@@ -144,8 +144,8 @@ export default function DoctorProfile() {
     );
   }
 
-  const doctorName = `Dr. ${doctor?.firstName || ''} ${doctor?.lastName || ''}`;
-  const initials = `${doctor?.firstName?.[0] || ''}${doctor?.lastName?.[0] || ''}`.toUpperCase();
+  const doctorName = `Dr. ${doctor?.user?.firstName || ''} ${doctor?.user?.lastName || ''}`;
+  const initials = `${doctor?.user?.firstName?.[0] || ''}${doctor?.user?.lastName?.[0] || ''}`.toUpperCase();
 
 
 

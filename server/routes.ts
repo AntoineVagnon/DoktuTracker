@@ -103,9 +103,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         rpps_number: doctor.rppsNumber,
         consultation_price: doctor.consultationPrice,
         is_online: doctor.isOnline,
-        firstName: doctor.user?.firstName || 'Dr.',
-        lastName: doctor.user?.lastName || '',
-        bio: doctor.bio,
+        user: {
+          firstName: doctor.user?.firstName,
+          lastName: doctor.user?.lastName,
+          bio: doctor.bio
+        },
         education: doctor.education,
         experience: doctor.experience,
         languages: doctor.languages || [],
