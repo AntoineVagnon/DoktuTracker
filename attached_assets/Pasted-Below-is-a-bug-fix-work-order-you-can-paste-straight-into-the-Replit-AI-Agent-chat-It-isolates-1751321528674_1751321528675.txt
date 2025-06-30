@@ -1,0 +1,116 @@
+Below is a **bug-fix work order** you can paste straight into the Replit AI Agent chat.
+It isolates the doctor-grid regression, lists reproducible steps, and spells out the exact code + test deliverables required to surface —or at least skeleton-render —the grid every time the Home page loads.
+
+---
+
+## Doktu — DoctorGrid Hot-Fix (v3)
+
+### 🎯 Goal
+
+*Home page must always display the “Hand-Picked Medical Team” section.*
+
+* If `/api/public/doctors-grid` returns ≥ 1 doctors → show cards.
+* If it returns `[]`, fails, or times out → show 10 animated skeletons.
+  Right now **neither cards nor skeletons are visible** (see `3c624e3e-2d5b-4bdc-b176-18aac8374db6.png`).
+
+---
+
+### 1 — Steps to reproduce (staging & dev)
+
+1. `npm run dev` (or open staging URL).
+2. Open Chrome DevTools → Network.
+3. Hard-refresh `/` (⌘⇧R / Ctrl-F5).
+
+**Actual:**
+
+* No request to `/api/public/doctors-grid` **OR** request returns 200 \[]
+  **and** the DOM for `<section id="doctors-grid">` is empty (no cards, no skeletons).
+
+---
+
+### 2 — Root-cause hypotheses (investigate in this order)
+
+| ID  | Area                            | Checks                                                                                                              |
+| --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| H-1 | **Home component import**       | `pages/index.tsx` (or `app/page.tsx`) might not actually render `<DoctorsGrid />`.                                  |
+| H-2 | **Fetch never fires**           | `useSWR('api/public/doctors-grid', …)` incorrectly gated behind `user?.authenticated` or wrapped in a feature-flag. |
+| H-3 | **API returns 0**               | Seed script didn’t insert doctors; query joins to `availability` produce empty array.                               |
+| H-4 | **Skeleton guard-clause wrong** | JSX returns `null` instead of `<SkeletonCard />` when `data?.length === 0`.                                         |
+| H-5 | **CSS / visibility**            | Outer container has `display:none` because of misplaced LaunchDarkly class.                                         |
+
+---
+
+### 3 — Required code changes
+
+1. **Ensure component mounts**
+
+   ```tsx
+   // pages/index.tsx
+   import DoctorsGrid from '@/components/DoctorsGrid';
+   …
+   <section id="doctors-grid" className="py-20">
+     <DoctorsGrid />
+   </section>
+   ```
+2. **Stable fetch hook** (client-side SWR, 30 s revalidate)
+
+   ```ts
+   const { data, error, isLoading } = useSWR<Doctor[]>('/api/public/doctors-grid', fetcher, {
+     refreshInterval: 30_000,
+     shouldRetryOnError: false,
+   });
+   ```
+3. **Render logic** inside `DoctorsGrid.tsx`
+
+   ```tsx
+   if (isLoading) return <SkeletonGrid count={10} />;
+   if (error)    return <SkeletonGrid count={10} />;
+   if (!data?.length) return <SkeletonGrid count={10} />;
+   return <DoctorCardGrid doctors={data.slice(0, 10)} />;
+   ```
+4. **Seed script** (`scripts/seed.ts`)
+
+   * Insert 10 doctors with at least one future `availability` slot.
+   * Run on `prisma migrate dev` hook.
+5. **API route** `/api/public/doctors-grid`
+
+   * `limit 10`, `order by updated_at desc`.
+   * Join next 2 upcoming slots.
+   * Return 200 JSON array (never 204).
+
+---
+
+### 4 — Tests (red → green)
+
+| Layer     | Framework  | Test                                                                                              |
+| --------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| Unit      | Vitest     | `fetchDoctorsGrid()` returns array length ≤ 10.                                                   |
+| Component | RTL        | Mount `<DoctorsGrid />` with empty mock → expects 10 skeletons.                                   |
+| E2E       | Playwright | Visit `/` → `role="grid"` visible within 4 s, contains either `.doctor-card` or `.skeleton-card`. |
+
+---
+
+### 5 — Acceptance criteria
+
+* [ ] Network tab shows `/api/public/doctors-grid` request on every page load (200).
+* [ ] DOM always contains 10 elements with `.doctor-card` **or** `.skeleton-card`.
+* [ ] Screenshot test matches `public/with-doctors.png` (cards) or `public/without-doctors.png` (skeletons).
+* [ ] Lighthouse Performance ≥ 90, CLS < 0.1.
+* [ ] No uncaught console errors related to DoctorsGrid.
+
+---
+
+### 6 — Out of scope
+
+GA / Segment 403s, LaunchDarkly pings, and other console noise are acceptable **unless** they block the grid render.
+
+---
+
+### 7 — Timebox
+
+Aim for < 2 h dev + < 30 min review; hot-fix label.
+
+---
+
+> **Hand this block to the Replit AI Agent.**
+> It should produce the code, migrations, and tests that satisfy the acceptance checklist above.
