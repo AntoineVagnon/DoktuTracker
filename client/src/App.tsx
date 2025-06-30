@@ -10,6 +10,7 @@ import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
 import DoctorProfile from "@/pages/DoctorProfile";
 import BookAppointment from "@/pages/BookAppointment";
+import Login from "@/pages/Login";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
 
@@ -21,8 +22,10 @@ function Router() {
       {isLoading || !isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
+          <Route path="/login" component={Login} />
           <Route path="/doctor/:id" component={DoctorProfile} />
           <Route path="/book/:id" component={BookAppointment} />
+          <Route path="/booking" component={BookAppointment} />
         </>
       ) : (
         <>
@@ -32,6 +35,7 @@ function Router() {
           <Route path="/admin" component={AdminDashboard} />
           <Route path="/doctor/:id" component={DoctorProfile} />
           <Route path="/book/:id" component={BookAppointment} />
+          <Route path="/booking" component={BookAppointment} />
         </>
       )}
       <Route component={NotFound} />

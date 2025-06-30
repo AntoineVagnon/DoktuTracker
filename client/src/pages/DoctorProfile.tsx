@@ -151,18 +151,18 @@ export default function DoctorProfile() {
 
 
   const handleSlotClick = (slot: TimeSlot) => {
+    const slotTime = `${slot.date}T${slot.startTime}:00Z`;
+    const bookingUrl = `/booking?doctorId=${id}&slot=${encodeURIComponent(slotTime)}`;
+    
     if (!isAuthenticated) {
-      // Store booking context for unauthenticated users
-      sessionStorage.setItem("bookingContext", JSON.stringify({
-        doctorId: id,
-        slotId: slot.id,
-        timestamp: Date.now(),
-      }));
-      window.location.href = "/api/login";
+      // Redirect to login with booking URL as redirect parameter
+      const loginUrl = `/login?redirect=${encodeURIComponent(bookingUrl)}`;
+      window.location.href = loginUrl;
       return;
     }
 
-    lockSlotMutation.mutate(slot.id);
+    // User is authenticated, go directly to booking page
+    window.location.href = bookingUrl;
   };
 
 
