@@ -1,0 +1,163 @@
+
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Star, Clock } from "lucide-react";
+import { SkeletonCard } from "./SkeletonCard";
+import { Link } from "wouter";
+
+interface Doctor {
+  id: string;
+  firstName: string;
+  lastName: string;
+  specialty: string;
+  avatarUrl: string | null;
+  avgRating: number | null;
+  nextAvailableSlots: string[];
+}
+
+export function DoctorsGrid() {
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch("/api/public/doctors-grid");
+        if (!response.ok) {
+          throw new Error("Failed to fetch doctors");
+        }
+        const data = await response.json();
+        setDoctors(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+        console.error("Error fetching doctors:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  const formatSlotTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return `Today ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    } else if (date.toDateString() === tomorrow.toDateString()) {
+      return `Tomorrow ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    } else {
+      return date.toLocaleDateString([], { 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  };
+
+  const renderSkeletons = () => {
+    return Array.from({ length: 10 }, (_, i) => (
+      <SkeletonCard key={i} />
+    ));
+  };
+
+  const renderDoctorCard = (doctor: Doctor) => (
+    <Link key={doctor.id} href={`/doctor/${doctor.id}`}>
+      <Card 
+        className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-sm hover:shadow-xl"
+        role="button"
+        tabIndex={0}
+        aria-label={`View Dr ${doctor.lastName} profile`}
+      >
+        <CardContent className="p-6">
+          <div className="flex flex-col items-center space-y-4 text-center">
+            {/* Avatar */}
+            <Avatar className="h-16 w-16">
+              <AvatarImage 
+                src={doctor.avatarUrl || undefined} 
+                alt={`Photo of Dr. ${doctor.lastName}`}
+              />
+              <AvatarFallback className="text-lg font-semibold">
+                {doctor.firstName[0]}{doctor.lastName[0]}
+              </AvatarFallback>
+            </Avatar>
+            
+            {/* Name */}
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg">
+                Dr. {doctor.firstName} {doctor.lastName}
+              </h3>
+              <p className="text-sm text-gray-600">{doctor.specialty}</p>
+            </div>
+            
+            {/* Rating */}
+            <div className="flex items-center space-x-1">
+              {doctor.avgRating ? (
+                <>
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm font-medium">{doctor.avgRating.toFixed(1)}</span>
+                </>
+              ) : (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                  New
+                </Badge>
+              )}
+            </div>
+            
+            {/* Availability */}
+            <div className="space-y-1 w-full">
+              <div className="flex items-center justify-center space-x-1 text-xs text-gray-600">
+                <Clock className="h-3 w-3" />
+                <span>Next available:</span>
+              </div>
+              {doctor.nextAvailableSlots.length >= 2 ? (
+                <div className="space-y-1 text-xs text-gray-700">
+                  <div>{formatSlotTime(doctor.nextAvailableSlots[0])}</div>
+                  <div>{formatSlotTime(doctor.nextAvailableSlots[1])}</div>
+                </div>
+              ) : (
+                <div className="text-xs text-red-600 font-medium">
+                  Fully booked
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+
+  return (
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Hand-Picked Medical Team
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Meet our carefully selected healthcare professionals, ready to provide you with expert medical care.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          {loading || error ? (
+            renderSkeletons()
+          ) : (
+            doctors.length > 0 ? (
+              doctors.map(renderDoctorCard)
+            ) : (
+              renderSkeletons()
+            )
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}

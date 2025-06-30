@@ -41,6 +41,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public doctors grid endpoint
+  app.get("/api/public/doctors-grid", async (req, res) => {
+    try {
+      const doctors = await storage.getDoctors();
+      // Return up to 10 doctors for the grid
+      const doctorsGrid = doctors.slice(0, 10).map(doctor => ({
+        id: doctor.id,
+        firstName: doctor.firstName,
+        lastName: doctor.lastName,
+        specialty: doctor.specialty,
+        avatarUrl: doctor.avatarUrl,
+        avgRating: doctor.avgRating,
+        // Add placeholder availability for now
+        nextAvailableSlots: [
+          new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString()
+        ]
+      }));
+      res.json(doctorsGrid);
+    } catch (error) {
+      console.error("Error fetching doctors grid:", error);
+      res.status(500).json({ message: "Failed to fetch doctors grid" });
+    }
+  });
+
   app.get("/api/doctors/:id", async (req, res) => {
     try {
       const doctor = await storage.getDoctor(req.params.id);

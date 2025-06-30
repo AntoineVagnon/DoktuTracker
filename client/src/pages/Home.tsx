@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Star, TrendingUp } from "lucide-react";
+import { DoctorsGrid } from "@/components/DoctorsGrid";
 
 export default function Home() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -47,7 +48,7 @@ export default function Home() {
   const getUserGreeting = () => {
     const name = user?.firstName || "there";
     const hour = new Date().getHours();
-    
+
     if (hour < 12) return `Good morning, ${name}!`;
     if (hour < 17) return `Good afternoon, ${name}!`;
     return `Good evening, ${name}!`;
@@ -164,6 +165,9 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        {/* Doctors Grid - only show for unauthenticated users */}
+        {!isAuthenticated && <DoctorsGrid />}
 
         {/* Role-specific CTA */}
         <Card className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] text-white">
