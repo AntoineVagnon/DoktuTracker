@@ -13,30 +13,12 @@ export default function Home() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return null;
   }
 
   const getDashboardRoute = () => {
@@ -108,98 +90,128 @@ export default function Home() {
 
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {getUserGreeting()}
-          </h1>
-          <p className="text-gray-600">
-            Welcome back to Doktu. What would you like to do today?
-          </p>
-        </div>
+        {isAuthenticated ? (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {getUserGreeting()}
+            </h1>
+            <p className="text-gray-600">
+              Welcome back to Doktu. What would you like to do today?
+            </p>
+          </div>
+        ) : (
+          <div className="mb-8 text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Welcome to Doktu
+            </h1>
+            <p className="text-xl text-gray-600 mb-6">
+              Connect with certified healthcare professionals for expert medical care
+            </p>
+            <Button size="lg" asChild>
+              <a href="/api/login">Get Started - Login with Replit</a>
+            </Button>
+          </div>
+        )}
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {quickActions.map((action, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-blue-500">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className={`p-3 rounded-lg bg-${action.color}-100`}>
-                    <action.icon className={`h-6 w-6 text-${action.color}-600`} />
+        {/* Quick Actions - only for authenticated users */}
+        {isAuthenticated && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {quickActions.map((action, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-blue-500">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className={`p-3 rounded-lg bg-${action.color}-100`}>
+                      <action.icon className={`h-6 w-6 text-${action.color}-600`} />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 mb-1">{action.title}</h3>
+                      <p className="text-sm text-gray-600 mb-3">{action.description}</p>
+                      <Button size="sm" asChild>
+                        <Link href={action.href}>Get Started</Link>
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 mb-1">{action.title}</h3>
-                    <p className="text-sm text-gray-600 mb-3">{action.description}</p>
-                    <Button size="sm" asChild>
-                      <Link href={action.href}>Get Started</Link>
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Stats Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Platform Statistics</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {stats.map((stat, index) => (
-              <Card key={index}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium text-gray-600">
-                      {stat.title}
-                    </CardTitle>
-                    <stat.icon className={`h-5 w-5 ${stat.color}`} />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-gray-900 mb-1">
-                    {stat.value}
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    {stat.description}
-                  </p>
                 </CardContent>
               </Card>
             ))}
           </div>
-        </div>
+        )}
 
-        {/* Doctors Grid - only show for unauthenticated users */}
-        {!isAuthenticated && <DoctorsGrid />}
+        {/* Stats Section - only for authenticated users */}
+        {isAuthenticated && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Platform Statistics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {stats.map((stat, index) => (
+                <Card key={index}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-gray-600">
+                        {stat.title}
+                      </CardTitle>
+                      <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-gray-900 mb-1">
+                      {stat.value}
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {stat.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Doctors Grid - always show */}
+        <DoctorsGrid />
 
         {/* Role-specific CTA */}
         <Card className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] text-white">
           <CardContent className="p-8 text-center">
-            {user?.role === "doctor" ? (
-              <>
-                <h2 className="text-2xl font-bold mb-4">Ready to help patients?</h2>
-                <p className="text-blue-100 mb-6">
-                  Manage your schedule and connect with patients who need your expertise.
-                </p>
-                <Button size="lg" className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" asChild>
-                  <Link href="/doctor-dashboard">Go to Doctor Dashboard</Link>
-                </Button>
-              </>
-            ) : user?.role === "admin" ? (
-              <>
-                <h2 className="text-2xl font-bold mb-4">Monitor platform performance</h2>
-                <p className="text-blue-100 mb-6">
-                  View analytics, manage users, and oversee the platform operations.
-                </p>
-                <Button size="lg" className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" asChild>
-                  <Link href="/admin">Go to Admin Dashboard</Link>
-                </Button>
-              </>
+            {isAuthenticated ? (
+              user?.role === "doctor" ? (
+                <>
+                  <h2 className="text-2xl font-bold mb-4">Ready to help patients?</h2>
+                  <p className="text-blue-100 mb-6">
+                    Manage your schedule and connect with patients who need your expertise.
+                  </p>
+                  <Button size="lg" className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" asChild>
+                    <Link href="/doctor-dashboard">Go to Doctor Dashboard</Link>
+                  </Button>
+                </>
+              ) : user?.role === "admin" ? (
+                <>
+                  <h2 className="text-2xl font-bold mb-4">Monitor platform performance</h2>
+                  <p className="text-blue-100 mb-6">
+                    View analytics, manage users, and oversee the platform operations.
+                  </p>
+                  <Button size="lg" className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" asChild>
+                    <Link href="/admin">Go to Admin Dashboard</Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold mb-4">Need medical consultation?</h2>
+                  <p className="text-blue-100 mb-6">
+                    Connect with certified doctors for secure video consultations.
+                  </p>
+                  <Button size="lg" className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" asChild>
+                    <Link href="/dashboard">Book Your Consultation</Link>
+                  </Button>
+                </>
+              )
             ) : (
               <>
-                <h2 className="text-2xl font-bold mb-4">Need medical consultation?</h2>
+                <h2 className="text-2xl font-bold mb-4">Ready to get started?</h2>
                 <p className="text-blue-100 mb-6">
-                  Connect with certified doctors for secure video consultations.
+                  Join thousands of patients who trust our platform for their healthcare needs.
                 </p>
                 <Button size="lg" className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" asChild>
-                  <Link href="/dashboard">Book Your Consultation</Link>
+                  <a href="/api/login">Login with Replit</a>
                 </Button>
               </>
             )}
