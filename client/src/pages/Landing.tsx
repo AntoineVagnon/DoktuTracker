@@ -21,7 +21,16 @@ export default function Landing() {
     img.src = "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600";
   }, []);
 
-  const featuredDoctors = doctors.slice(0, 5);
+  // Transform the doctor data to match DoctorCard interface
+  const featuredDoctors = doctors.slice(0, 5).map((doctor: any) => ({
+    id: doctor.id || doctor.doctors?.id,
+    user: doctor.user || doctor.users,
+    specialty: doctor.specialty || doctor.doctors?.specialty,
+    rating: doctor.rating || doctor.doctors?.rating || "4.5",
+    reviewCount: doctor.reviewCount || 20,
+    consultationPrice: doctor.consultationPrice || doctor.doctors?.consultationPrice || "€35",
+    isOnline: doctor.isOnline !== undefined ? doctor.isOnline : (doctor.doctors?.isOnline || true)
+  }));
 
   const features = [
     {
