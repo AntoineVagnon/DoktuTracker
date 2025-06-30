@@ -1,0 +1,291 @@
+──────────────────── 0 • PRODUCT VISION ─────────────────────────────────────
+Patients in Europe can book a tele-consultation and enter the Zoom room **in
+under two minutes**. Doctors manage availability in one portal; founders track
+KPIs in real time. Solution must be GDPR-hosted, WCAG 2.1 AA compliant.
+
+──────────────────── 1 • TECH STACK ──────────────────────────────────────────
+Front-end   Next.js 13 (app-router) · React 18 TS strict · Vite · Tailwind + shadcn/ui  
+State       React-Query (server) · Zustand (local)  
+Back-end    Fastify 4 · Zod · Supabase Postgres 15 + RLS (Drizzle ORM) · Redis (slot holds)  
+External    Stripe Checkout · Zoom JWT SDK · SendGrid · Twilio · Cal.com  
+Observ.     Pino JSON logs · OpenTelemetry traces · `/metrics` Prometheus scrape  
+Quality     Vitest · React-Testing-Library · Playwright · Axe · Lighthouse
+
+──────────────────── 2 • REPO LAYOUT ─────────────────────────────────────────
+doktu/  
+├─ apps/web/                     Next 13 app + API routes  
+│  └─ app/(public|patients|doctors|admin)/…  
+│  └─ components/ navigation/ · ui/ · calendar/ · video-check/  
+├─ packages/server/              fastify.ts · modules/{auth|booking|payments|scheduling|notify|video-check}  
+├─ packages/db/                  schema.ts + drizzle migrations  
+├─ e2e/                          Playwright specs  
+├─ .github/workflows/ci.yml      lint → unit → e2e → Docker → Fly.io  
+└─ docker-compose.yml            postgres · redis · mailhog · stripe-cli
+
+──────────────────── 3 • DATABASE SCHEMA (v0.1 + extensions) ────────────────
+Use *Doktu DB Schema – Supabase Migration v0.1* (users, doctors, patients,
+slots, appointments, payments, ratings, audit_events) **plus**:
+
+```sql
+-- Slot locking --------------------------------------------------------------
+alter table slots
+  add column locked_until timestamptz,
+  add column locked_by   uuid;
+
+-- Reschedule / cancel tracking ---------------------------------------------
+alter table appointments
+  add column reschedule_count int default 0,
+  add column cancelled_by text; -- patient | doctor | admin
+
+create table appointment_changes (
+  id uuid primary key default gen_random_uuid(),
+  appointment_id uuid references appointments(id) on delete cascade,
+  action text check (action in ('reschedule','cancel')),
+  actor_role text,
+  reason text,
+  before jsonb,
+  after  jsonb,
+  created_at timestamptz default now()
+);
+
+-- Video readiness tests -----------------------------------------------------
+create table video_tests (
+  id uuid primary key default gen_random_uuid(),
+  appointment_id uuid references appointments(id) on delete cascade,
+  passed boolean,
+  details jsonb,
+  created_at timestamptz default now()
+);
+RLS enabled; policies by role derived from users.role. Custom JWT auth.
+
+──────────────────── 4 • SCHEDULING & SLOT ENGINE ───────────────────────────
+Default working hours 10:00-21:00 daily if no explicit slots.
+15-minute generator; consult duration 30 min.
+
+GET /api/doctors/:id/unified-availability
+
+Fetch explicit doctorTimeSlots rows.
+
+Back-fill gaps with default template.
+
+Exclude booked slots ±45 min buffer.
+
+Skip any slot < 60 min from now() (advance notice).
+
+Remove entries locked via Redis slot_holds or locked_until > now().
+→ Returns [{ start, end, isAvailable, isBooked }].
+
+POST /api/slots/hold → sets locked_until = now() + 15 min, writes
+Redis slot_holds:<slotId> TTL 900 s.
+
+Conflict check: POST /api/doctor/time-slots/check-conflicts
+returns 409 ERR_SLOT_CONFLICT on overlap.
+
+Cron job unlockStaleSlots un-locks expired holds every 60 s.
+
+Cal.com bridge (server/modules/scheduling/cal-service.ts): pushes explicit
+availability and ingests external events every 5 min if CAL_API_KEY present
+(otherwise returns deterministic fakes in dev).
+
+──────────────────── 5 • DOCTOR CALENDAR SYSTEM ─────────────────────────────
+Built with react-big-calendar (moment localiser).
+
+Views
+• Day 00:00-23:30 (30-min rows) red “now” line
+• Week 7-day grid (scroll horizontal on mobile)
+• Month overview (click → Day view)
+
+Slot colours
+• Green = available (click → DELETE /api/doctor/time-slots/:id)
+• White = unavailable (click → POST /api/doctor/time-slots)
+• Blue = booked (hover shows patient name)
+• Past = bg-gray-100 opacity-50 cursor-default
+Weekend = bg-gray-50.
+
+Hover icons: plus (white), trash (green).
+React-Query refresh 30 s (staleTime 30 000).
+Virtual rows for Month view.
+
+──────────────────── 6 • RESCHEDULE & CANCELLATION POLICY ───────────────────
+
+Reschedule ≥ 60 min before start; max 2 per appointment; optional cap 5/mo.
+
+Cancel: patient ≥ 60 min; doctor any time (must provide reason).
+
+Refunds: patient ≥ 60 min → full refund/credit; < 60 min → none; doctor < 60 min → full refund + €10 credit.
+
+Endpoints
+
+bash
+Copier
+Modifier
+PATCH /api/appointments/:id/reschedule { newSlotId }
+PATCH /api/appointments/:id/cancel     { reason }
+Writes to appointment_changes & audit_events.
+
+──────────────────── 7 • CREDENTIALS & ONBOARDING ───────────────────────────
+
+Email + password ≥ 12 chars (upper/lower/digit/symbol). bcrypt 12 rounds.
+
+reCAPTCHA v3 (score ≥ 0.7) on sign-up/login; fallback challenge if < 0.7.
+
+Forgot-password magic-link (SendGrid) valid 60 min.
+
+Profile onboarding (DOB, gender, primaryConditions[], allergies[]) required
+before first payment; progress meter.
+
+──────────────────── 8 • GLOBAL NAVIGATION ───────────────────────────────────
+Desktop header: logo, Doctors, Pricing, Login/Sign-Up → becomes solid
+white + shadow after 64 px scroll.
+Mobile: hamburger overlay (full-screen, 44 px tap-targets).
+Avatar dropdown routes by role: /dashboard, /doctor, /admin.
+Header auto-hides on scroll down (useHideOnScroll).
+
+──────────────────── 9 • PUBLIC PAGES ───────────────────────────────────────
+/ hero + fixed 10-doctor grid (lg:5 md:3 sm:2). Each card shows:
+avatar initials, specialty, rating ★4.8-5.0, next two slots via
+unified-availability. FCP ≤ 1.5 s on LTE.
+
+Routes: /doctors search list; /how-it-works; /pricing;
+/legal/* (GDPR, HIPAA, ToS, Privacy); /blog/* MDX static.
+
+──────────────────── 10 • DOCTOR PROFILE /doctor/:id ──────────────────────
+Header gradient #0A84FF → #155AFA; avatar fallback; rating; RPPS 10003{id}789.
+Sections: About (bio, education, expertise badges, languages, philosophy),
+Professional details, FAQ.
+
+Sticky booking card (desktop right / mobile footer):
+– 7-day selector with arrows
+– Shows future slots (green pills, 24 h clock)
+– First 4 shown → “See all” expands scrollable list
+– Unauth user click: stores bookingContext {doctorId,date,time} in
+sessionStorage (TTL 15 min) → redirect /book/:id.
+– Auth user click: POST /api/appointments/create-pending → Stripe Checkout.
+
+Responsive layouts: desktop 3-column; tablet stacked; mobile single column.
+Skeleton loaders + ARIA labels.
+
+──────────────────── 11 • DASHBOARDS ─────────────────────────────────────────
+11-A Patient /dashboard
+Banner “Join Video” appears 5 min pre-consult; tabs:
+Appointments · Book New · Health Profile · Billing · Settings.
+Reschedule/cancel buttons obey policy.
+
+11-B Doctor /doctor
+Header: logo→home, Messages (modal), Logout.
+Upcoming list (2⁄3 width): next 5 appts, status chips
+(pending/confirmed/paid/completed/cancelled), pulsing green “Join Live”
+5 min before start until +30 min. Buttons: Join · Complete · Cancel.
+Quick Actions (1⁄3): Patient Records, Settings, View Schedule
+(toggles full DoctorCalendar). Online/Offline switch hides slots live.
+React-Query refresh 30 s.
+
+11-C Admin /admin
+Sidebar 7 items. Overview KPI tiles refresh 60 s
+(Booked, Completed, No-Show%, ARPA, Appts/Patient, Doctor Utilisation,
+Booking Conversion, New Patients). Alert feed (Critical, Warning, Info) with
+CTA. Date filter (today, yesterday, week, month). CSV export.
+
+──────────────────── 12 • VIDEO READINESS SELF-TEST ─────────────────────────
+modules/video-check + <VideoSelfTest /> wizard (modal).
+
+Steps (WebRTC & network):
+
+Camera preview ≥ 640×480.
+
+Mic RMS > -45 dB.
+
+Bandwidth ≥ 1.2 Mbps up/down (data channel).
+
+Echo score < 0.3.
+
+STUN reachability.
+
+Trigger: Patient banner (10 min pre-consult); Doctor “Test devices” link.
+POST /api/video-test/result saves {passed, details} → video_tests.
+Join button disabled until latest test passed=true within 24 h.
+
+──────────────────── 13 • API CONTRACTS ──────────────────────────────────────
+
+bash
+Copier
+Modifier
+GET  /api/doctors/:id/unified-availability
+POST /api/slots/hold
+POST /api/payment/start
+PATCH/api/appointments/:id/reschedule
+PATCH/api/appointments/:id/cancel
+GET  /api/appointments/:id/history
+POST /api/video-test/result
+
+-- Doctor availability CRUD
+GET    /api/doctor/time-slots
+POST   /api/doctor/time-slots
+POST   /api/doctor/time-slots/batch
+DELETE /api/doctor/time-slots/:id
+POST   /api/doctor/time-slots/check-conflicts
+
+-- Admin KPIs
+GET /api/metrics/overview
+GET /api/metrics/funnel
+All return JSON. Error codes: ERR_SLOT_CONFLICT, ERR_TIME_WINDOW,
+ERR_MAX_RESCHEDULES, ERR_DUP_EMAIL, ERR_PAYMENT_FAILED.
+
+──────────────────── 14 • SEED SCRIPT (pnpm db:seed) ───────────────────────
+
+Insert 10 demo doctors (avatar or initials, specialty, languages).
+
+Generate weekday slots 08-12 & 14-18 for next 7 days (30-min granularity).
+
+Insert demo patient, demo admin, one completed appointment (rating 5★).
+
+Stripe products: Pay-per-visit €35, Basic €29, Premium €59.
+
+Fake Cal.com events if CAL_API_KEY missing.
+
+──────────────────── 15 • TEST SUITE ─────────────────────────────────────────
+Vitest: slot conflict, reschedule limit, cancel refund, doctor slot toggle,
+video-test save.
+Playwright: happy path (hold → sign-up → pay → video test → Zoom join);
+reschedule success; cancel refund; doctor calendar toggling; admin KPI tiles.
+Accessibility: Axe scan (home, patient dash). Performance: Lighthouse desktop
+FCP ≤ 1.5 s LTE.
+
+──────────────────── 16 • CI / CD ────────────────────────────────────────────
+GitHub Action:
+
+pnpm lint
+
+pnpm test (Vitest)
+
+pnpm playwright install && pnpm playwright test
+
+Docker build → Fly.io staging (blue-green)
+
+Manual “Promote → prod” job.
+
+──────────────────── 17 • OPEN QUESTIONS ─────────────────────────────────────
+• Confirm final AWS region (eu-central-1) for GDPR storage.
+• Provide production brand assets (logo SVG, favicons, email templates).
+• Decide prod domain → configure CORS + webhook allow list.
+• Policy if camera or mic unavailable (audio-only fallback?).
+
+──────────────────── 18 • EXPECTED OUTPUT ────────────────────────────────────
+
+Repo scaffolds exactly as Section 2, compiles with pnpm dev.
+
+Supabase migrations apply cleanly; pnpm db:seed populates demo data.
+
+Marketing / loads 10-doctor grid; FCP ≤ 1.5 s LTE.
+
+Patient journey works end-to-end (hold → sign-up → Stripe test pay →
+video self-test → Zoom).
+
+Doctor dashboard shows upcoming list & full calendar; availability toggling
+and live join rule work.
+
+Admin console renders KPI tiles & alerts.
+
+Reschedule/cancel endpoints enforce 60-min policy, trigger refunds/credits.
+
+All unit + e2e tests green; Axe & Lighthouse budgets met.
