@@ -144,8 +144,8 @@ export default function DoctorProfile() {
     );
   }
 
-  const doctorName = `Dr. ${doctor.user.firstName} ${doctor.user.lastName}`;
-  const initials = `${doctor.user.firstName[0]}${doctor.user.lastName[0]}`.toUpperCase();
+  const doctorName = `Dr. ${doctor?.user?.firstName || ''} ${doctor?.user?.lastName || ''}`;
+  const initials = `${doctor?.user?.firstName?.[0] || ''}${doctor?.user?.lastName?.[0] || ''}`.toUpperCase();
 
 
 
@@ -195,7 +195,7 @@ export default function DoctorProfile() {
               <CardContent className="p-8">
                 <div className="flex items-center space-x-6">
                   <Avatar className="w-24 h-24 border-4 border-white/20">
-                    <AvatarImage src={doctor.user.profileImageUrl} alt={doctorName} />
+                    <AvatarImage src={doctor?.user?.profileImageUrl || ''} alt={doctorName} />
                     <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
                       {initials}
                     </AvatarFallback>
@@ -203,7 +203,7 @@ export default function DoctorProfile() {
                   
                   <div className="flex-1">
                     <h1 className="text-3xl font-bold mb-2">{doctorName}</h1>
-                    <p className="text-blue-100 text-lg mb-3">{doctor.specialty}</p>
+                    <p className="text-blue-100 text-lg mb-3">{doctor?.specialty || ''}</p>
                     
                     <div className="flex items-center space-x-6">
                       <div className="flex items-center">
@@ -212,13 +212,13 @@ export default function DoctorProfile() {
                             <Star
                               key={i}
                               className={`h-4 w-4 ${
-                                i < Math.floor(parseFloat(doctor.rating)) ? "fill-current" : ""
+                                i < Math.floor(parseFloat(doctor?.rating || '0')) ? "fill-current" : ""
                               }`}
                             />
                           ))}
                         </div>
                         <span className="ml-2 text-blue-100">
-                          {doctor.rating} ({doctor.reviewCount} reviews)
+                          {doctor?.rating || '0'} ({doctor?.reviewCount || 0} reviews)
                         </span>
                       </div>
                       
@@ -228,7 +228,7 @@ export default function DoctorProfile() {
                       </div>
                       
                       <Badge className="bg-white/20 text-white border-white/20">
-                        RPPS {doctor.rppsNumber}
+                        RPPS {doctor?.rppsNumber || 'N/A'}
                       </Badge>
                     </div>
                   </div>
@@ -252,7 +252,7 @@ export default function DoctorProfile() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <p className="text-gray-600 leading-relaxed">
-                      {doctor.bio || "Psychiatrist specialised in cognitive behavioral therapy and anxiety management. Over 15 years of clinical experience helping patients overcome mental health challenges through evidence-based treatment approaches."}
+                      {doctor?.bio || "Psychiatrist specialised in cognitive behavioral therapy and anxiety management. Over 15 years of clinical experience helping patients overcome mental health challenges through evidence-based treatment approaches."}
                     </p>
 
                     <Separator />
@@ -395,7 +395,7 @@ export default function DoctorProfile() {
               <Card>
                 <CardHeader className="text-center">
                   <CardTitle className="text-2xl text-[hsl(207,100%,52%)]">
-                    €{doctor.consultationPrice}
+                    €{doctor?.consultationPrice || '35'}
                   </CardTitle>
                   <p className="text-sm text-gray-600">30 min consultation</p>
                 </CardHeader>
