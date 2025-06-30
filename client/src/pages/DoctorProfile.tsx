@@ -64,8 +64,8 @@ export default function DoctorProfile() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [weekOffset, setWeekOffset] = useState(0);
 
-  const { data: doctor, isLoading: doctorLoading } = useQuery({
-    queryKey: [`/api/doctors/${id}`],
+  const { data: doctor, isLoading: doctorLoading, error: doctorError } = useQuery({
+    queryKey: [`/api/public/doctors/${id}`],
     enabled: !!id,
   });
 
@@ -126,7 +126,7 @@ export default function DoctorProfile() {
     );
   }
 
-  if (!doctor) {
+  if (doctorError || !doctor) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />

@@ -68,6 +68,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public doctor detail endpoint
+  app.get("/api/public/doctors/:id", async (req, res) => {
+    try {
+      const doctor = await storage.getDoctor(req.params.id);
+      
+      if (!doctor) {
+        return res.status(404).json({ message: "Doctor not found" });
+      }
+
+      // Transform the data to match expected structure
+      const doctorDetail = {
+        id: doctor.id,
+        user: doctor.user,
+        specialty: doctor.specialty,
+        bio: doctor.bio,
+        education: doctor.education,
+        experience: doctor.experience,
+        languages: Array.isArray(doctor.languages) ? doctor.languages : (doctor.languages ? doctor.languages.split(',').map((l: string) => l.trim()) : []),
+        rppsNumber: doctor.rppsNumber,
+        consultationPrice: doctor.consultationPrice,
+        rating: doctor.rating,
+        reviewCount: doctor.reviewCount || 0,
+        isOnline: doctor.isOnline
+      };
+
+      res.json(doctorDetail);
+    } catch (error) {
+      console.error("Error fetching doctor detail:", error);
+      res.status(500).json({ message: "Failed to fetch doctor details" });
+    }
+  });
+
   app.get("/api/doctors/:id", async (req, res) => {
     try {
       const doctor = await storage.getDoctor(req.params.id);

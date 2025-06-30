@@ -1,0 +1,52 @@
+Here’s a prompt you can paste straight into the Replit AI Agent to fix the `doctor.user` undefined error when navigating to a doctor’s profile:
+
+````
+The DoctorProfile page is crashing because `doctor.user` is undefined. We need to:
+
+1. **Backend: Expose a proper detail endpoint**  
+   - Create `GET /api/public/doctors/:id` (if it doesn’t exist)  
+   - Query the `doctors` table **JOIN** the related `users` row so the JSON looks like:  
+     ```json
+     {
+       "id": "...",
+       "specialty": "...",
+       "avg_rating": 4.8,
+       "avatar_url": "...",
+       "user": {
+         "firstName": "Alice",
+         "lastName": "Smith",
+         "bio": "...",
+         // any other user fields needed on profile
+       },
+       "availability": [ /* slots */ ]
+     }
+     ```
+   - Always return a 200 JSON object, or 404 if the id doesn’t exist.
+
+2. **Client: Fetch the detailed doctor object**  
+   In `client/src/pages/DoctorProfile.tsx`:
+   ```ts
+   // Replace whatever data source you have with:
+   const { data: doctor, error, isLoading } = useSWR<Doctor>(
+     `/api/public/doctors/${params.id}`,
+     fetcher
+   );
+
+   if (isLoading) return <LoadingSpinner />;
+   if (error)   return <ErrorMessage message="Unable to load doctor" />;
+   if (!doctor) return <NotFound />; // 404 case
+
+   // Now doctor.user is guaranteed
+   const doctorName = `Dr. ${doctor.user.firstName} ${doctor.user.lastName}`;
+   const initials   = `${doctor.user.firstName[0]}${doctor.user.lastName[0]}`.toUpperCase();
+````
+
+* Remove any direct imports of mock data or props that assumed `doctor.user` was present.
+* Ensure the component doesn’t execute line 148 until the `doctor` object is fully defined.
+
+3. **Tests**
+
+   * Add a unit test for `fetchDoctorById()` (Vitest) returning the nested `user` object.
+   * Add a Playwright navigation test: click a “Book now” button on a card → expect the profile page to render `role="heading"` with the text “Dr. {LastName}”.
+
+Once these changes are applied, clicking “Book now” should navigate to `/doctor/:id` and render the profile without any “undefined” errors.
