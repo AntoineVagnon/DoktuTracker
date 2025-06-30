@@ -45,20 +45,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/public/doctors-grid", async (req, res) => {
     try {
       const doctors = await storage.getDoctors();
+      
       // Return up to 10 doctors for the grid
       const doctorsGrid = doctors.slice(0, 10).map(doctor => ({
-        id: doctor.id,
-        firstName: doctor.firstName,
-        lastName: doctor.lastName,
-        specialty: doctor.specialty,
-        avatarUrl: doctor.avatarUrl,
-        avgRating: doctor.avgRating,
+        id: doctor.doctors?.id || doctor.id,
+        firstName: doctor.users?.firstName || doctor.user?.firstName,
+        lastName: doctor.users?.lastName || doctor.user?.lastName,
+        specialty: doctor.doctors?.specialty || doctor.specialty,
+        avatarUrl: doctor.users?.profileImageUrl || doctor.user?.profileImageUrl,
+        avgRating: doctor.doctors?.rating ? parseFloat(doctor.doctors.rating) : (doctor.rating ? parseFloat(doctor.rating) : null),
         // Add placeholder availability for now
         nextAvailableSlots: [
           new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString()
         ]
       }));
+      
       res.json(doctorsGrid);
     } catch (error) {
       console.error("Error fetching doctors grid:", error);
