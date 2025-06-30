@@ -195,7 +195,7 @@ export default function DoctorProfile() {
               <CardContent className="p-8">
                 <div className="flex items-center space-x-6">
                   <Avatar className="w-24 h-24 border-4 border-white/20">
-                    <AvatarImage src={doctor?.user?.profileImageUrl || ''} alt={doctorName} />
+                    <AvatarImage src={doctor?.avatar_url || ''} alt={doctorName} />
                     <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
                       {initials}
                     </AvatarFallback>
@@ -212,23 +212,23 @@ export default function DoctorProfile() {
                             <Star
                               key={i}
                               className={`h-4 w-4 ${
-                                i < Math.floor(parseFloat(doctor?.rating || '0')) ? "fill-current" : ""
+                                i < Math.floor(doctor?.avg_rating || 0) ? "fill-current" : ""
                               }`}
                             />
                           ))}
                         </div>
                         <span className="ml-2 text-blue-100">
-                          {doctor?.rating || '0'} ({doctor?.reviewCount || 0} reviews)
+                          {doctor?.avg_rating || 0} ({doctor?.review_count || 0} reviews)
                         </span>
                       </div>
                       
                       <div className="flex items-center">
                         <MapPin className="h-4 w-4 mr-1" />
-                        <span className="text-blue-100">Paris, France</span>
+                        <span className="text-blue-100">{doctor?.location || 'Paris, France'}</span>
                       </div>
                       
                       <Badge className="bg-white/20 text-white border-white/20">
-                        RPPS {doctor?.rppsNumber || 'N/A'}
+                        RPPS {doctor?.rpps_number || 'N/A'}
                       </Badge>
                     </div>
                   </div>
@@ -395,18 +395,32 @@ export default function DoctorProfile() {
               <Card>
                 <CardHeader className="text-center">
                   <CardTitle className="text-2xl text-[hsl(207,100%,52%)]">
-                    €{doctor?.consultationPrice || '35'}
+                    €{doctor?.consultation_price || '35'}
                   </CardTitle>
                   <p className="text-sm text-gray-600">30 min consultation</p>
                 </CardHeader>
               </Card>
               
               {/* New Availability Calendar */}
-              <AvailabilityCalendar 
-                doctorId={id!} 
-                availableSlots={doctor?.availability || []}
-                onSlotSelect={handleSlotClick}
-              />
+              {doctor?.availability && doctor.availability.length > 0 ? (
+                <AvailabilityCalendar 
+                  doctorId={id!} 
+                  availableSlots={doctor.availability.map(timestamp => ({
+                    id: timestamp,
+                    date: timestamp.split('T')[0],
+                    startTime: timestamp.split('T')[1].split(':').slice(0, 2).join(':'),
+                    endTime: '', // Will be calculated in the component
+                    isAvailable: true
+                  }))}
+                  onSlotSelect={handleSlotClick}
+                />
+              ) : (
+                <Card>
+                  <CardContent className="p-6 text-center">
+                    <p className="text-gray-500">No availability found</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </div>

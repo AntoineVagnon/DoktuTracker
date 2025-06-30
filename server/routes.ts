@@ -95,22 +95,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const doctorDetail = {
         id: doctor.id,
+        avatar_url: doctor.user?.profileImageUrl,
+        specialty: doctor.specialty,
+        avg_rating: parseFloat(doctor.rating || '0'),
+        review_count: doctor.reviewCount || 0,
+        location: "Paris, France",
+        rpps_number: doctor.rppsNumber,
+        consultation_price: doctor.consultationPrice,
+        is_online: doctor.isOnline,
         user: {
           firstName: doctor.user?.firstName,
           lastName: doctor.user?.lastName,
-          profileImageUrl: doctor.user?.profileImageUrl
+          bio: doctor.bio
         },
-        specialty: doctor.specialty,
-        bio: doctor.bio,
         education: doctor.education,
         experience: doctor.experience,
         languages: doctor.languages || [],
-        rppsNumber: doctor.rppsNumber,
-        consultationPrice: doctor.consultationPrice,
-        rating: doctor.rating || '0',
-        reviewCount: doctor.reviewCount || 0,
-        isOnline: doctor.isOnline,
-        availability: availableSlots
+        availability: availableSlots.map(slot => `${slot.date}T${slot.startTime}:00Z`)
       };
 
       res.json(doctorDetail);
