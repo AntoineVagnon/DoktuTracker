@@ -403,7 +403,8 @@ export default function DoctorProfile() {
               
               {/* New Availability Calendar */}
               <AvailabilityCalendar 
-                doctorId={id} 
+                doctorId={id!} 
+                availableSlots={doctor?.availability || []}
                 onSlotSelect={handleSlotClick}
               />
             </div>

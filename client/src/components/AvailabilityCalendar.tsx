@@ -69,6 +69,7 @@ function getDayTitle(date: Date): string {
 
 export default function AvailabilityCalendar({ 
   doctorId, 
+  availableSlots = [],
   onSlotSelect,
   today = new Date() 
 }: AvailabilityCalendarProps) {
@@ -96,11 +97,8 @@ export default function AvailabilityCalendar({
     }
   }, [weekOffset]); // Only depend on weekOffset, not weekDays to avoid infinite loop
 
-  // Fetch time slots for the current week
-  const { data: doctorSlots = [], isLoading } = useQuery({
-    queryKey: [`/api/doctors/${doctorId}/time-slots`, format(currentWeekStart, "yyyy-MM-dd")],
-    enabled: !!doctorId,
-  });
+  // Use the passed-in availability data instead of fetching separately
+  const doctorSlots = availableSlots;
 
   const handlePreviousWeek = () => {
     setWeekOffset(prev => prev - 1);
@@ -151,12 +149,11 @@ export default function AvailabilityCalendar({
     return getAvailableSlotsForDate(selectedDay);
   }, [selectedDay, doctorSlots]);
 
-  if (isLoading) {
+  if (!doctorSlots || doctorSlots.length === 0) {
     return (
       <Card className="w-full">
         <CardContent className="p-8 text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-gray-600">Loading availability...</p>
+          <p className="text-gray-600">No availability found for this doctor.</p>
         </CardContent>
       </Card>
     );
