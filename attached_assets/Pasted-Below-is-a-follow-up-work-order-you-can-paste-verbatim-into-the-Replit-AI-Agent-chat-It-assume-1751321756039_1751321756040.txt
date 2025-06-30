@@ -1,0 +1,91 @@
+Below is a **follow-up work order** you can paste verbatim into the Replit AI Agent chat.
+It assumes the code from the previous patch is in place but the grid is **still invisible**.
+The checklist forces the agent to trace the exact hiding point, surface at least the 10 skeletons, and add an automated Playwright assertion so this bug can’t sneak back in.
+
+---
+
+## Doktu — DoctorGrid Visibility Debug (v4)
+
+### 🎯 Goal
+
+The “Hand-Picked Medical Team” section on `/` **must always be visible** (cards or skeletons).
+It is still blank after patch v3 even though:
+
+* `/api/public/doctors-grid` endpoint exists.
+* `DoctorsGrid` component claims to use SWR with skeleton fallback.
+* Seed script inserts ≥ 10 doctors.
+
+---
+
+### 1 — Mandatory instrumentation (show the truth)
+
+1. **Network log**
+
+   ```ts
+   // DoctorsGrid.tsx (top of fetch hook)
+   console.info('[DoctorsGrid] fetching /api/public/doctors-grid');
+   ```
+2. **Render checkpoints**
+
+   ```tsx
+   console.info('[DoctorsGrid] state',
+     { isLoading, error, length: data?.length });
+   ```
+3. **DOM marker**
+   Ensure outer wrapper `<section id="doctors-grid" role="grid" data-testid="doctors-grid" />`.
+
+*Commit with logs; we’ll strip them after verification.*
+
+---
+
+### 2 — Deep-dive checklist (agent must tick all)
+
+| Step | Must verify / implement                                                                             |   |       |   |                                                                |
+| ---- | --------------------------------------------------------------------------------------------------- | - | ----- | - | -------------------------------------------------------------- |
+| A    | **API route path** reachable in dev: `curl -I http://localhost:3000/api/public/doctors-grid` → 200. |   |       |   |                                                                |
+| B    | **Client fetch URL** exactly `/api/public/doctors-grid` (no missing leading slash or env prefix).   |   |       |   |                                                                |
+| C    | **SWR hook** called unconditionally (not wrapped by auth or feature-flag).                          |   |       |   |                                                                |
+| D    | \`isLoading                                                                                         |   | error |   | !data?.length`branch returns`<SkeletonGrid />`, never `null\`. |
+| E    | **CSS** – no parent container has `display:none` or `opacity:0` due to LaunchDarkly flags.          |   |       |   |                                                                |
+| F    | **Seed script** verified via `psql` or Prisma Studio → table contains 10 rows.                      |   |       |   |                                                                |
+| G    | **Avatars** / images use Next `<Image>` with `unoptimized` prop off to avoid layout shift.          |   |       |   |                                                                |
+
+---
+
+### 3 — Permanent automated regression guard
+
+Add **Playwright** test `e2e/home-grid.spec.ts`:
+
+```ts
+test('doctors grid always visible', async ({ page }) => {
+  await page.goto('/');
+  const grid = page.locator('[data-testid="doctors-grid"]');
+  await expect(grid).toBeVisible({ timeout: 4000 });
+  // must contain either card or skeleton nodes
+  await expect(
+    grid.locator('.doctor-card, .skeleton-card')
+  ).toHaveCount(10);
+});
+```
+
+Add to CI job.
+
+---
+
+### 4 — Acceptance gate for this fix PR
+
+* [ ] DevTools console shows **two** INFO logs (`fetching`, `state …`) per page load.
+* [ ] Network panel lists `/api/public/doctors-grid` → 200 JSON ≤ 1 KB.
+* [ ] DOM contains 10 `.doctor-card` **or** `.skeleton-card` elements.
+* [ ] Playwright test passes locally (`npm run test:e2e`) and in CI.
+* [ ] After green tests, strip the two console logs or guard them behind `if (process.env.NODE_ENV === 'development')`.
+
+---
+
+### 5 — Timebox
+
+Target ≤ 1 h coding, ≤ 15 min PR review (hot-fix severity).
+
+---
+
+> **Hand this block to the Replit agent and let it drive the code changes + tests.**
