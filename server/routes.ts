@@ -95,7 +95,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const doctorDetail = {
         id: doctor.id,
-        user: doctor.user,
+        user: {
+          firstName: doctor.user?.firstName,
+          lastName: doctor.user?.lastName,
+          profileImageUrl: doctor.user?.profileImageUrl
+        },
         specialty: doctor.specialty,
         bio: doctor.bio,
         education: doctor.education,
@@ -103,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         languages: doctor.languages || [],
         rppsNumber: doctor.rppsNumber,
         consultationPrice: doctor.consultationPrice,
-        rating: doctor.rating,
+        rating: doctor.rating || '0',
         reviewCount: doctor.reviewCount || 0,
         isOnline: doctor.isOnline,
         availability: availableSlots

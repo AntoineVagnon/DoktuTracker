@@ -1,0 +1,45 @@
+We’re seeing blank fields and “No availability found” on the DoctorProfile, because the profile endpoint isn’t returning the same data shape as the grid. Let’s unify everything:
+
+1. **Profile API route**  
+   - Fix or create `GET /api/public/doctors/:id` to return a full doctor object, matching the grid plus extras. JSON shape should be:
+     ```json
+     {
+       "id": "...",
+       "specialty": "Cardiology",
+       "avg_rating": 4.9,
+       "review_count": 127,
+       "avatar_url": "https://…",
+       "location": "Paris, France",
+       "rpps_number": "10003456789", 
+       "user": {
+         "firstName": "Sarah",
+         "lastName": "Miller",
+         "bio": "…"
+       },
+       "availability": [
+         "2025-07-01T08:00:00Z",
+         "2025-07-01T08:30:00Z",
+         …
+       ]
+     }
+     ```
+   - Query the same tables/joins you use for `/api/public/doctors-grid` but without the `LIMIT 2`, so the profile shows all future slots.
+
+2. **Seed script**  
+   - Ensure the seed creates multiple slots per doctor so the profile has real availability.
+
+3. **Client fetch & render**  
+   - In `client/src/pages/DoctorProfile.tsx`, use SWR to fetch `/api/public/doctors/${id}`.
+   - Before rendering, guard against `isLoading` and `error`.
+   - Then render:
+     - **Name**: `Dr. ${doctor.user.firstName} ${doctor.user.lastName}`
+     - **Rating**: render star ★ and `(${doctor.review_count} reviews)`
+     - **Location** & **RPPS** badge from `doctor.location` and `doctor.rpps_number`
+     - **Availability**: map `doctor.availability` array into slot buttons (reuse your Skeleton/Slot components)
+   - If `doctor.availability.length === 0`, show “No availability found” message.
+
+4. **Tests**  
+   - Add a mock for `fetchDoctorById()` returning a full doctor with availability; assert that the profile page renders every field and slot list.
+   - E2E: click “Book Now” on the grid, navigate to profile, and assert the same two slots you saw on the card now appear under availability.
+
+After these changes, visiting `/doctor/:id` will show the doctor’s full name, rating, location, RPPS, and the real slots from the database. Thank you!  
