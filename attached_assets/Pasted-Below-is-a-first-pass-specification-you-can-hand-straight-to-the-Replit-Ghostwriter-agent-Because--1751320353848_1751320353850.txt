@@ -1,0 +1,111 @@
+Below is a first-pass specification you can hand straight to the Replit Ghostwriter agent.
+Because a few details still look ambiguous, the spec is preceded by a short **Gap-Analysis & Decisions** table.
+Let me know if anything under **NEED INPUT** should be changed or confirmed—I’ll update the doc and produce **Replit Spec v2**.
+
+---
+
+## Gap-Analysis & Decisions
+
+| # | Topic                                  | Current answer / proposed default                                                                         | Status     |
+| - | -------------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------- |
+| 1 | Minimum doctor records in prod/dev     | Seed script must always insert **≥ 10** doctor rows (same as Section 14 of main brief)                    | ASSUMED    |
+| 2 | Behaviour when query returns 0 doctors | Render **10 shimmer skeleton cards** (pulse animation) to preserve layout instead of hiding the section   | ASSUMED    |
+| 3 | Avatar source & fallback               | Use `doctors.avatar_url`; if `NULL`, render initials from `first_name` + `last_name`                      | ASSUMED    |
+| 4 | Rating display                         | Show ★`avg_rating` (1 dec) if present; otherwise badge “New”                                              | ASSUMED    |
+| 5 | Slot preview on card                   | Call `/api/doctors/:id/unified-availability`, take **first two future slots**; if < 2 show “Fully booked” | ASSUMED    |
+| 6 | Data-fetch strategy                    | `getStaticProps` (ISR, revalidate 60 s) so FCP ≤ 1.5 s on LTE                                             | ASSUMED    |
+| 7 | A11y alt text                          | `alt="Photo of Dr. {last_name}"`, role = `button` on card                                                 | ASSUMED    |
+| 8 | Visual reference filenames             | `with-doctors.png`, `without-doctors.png` (screens supplied in chat)                                      | NEED INPUT |
+
+---
+
+## Replit Spec v1
+
+# Doktu — Rebuild Requirements (v1)
+
+### 1 — Elevator pitch
+
+Display a fixed 10-card “Hand-Picked Medical Team” grid on the public home page. Each card shows avatar, specialty, ★rating, and the next two available slots—exactly matching the supplied *with-doctors* screenshot. If the doctors query is empty, render skeleton placeholders (see *without-doctors* screenshot).
+
+### 2 — Primary user roles
+
+* **Visitor (unauthenticated)** – views cards, can click any card to jump to `/doctor/:id`.
+
+### 3 — Key user flows
+
+1. Home page loads → ISR fetch `GET /api/public/doctors-grid` (new endpoint, see §13).
+2. React component renders:
+
+   * While loading: 10 skeleton cards.
+   * Success: map array → `DoctorCard`.
+3. Click card → navigate to profile; booking context stored as per existing logic.
+
+### 4 — Non-functional must-haves
+
+* **Performance**: FCP ≤ 1.5 s (LTE); CLS < 0.1.
+* **Accessibility**: WCAG 2.1 AA; card focus outline; `aria-label` “View Dr {last\_name} profile”.
+* **Responsive**: lg 5, md 3, sm 2 columns (already in global brief).
+* **Empty state**: render skeletons, logged to Sentry if 0 doctors after 5 s.
+
+### 5 — Tech-stack decisions
+
+* Next.js 13 (app-router) ISR.
+* Tailwind + shadcn/ui `Card` component.
+* React-Query removed (static page).
+* No new external libs.
+
+### 6 — Secrets already present in Replit
+
+None needed for this feature.
+
+### 7 — Database schema
+
+Uses existing `doctors`, `appointments` tables. No migrations required.
+
+### 8 — UI references
+
+* `without-doctors.png` – skeleton state (provided).
+* `with-doctors.png` – success state (provided).
+
+### 9 — “Don’t break these” rules
+
+* Keep hero section & global navigation unchanged.
+* Preserve Lighthouse budgets already defined.
+* Do not change existing API contracts outside the new read-only endpoint (§13).
+
+### 10 — Membership plans (new)
+
+N/A – unchanged.
+
+### 11 — Rate limits
+
+`/api/public/doctors-grid` limited to **30 req / min / IP** via Fastify rate-limit plugin.
+
+### 12 — Webhooks
+
+None.
+
+### 13 — Testing & CI
+
+* **Vitest** unit:
+
+  * Returns 10 doctors when DB seeded.
+  * Returns empty array → skeletons rendered.
+* **Playwright** e2e (home.spec.ts):
+
+  * Verify at least one doctor card visible.
+  * Measure FCP < 1.5 s.
+* **Axe**: no violations on home.
+
+### 14 — Deployment
+
+Included in existing CI/CD; no extra steps.
+
+### 15 — Open questions
+
+* **Q1** (§8 #8): confirm the screenshot filenames / final design hand-off.
+* **Q2** Do we ever completely hide the section in production if doctors = 0? (Currently assumed “No”.)
+
+---
+
+Let me know if you’d like any defaults changed or additional details—the next iteration will move all ❓ items to **CONFIRMED** and mark the spec as final.
