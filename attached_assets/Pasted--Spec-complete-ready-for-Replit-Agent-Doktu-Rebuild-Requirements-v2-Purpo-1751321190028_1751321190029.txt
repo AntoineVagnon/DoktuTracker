@@ -1,0 +1,95 @@
+✅ Spec complete — ready for Replit Agent
+
+---
+
+## Doktu — Rebuild Requirements (v2)
+
+> **Purpose of this patch:** the **DoctorsGrid** never shows up on the public Home page in dev and staging. This spec tells the Replit agent exactly how to surface the grid (or its skeleton) every time the page renders, and how to prevent regressions.
+
+---
+
+### 1 — Elevator pitch
+
+Home page must always render the 10-card “Hand-Picked Medical Team” grid—either with real doctor data or with animated skeleton placeholders—within 1.5 s FCP on LTE. No blank space or hidden section is acceptable.
+
+### 2 — Primary user roles
+
+* **Visitor (unauthenticated)** – sees the grid, can click a card → `/doctor/:id`.
+
+### 3 — Key user flows
+
+| Step | Behaviour (must-pass)                                                                                |
+| ---- | ---------------------------------------------------------------------------------------------------- |
+| 1    | `Home` mounts → **client-side fetch** `GET /api/public/doctors-grid` (SWR; `revalidate = 30 s`).     |
+| 2    | While request is in-flight → render **10 `SkeletonCard`s**.                                          |
+| 3    | When response → `200` with ≥ 1 doctors → map data to `DoctorCard`s.                                  |
+| 4    | When response → `200` with `[]` → keep skeletons **and** log `warn("doctors-grid empty")` to Sentry. |
+| 5    | Any non-200 response → keep skeletons, log error, **do NOT hide section**.                           |
+
+### 4 — Non-functional must-haves
+
+* **Performance:** FCP ≤ 1.5 s, CLS < 0.1.
+* **Accessibility:** WCAG 2.1 AA; card focus outline; `aria-label="View Dr {last_name} profile"`.
+* **Resilience:** Grid must render even if `/api/auth/user` 401s or Segment/GA scripts are blocked.
+* **Observability:** Log fetch failures with `console.error` + Sentry (level = error).
+
+### 5 — Tech-stack decisions
+
+* Next.js 13 App Router; React-SWR (`useSWR`) for near-real-time cache.
+* Tailwind + shadcn/ui `Card`. No additional libs.
+
+### 6 — Secrets already present in Replit
+
+None required.
+
+### 7 — Database schema & seeding
+
+* Uses existing `doctors` table.
+* **Seed script on `npm run dev` / `docker-entrypoint`:** insert at least 10 sample doctors with one future slot each.
+
+### 8 — UI references
+
+* `/public/with-doctors.png` – expected rendered state.
+* `/public/without-doctors.png` – skeleton state.
+
+### 9 — “Don’t break these” rules
+
+* Leave hero, nav, and existing analytics intact.
+* No changes to auth flow; grid must not depend on a logged-in user.
+
+### 10 — Membership plans (new)
+
+N/A.
+
+### 11 — Rate limits
+
+`/api/public/doctors-grid` limited to **30 req/min/IP** via Fastify rate-limit plugin.
+
+### 12 — Webhooks
+
+None.
+
+### 13 — Testing & CI
+
+| Layer     | Tool                      | New tests (red → green)                                                     |
+| --------- | ------------------------- | --------------------------------------------------------------------------- |
+| Unit      | **Vitest**                | `fetchDoctorsGrid()` returns array length ≤ 10.                             |
+| Component | **React-Testing-Library** | `DoctorsGrid` shows 10 skeletons → cards after mock fetch resolves.         |
+| E2E       | **Playwright**            | Visit `/` → expect `role="grid"` visible with ≥ 1 `DoctorCard`s within 4 s. |
+
+### 14 — Deployment
+
+Included in existing CI/CD; no extra infra.
+
+### 15 — Open questions
+
+None—defaults from v1 are now locked in.
+
+---
+
+### Acceptance checklist for PR reviewer
+
+* [ ] `/api/public/doctors-grid` returns max 10 records plus next 2 slots each.
+* [ ] Grid or skeletons always visible on `/` (throttle network to “Slow 3G” to confirm).
+* [ ] All new tests pass; Lighthouse performance ≥ 90.
+* [ ] No console errors related to grid fetch in devtools.
