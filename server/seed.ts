@@ -198,7 +198,6 @@ export async function seedDatabase() {
       
       // Create doctor profile
       const [doctor] = await db.insert(doctors).values({
-        id: nanoid(),
         userId,
         specialty: doctorData.specialty,
         bio: doctorData.bio,
@@ -209,8 +208,7 @@ export async function seedDatabase() {
         consultationPrice: doctorData.consultationPrice,
         rating: doctorData.rating,
         reviewCount: doctorData.reviewCount,
-        isOnline: Math.random() > 0.3, // 70% chance of being online
-        isVerified: true
+        isOnline: Math.random() > 0.3 // 70% chance of being online
       }).returning();
       
       // Generate time slots for this doctor
