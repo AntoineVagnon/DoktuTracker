@@ -1,0 +1,40 @@
+Please implement and expose our “Hand-Picked Medical Team” DoctorsGrid on the public Home page so that it always renders in both dev and prod:
+
+1. **API**  
+   - Create or fix `GET /api/public/doctors-grid` to return up to 10 doctor records, each including avatar_url, specialty, avg_rating, and the next two future availability slots.
+
+2. **Data fetching**  
+   - In `Home` (or `pages/index.tsx` / `app/page.tsx`), import and render a `<section id="doctors-grid" data-testid="doctors-grid" role="grid">` that mounts the new `DoctorsGrid` component.
+   - Inside `DoctorsGrid`, use `useSWR('/api/public/doctors-grid', fetcher, { refreshInterval: 30000, shouldRetryOnError: false })`.
+
+3. **Rendering logic**  
+   - While `isLoading`, render exactly 10 `<SkeletonCard className="skeleton-card">` placeholders.
+   - If fetch `error` or `!data.length`, keep showing the 10 skeletons and log a Sentry warning.
+   - Otherwise map the first 10 doctors → `<DoctorCard className="doctor-card">` showing:
+     - Avatar (or initials fallback), specialty, star-rating (or “New”), and the next two slots.
+
+4. **Styling & accessibility**  
+   - Responsive grid: 2 cols on mobile, 3 on tablet, 5 on desktop.
+   - Each card has `role="button"` and `aria-label="View Dr {last_name} profile"`.
+   - Images use `<Image>` without causing layout shifts.
+
+5. **Seeding**  
+   - Ensure your server seed script always creates at least 10 doctors with one future slot each.
+
+6. **Tests**  
+   - Add a Playwright test at `e2e/home-grid.spec.ts`:
+     ```ts
+     test('doctors grid always visible', async ({ page }) => {
+       await page.goto('/');
+       const grid = page.locator('[data-testid="doctors-grid"]');
+       await expect(grid).toBeVisible({ timeout: 4000 });
+       await expect(grid.locator('.doctor-card, .skeleton-card')).toHaveCount(10);
+     });
+     ```
+   - Add a Vitest/RTL component test for 10 skeletons → cards after mock resolves.
+
+7. **Performance**  
+   - FCP ≤ 1.5 s on LTE, CLS < 0.1.
+   - ISR or SWR caching as above to hit these budgets.
+
+Once you’ve implemented all of the above, running `npm run test:e2e` and `npm run test:unit` should pass with zero failures and show the grid (or skeletons) on `/`. Thank you!  
