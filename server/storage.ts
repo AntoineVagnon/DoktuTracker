@@ -102,7 +102,34 @@ export class DatabaseStorage implements IStorage {
 
   async getDoctor(id: string): Promise<(Doctor & { user: User }) | undefined> {
     const [result] = await db
-      .select()
+      .select({
+        id: doctors.id,
+        userId: doctors.userId,
+        specialty: doctors.specialty,
+        bio: doctors.bio,
+        education: doctors.education,
+        experience: doctors.experience,
+        languages: doctors.languages,
+        rppsNumber: doctors.rppsNumber,
+        consultationPrice: doctors.consultationPrice,
+        rating: doctors.rating,
+        reviewCount: doctors.reviewCount,
+        isOnline: doctors.isOnline,
+        createdAt: doctors.createdAt,
+        updatedAt: doctors.updatedAt,
+        user: {
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImageUrl: users.profileImageUrl,
+          role: users.role,
+          stripeCustomerId: users.stripeCustomerId,
+          stripeSubscriptionId: users.stripeSubscriptionId,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt
+        }
+      })
       .from(doctors)
       .innerJoin(users, eq(doctors.userId, users.id))
       .where(eq(doctors.id, id));

@@ -253,7 +253,7 @@ export default function DoctorProfile() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <p className="text-gray-600 leading-relaxed">
-                      {doctor?.bio || "Psychiatrist specialised in cognitive behavioral therapy and anxiety management. Over 15 years of clinical experience helping patients overcome mental health challenges through evidence-based treatment approaches."}
+                      {doctor?.user?.bio || "No biography available."}
                     </p>
 
                     <Separator />
