@@ -70,10 +70,7 @@ export default function DoctorProfile() {
     enabled: !!id,
   });
 
-  const { data: timeSlots = [], isLoading: slotsLoading } = useQuery({
-    queryKey: [`/api/doctors/${id}/time-slots`, format(selectedDate, "yyyy-MM-dd")],
-    enabled: !!id,
-  });
+
 
   const { data: reviews = [] } = useQuery({
     queryKey: [`/api/doctors/${id}/reviews`],
@@ -149,18 +146,7 @@ export default function DoctorProfile() {
   const doctorName = `Dr. ${doctor.user.firstName} ${doctor.user.lastName}`;
   const initials = `${doctor.user.firstName[0]}${doctor.user.lastName[0]}`.toUpperCase();
 
-  const currentWeekStart = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), weekOffset * 7);
-  const weekDays = eachDayOfInterval({
-    start: currentWeekStart,
-    end: endOfWeek(currentWeekStart, { weekStartsOn: 1 }),
-  }).slice(0, 7);
 
-  const getAvailableSlotsForDate = (date: Date) => {
-    const dateStr = format(date, "yyyy-MM-dd");
-    return timeSlots.filter((slot: TimeSlot) => 
-      slot.date === dateStr && slot.isAvailable
-    );
-  };
 
   const handleSlotClick = (slot: TimeSlot) => {
     if (!isAuthenticated) {
@@ -177,13 +163,7 @@ export default function DoctorProfile() {
     lockSlotMutation.mutate(slot.id);
   };
 
-  const handlePreviousWeek = () => {
-    setWeekOffset(prev => prev - 1);
-  };
 
-  const handleNextWeek = () => {
-    setWeekOffset(prev => prev + 1);
-  };
 
   const areas = [
     { label: "General consultations", icon: Stethoscope },
