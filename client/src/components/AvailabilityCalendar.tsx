@@ -1,21 +1,20 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { 
   format, 
   addDays, 
-  startOfWeek, 
   addWeeks, 
   subWeeks,
   isToday,
-  isPast,
+  isTomorrow,
   parseISO,
   setHours,
   setMinutes,
-  isBefore
+  isBefore,
+  isSameDay
 } from "date-fns";
 
 interface TimeSlot {
@@ -34,14 +33,14 @@ interface AvailabilityCalendarProps {
   today?: Date; // For testing purposes
 }
 
-// Helper function to get week days starting from today
-function getWeekDays(startDate: Date): Date[] {
-  const today = new Date(startDate);
-  today.setHours(0, 0, 0, 0);
+// Helper function to get next 7 days starting from a date
+function getNext7Days(startDate: Date): Date[] {
+  const baseDate = new Date(startDate);
+  baseDate.setHours(0, 0, 0, 0);
   
   const days: Date[] = [];
   for (let i = 0; i < 7; i++) {
-    days.push(addDays(today, i));
+    days.push(addDays(baseDate, i));
   }
   return days;
 }
@@ -56,13 +55,24 @@ function generateTimeSlots(): string[] {
   return slots;
 }
 
+// Get user-friendly day title
+function getDayTitle(date: Date): string {
+  if (isToday(date)) {
+    return `Today ${format(date, 'd MMMM')}`;
+  } else if (isTomorrow(date)) {
+    return `Tomorrow ${format(date, 'd MMMM')}`;
+  } else {
+    return format(date, 'EEEE d MMMM');
+  }
+}
+
 export default function AvailabilityCalendar({ 
   doctorId, 
   onSlotSelect,
   today = new Date() 
 }: AvailabilityCalendarProps) {
   const [weekOffset, setWeekOffset] = useState(0);
-  const calendarContainerRef = useRef<HTMLDivElement>(null);
+  const pillContainerRef = useRef<HTMLDivElement>(null);
   
   // Calculate current week starting from today
   const currentWeekStart = useMemo(() => {
@@ -71,8 +81,17 @@ export default function AvailabilityCalendar({
     return addDays(baseDate, weekOffset * 7);
   }, [today, weekOffset]);
 
-  const weekDays = useMemo(() => getWeekDays(currentWeekStart), [currentWeekStart]);
+  const weekDays = useMemo(() => getNext7Days(currentWeekStart), [currentWeekStart]);
+  const [selectedDay, setSelectedDay] = useState(() => weekDays[0]);
   const timeSlots = useMemo(() => generateTimeSlots(), []);
+
+  // Update selected day when week changes
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
+  if (!hasInitialized && weekDays.length > 0) {
+    setSelectedDay(weekDays[0]);
+    setHasInitialized(true);
+  }
 
   // Fetch time slots for the current week
   const { data: doctorSlots = [], isLoading } = useQuery({
@@ -86,24 +105,6 @@ export default function AvailabilityCalendar({
 
   const handleNextWeek = () => {
     setWeekOffset(prev => prev + 1);
-  };
-
-  const scrollLeft = () => {
-    if (calendarContainerRef.current) {
-      calendarContainerRef.current.scrollBy({ 
-        left: -calendarContainerRef.current.clientWidth * 0.5, 
-        behavior: 'smooth' 
-      });
-    }
-  };
-
-  const scrollRight = () => {
-    if (calendarContainerRef.current) {
-      calendarContainerRef.current.scrollBy({ 
-        left: calendarContainerRef.current.clientWidth * 0.5, 
-        behavior: 'smooth' 
-      });
-    }
   };
 
   const getAvailableSlotsForDate = (date: Date): TimeSlot[] => {
@@ -138,6 +139,15 @@ export default function AvailabilityCalendar({
     }
   };
 
+  const handlePillClick = (day: Date) => {
+    setSelectedDay(day);
+  };
+
+  // Get slots for the selected day
+  const selectedDaySlots = useMemo(() => {
+    return getAvailableSlotsForDate(selectedDay);
+  }, [selectedDay, doctorSlots]);
+
   if (isLoading) {
     return (
       <Card className="w-full">
@@ -158,7 +168,8 @@ export default function AvailabilityCalendar({
             Available Times
           </CardTitle>
           
-          <div className="flex items-center space-x-2">
+          {/* Week navigation - visible on desktop, hidden on mobile */}
+          <div className="hidden sm:flex items-center space-x-2">
             <Button 
               variant="ghost" 
               size="sm" 
@@ -187,147 +198,94 @@ export default function AvailabilityCalendar({
         </div>
       </CardHeader>
       
-      <CardContent className="p-0">
-        {/* Mobile scroll navigation */}
-        <div className="flex items-center justify-between p-2 lg:hidden border-b border-gray-200">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={scrollLeft}
-            aria-label="Scroll calendar left"
-            className="p-2 rounded hover:bg-gray-100"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <span className="text-sm text-gray-600">Scroll to see all days</span>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={scrollRight}
-            aria-label="Scroll calendar right"
-            className="p-2 rounded hover:bg-gray-100"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Calendar container with horizontal scroll */}
+      <CardContent className="p-4">
+        {/* Week pills selector */}
         <div 
-          ref={calendarContainerRef}
-          className="overflow-x-auto scroll-smooth"
-          style={{ scrollBehavior: 'smooth' }}
-          data-testid="calendar-scroll-container"
+          ref={pillContainerRef}
+          className="overflow-x-auto scrollbar-none scroll-smooth mb-6"
+          role="listbox"
+          data-testid="week-pills-container"
         >
-          {/* CSS Grid calendar */}
-          <div 
-            className="calendar-grid"
-            role="grid"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '80px repeat(7, 1fr)',
-              gridTemplateRows: `auto repeat(${timeSlots.length}, 48px)`,
-              minWidth: '640px'
-            }}
-          >
-            {/* Empty corner cell */}
-            <div className="sticky top-0 left-0 z-20 bg-white border-r border-b border-gray-200 p-2 text-sm font-medium text-gray-600">
-              Time
-            </div>
-            
-            {/* Day headers - sticky top */}
-            {weekDays.map((day, index) => {
+          <div className="flex space-x-2 pb-2" style={{ minWidth: 'max-content' }}>
+            {weekDays.map((day) => {
               const availableSlots = getAvailableSlotsForDate(day);
               const availableCount = availableSlots.filter(slot => 
                 !isSlotDisabled(day, slot.startTime)
               ).length;
-              const isTodayColumn = isToday(day);
+              const isSelected = isSameDay(day, selectedDay);
               
               return (
-                <div
+                <button
                   key={day.toISOString()}
-                  role="columnheader"
-                  className={`sticky top-0 z-10 p-2 text-center border-r border-b border-gray-200 bg-white ${
-                    isTodayColumn 
-                      ? "bg-blue-50 border-l-2 border-l-blue-500" 
-                      : ""
-                  }`}
-                  style={{ gridColumn: index + 2 }}
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => handlePillClick(day)}
+                  className={`
+                    min-w-16 min-h-20 px-3 py-2 rounded-xl text-center transition-colors
+                    ${isSelected 
+                      ? "bg-blue-500 text-white" 
+                      : "bg-white border border-gray-200 text-gray-900 hover:bg-gray-50"
+                    }
+                  `}
+                  data-testid={`day-pill-${format(day, 'yyyy-MM-dd')}`}
                 >
-                  <div className={`text-sm font-medium ${
-                    isTodayColumn ? "text-blue-600" : "text-gray-900"
-                  }`}>
+                  <div className={`text-xs font-medium ${isSelected ? "text-white" : "text-gray-600"}`}>
                     {format(day, "EEE")}
                   </div>
-                  <div className="text-xs text-gray-600 mb-1">
-                    {format(day, "MMM d")}
+                  <div className={`text-lg font-bold ${isSelected ? "text-white" : "text-gray-900"}`}>
+                    {format(day, "d")}
                   </div>
                   {availableCount > 0 && (
-                    <Badge className="px-1 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
+                    <div className={`text-xs ${isSelected ? "text-blue-100" : "text-gray-500"}`}>
                       {availableCount}
-                    </Badge>
+                    </div>
                   )}
-                </div>
+                </button>
               );
-            })}
-
-            {/* Time slots */}
-            {timeSlots.map((timeStr, timeIndex) => {
-              const timeRowItems = [];
-              
-              // Time label - sticky left
-              timeRowItems.push(
-                <div
-                  key={`time-${timeStr}`}
-                  role="rowheader"
-                  className="sticky left-0 z-5 bg-white border-r border-b border-gray-200 p-2 text-sm text-gray-600 font-mono flex items-center"
-                  style={{ gridRow: timeIndex + 2, gridColumn: 1 }}
-                >
-                  {timeStr}
-                </div>
-              );
-              
-              // Slot cells
-              weekDays.forEach((day, dayIndex) => {
-                const slot = getSlotForDateTime(day, timeStr);
-                const isDisabled = isSlotDisabled(day, timeStr);
-                const isAvailable = slot && slot.isAvailable && !isDisabled;
-                
-                timeRowItems.push(
-                  <div
-                    key={`${day.toISOString()}-${timeStr}`}
-                    role="gridcell"
-                    className="border-r border-b border-gray-200 p-1"
-                    style={{ 
-                      gridRow: timeIndex + 2, 
-                      gridColumn: dayIndex + 2,
-                      minHeight: '48px'
-                    }}
-                  >
-                    <button
-                      onClick={() => handleSlotClick(day, timeStr)}
-                      disabled={!isAvailable}
-                      className={`
-                        w-full h-full text-xs font-medium rounded transition-colors
-                        ${isAvailable 
-                          ? "bg-white border border-blue-500 text-blue-600 hover:bg-blue-50 focus:ring-2 focus:ring-blue-200" 
-                          : "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
-                        }
-                      `}
-                      aria-label={`${isAvailable ? 'Book appointment' : 'Unavailable'} at ${timeStr} on ${format(day, "EEEE, MMMM d")}`}
-                    >
-                      {isAvailable ? "Book" : "—"}
-                    </button>
-                  </div>
-                );
-              });
-              
-              return timeRowItems;
             })}
           </div>
         </div>
 
+        {/* Selected day title and timezone notice */}
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-1" data-testid="selected-day-title">
+            {getDayTitle(selectedDay)}
+          </h3>
+          <p className="text-sm text-gray-600">
+            Times in German time (GMT+1) • Dr. David Martin practices from Germany
+          </p>
+        </div>
+
+        {/* Time slots grid for selected day */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" data-testid="time-slots-grid">
+          {timeSlots.map((timeStr) => {
+            const slot = getSlotForDateTime(selectedDay, timeStr);
+            const isDisabled = isSlotDisabled(selectedDay, timeStr);
+            const isAvailable = slot && slot.isAvailable && !isDisabled;
+            
+            return (
+              <button
+                key={timeStr}
+                onClick={() => handleSlotClick(selectedDay, timeStr)}
+                disabled={!isAvailable}
+                className={`
+                  px-4 py-2 border rounded-lg text-center transition-colors
+                  ${isAvailable 
+                    ? "bg-white border-blue-500 text-blue-600 hover:bg-blue-50" 
+                    : "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed"
+                  }
+                `}
+                aria-label={`${isAvailable ? 'Book appointment' : 'Unavailable'} at ${timeStr} on ${format(selectedDay, "EEEE, MMMM d")}`}
+                data-testid={`time-slot-${timeStr}`}
+              >
+                {timeStr}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Legend */}
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
+        <div className="mt-6 pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between text-sm text-gray-600">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
@@ -335,11 +293,11 @@ export default function AvailabilityCalendar({
                 <span>Available</span>
               </div>
               <div className="flex items-center space-x-1">
-                <div className="w-3 h-3 bg-gray-100 border border-gray-200 rounded"></div>
+                <div className="w-3 h-3 bg-gray-100 border border-gray-300 rounded"></div>
                 <span>Unavailable</span>
               </div>
             </div>
-            <p className="hidden sm:block">Click on available slots to book an appointment</p>
+            <p className="hidden sm:block">Select a day above, then choose your preferred time</p>
           </div>
         </div>
       </CardContent>
