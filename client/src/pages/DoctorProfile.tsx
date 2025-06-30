@@ -405,7 +405,7 @@ export default function DoctorProfile() {
               {doctor?.availability && doctor.availability.length > 0 ? (
                 <AvailabilityCalendar 
                   doctorId={id!} 
-                  availableSlots={doctor.availability.map(timestamp => ({
+                  availableSlots={doctor.availability.map((timestamp: string) => ({
                     id: timestamp,
                     date: timestamp.split('T')[0],
                     startTime: timestamp.split('T')[1].split(':').slice(0, 2).join(':'),
@@ -417,7 +417,7 @@ export default function DoctorProfile() {
               ) : (
                 <Card>
                   <CardContent className="p-6 text-center">
-                    <p className="text-gray-500">No availability found</p>
+                    <p className="text-gray-500">No availability found for this doctor</p>
                   </CardContent>
                 </Card>
               )}
