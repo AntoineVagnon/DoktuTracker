@@ -129,6 +129,10 @@ Changelog:
 - June 30, 2025: Unified data structure between DoctorsGrid and DoctorProfile with standardized API format
 - June 30, 2025: Fixed null reference errors in DoctorProfile with comprehensive optional chaining
 - June 30, 2025: Implemented database-driven availability data with proper timestamp formatting
+- June 30, 2025: Replaced Replit Auth popup with internal booking flow - slot clicks now redirect to custom login/booking pages
+- June 30, 2025: Created Login page with "New Patient" vs "Returning Patient" options that store redirect URLs
+- June 30, 2025: Built BookAppointment page with doctor info, appointment details, and payment integration
+- June 30, 2025: Added redirect handling in Home component to process post-login booking flow
 ```
 
 ## User Preferences

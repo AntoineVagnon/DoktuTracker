@@ -13,6 +13,18 @@ export default function Home() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
 
+  // Handle post-login redirects
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      const storedRedirect = sessionStorage.getItem('loginRedirect');
+      if (storedRedirect) {
+        sessionStorage.removeItem('loginRedirect');
+        window.location.href = storedRedirect;
+        return;
+      }
+    }
+  }, [isAuthenticated, isLoading]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
