@@ -119,7 +119,10 @@ Doktu is a professional telemedicine platform that connects patients with certif
 ## Changelog
 ```
 Changelog:
-- June 30, 2025. Initial setup
+- June 30, 2025: Initial setup
+- June 30, 2025: Implemented Hand-Picked Medical Team DoctorsGrid on public Home page
+- June 30, 2025: Fixed DoctorsGrid API endpoints for proper JOIN query data handling
+- June 30, 2025: Fixed missing Alert icon import in DoctorProfile component
 ```
 
 ## User Preferences
