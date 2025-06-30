@@ -1,0 +1,42 @@
+Please update the availability calendar in the DoctorProfile page so it matches our “clean, future-focused week view” vision:
+
+1. **Week-only view starting today**  
+   - Render exactly 7 columns, one for each day beginning with today (e.g. Tue→Mon), not a full month or multi-week view.  
+   - Remove or hide any “Past date” placeholder — we never show slots for days before today.
+
+2. **Disable past slots**  
+   - For the current day, disable (grey-out + unclickable) any time that is before now.  
+   - Past days should not appear at all.
+
+3. **Highlight “Today” column**  
+   - Add a distinct left border (2px solid brand-blue) on the “today” column header.  
+   - Give its header cell a background tint (e.g. `bg-blue-50`).
+
+4. **Slot count badges on headers**  
+   - In each day’s header, append a small badge showing the number of available slots, e.g. `Wed · 3`.  
+   - Use a pill style: `px-2 py-0.5 text-xs font-medium bg-gray-100 rounded-full`.
+
+5. **Uniform time-slot grid**  
+   - Render slots in a fixed grid of 30-minute increments (e.g. 09:00, 09:30, 10:00…).  
+   - Buttons all the same size (min-width 80px, height 36px).  
+   - Available slots: white background + brand-blue border.  
+   - Disabled/fully booked slots: `bg-gray-100 text-gray-400` + `cursor-not-allowed`.
+
+6. **Prev/Next week navigation**  
+   - Replace generic chevrons with `<button aria-label="Previous week">` and `<button aria-label="Next week">`.  
+   - Keep them keyboard-focusable and styled `p-2 rounded hover:bg-gray-100`.
+
+7. **Accessibility & responsiveness**  
+   - Ensure `role="grid"`, with each day header `role="columnheader"`, each slot `role="button"`.  
+   - On mobile, collapse to a 1-column day-picker + detail view when a day is tapped.
+
+8. **Implementation pointers**  
+   - File: `client/src/components/AvailabilityCalendar.tsx` (or wherever the calendar lives).  
+   - Use a lightweight custom grid (Tailwind CSS + flexbox) rather than a full month-view component.  
+   - Write a helper function `getWeekDays(startDate: Date): Date[]` to drive the 7 headers.
+
+9. **Tests**  
+   - **Playwright e2e**: on `/doctor/:id`, verify 7 header cells starting with today’s name, that past slots are not rendered, and today’s column has `.today` class.  
+   - **RTL unit**: render `<AvailabilityCalendar today={new Date('2025-07-01')} slots={…} />` → expect 7 headers, correct counts, and disabled past buttons.
+
+Once applied, the calendar will display only the upcoming week, highlight today, show precise slot counts, and cleanly guard against past/invalid times. Thanks!  

@@ -28,7 +28,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { format, addDays, isSameDay, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
+import AvailabilityCalendar from "@/components/AvailabilityCalendar";
+import { format } from "date-fns";
 
 interface Doctor {
   id: string;
@@ -62,8 +63,7 @@ export default function DoctorProfile() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [weekOffset, setWeekOffset] = useState(0);
+
 
   const { data: doctor, isLoading: doctorLoading, error: doctorError } = useQuery({
     queryKey: [`/api/public/doctors/${id}`],
@@ -162,19 +162,19 @@ export default function DoctorProfile() {
     );
   };
 
-  const handleSlotClick = (slotId: string) => {
+  const handleSlotClick = (slot: TimeSlot) => {
     if (!isAuthenticated) {
       // Store booking context for unauthenticated users
       sessionStorage.setItem("bookingContext", JSON.stringify({
         doctorId: id,
-        slotId,
+        slotId: slot.id,
         timestamp: Date.now(),
       }));
       window.location.href = "/api/login";
       return;
     }
 
-    lockSlotMutation.mutate(slotId);
+    lockSlotMutation.mutate(slot.id);
   };
 
   const handlePreviousWeek = () => {
@@ -410,93 +410,22 @@ export default function DoctorProfile() {
 
           {/* Booking Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-8">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl text-[hsl(207,100%,52%)]">
-                  €{doctor.consultationPrice}
-                </CardTitle>
-                <p className="text-sm text-gray-600">30 min consultation</p>
-              </CardHeader>
+            <div className="sticky top-8 space-y-6">
+              <Card>
+                <CardHeader className="text-center">
+                  <CardTitle className="text-2xl text-[hsl(207,100%,52%)]">
+                    €{doctor.consultationPrice}
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">30 min consultation</p>
+                </CardHeader>
+              </Card>
               
-              <CardContent className="space-y-6">
-                {/* Week Navigation */}
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handlePreviousWeek}
-                    disabled={weekOffset <= 0}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  
-                  <h3 className="font-medium">
-                    Week of {format(currentWeekStart, "MMM d")}
-                  </h3>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleNextWeek}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                {/* Calendar */}
-                <div className="space-y-4">
-                  {weekDays.map((day) => {
-                    const availableSlots = getAvailableSlotsForDate(day);
-                    const isToday = isSameDay(day, new Date());
-                    const isPast = day < new Date() && !isToday;
-                    
-                    return (
-                      <div key={day.toISOString()} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className={`font-medium ${isToday ? "text-[hsl(207,100%,52%)]" : "text-gray-900"}`}>
-                            {format(day, "EEE")}
-                          </div>
-                          <div className={`text-sm ${isToday ? "text-[hsl(207,100%,52%)]" : "text-gray-600"}`}>
-                            {format(day, "d")}
-                          </div>
-                        </div>
-                        
-                        {isPast ? (
-                          <div className="text-xs text-gray-400">Past date</div>
-                        ) : availableSlots.length === 0 ? (
-                          <div className="text-xs text-gray-500">No slots available</div>
-                        ) : (
-                          <div className="grid grid-cols-2 gap-2">
-                            {availableSlots.slice(0, 6).map((slot: TimeSlot) => (
-                              <Button
-                                key={slot.id}
-                                size="sm"
-                                variant="outline"
-                                className="text-xs hover:bg-[hsl(207,100%,52%)] hover:text-white hover:border-[hsl(207,100%,52%)]"
-                                onClick={() => handleSlotClick(slot.id)}
-                                disabled={lockSlotMutation.isPending}
-                              >
-                                {slot.startTime.slice(0, 5)}
-                              </Button>
-                            ))}
-                            {availableSlots.length > 6 && (
-                              <div className="text-xs text-gray-500 col-span-2 text-center">
-                                +{availableSlots.length - 6} more
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Footer Note */}
-                <div className="text-xs text-gray-500 text-center">
-                  Times in German time (GMT+1). Dr. David Martin practices according to Dr. David Martin policies.
-                </div>
-              </CardContent>
-            </Card>
+              {/* New Availability Calendar */}
+              <AvailabilityCalendar 
+                doctorId={id} 
+                onSlotSelect={handleSlotClick}
+              />
+            </div>
           </div>
         </div>
       </main>
