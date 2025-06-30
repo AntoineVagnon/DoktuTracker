@@ -82,16 +82,16 @@ export default function AvailabilityCalendar({
   }, [today, weekOffset]);
 
   const weekDays = useMemo(() => getNext7Days(currentWeekStart), [currentWeekStart]);
-  const [selectedDay, setSelectedDay] = useState(() => weekDays[0]);
+  const [selectedDay, setSelectedDay] = useState(() => {
+    const days = getNext7Days(currentWeekStart);
+    return days[0];
+  });
   const timeSlots = useMemo(() => generateTimeSlots(), []);
 
   // Update selected day when week changes
-  const [hasInitialized, setHasInitialized] = useState(false);
-  
-  if (!hasInitialized && weekDays.length > 0) {
+  useEffect(() => {
     setSelectedDay(weekDays[0]);
-    setHasInitialized(true);
-  }
+  }, [weekDays]);
 
   // Fetch time slots for the current week
   const { data: doctorSlots = [], isLoading } = useQuery({
