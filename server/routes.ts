@@ -77,31 +77,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Doctor not found" });
       }
 
-      // Debug: log the actual data structure
-      console.log("Full doctor object:", JSON.stringify(doctor, null, 2));
-      
-      // Type cast to bypass TypeScript issues and use the actual data structure
+      // Transform the data to match expected structure (using known data structure)
       const doctorData = doctor as any;
       
-      // Transform the data to match expected structure
       const doctorDetail = {
-        id: doctorData.doctors?.id || doctorData.id,
-        user: doctorData.users || doctorData.user,
-        specialty: doctorData.doctors?.specialty || doctorData.specialty,
-        bio: doctorData.doctors?.bio || doctorData.bio,
-        education: doctorData.doctors?.education || doctorData.education,
-        experience: doctorData.doctors?.experience || doctorData.experience,
-        languages: (() => {
-          const langs = doctorData.doctors?.languages || doctorData.languages;
-          if (Array.isArray(langs)) return langs;
-          if (typeof langs === 'string') return langs.split(',').map((l: string) => l.trim());
-          return [];
-        })(),
-        rppsNumber: doctorData.doctors?.rppsNumber || doctorData.rppsNumber,
-        consultationPrice: doctorData.doctors?.consultationPrice || doctorData.consultationPrice,
-        rating: doctorData.doctors?.rating || doctorData.rating,
-        reviewCount: doctorData.doctors?.reviewCount || doctorData.reviewCount || 0,
-        isOnline: doctorData.doctors?.isOnline !== undefined ? doctorData.doctors.isOnline : doctorData.isOnline
+        id: doctorData.doctors.id,
+        user: doctorData.users,
+        specialty: doctorData.doctors.specialty,
+        bio: doctorData.doctors.bio,
+        education: doctorData.doctors.education,
+        experience: doctorData.doctors.experience,
+        languages: doctorData.doctors.languages || [],
+        rppsNumber: doctorData.doctors.rppsNumber,
+        consultationPrice: doctorData.doctors.consultationPrice,
+        rating: doctorData.doctors.rating,
+        reviewCount: doctorData.doctors.reviewCount || 0,
+        isOnline: doctorData.doctors.isOnline
       };
 
       res.json(doctorDetail);
