@@ -1,0 +1,64 @@
+Here’s a prompt you can paste into the Replit AI Agent chat so it knows exactly how to restore the missing name, availability, and other profile details:
+
+````
+We still have missing fields on DoctorProfile—no name, no availability, no RPPS, etc. Let’s unify the profile data and rendering:
+
+1. **Fix profile API**  
+   - Ensure `GET /api/public/doctors/:id` returns the full doctor record, matching the grid plus profile extras. JSON shape must include:
+     ```json
+     {
+       "id": "...",
+       "specialty": "Psychiatry",
+       "avg_rating": 4.8,
+       "review_count": 20,
+       "avatar_url": "https://…",
+       "location": "Paris, France",
+       "rpps_number": "10003456789",      // or null
+       "user": {
+         "firstName": "Lisa",
+         "lastName": "Wang",
+         "bio": "Psychiatrist specialised…"
+       },
+       "availability": [
+         "2025-07-02T08:00:00Z",
+         "2025-07-02T08:30:00Z",
+         …
+       ]
+     }
+     ```
+
+2. **Remove mocks**  
+   - Delete any hard-coded or mock `doctor` objects in `DoctorProfile.tsx` or child components. Everything must come from SWR.
+
+3. **Client fetch & guards**  
+   In `client/src/pages/DoctorProfile.tsx`:
+   ```ts
+   const { data: doctor, isLoading, error } =
+     useSWR<Doctor>(`/api/public/doctors/${doctorId}`, fetcher);
+   if (isLoading) return <LoadingSpinner />;
+   if (error)   return <ErrorMessage message="Unable to load profile" />;
+   if (!doctor) return <NotFound />;
+````
+
+4. **Render real fields**
+   Replace the blank header with:
+
+   ```jsx
+   <Image src={doctor.avatar_url} alt={`Photo of Dr. ${doctor.user.lastName}`} … />
+   <h1>Dr. {doctor.user.firstName} {doctor.user.lastName}</h1>
+   <Stars rating={doctor.avg_rating} /> ({doctor.review_count} reviews)
+   <LocationPin text={doctor.location} />
+   <Badge>{doctor.rpps_number || 'N/A'}</Badge>
+   ```
+
+   Under “No availability found,” map `doctor.availability` into slot buttons exactly as on the grid. If empty, show “No availability found for this doctor.”
+
+5. **Tests**
+
+   * Unit test for `fetchDoctorById()` returns the nested `user` and `availability` arrays.
+   * E2E: click a card’s “Book Now” → profile → assert the header shows “Dr. {LastName}” and that the same two slots from the card appear in `doctor.availability`.
+
+After this, the profile page will display the doctor’s full name, rating, location, RPPS, bio, and real availability from the database—no more blanks. Thanks!
+
+```
+```

@@ -95,10 +95,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const doctorDetail = {
         id: doctor.id,
-        avatar_url: doctor.user?.profileImageUrl,
         specialty: doctor.specialty,
         avg_rating: parseFloat(doctor.rating || '0'),
         review_count: doctor.reviewCount || 0,
+        avatar_url: doctor.user?.profileImageUrl,
         location: "Paris, France",
         rpps_number: doctor.rppsNumber,
         consultation_price: doctor.consultationPrice,
