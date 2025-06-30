@@ -1,0 +1,171 @@
+import {
+  pgTable,
+  text,
+  varchar,
+  timestamp,
+  jsonb,
+  index,
+  uuid,
+  integer,
+  decimal,
+  boolean,
+  time,
+  date,
+} from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
+// Session storage table (required for Replit Auth)
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User storage table (required for Replit Auth)
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey().notNull(),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  role: varchar("role").notNull().default("patient"), // patient, doctor, admin
+  stripeCustomerId: varchar("stripe_customer_id"),
+  stripeSubscriptionId: varchar("stripe_subscription_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Doctors table
+export const doctors = pgTable("doctors", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  specialty: varchar("specialty").notNull(),
+  bio: text("bio"),
+  education: text("education"),
+  experience: text("experience"),
+  languages: text("languages").array(),
+  rppsNumber: varchar("rpps_number"), // French medical registration number
+  consultationPrice: decimal("consultation_price", { precision: 10, scale: 2 }).notNull().default("35.00"),
+  rating: decimal("rating", { precision: 3, scale: 2 }).default("5.00"),
+  reviewCount: integer("review_count").default(0),
+  isOnline: boolean("is_online").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Doctor time slots for availability
+export const doctorTimeSlots = pgTable("doctor_time_slots", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  doctorId: uuid("doctor_id").references(() => doctors.id, { onDelete: "cascade" }).notNull(),
+  date: date("date").notNull(),
+  startTime: time("start_time").notNull(),
+  endTime: time("end_time").notNull(),
+  isAvailable: boolean("is_available").default(true),
+  lockedUntil: timestamp("locked_until"),
+  lockedBy: varchar("locked_by"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Appointments
+export const appointments = pgTable("appointments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  patientId: varchar("patient_id").references(() => users.id).notNull(),
+  doctorId: uuid("doctor_id").references(() => doctors.id).notNull(),
+  slotId: uuid("slot_id").references(() => doctorTimeSlots.id),
+  appointmentDate: timestamp("appointment_date").notNull(),
+  status: varchar("status").notNull().default("pending"), // pending, confirmed, paid, completed, cancelled
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  paymentIntentId: varchar("payment_intent_id"),
+  notes: text("notes"),
+  prescription: text("prescription"),
+  rescheduleCount: integer("reschedule_count").default(0),
+  cancelledBy: varchar("cancelled_by"), // patient, doctor, admin
+  videoRoomId: varchar("video_room_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Appointment changes tracking
+export const appointmentChanges = pgTable("appointment_changes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  appointmentId: uuid("appointment_id").references(() => appointments.id, { onDelete: "cascade" }).notNull(),
+  action: varchar("action").notNull(), // reschedule, cancel
+  actorRole: varchar("actor_role"),
+  reason: text("reason"),
+  before: jsonb("before"),
+  after: jsonb("after"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Reviews and ratings
+export const reviews = pgTable("reviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  appointmentId: uuid("appointment_id").references(() => appointments.id).notNull(),
+  patientId: varchar("patient_id").references(() => users.id).notNull(),
+  doctorId: uuid("doctor_id").references(() => doctors.id).notNull(),
+  rating: integer("rating").notNull(), // 1-5
+  comment: text("comment"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Video test results
+export const videoTests = pgTable("video_tests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  appointmentId: uuid("appointment_id").references(() => appointments.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  passed: boolean("passed").notNull(),
+  details: jsonb("details"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Audit events
+export const auditEvents = pgTable("audit_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").references(() => users.id),
+  action: varchar("action").notNull(),
+  resourceType: varchar("resource_type"),
+  resourceId: varchar("resource_id"),
+  details: jsonb("details"),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Schema exports and types
+export type UpsertUser = typeof users.$inferInsert;
+export type User = typeof users.$inferSelect;
+
+export const insertDoctorSchema = createInsertSchema(doctors).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertDoctor = z.infer<typeof insertDoctorSchema>;
+export type Doctor = typeof doctors.$inferSelect;
+
+export const insertTimeSlotSchema = createInsertSchema(doctorTimeSlots).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertTimeSlot = z.infer<typeof insertTimeSlotSchema>;
+export type TimeSlot = typeof doctorTimeSlots.$inferSelect;
+
+export const insertAppointmentSchema = createInsertSchema(appointments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
+export type Appointment = typeof appointments.$inferSelect;
+
+export const insertReviewSchema = createInsertSchema(reviews).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertReview = z.infer<typeof insertReviewSchema>;
+export type Review = typeof reviews.$inferSelect;
