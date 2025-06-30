@@ -77,20 +77,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Doctor not found" });
       }
 
+      // Debug: log the actual data structure
+      console.log("Full doctor object:", JSON.stringify(doctor, null, 2));
+      
+      // Type cast to bypass TypeScript issues and use the actual data structure
+      const doctorData = doctor as any;
+      
       // Transform the data to match expected structure
       const doctorDetail = {
-        id: doctor.id,
-        user: doctor.user,
-        specialty: doctor.specialty,
-        bio: doctor.bio,
-        education: doctor.education,
-        experience: doctor.experience,
-        languages: Array.isArray(doctor.languages) ? doctor.languages : (doctor.languages ? doctor.languages.split(',').map((l: string) => l.trim()) : []),
-        rppsNumber: doctor.rppsNumber,
-        consultationPrice: doctor.consultationPrice,
-        rating: doctor.rating,
-        reviewCount: doctor.reviewCount || 0,
-        isOnline: doctor.isOnline
+        id: doctorData.doctors?.id || doctorData.id,
+        user: doctorData.users || doctorData.user,
+        specialty: doctorData.doctors?.specialty || doctorData.specialty,
+        bio: doctorData.doctors?.bio || doctorData.bio,
+        education: doctorData.doctors?.education || doctorData.education,
+        experience: doctorData.doctors?.experience || doctorData.experience,
+        languages: (() => {
+          const langs = doctorData.doctors?.languages || doctorData.languages;
+          if (Array.isArray(langs)) return langs;
+          if (typeof langs === 'string') return langs.split(',').map((l: string) => l.trim());
+          return [];
+        })(),
+        rppsNumber: doctorData.doctors?.rppsNumber || doctorData.rppsNumber,
+        consultationPrice: doctorData.doctors?.consultationPrice || doctorData.consultationPrice,
+        rating: doctorData.doctors?.rating || doctorData.rating,
+        reviewCount: doctorData.doctors?.reviewCount || doctorData.reviewCount || 0,
+        isOnline: doctorData.doctors?.isOnline !== undefined ? doctorData.doctors.isOnline : doctorData.isOnline
       };
 
       res.json(doctorDetail);
