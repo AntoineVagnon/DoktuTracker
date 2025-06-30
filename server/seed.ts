@@ -1,4 +1,3 @@
-
 import { db } from "./db";
 import { doctors } from "../shared/schema";
 
@@ -88,7 +87,7 @@ const sampleDoctors = [
 export async function seedDoctors() {
   try {
     console.log("Seeding doctors...");
-    
+
     // Check if doctors already exist
     const existingDoctors = await db.select().from(doctors);
     if (existingDoctors.length >= 10) {

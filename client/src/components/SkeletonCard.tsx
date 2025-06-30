@@ -1,31 +1,28 @@
-
 import { Card, CardContent } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
 
 export function SkeletonCard() {
   return (
-    <Card className="h-full">
+    <Card className="h-full animate-pulse skeleton-card">
       <CardContent className="p-6">
-        <div className="flex flex-col items-center space-y-4">
+        <div className="flex flex-col items-center space-y-4 text-center">
           {/* Avatar skeleton */}
-          <Skeleton className="h-16 w-16 rounded-full" />
-          
+          <div className="h-16 w-16 bg-gray-200 rounded-full" />
+
           {/* Name skeleton */}
-          <div className="space-y-2 text-center w-full">
-            <Skeleton className="h-4 w-32 mx-auto" />
-            <Skeleton className="h-3 w-24 mx-auto" />
+          <div className="space-y-2 w-full">
+            <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto" />
+            <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto" />
           </div>
-          
+
           {/* Rating skeleton */}
-          <Skeleton className="h-5 w-16" />
-          
-          {/* Specialty skeleton */}
-          <Skeleton className="h-4 w-28" />
-          
+          <div className="h-4 bg-gray-200 rounded w-1/3" />
+
           {/* Availability skeleton */}
           <div className="space-y-2 w-full">
-            <Skeleton className="h-3 w-full" />
-            <Skeleton className="h-3 w-3/4" />
+            <div className="h-3 bg-gray-200 rounded w-2/3 mx-auto" />
+            <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto" />
+            <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto" />
           </div>
         </div>
       </CardContent>

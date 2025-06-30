@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import useSWR from "swr";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
@@ -17,30 +17,34 @@ interface Doctor {
   nextAvailableSlots: string[];
 }
 
+const fetcher = async (url: string) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Failed to fetch doctors");
+  }
+  return response.json();
+};
+
 export function DoctorsGrid() {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: doctors, error, isLoading } = useSWR<Doctor[]>(
+    "/api/public/doctors-grid", 
+    fetcher,
+    {
+      refreshInterval: 30000,
+      shouldRetryOnError: false,
+      revalidateOnFocus: false,
+    }
+  );
 
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const response = await fetch("/api/public/doctors-grid");
-        if (!response.ok) {
-          throw new Error("Failed to fetch doctors");
-        }
-        const data = await response.json();
-        setDoctors(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-        console.error("Error fetching doctors:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Log errors for observability
+  if (error) {
+    console.error("DoctorsGrid fetch error:", error);
+  }
 
-    fetchDoctors();
-  }, []);
+  // Log warning if doctors array is empty
+  if (doctors && doctors.length === 0) {
+    console.warn("doctors-grid empty");
+  }
 
   const formatSlotTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -64,14 +68,14 @@ export function DoctorsGrid() {
 
   const renderSkeletons = () => {
     return Array.from({ length: 10 }, (_, i) => (
-      <SkeletonCard key={i} />
+      <SkeletonCard key={`skeleton-${i}`} />
     ));
   };
 
   const renderDoctorCard = (doctor: Doctor) => (
     <Link key={doctor.id} href={`/doctor/${doctor.id}`}>
       <Card 
-        className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-sm hover:shadow-xl"
+        className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-sm hover:shadow-xl doctor-card"
         role="button"
         tabIndex={0}
         aria-label={`View Dr ${doctor.lastName} profile`}
@@ -134,8 +138,9 @@ export function DoctorsGrid() {
     </Link>
   );
 
+  // Always render the section with either doctor cards or skeletons
   return (
-    <section className="py-16 bg-white">
+    <section id="doctors-grid" className="py-16 bg-white" role="grid">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -147,14 +152,10 @@ export function DoctorsGrid() {
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {loading || error ? (
+          {isLoading || error || !doctors || doctors.length === 0 ? (
             renderSkeletons()
           ) : (
-            doctors.length > 0 ? (
-              doctors.map(renderDoctorCard)
-            ) : (
-              renderSkeletons()
-            )
+            doctors.slice(0, 10).map(renderDoctorCard)
           )}
         </div>
       </div>

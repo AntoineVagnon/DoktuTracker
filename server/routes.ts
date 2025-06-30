@@ -84,10 +84,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const doctorData = insertDoctorSchema.parse({ ...req.body, userId });
       const doctor = await storage.createDoctor(doctorData);
-      
+
       // Update user role to doctor
       await storage.upsertUser({ id: userId, role: "doctor" });
-      
+
       res.json(doctor);
     } catch (error) {
       console.error("Error creating doctor:", error);
@@ -144,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       let appointments;
       if (user?.role === "doctor") {
         const doctor = await storage.getDoctorByUserId(userId);
@@ -152,7 +152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         appointments = await storage.getAppointments(userId);
       }
-      
+
       res.json(appointments);
     } catch (error) {
       console.error("Error fetching appointments:", error);
@@ -189,7 +189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
       const cancelledBy = user?.role || "patient";
-      
+
       await storage.cancelAppointment(req.params.id, cancelledBy, reason);
       res.json({ success: true });
     } catch (error) {
@@ -207,7 +207,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         currency: "eur",
         metadata: { appointmentId },
       });
-      
+
       res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error: any) {
       console.error("Error creating payment intent:", error);
@@ -218,10 +218,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/confirm-payment", isAuthenticated, async (req, res) => {
     try {
       const { paymentIntentId, appointmentId } = req.body;
-      
+
       // Verify payment with Stripe
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      
+
       if (paymentIntent.status === "succeeded") {
         await storage.updateAppointmentPayment(appointmentId, paymentIntentId);
         res.json({ success: true });
@@ -264,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user?.role !== "admin") {
         return res.status(403).json({ message: "Access denied" });
       }
-      
+
       const kpis = await storage.getKPIs();
       res.json(kpis);
     } catch (error) {
