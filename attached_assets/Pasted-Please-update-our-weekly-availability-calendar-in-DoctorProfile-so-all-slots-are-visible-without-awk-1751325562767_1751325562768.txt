@@ -1,0 +1,45 @@
+Please update our weekly availability calendar in DoctorProfile so all slots are visible without awkward manual scrolling:
+
+1. **Sticky headers & time column**  
+   - Make the top row of day headers (`Tue Jul 1 · 3`, etc.) `position: sticky; top: 0; z-index: 10` so it remains visible when the user scrolls vertically.  
+   - Make the left “Time” column sticky (`position: sticky; left: 0; z-index: 5`) so hour labels (09:00, 09:30, …) never disappear when scrolling horizontally.
+
+2. **Fit all 7 days in view**  
+   - Calculate each day‐column width as `calc((100% - TIME_COLUMN_WIDTH) / 7)` instead of a fixed 150px, so the entire week spans the container exactly on desktop.  
+   - On large screens, show the full 7-column grid with no horizontal scrollbar.
+
+3. **Overflow nav on small screens**  
+   - Wrap the grid in a horizontally‐scrollable container (`overflow-x: auto; scroll-behavior: smooth`).  
+   - Add left/right arrow buttons outside that container which call `.scrollBy({ left: ±container.clientWidth * 0.5, behavior: 'smooth' })`.
+
+4. **Compact row heights**  
+   - Reduce each time-slot row height to 48px (min-height) so more slots fit vertically.  
+   - If still too tall for the viewport, show a mini scrollbar inside the calendar body, not the entire page.
+
+5. **CSS Grid layout**  
+   - Refactor to use CSS Grid:  
+     ```css
+     .calendar {
+       display: grid;
+       grid-template-columns: 80px repeat(7, 1fr);
+       grid-template-rows: auto repeat(SLOT_COUNT, 48px);
+     }
+     .calendar-header { grid-column: 2 / span 7; }
+     .time-label { grid-column: 1; }
+     .slot-cell { /* grid-cell styling */ }
+     ```
+   - This ensures alignment and makes sticky positioning trivial.
+
+6. **Accessibility & tests**  
+   - Keep `role="grid"`, `role="columnheader"`, `role="rowheader"`, and `role="gridcell"`.  
+   - Update the Playwright test in `e2e/home-grid.spec.ts` or add a new one in `e2e/doctor-profile.spec.ts` to verify:
+     - The day header stays visible after vertical scroll.
+     - The time labels stay visible after horizontal scroll.
+     - Arrow-buttons scroll the container.
+
+7. **Implementation details**  
+   - File: `client/src/components/AvailabilityCalendar.tsx`.  
+   - Use Tailwind’s `sticky`, `overflow-x-auto`, `grid` utilities.  
+   - No external calendar library—keep it lightweight.
+
+With these changes, users will always see the current week’s full schedule in a fixed, aligned grid, with only the calendar body scrolling internally when necessary—no more awkward page‐level scrolling. Thank you!  

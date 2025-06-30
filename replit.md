@@ -123,6 +123,9 @@ Changelog:
 - June 30, 2025: Implemented Hand-Picked Medical Team DoctorsGrid on public Home page
 - June 30, 2025: Fixed DoctorsGrid API endpoints for proper JOIN query data handling
 - June 30, 2025: Fixed missing Alert icon import in DoctorProfile component
+- June 30, 2025: Completely rebuilt AvailabilityCalendar with CSS Grid layout and sticky positioning
+- June 30, 2025: Added horizontal scroll navigation and mobile-responsive design to calendar
+- June 30, 2025: Implemented Playwright e2e tests for calendar functionality verification
 ```
 
 ## User Preferences

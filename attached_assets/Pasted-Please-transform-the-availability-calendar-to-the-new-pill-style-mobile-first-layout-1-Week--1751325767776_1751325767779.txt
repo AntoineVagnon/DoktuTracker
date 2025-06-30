@@ -1,0 +1,42 @@
+Please transform the availability calendar to the new pill-style, mobile-first layout:
+
+1. **Week pill selector**  
+   - Replace the 7-column grid header with a horizontal list of “day pills”:  
+     - Each pill shows the 3-letter weekday (Tue) on top, date (1) below, and the count of slots (e.g. 11) at the bottom in a smaller font.  
+     - Selected pill: full brand-blue background, white text; unselected: white bg, border `1px solid gray-200`, dark text.  
+     - Pills are equal width and height (min-width 64px, min-height 80px), with `border-radius: 12px`, and spaced 8px apart.  
+   - Wrap the pills in `overflow-x-auto` for mobile; hide native scrollbar with `scrollbar-none` and enable smooth scrolling.
+
+2. **Week navigation**  
+   - Keep “← Previous” and “Next →” buttons above the pills for desktop; on mobile hide them (pill list is scrollable).  
+   - Accessible: each is a `<button aria-label="Previous week">`.
+
+3. **Day-focused slot pane**  
+   - Below the pills, show only the slots for the currently selected day (no multi-day grid).  
+   - Title: “Tomorrow 1 July” (dynamically computed from selected pill).  
+   - Underneath, display timezone notice: “Times in German time (GMT+1) • Dr. David Martin practices from Germany”.
+
+4. **Slot grid**  
+   - Render a responsive two-column grid of time slots with Tailwind’s `grid grid-cols-2 gap-4`.  
+   - Buttons: `px-4 py-2 border rounded-lg text-center`; available—white bg + blue border; disabled—gray-100 bg + gray-300 text.  
+   - On very small screens, collapse to one column (`grid-cols-1`).
+
+5. **Implementation**  
+   - File: `client/src/components/AvailabilityCalendar.tsx`.  
+   - Replace existing multi-week grid logic with:  
+     ```ts
+     const weekDays = getNext7Days(startDate);
+     const [selected, setSelected] = useState(weekDays[0]);
+     // render pills → onClick() sets selected.
+     // render slots = slotsByDate[selected.toDateString()]
+     ```
+   - Use Tailwind for all spacing, rounding, and overflow.
+
+6. **Accessibility & tests**  
+   - Ensure `role="listbox"` on the pill container, each pill `role="option" aria-selected`.  
+   - Update Playwright (`e2e/doctor-profile.spec.ts`):  
+     - Click the third pill → expect slot pane shows the correct date title.  
+     - On mobile viewport (320×568), verify pills are scrollable (`evaluate(() => scrollLeft > 0)`).  
+   - Add RTL unit test for `<AvailabilityCalendar startDate={new Date('2025-07-01')} slots={…} />` → expect 7 pills and correct slot pane on initial render.
+
+Once complete, the calendar will be ultra-mobile-friendly: horizontal pill selector with smooth scroll, single-day slot view, and clear navigation. Thank you!  
