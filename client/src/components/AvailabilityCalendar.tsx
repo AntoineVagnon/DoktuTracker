@@ -29,6 +29,7 @@ interface TimeSlot {
 
 interface AvailabilityCalendarProps {
   doctorId: string;
+  availableSlots?: TimeSlot[];
   onSlotSelect?: (slot: TimeSlot) => void;
   today?: Date; // For testing purposes
 }
@@ -90,8 +91,10 @@ export default function AvailabilityCalendar({
 
   // Update selected day when week changes
   useEffect(() => {
-    setSelectedDay(weekDays[0]);
-  }, [weekDays]);
+    if (weekDays.length > 0) {
+      setSelectedDay(weekDays[0]);
+    }
+  }, [weekOffset]); // Only depend on weekOffset, not weekDays to avoid infinite loop
 
   // Fetch time slots for the current week
   const { data: doctorSlots = [], isLoading } = useQuery({

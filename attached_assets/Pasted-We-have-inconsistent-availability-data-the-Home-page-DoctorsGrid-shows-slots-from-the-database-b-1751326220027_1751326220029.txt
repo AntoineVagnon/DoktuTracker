@@ -1,0 +1,38 @@
+We have inconsistent availability data: the Home page “DoctorsGrid” shows slots from the database, but the DoctorProfile page is still using mock or hard-coded availability. We need a single source of truth and consistent behavior everywhere.
+
+1. **Backend: Unified availability joins**  
+   - Ensure both endpoints use the same SQL logic:
+     - **GET /api/public/doctors-grid**: returns up to 2 upcoming slots per doctor (as it already does).
+     - **GET /api/public/doctors/:id**: must return **all** future slots for that doctor, using the same join/query against the `availability` table.
+   - In both routes, query:  
+     ```sql
+     SELECT slot_time
+     FROM availability
+     WHERE doctor_id = $1 AND slot_time > now()
+     ORDER BY slot_time ASC
+     LIMIT $2;
+     ```
+     – use `LIMIT 2` in the grid route; no limit in the profile route.
+
+2. **Client: Remove front-end mocks**  
+   - Delete any hard-coded `mockSlots` arrays in `DoctorProfile.tsx` or its calendar component.
+   - Replace with a SWR fetch to `/api/public/doctors/:id`:
+     ```ts
+     const { data: doctor, isLoading, error } = useSWR<Doctor>(
+       `/api/public/doctors/${params.id}`, fetcher
+     );
+     ```
+   - While `isLoading`, show skeleton slots; on `error`, show a friendly message.
+
+3. **DoctorProfile Availability component**  
+   - Use the `doctor.availability` array from the fetched JSON.
+   - Render slots exactly as on the grid: two-column grid of buttons, disabling past times if needed.
+
+4. **Tests**  
+   - Unit test: mock `fetchDoctorById()` to return a known availability array; assert the component maps through `doctor.availability` correctly.
+   - Playwright e2e: click “Book Now” on the grid → navigate to profile → expect the same two slots that were shown on the card to appear in the profile’s availability list.
+
+5. **Seed script**  
+   - Ensure the seed script inserts multiple future slots per doctor so both places have real data to display.
+
+After these changes, the Home grid and Doctor profile will use the exact same DB-driven slots, eliminating any front-end mock data or inconsistencies. Thank you!  

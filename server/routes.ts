@@ -46,19 +46,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const doctors = await storage.getDoctors();
       
-      // Return up to 10 doctors for the grid
-      const doctorsGrid = doctors.slice(0, 10).map(doctor => ({
-        id: doctor.doctors?.id || doctor.id,
-        firstName: doctor.users?.firstName || doctor.user?.firstName,
-        lastName: doctor.users?.lastName || doctor.user?.lastName,
-        specialty: doctor.doctors?.specialty || doctor.specialty,
-        avatarUrl: doctor.users?.profileImageUrl || doctor.user?.profileImageUrl,
-        avgRating: doctor.doctors?.rating ? parseFloat(doctor.doctors.rating) : (doctor.rating ? parseFloat(doctor.rating) : null),
-        // Add placeholder availability for now
-        nextAvailableSlots: [
-          new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString()
-        ]
+      // Get next 2 available slots for each doctor
+      const doctorsGrid = await Promise.all(doctors.slice(0, 10).map(async (doctor) => {
+        const timeSlots = await storage.getDoctorTimeSlots(doctor.id);
+        const nextAvailableSlots = timeSlots
+          .filter(slot => slot.isAvailable && new Date(slot.date + 'T' + slot.startTime) > new Date())
+          .slice(0, 2)
+          .map(slot => new Date(slot.date + 'T' + slot.startTime).toISOString());
+        
+        return {
+          id: doctor.id,
+          firstName: doctor.user.firstName,
+          lastName: doctor.user.lastName,
+          specialty: doctor.specialty,
+          avatarUrl: doctor.user.profileImageUrl,
+          avgRating: doctor.rating ? parseFloat(doctor.rating) : null,
+          nextAvailableSlots
+        };
       }));
       
       res.json(doctorsGrid);
@@ -77,22 +81,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Doctor not found" });
       }
 
-      // Transform the data to match expected structure (using known data structure)
-      const doctorData = doctor as any;
+      // Get all future availability for this doctor
+      const timeSlots = await storage.getDoctorTimeSlots(doctor.id);
+      const availableSlots = timeSlots
+        .filter(slot => slot.isAvailable && new Date(slot.date + 'T' + slot.startTime) > new Date())
+        .map(slot => ({
+          id: slot.id,
+          date: slot.date,
+          startTime: slot.startTime,
+          endTime: slot.endTime,
+          isAvailable: slot.isAvailable
+        }));
       
       const doctorDetail = {
-        id: doctorData.doctors.id,
-        user: doctorData.users,
-        specialty: doctorData.doctors.specialty,
-        bio: doctorData.doctors.bio,
-        education: doctorData.doctors.education,
-        experience: doctorData.doctors.experience,
-        languages: doctorData.doctors.languages || [],
-        rppsNumber: doctorData.doctors.rppsNumber,
-        consultationPrice: doctorData.doctors.consultationPrice,
-        rating: doctorData.doctors.rating,
-        reviewCount: doctorData.doctors.reviewCount || 0,
-        isOnline: doctorData.doctors.isOnline
+        id: doctor.id,
+        user: doctor.user,
+        specialty: doctor.specialty,
+        bio: doctor.bio,
+        education: doctor.education,
+        experience: doctor.experience,
+        languages: doctor.languages || [],
+        rppsNumber: doctor.rppsNumber,
+        consultationPrice: doctor.consultationPrice,
+        rating: doctor.rating,
+        reviewCount: doctor.reviewCount || 0,
+        isOnline: doctor.isOnline,
+        availability: availableSlots
       };
 
       res.json(doctorDetail);

@@ -48,6 +48,7 @@ interface Doctor {
   rating: string;
   reviewCount: number;
   isOnline: boolean;
+  availability: TimeSlot[];
 }
 
 interface TimeSlot {
@@ -65,7 +66,7 @@ export default function DoctorProfile() {
   const queryClient = useQueryClient();
 
 
-  const { data: doctor, isLoading: doctorLoading, error: doctorError } = useQuery({
+  const { data: doctor, isLoading: doctorLoading, error: doctorError } = useQuery<Doctor>({
     queryKey: [`/api/public/doctors/${id}`],
     enabled: !!id,
   });
