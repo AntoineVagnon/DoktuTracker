@@ -1,0 +1,65 @@
+Please fix the DoctorProfile page so it uses the real doctor data from the database instead of showing blanks:
+
+````
+1. **Backend – Profile endpoint**  
+   - Update or create `GET /api/public/doctors/:id` to return a single doctor object with this shape:
+     ```json
+     {
+       "id": "…",
+       "specialty": "Psychiatry",
+       "avg_rating": 4.8,
+       "review_count": 20,
+       "avatar_url": "https://…",
+       "location": "Paris, France",
+       "rpps_number": "10003456789",
+       "user": {
+         "firstName": "Lisa",
+         "lastName": "Wang",
+         "bio": "Psychiatrist specialised…"
+       },
+       "availability": [
+         "2025-07-02T08:00:00Z",
+         "2025-07-02T08:30:00Z",
+         …
+       ]
+     }
+     ```
+   - Join the `users` table on `doctor.user_id`, and select *all* future slots (no mock data).
+
+2. **Client – Fetch real profile**  
+   In `client/src/pages/DoctorProfile.tsx`:
+   ```ts
+   const { data: doctor, isLoading, error } =
+     useSWR<Doctor>(`/api/public/doctors/${params.id}`, fetcher);
+
+   if (isLoading) return <LoadingSpinner />;
+   if (error)   return <ErrorMessage message="Unable to load profile" />;
+   if (!doctor) return <NotFound />;
+````
+
+3. **Render real fields**
+   Replace blank placeholders with:
+
+   ```jsx
+   <Image src={doctor.avatar_url} alt={`Photo of Dr. ${doctor.user.lastName}`} … />
+   <h1>Dr. {doctor.user.firstName} {doctor.user.lastName}</h1>
+   <Stars rating={doctor.avg_rating} /> ({doctor.review_count} reviews)
+   <LocationPin text={doctor.location} />
+   <Badge>{doctor.rpps_number || 'N/A'}</Badge>
+   <p>{doctor.user.bio}</p>
+   ```
+
+   Under availability, map `doctor.availability` to slot buttons. If empty, show “No availability found for this doctor.”
+
+4. **Seed script**
+   Ensure your seed script inserts multiple future slots per doctor.
+
+5. **Tests**
+
+   * Vitest: mock `fetchDoctorById` to return the full profile shape and assert each field renders.
+   * Playwright: click “Book Now” on a card → profile → assert header shows “Dr. {LastName}” and that the same two slots appear.
+
+After applying these changes, visiting `/doctor/:id` must show the doctor’s name, rating, RPPS, bio, location, and real availability slots—no more blanks.
+
+```
+```

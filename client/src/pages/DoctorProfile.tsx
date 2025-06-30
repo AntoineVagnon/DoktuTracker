@@ -33,22 +33,23 @@ import { format } from "date-fns";
 
 interface Doctor {
   id: string;
+  specialty: string;
+  avg_rating: number;
+  review_count: number;
+  avatar_url?: string;
+  location: string;
+  rpps_number?: string;
+  consultation_price: string;
+  is_online: boolean;
   user: {
     firstName: string;
     lastName: string;
-    profileImageUrl?: string;
+    bio: string;
   };
-  specialty: string;
-  bio: string;
   education: string;
   experience: string;
   languages: string[];
-  rppsNumber: string;
-  consultationPrice: string;
-  rating: string;
-  reviewCount: number;
-  isOnline: boolean;
-  availability: TimeSlot[];
+  availability: string[];
 }
 
 interface TimeSlot {
