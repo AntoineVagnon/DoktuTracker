@@ -146,6 +146,11 @@ Changelog:
 - July 1, 2025: Enhanced Login page to show different content based on role parameter (patients can register, doctors/admins sign in only)
 - July 1, 2025: Implemented server-side role-based redirects in auth callback to route users to appropriate dashboards
 - July 1, 2025: Created comprehensive Playwright test suite for role-based authentication flows
+- July 1, 2025: Implemented reusable AuthModal component for casual authentication on Home page and Header
+- July 1, 2025: Updated Header and Home page to use AuthModal instead of navigation for general auth flows
+- July 1, 2025: Preserved existing /login and /register pages with redirect logic for booking flows
+- July 1, 2025: Created comprehensive Playwright test suite for AuthModal functionality (e2e/modal-auth.spec.ts)
+- July 1, 2025: Implemented dual authentication approach: modal for general use, dedicated pages for booking flow
 ```
 
 ## User Preferences

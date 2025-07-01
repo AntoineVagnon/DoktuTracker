@@ -123,20 +123,28 @@ export default function Home() {
               Connect with certified healthcare professionals for expert medical care
             </p>
             <div className="flex flex-col gap-4 items-center">
-              <Button size="lg" asChild className="w-full max-w-xs">
-                <Link href="/register">Register as Patient</Link>
+              <Button 
+                size="lg" 
+                className="w-full max-w-xs bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-lg transition-all duration-200"
+                onClick={() => {
+                  setAuthModalTab("signup");
+                  setIsAuthModalOpen(true);
+                }}
+              >
+                Get Started
               </Button>
-              <div className="flex gap-4">
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/login?role=patient">Login as Patient</Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/login?role=doctor">Login as Doctor</Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/login?role=admin">Login as Admin</Link>
-                </Button>
-              </div>
+              <p className="text-sm text-gray-500">
+                Already have an account?{" "}
+                <button
+                  onClick={() => {
+                    setAuthModalTab("login");
+                    setIsAuthModalOpen(true);
+                  }}
+                  className="text-blue-600 hover:underline font-medium"
+                >
+                  Sign in
+                </button>
+              </p>
             </div>
           </div>
         )}
@@ -239,11 +247,26 @@ export default function Home() {
                   Join thousands of patients who trust our platform for their healthcare needs.
                 </p>
                 <div className="flex gap-4 justify-center">
-                  <Button size="lg" className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" asChild>
-                    <Link href="/login">Sign In</Link>
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50"
+                    onClick={() => {
+                      setAuthModalTab("login");
+                      setIsAuthModalOpen(true);
+                    }}
+                  >
+                    Sign In
                   </Button>
-                  <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-[hsl(207,100%,52%)]" asChild>
-                    <Link href="/register">Sign Up</Link>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="bg-transparent border-white text-white hover:bg-white hover:text-[hsl(207,100%,52%)]"
+                    onClick={() => {
+                      setAuthModalTab("signup");
+                      setIsAuthModalOpen(true);
+                    }}
+                  >
+                    Sign Up
                   </Button>
                 </div>
               </>
@@ -253,6 +276,13 @@ export default function Home() {
       </main>
 
       <Footer />
+      
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultTab={authModalTab}
+      />
     </div>
   );
 }
