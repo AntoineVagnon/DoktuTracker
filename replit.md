@@ -159,6 +159,11 @@ Changelog:
 - July 1, 2025: Removed redirect parameter complexity - /register accepts doctorId, slot, price directly in URL
 - July 1, 2025: Streamlined flow: slot click → /register?doctorId=...&slot=...&price=... → Replit Auth → /checkout
 - July 1, 2025: Updated all Playwright tests to reflect simplified booking flow without intermediate redirects
+- July 1, 2025: Final streamlining - removed "Back to login options" link from /register page
+- July 1, 2025: Completely removed Login.tsx, LoginForm.tsx, RegisterForm.tsx pages from codebase
+- July 1, 2025: Updated /register to show booking summary + signup form with "Already have an account? Sign in" modal trigger
+- July 1, 2025: Removed /login route from App.tsx - authentication now only through header modal or /register page
+- July 1, 2025: Created comprehensive test suite in e2e/register.spec.ts for streamlined registration flow
 ```
 
 ## User Preferences
