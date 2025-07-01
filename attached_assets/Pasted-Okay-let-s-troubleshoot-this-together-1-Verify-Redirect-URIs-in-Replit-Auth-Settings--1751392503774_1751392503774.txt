@@ -1,0 +1,48 @@
+Okay, let’s troubleshoot this together:
+
+1. **Verify Redirect URIs in Replit Auth Settings**
+
+   * Go to your Replit project’s Auth configuration.
+   * Under “Redirect URIs,” make sure you have *exactly* all of these listed (no trailing slashes):
+
+     ```
+     https://<your-repl>.replit.dev/dashboard
+     https://<your-repl>.replit.dev/register-form
+     https://<your-repl>.replit.dev/login
+     https://<your-repl>.replit.dev/auth-choice
+     ```
+   * This ensures that after Replit Auth completes, users can be sent back into any of those routes in your app rather than to the built-in preview page.
+
+2. **Double-Check Your OAuth Callback Handler**
+   In your code where you handle the OAuth callback, confirm that you’re reading the `redirect` or query parameters and then doing something like:
+
+   ```js
+   const returnTo = ctx.query.redirect || '/dashboard';
+   ctx.redirect(returnTo);
+   ```
+
+   If you hard-code anything else, or don’t include `redirect`, it will fall back to that preview page.
+
+3. **Test Each Flow With Explicit Redirect Parameters**
+
+   * **Header Sign-Up / Login**: Open your app in an incognito window, click “Sign Up” in the header, and watch the network in DevTools. Ensure the final callback URL is calling back to `/login?redirect=/dashboard` (for login) or `/register-form?redirect=/dashboard` (for signup).
+   * **Booking Flow**: From a doctor profile, select a slot and click “Book.” That should take you to `/auth-choice?doctorId=…&slot=…&price=…`. When you sign up or log in, the callback must include the same slot & price params and then redirect you to Stripe.
+
+4. **Look for Mismatched Origins**
+   If your Replit project URL (e.g. `replit.dev`) doesn’t exactly match the domain in your OAuth settings (e.g. `my-app.user.repl.co`), Replit will reject the redirect and show you that generic preview page. Make sure they’re identical.
+
+5. **Deploy a Minimal Reproduction**
+   If you still see the preview page, try creating a tiny test route in your app:
+
+   ```js
+   // /test-callback
+   app.get('/test-callback', (req, res) => {
+     res.send('✅ Callback received with query: ' + JSON.stringify(req.query));
+   });
+   ```
+
+   Then add `https://<your-repl>.replit.dev/test-callback` to your OAuth redirect URIs and have Replit Auth redirect to it. If you hit that and see your query params, your OAuth setup is correct and the bug lies in your redirect-handling code. If you still see the preview page, the problem is in the OAuth config.
+
+---
+
+Let me know what you discover, and we’ll pinpoint the fix.

@@ -18,6 +18,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
+  // Test callback endpoint for OAuth troubleshooting
+  app.get('/test-callback', (req, res) => {
+    res.send('✅ Callback received with query: ' + JSON.stringify(req.query));
+  });
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {

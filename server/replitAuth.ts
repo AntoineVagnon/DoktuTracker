@@ -136,16 +136,24 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
+    console.log('OAuth callback received with query:', req.query);
+    console.log('Session data:', req.session);
+    
     passport.authenticate(`replitauth:${req.hostname}`, (err: any, user: any) => {
       if (err) {
+        console.error('OAuth authentication error:', err);
         return next(err);
       }
       if (!user) {
+        console.log('No user returned from OAuth, redirecting to login');
         return res.redirect("/api/login");
       }
       
+      console.log('User authenticated successfully:', user.claims);
+      
       req.logIn(user, async (err) => {
         if (err) {
+          console.error('Session login error:', err);
           return next(err);
         }
         
@@ -161,12 +169,15 @@ export async function setupAuth(app: Express) {
           
           // Priority 2: Get user from database to check role
           const dbUser = await storage.getUser(user.claims.sub);
+          console.log('Database user found:', dbUser);
           
           if (dbUser) {
             // Role-based redirect based on user role in database
             if (dbUser.role === 'doctor') {
+              console.log('Redirecting doctor to dashboard');
               return res.redirect('/doctor-dashboard');
             } else if (dbUser.role === 'admin') {
+              console.log('Redirecting admin to dashboard');
               return res.redirect('/admin-dashboard');
             }
           }
@@ -175,10 +186,12 @@ export async function setupAuth(app: Express) {
           const storedRedirect = req.session?.loginRedirect;
           if (storedRedirect) {
             delete req.session.loginRedirect;
+            console.log('Redirecting to stored redirect:', storedRedirect);
             return res.redirect(storedRedirect);
           }
           
           // Default redirect for patients
+          console.log('Redirecting to default patient dashboard');
           return res.redirect('/dashboard');
         } catch (error) {
           console.error('Error in callback redirect logic:', error);
