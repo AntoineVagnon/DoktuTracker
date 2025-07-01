@@ -1,0 +1,58 @@
+❗️ Update `/register` page to show booking summary and remove Quick‐Registration box
+
+We need the `/register` page to become the booking signup step: show the slot/date/price summary and then the signup form, without the “Quick registration” info text.
+
+1. **Route params**  
+   - Read `doctorId`, `slot` (ISO string), and `price` from `router.query` at the top of `pages/register.tsx`.
+   - Parse `slot` into a human‐readable date/time (e.g. using `date-fns`).
+
+2. **Booking Summary panel**  
+   - Immediately under the header, render a summary card:
+     ```jsx
+     <div className="booking-summary border rounded-lg p-4 mb-6">
+       <h2 className="text-lg font-medium mb-2">Booking Summary</h2>
+       <p className="flex justify-between">
+         <span>Date:</span>
+         <span>{format(new Date(slot), 'dd/MM/yyyy')}</span>
+       </p>
+       <p className="flex justify-between">
+         <span>Time:</span>
+         <span>{format(new Date(slot), 'HH:mm')}</span>
+       </p>
+       <p className="flex justify-between">
+         <span>Price:</span>
+         <span>€{price}</span>
+       </p>
+     </div>
+     ```
+
+3. **Remove Quick-Registration box**  
+   - Delete the blue “Quick registration: We'll create your secure account…” info `<div>` entirely.
+
+4. **Show signup form directly**  
+   - Below the Booking Summary, render the actual signup form fields:  
+     - First name, Last name, Email, Password (with confirm).  
+   - Primary button: “Create Account & Continue to Payment” (blue, full-width).  
+     - On submit, POST to `/api/auth/register` with form data + `doctorId`, `slot`, `price`.  
+     - On success, automatically sign in and redirect to `/checkout?doctorId=…&slot=…&price=…`.
+
+5. **“Already have an account?” link**  
+   - Under the form, show a secondary link:  
+     ```jsx
+     <a 
+       className="text-sm text-blue-600 mt-4 block" 
+       onClick={() => router.push(`/login?doctorId=${doctorId}&slot=${slot}&price=${price}`)}
+     >
+       Already have an account? Sign in instead
+     </a>
+     ```
+   - That link goes to `/login` with the same booking params.
+
+6. **Tests**  
+   - Playwright `e2e/register-flow.spec.ts`:  
+     1. As unauthenticated, click slot → `/register?doctorId=…&slot=…&price=…`.  
+     2. Verify Booking Summary panel shows correct date/time/price.  
+     3. Ensure no blue Quick-Registration box is present.  
+     4. Fill the signup form → submit → expect redirect to `/checkout?doctorId=…&slot=…&price=…`.
+
+With this change, `/register` becomes the booking signup form step, complete with booking summary at the top and no extraneous Quick-Registration copy.  

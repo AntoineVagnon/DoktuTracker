@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { Calendar, Clock, Euro } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -26,62 +26,128 @@ export default function Register() {
     window.location.href = "/api/login";
   };
 
-  const handleBackToLogin = () => {
-    // Go back to login page - no redirect parameters needed
-    window.location.href = '/login';
+  const openAuthModal = () => {
+    // For now, use the login API directly (would trigger header modal in final implementation)
+    window.location.href = '/api/login';
   };
+
+  // Format booking details for display
+  const formatSlotDateTime = (slotString: string) => {
+    if (!slotString) return { date: '', time: '' };
+    const date = new Date(slotString);
+    return {
+      date: date.toLocaleDateString('en-GB', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }),
+      time: date.toLocaleTimeString('en-GB', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
+    };
+  };
+
+  const { date, time } = formatSlotDateTime(slot || '');
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md mx-auto space-y-6">
+          
+          {/* Booking Summary Card - only show if we have booking parameters */}
+          {doctorId && slot && price && (
+            <Card className="rounded-2xl shadow-lg p-6">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-lg font-semibold text-gray-900">
+                  Booking Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="space-y-3">
+                  <div className="flex items-center text-gray-600">
+                    <Calendar className="h-4 w-4 mr-3" />
+                    <span className="text-sm">{date}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <Clock className="h-4 w-4 mr-3" />
+                    <span className="text-sm">{time}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <Euro className="h-4 w-4 mr-3" />
+                    <span className="text-sm">€{price}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Registration Form Card */}
           <Card className="rounded-2xl shadow-lg p-6">
             <CardHeader className="p-0 mb-6">
-              <button 
-                onClick={handleBackToLogin}
-                className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to login options
-              </button>
-              
               <CardTitle className="text-2xl font-bold text-gray-900">
                 Create your account
               </CardTitle>
               <p className="text-gray-600 mt-2">
-                Join Doktu to book your first consultation
+                Join Doktu to book your consultation
               </p>
             </CardHeader>
 
             <CardContent className="p-0">
               <div className="space-y-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-blue-800">
-                    <strong>Quick registration:</strong> We'll create your secure account 
-                    using Replit Auth. You'll be able to book appointments and access 
-                    your medical history immediately.
-                  </p>
+                {/* Signup Form */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Create a password"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-4">
                   <Button
                     onClick={handleCreateAccount}
                     className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded-lg"
-                    aria-label="Create new patient account with secure authentication"
                   >
-                    Create Account & Continue
+                    Create Account & Continue to Payment
                   </Button>
                   
-                  <Button
-                    onClick={handleBackToLogin}
-                    variant="outline"
-                    className="border border-gray-300 text-gray-800 hover:bg-gray-50 w-full py-3 rounded-lg"
-                    aria-label="Return to login options"
-                  >
-                    Already have an account? Sign in instead
-                  </Button>
+                  <div className="text-center">
+                    <button
+                      onClick={openAuthModal}
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      Already have an account? Sign in
+                    </button>
+                  </div>
                 </div>
 
                 <div className="text-center text-sm text-gray-500">

@@ -1,0 +1,40 @@
+❗️ Final adjustments — streamline `/register` and remove obsolete pages
+
+1. **Remove “Back to login options” link on `/register`**  
+   - In `pages/register.tsx`, delete the `<Link>` or back‐arrow element that says “← Back to login options”.  
+   - There is no alternate login flow on `/register`—all login happens via the header modal.
+
+2. **Eliminate the obsolete Patient Portal page**  
+   - Delete or disable `pages/login.tsx` (the “Patient Portal” New vs Returning Patient choice screen).  
+   - Remove any routes, links, or redirects pointing to `/login`.  
+   - Ensure no tests reference this page—delete `e2e/auth-portal.spec.ts` or similar.
+
+3. **Slot-click handler**  
+   - Confirm that clicking a time slot when logged out now does:
+     ```ts
+     router.push(
+       `/register?doctorId=${doctorId}&slot=${slot}&price=${price}`
+     );
+     ```
+   - There must be **no** navigation to `/login?redirect=…`.
+
+4. **`pages/register.tsx` UI**  
+   - Show only:
+     - Booking Summary card (date/time/price).  
+     - Signup form (name, email, password).  
+     - Primary button: “Create Account & Continue to Payment”.  
+     - Secondary link under form: “Already have an account? Sign in” → opens header login modal (e.g. `onClick={() => openAuthModal('login')}`).
+   - **Remove** any Quick-registration info text or back links.
+
+5. **Header modal login**  
+   - Keep the existing AuthModal trigger on the header “Sign In” button.  
+   - Ensure secondary “Sign in” link on `/register` calls the header modal (`openAuthModal('login')`).
+
+6. **Tests update**  
+   - Remove tests for `/login` choice page.  
+   - Add a test in `e2e/register.spec.ts`:
+     1. Click a slot → `/register?doctorId=…&slot=…&price=…`.  
+     2. Ensure no back link or Quick-registration box exists.  
+     3. Under the signup form, click “Already have an account? Sign in” → header login modal appears.
+
+After these updates, `/register` is the sole booking signup screen (no back-link), and the old Patient Portal page is fully removed.  

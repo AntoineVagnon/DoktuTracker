@@ -10,7 +10,6 @@ import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
 import DoctorProfile from "@/pages/DoctorProfile";
 
-import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Checkout from "@/pages/Checkout";
 import DoctorDashboard from "@/pages/DoctorDashboard";
@@ -22,7 +21,6 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={isLoading || !isAuthenticated ? Landing : Home} />
-      <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/doctor/:id" component={DoctorProfile} />
