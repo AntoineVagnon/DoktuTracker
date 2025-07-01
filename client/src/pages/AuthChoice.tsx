@@ -16,11 +16,11 @@ export default function AuthChoice() {
   const price = urlParams.get('price');
 
   const handleNewPatient = () => {
-    window.location.href = `/register-form?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+    window.location.href = `/register-form?doctorId=${doctorId || ''}&slot=${encodeURIComponent(slot || '')}&price=${price || ''}`;
   };
 
   const handleReturningPatient = () => {
-    window.location.href = `/login-book?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+    window.location.href = `/login-book?doctorId=${doctorId || ''}&slot=${encodeURIComponent(slot || '')}&price=${price || ''}`;
   };
 
   return (
