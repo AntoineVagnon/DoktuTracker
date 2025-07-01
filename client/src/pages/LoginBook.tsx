@@ -48,28 +48,13 @@ export default function LoginBook() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Login failed');
+      // Store booking parameters for after authentication
+      if (doctorId && slot && price) {
+        sessionStorage.setItem('booking_redirect', `/payment?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`);
       }
 
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!",
-      });
-
-      // Redirect to payment page with booking parameters
-      const paymentUrl = `/payment?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
-      window.location.href = paymentUrl;
+      // Redirect to Replit Auth for login
+      window.location.href = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
 
     } catch (error) {
       console.error('Login error:', error);

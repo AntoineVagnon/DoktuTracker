@@ -56,28 +56,13 @@ export default function RegisterForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Registration failed');
+      // Store booking parameters for after authentication
+      if (doctorId && slot && price) {
+        sessionStorage.setItem('booking_redirect', `/payment?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`);
       }
 
-      toast({
-        title: "Account Created",
-        description: "Your account has been created successfully!",
-      });
-
-      // Redirect to payment page with booking parameters
-      const paymentUrl = `/payment?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
-      window.location.href = paymentUrl;
+      // Redirect to Replit Auth for registration/login
+      window.location.href = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
 
     } catch (error) {
       console.error('Registration error:', error);
