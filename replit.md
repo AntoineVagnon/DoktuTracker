@@ -151,6 +151,10 @@ Changelog:
 - July 1, 2025: Preserved existing /login and /register pages with redirect logic for booking flows
 - July 1, 2025: Created comprehensive Playwright test suite for AuthModal functionality (e2e/modal-auth.spec.ts)
 - July 1, 2025: Implemented dual authentication approach: modal for general use, dedicated pages for booking flow
+- July 1, 2025: Simplified /register to single "Quick Registration" screen using Replit Auth directly
+- July 1, 2025: Removed multi-step patient forms (LoginForm, RegisterForm) in favor of unified OIDC flow
+- July 1, 2025: Updated /register to store redirect URL and proceed with Replit Auth for all users
+- July 1, 2025: Cleaned up routes and tests to reflect simplified authentication architecture
 ```
 
 ## User Preferences
