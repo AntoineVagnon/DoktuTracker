@@ -1,42 +1,19 @@
-import { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { isUnauthorizedError } from "@/lib/authUtils";
-import Header from "@/components/Header";
-import Calendar from "@/components/Calendar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  Users, 
-  Settings, 
-  Video, 
-  CheckCircle,
-  X,
-  MessageSquare,
-  LogOut,
-  Eye,
-  Plus
-} from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { format, isToday, isTomorrow } from "date-fns";
+import { Calendar, Users, Clock, TrendingUp } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export default function DoctorDashboard() {
-  const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [isOnline, setIsOnline] = useState(false);
+  const { user, isAuthenticated, isLoading } = useAuth();
 
-  // Redirect if not authenticated or not a doctor
+  // Redirect to login if not authenticated
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || user?.role !== "doctor")) {
+    if (!isLoading && !isAuthenticated) {
       toast({
         title: "Unauthorized",
         description: "You are logged out. Logging in again...",
@@ -47,450 +24,180 @@ export default function DoctorDashboard() {
       }, 500);
       return;
     }
-  }, [isAuthenticated, isLoading, user?.role, toast]);
+  }, [isAuthenticated, isLoading, toast]);
 
-  const { data: doctor } = useQuery({
-    queryKey: [`/api/doctors/user/${user?.id}`],
-    enabled: isAuthenticated && user?.role === "doctor",
-  });
-
-  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery({
-    queryKey: ["/api/appointments"],
-    enabled: isAuthenticated && user?.role === "doctor",
-  });
-
-  const updateOnlineStatusMutation = useMutation({
-    mutationFn: async (online: boolean) => {
-      if (!doctor) return;
-      await apiRequest("PATCH", `/api/doctors/${doctor.id}/status`, { isOnline: online });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/doctors/user/${user?.id}`] });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to update online status.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateAppointmentStatusMutation = useMutation({
-    mutationFn: async ({ appointmentId, status }: { appointmentId: string; status: string }) => {
-      await apiRequest("PATCH", `/api/appointments/${appointmentId}/status`, { status });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
-      toast({
-        title: "Status Updated",
-        description: "Appointment status has been updated successfully.",
-      });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to update appointment status.",
-        variant: "destructive",
-      });
-    },
-  });
-
+  // Check if user has doctor role
   useEffect(() => {
-    if (doctor) {
-      setIsOnline(doctor.isOnline);
+    if (user && user.role !== 'doctor') {
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to access the doctor dashboard.",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 500);
+      return;
     }
-  }, [doctor]);
+  }, [user, toast]);
 
-  const handleOnlineToggle = (checked: boolean) => {
-    setIsOnline(checked);
-    updateOnlineStatusMutation.mutate(checked);
-  };
-
-  if (isLoading || !isAuthenticated || user?.role !== "doctor") {
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" aria-label="Loading"/>
       </div>
     );
   }
 
-  const upcomingAppointments = appointments
-    .filter((apt: any) => 
-      apt.status !== "cancelled" && apt.status !== "completed" && 
-      new Date(apt.appointmentDate) > new Date()
-    )
-    .sort((a: any, b: any) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime())
-    .slice(0, 5);
-
-  const todayAppointments = appointments.filter((apt: any) => 
-    isToday(new Date(apt.appointmentDate)) && apt.status !== "cancelled"
-  );
-
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      pending: { variant: "secondary" as const, label: "Pending" },
-      confirmed: { variant: "default" as const, label: "Confirmed" },
-      paid: { variant: "default" as const, label: "Paid", className: "bg-blue-500" },
-      completed: { variant: "default" as const, label: "Completed", className: "bg-green-500" },
-      cancelled: { variant: "destructive" as const, label: "Cancelled" },
-    };
-
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    
-    return (
-      <Badge variant={config.variant} className={config.className}>
-        {config.label}
-      </Badge>
-    );
-  };
-
-  const canJoinVideo = (appointment: any) => {
-    const appointmentTime = new Date(appointment.appointmentDate);
-    const now = new Date();
-    const timeDiff = appointmentTime.getTime() - now.getTime();
-    const minutesDiff = timeDiff / (1000 * 60);
-    
-    return minutesDiff <= 5 && minutesDiff >= -30 && appointment.status === "paid";
-  };
-
-  const getAppointmentTimeLabel = (date: Date) => {
-    if (isToday(date)) return "Today";
-    if (isTomorrow(date)) return "Tomorrow";
-    return format(date, "MMM d");
-  };
-
-  const handleCompleteAppointment = (appointmentId: string) => {
-    updateAppointmentStatusMutation.mutate({
-      appointmentId,
-      status: "completed",
-    });
-  };
-
-  const handleCancelAppointment = (appointmentId: string) => {
-    if (confirm("Are you sure you want to cancel this appointment?")) {
-      updateAppointmentStatusMutation.mutate({
-        appointmentId,
-        status: "cancelled",
-      });
-    }
-  };
-
-  if (showCalendar) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">My Schedule</h1>
-            <Button onClick={() => setShowCalendar(false)}>
-              Back to Dashboard
-            </Button>
-          </div>
-          <Calendar doctorId={doctor?.id} />
-        </main>
-      </div>
-    );
+  if (!isAuthenticated || !user || user.role !== 'doctor') {
+    return null;
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
-                <span className="text-lg font-bold text-white">D</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">Doktu</span>
-            </div>
-
-            <div className="flex items-center space-x-6">
-              <Button variant="ghost" size="sm">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Messages
-              </Button>
-              
-              <Button variant="ghost" size="sm" asChild>
-                <a href="/api/logout">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </a>
-              </Button>
-            </div>
-          </div>
+      <Header />
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Welcome back, Dr. {user.firstName} {user.lastName}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Manage your appointments and patient consultations
+          </p>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Welcome Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, Dr. {user?.firstName}
-            </h1>
-            <p className="text-gray-600">Manage your appointments and availability</p>
-          </div>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Today's Appointments</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">5</div>
+              <p className="text-xs text-muted-foreground">+2 from yesterday</p>
+            </CardContent>
+          </Card>
           
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Online Status</span>
-              <Switch
-                checked={isOnline}
-                onCheckedChange={handleOnlineToggle}
-                disabled={updateOnlineStatusMutation.isPending}
-              />
-              <span className={`text-sm ${isOnline ? "text-green-600" : "text-gray-500"}`}>
-                {isOnline ? "Online" : "Offline"}
-              </span>
-            </div>
-          </div>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">142</div>
+              <p className="text-xs text-muted-foreground">+12 this week</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Hours This Week</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">32</div>
+              <p className="text-xs text-muted-foreground">6 hours remaining</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Patient Rating</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">4.8</div>
+              <p className="text-xs text-muted-foreground">+0.2 from last month</p>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Today's Schedule */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center">
-                    <CalendarIcon className="h-5 w-5 mr-2" />
-                    Today's Schedule
-                  </CardTitle>
-                  <Badge variant="secondary">
-                    {todayAppointments.length} appointment{todayAppointments.length !== 1 ? "s" : ""}
-                  </Badge>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Today's Schedule */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Today's Schedule</CardTitle>
+              <CardDescription>Your upcoming appointments for today</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center p-3 bg-blue-50 rounded-lg">
+                  <div className="mr-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">John Smith</p>
+                    <p className="text-sm text-gray-600">General Consultation</p>
+                  </div>
+                  <div className="text-sm font-medium">9:00 AM</div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                {todayAppointments.length === 0 ? (
-                  <div className="text-center py-8">
-                    <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">No appointments scheduled for today</p>
+                
+                <div className="flex items-center p-3 bg-green-50 rounded-lg">
+                  <div className="mr-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {todayAppointments.map((appointment: any) => (
-                      <div key={appointment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center space-x-3">
-                            <Avatar className="w-10 h-10">
-                              <AvatarImage src={appointment.patient?.profileImageUrl} />
-                              <AvatarFallback>
-                                {appointment.patient?.firstName?.[0]}{appointment.patient?.lastName?.[0]}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <h3 className="font-medium text-gray-900">
-                                {appointment.patient?.firstName} {appointment.patient?.lastName}
-                              </h3>
-                              <p className="text-sm text-gray-600">
-                                {format(new Date(appointment.appointmentDate), "h:mm a")}
-                              </p>
-                            </div>
-                          </div>
-                          {getStatusBadge(appointment.status)}
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          {canJoinVideo(appointment) && (
-                            <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                              <Video className="h-4 w-4 mr-2" />
-                              Join Live
-                            </Button>
-                          )}
-                          
-                          {appointment.status === "paid" && (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleCompleteAppointment(appointment.id)}
-                              disabled={updateAppointmentStatusMutation.isPending}
-                            >
-                              <CheckCircle className="h-4 w-4 mr-2" />
-                              Complete
-                            </Button>
-                          )}
-                          
-                          <Button 
-                            size="sm" 
-                            variant="ghost"
-                            onClick={() => handleCancelAppointment(appointment.id)}
-                            disabled={updateAppointmentStatusMutation.isPending}
-                          >
-                            <X className="h-4 w-4 mr-2" />
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="flex-1">
+                    <p className="font-medium">Maria Garcia</p>
+                    <p className="text-sm text-gray-600">Follow-up Consultation</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Upcoming Appointments */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center">
-                    <Clock className="h-5 w-5 mr-2" />
-                    Upcoming Appointments
-                  </CardTitle>
-                  <Button variant="ghost" size="sm">View All</Button>
+                  <div className="text-sm font-medium">10:30 AM</div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                {appointmentsLoading ? (
-                  <div className="space-y-4">
-                    {[...Array(3)].map((_, i) => (
-                      <div key={i} className="animate-pulse">
-                        <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                      </div>
-                    ))}
+                
+                <div className="flex items-center p-3 bg-orange-50 rounded-lg">
+                  <div className="mr-3">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                   </div>
-                ) : upcomingAppointments.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">No upcoming appointments</p>
+                  <div className="flex-1">
+                    <p className="font-medium">David Lee</p>
+                    <p className="text-sm text-gray-600">General Consultation</p>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {upcomingAppointments.map((appointment: any) => (
-                      <div key={appointment.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-3">
-                            <Avatar className="w-8 h-8">
-                              <AvatarImage src={appointment.patient?.profileImageUrl} />
-                              <AvatarFallback className="text-xs">
-                                {appointment.patient?.firstName?.[0]}{appointment.patient?.lastName?.[0]}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <h3 className="font-medium text-gray-900">
-                                {appointment.patient?.firstName} {appointment.patient?.lastName}
-                              </h3>
-                              <p className="text-sm text-gray-600">
-                                {getAppointmentTimeLabel(new Date(appointment.appointmentDate))} at{" "}
-                                {format(new Date(appointment.appointmentDate), "h:mm a")}
-                              </p>
-                            </div>
-                          </div>
-                          {getStatusBadge(appointment.status)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                  <div className="text-sm font-medium">2:00 PM</div>
+                </div>
+              </div>
+              
+              <Button className="w-full mt-4" variant="outline">
+                View Full Schedule
+              </Button>
+            </CardContent>
+          </Card>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button 
-                  className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]"
-                  onClick={() => setShowCalendar(true)}
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  View Schedule
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>Manage your practice efficiently</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <Button className="h-20 flex flex-col items-center justify-center">
+                  <Calendar className="h-6 w-6 mb-2" />
+                  <span className="text-sm">Manage Schedule</span>
                 </Button>
                 
-                <Button variant="outline" className="w-full">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Availability
+                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
+                  <Users className="h-6 w-6 mb-2" />
+                  <span className="text-sm">Patient List</span>
                 </Button>
                 
-                <Button variant="outline" className="w-full">
-                  <Users className="h-4 w-4 mr-2" />
-                  Patient Records
+                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
+                  <Clock className="h-6 w-6 mb-2" />
+                  <span className="text-sm">Availability</span>
                 </Button>
                 
-                <Button variant="outline" className="w-full">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
+                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
+                  <TrendingUp className="h-6 w-6 mb-2" />
+                  <span className="text-sm">Analytics</span>
                 </Button>
-              </CardContent>
-            </Card>
-
-            {/* Statistics */}
-            <Card>
-              <CardHeader>
-                <CardTitle>This Week</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Total Appointments</span>
-                  <span className="font-medium">{appointments.length}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Completed</span>
-                  <span className="font-medium text-green-600">
-                    {appointments.filter((apt: any) => apt.status === "completed").length}
-                  </span>
-                </div>
-                <Separator />
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Average Rating</span>
-                  <span className="font-medium">{doctor?.rating || "5.0"} ⭐</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Online Status Info */}
-            <Card className={`${isOnline ? "border-green-200 bg-green-50" : "border-gray-200"}`}>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${isOnline ? "bg-green-500 animate-pulse" : "bg-gray-400"}`}></div>
-                  <div>
-                    <p className="font-medium text-sm">
-                      {isOnline ? "You're Online" : "You're Offline"}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      {isOnline 
-                        ? "Patients can see your available slots" 
-                        : "Toggle online to accept new bookings"
-                      }
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </main>
+      </div>
+      
+      <Footer />
     </div>
   );
 }

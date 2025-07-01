@@ -140,6 +140,12 @@ Changelog:
 - July 1, 2025: Enhanced DoctorProfile slot clicks to bypass auth for authenticated users (direct to checkout)
 - July 1, 2025: Created comprehensive Playwright test suite for auth redirect flows and booking journeys
 - July 1, 2025: Implemented split-flow design: /book → /register or /login → /checkout → /dashboard
+- July 1, 2025: Implemented role-based authentication system with separate login flows for patients, doctors, and admins
+- July 1, 2025: Added role-specific dashboard routes (/dashboard, /doctor/dashboard, /admin/dashboard) with proper access control
+- July 1, 2025: Updated Home page with role-specific login buttons (Register as Patient, Login as Patient/Doctor/Admin)
+- July 1, 2025: Enhanced Login page to show different content based on role parameter (patients can register, doctors/admins sign in only)
+- July 1, 2025: Implemented server-side role-based redirects in auth callback to route users to appropriate dashboards
+- July 1, 2025: Created comprehensive Playwright test suite for role-based authentication flows
 ```
 
 ## User Preferences

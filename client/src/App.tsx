@@ -31,6 +31,8 @@ function Router() {
       {isAuthenticated && (
         <>
           <Route path="/dashboard" component={Dashboard} />
+          <Route path="/doctor/dashboard" component={DoctorDashboard} />
+          <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route path="/doctor-dashboard" component={DoctorDashboard} />
           <Route path="/admin" component={AdminDashboard} />
         </>
