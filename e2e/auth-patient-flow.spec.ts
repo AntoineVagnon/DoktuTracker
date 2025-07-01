@@ -12,34 +12,27 @@ test.describe('Multi-step Patient Authentication Flow', () => {
     if (await timeSlots.count() > 0) {
       await timeSlots.first().click();
       
-      // Should be redirected to login with booking parameters
-      await expect(page).toHaveURL(/\/login\?redirect=.*\/book/);
+      // Should be redirected directly to register with booking parameters
+      await expect(page).toHaveURL(/\/register\?doctorId=.*&slot=.*&price=/);
       
-      // Verify the redirect URL contains proper booking parameters
+      // Verify the URL contains proper booking parameters
       const currentUrl = page.url();
-      const redirectParam = new URL(currentUrl).searchParams.get('redirect');
-      expect(redirectParam).toContain('doctorId=');
-      expect(redirectParam).toContain('slot=');
-      expect(redirectParam).toContain('price=');
+      const urlParams = new URL(currentUrl).searchParams;
+      expect(urlParams.get('doctorId')).toBeTruthy();
+      expect(urlParams.get('slot')).toBeTruthy();
+      expect(urlParams.get('price')).toBeTruthy();
     }
   });
 
   test('should navigate through simplified new patient registration', async ({ page }) => {
-    const bookingUrl = '/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00';
-    
-    // Step 1: Start with booking URL (should redirect to login)
-    await page.goto(bookingUrl);
-    await expect(page).toHaveURL(/\/login\?redirect=/);
-    
-    // Step 2: Click "Sign Up as New Patient"
-    await page.click('text=Sign Up as New Patient');
-    await expect(page).toHaveURL(/\/register\?redirect=/);
+    // Step 1: Go directly to register with booking parameters
+    await page.goto('/register?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00');
     
     // Verify the register page has the right content
     await expect(page.locator('h1')).toContainText('Create your account');
     await expect(page.locator('text=Quick registration')).toBeVisible();
     
-    // Step 3: Click "Create Account & Continue" should redirect to Replit Auth
+    // Step 2: Click "Create Account & Continue" should redirect to Replit Auth
     await page.click('text=Create Account & Continue');
     await expect(page).toHaveURL(/\/api\/login/);
   });

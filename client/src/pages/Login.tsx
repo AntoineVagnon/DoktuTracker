@@ -9,31 +9,22 @@ import Footer from "@/components/Footer";
 export default function Login() {
   const [location] = useLocation();
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
-  const redirectUrl = urlParams.get('redirect') || '/';
   const role = urlParams.get('role') || 'patient';
 
   const handleNewPatient = () => {
     // Only show for patient role
     if (role !== 'patient') return;
     
-    // If there's a redirect URL, pass it to register; otherwise register will go to dashboard
-    const registerUrl = redirectUrl && redirectUrl !== '/' ? `/register?redirect=${encodeURIComponent(redirectUrl)}` : '/register';
-    window.location.href = registerUrl;
+    // Go to register page without redirect parameters
+    window.location.href = '/register';
   };
 
   const handleLogin = () => {
-    if (role === 'patient') {
-      // For patients, go to the login form page
-      const loginFormUrl = redirectUrl && redirectUrl !== '/' ? `/login-form?redirect=${encodeURIComponent(redirectUrl)}` : '/login-form';
-      window.location.href = loginFormUrl;
-    } else {
-      // For doctors and admins, use the API login (OIDC)
-      sessionStorage.setItem('loginRole', role);
-      if (redirectUrl && redirectUrl !== '/') {
-        sessionStorage.setItem('loginRedirect', redirectUrl);
-      }
-      window.location.href = "/api/login";
-    }
+    // All roles use Replit Auth (OIDC)
+    sessionStorage.setItem('loginRole', role);
+    // After login, go to dashboard by default
+    sessionStorage.setItem('loginRedirect', '/dashboard');
+    window.location.href = "/api/login";
   };
 
   const getRoleTitle = () => {

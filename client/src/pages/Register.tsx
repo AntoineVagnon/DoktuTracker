@@ -8,24 +8,27 @@ import Footer from "@/components/Footer";
 export default function Register() {
   const [location] = useLocation();
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
-  const redirectParam = urlParams.get('redirect');
   
-  const redirectUrl = redirectParam 
-    ? decodeURIComponent(redirectParam) 
-    : '/dashboard';
+  // Extract booking parameters directly
+  const doctorId = urlParams.get('doctorId');
+  const slot = urlParams.get('slot');
+  const price = urlParams.get('price');
 
   const handleCreateAccount = () => {
-    // Store redirect URL and proceed with Replit Auth registration
-    if (redirectParam && redirectUrl !== '/dashboard') {
-      sessionStorage.setItem('loginRedirect', redirectUrl);
+    // If we have booking parameters, create checkout callback URL
+    if (doctorId && slot && price) {
+      const callbackUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
+      sessionStorage.setItem('loginRedirect', callbackUrl);
+    } else {
+      // No booking parameters, go to dashboard after auth
+      sessionStorage.setItem('loginRedirect', '/dashboard');
     }
     window.location.href = "/api/login";
   };
 
   const handleBackToLogin = () => {
-    // Go back to login page with redirect parameter
-    const loginUrl = redirectParam ? `/login?redirect=${encodeURIComponent(redirectParam)}` : '/login';
-    window.location.href = loginUrl;
+    // Go back to login page - no redirect parameters needed
+    window.location.href = '/login';
   };
 
   return (

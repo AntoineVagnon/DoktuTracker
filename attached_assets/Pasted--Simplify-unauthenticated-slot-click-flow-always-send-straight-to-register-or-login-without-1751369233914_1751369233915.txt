@@ -1,0 +1,38 @@
+❗️ Simplify unauthenticated slot-click flow: always send straight to `/register` or `/login` without any `?redirect=…`
+
+We need to remove the intermediate `?redirect=/book` step entirely. When an unauthenticated user clicks a time slot:
+
+1. **Slot click handler** (e.g. in `SlotButton.tsx` or `DoctorProfile.tsx`)  
+   - Replace any `router.push('/login?redirect=…')` or `router.push('/book?...')` logic with a direct branch:  
+     ```ts
+     const handleSlotClick = (slotTime) => {
+       if (user) {
+         // logged-in: go straight to checkout
+         router.push(`/checkout?doctorId=${doctor.id}&slot=${slotTime}&price=${price}`);
+       } else {
+         // not logged-in: send to register page
+         router.push(`/register?doctorId=${doctor.id}&slot=${slotTime}&price=${price}`);
+       }
+     };
+     ```
+   - **Remove** all uses of `?redirect=` in `/login` or `/register` controls for booking flows.
+
+2. **Login page** (`pages/login.tsx`)  
+   - Should no longer accept or process any `redirect` query param for booking.  
+   - If called directly (e.g. from header), stays on `/login` → after login push to `/dashboard`.  
+   - **Do not** use `/login?redirect=/book…` at all.
+
+3. **Register page** (`pages/register.tsx`)  
+   - Accepts `doctorId`, `slot`, and `price` in query params.  
+   - On “Create Account & Continue” (via `signIn('replit', { callbackUrl })`), pass those through to `/checkout` as:
+     ```ts
+     const callbackUrl = `/checkout?doctorId=${doctorId}&slot=${slot}&price=${price}`;
+     signIn('replit', { callbackUrl });
+     ```
+   - After Replit Auth, users land directly on the checkout URL and proceed to payment—no extra redirect step.
+
+4. **Cleanup**  
+   - Remove all code/tests that reference `/login?redirect=/book` or any `redirect` logic for booking flows.  
+   - Update Playwright/RTL tests accordingly.
+
+With this patch, clicking a slot while logged out immediately opens `/register?doctorId=…&slot=…&price=…`. There is no `?redirect=/book` intermediary, and checkout flows work transparently after auth.  
