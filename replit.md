@@ -155,6 +155,10 @@ Changelog:
 - July 1, 2025: Removed multi-step patient forms (LoginForm, RegisterForm) in favor of unified OIDC flow
 - July 1, 2025: Updated /register to store redirect URL and proceed with Replit Auth for all users
 - July 1, 2025: Cleaned up routes and tests to reflect simplified authentication architecture
+- July 1, 2025: Eliminated intermediate /book route - slot clicks now go directly to /register with booking parameters
+- July 1, 2025: Removed redirect parameter complexity - /register accepts doctorId, slot, price directly in URL
+- July 1, 2025: Streamlined flow: slot click → /register?doctorId=...&slot=...&price=... → Replit Auth → /checkout
+- July 1, 2025: Updated all Playwright tests to reflect simplified booking flow without intermediate redirects
 ```
 
 ## User Preferences

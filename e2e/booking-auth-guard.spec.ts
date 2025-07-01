@@ -1,19 +1,14 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('BookAppointment Authentication Guard', () => {
-  test('should redirect unauthenticated users to login with proper redirect URL', async ({ page }) => {
-    // Navigate directly to a booking URL as an unauthenticated user
-    const bookingUrl = '/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00';
+test.describe('Simplified Slot Click Flow', () => {
+  test('should redirect to 404 for old booking URLs', async ({ page }) => {
+    // The old booking URL should no longer work since we removed the route
+    const oldBookingUrl = '/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00';
     
-    await page.goto(bookingUrl);
+    await page.goto(oldBookingUrl);
     
-    // Should be redirected to login page with redirect parameter
-    await expect(page).toHaveURL(/\/login\?redirect=/);
-    
-    // Verify the redirect parameter contains the original booking URL
-    const currentUrl = page.url();
-    const redirectParam = new URL(currentUrl).searchParams.get('redirect');
-    expect(redirectParam).toBe(bookingUrl);
+    // Should show 404 since /book route is removed
+    await expect(page.locator('text=404')).toBeVisible();
   });
 
   test('should show error for malformed booking URLs with missing parameters', async ({ page }) => {
@@ -53,15 +48,15 @@ test.describe('BookAppointment Authentication Guard', () => {
       const firstSlot = timeSlots.first();
       await firstSlot.click();
       
-      // Should be redirected to login with a booking URL in the redirect parameter
-      await expect(page).toHaveURL(/\/login\?redirect=.*\/book/);
+      // Should be redirected directly to register with booking parameters
+      await expect(page).toHaveURL(/\/register\?doctorId=.*&slot=.*&price=/);
       
-      // Verify the redirect URL contains proper booking parameters
+      // Verify the URL contains proper booking parameters
       const currentUrl = page.url();
-      const redirectParam = new URL(currentUrl).searchParams.get('redirect');
-      expect(redirectParam).toContain('doctorId=');
-      expect(redirectParam).toContain('slot=');
-      expect(redirectParam).toContain('price=');
+      const urlParams = new URL(currentUrl).searchParams;
+      expect(urlParams.get('doctorId')).toBeTruthy();
+      expect(urlParams.get('slot')).toBeTruthy();
+      expect(urlParams.get('price')).toBeTruthy();
     } else {
       console.log('No time slots found on doctor profile page');
     }

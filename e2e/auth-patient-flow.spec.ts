@@ -37,43 +37,35 @@ test.describe('Multi-step Patient Authentication Flow', () => {
     await expect(page).toHaveURL(/\/api\/login/);
   });
 
-  test('should navigate through returning patient login flow', async ({ page }) => {
-    const bookingUrl = '/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00';
+  test('should handle returning patient login through /login page', async ({ page }) => {
+    // Navigate to login page directly
+    await page.goto('/login');
     
-    // Step 1: Start with booking URL (should redirect to login)
-    await page.goto(bookingUrl);
-    await expect(page).toHaveURL(/\/login\?redirect=/);
-    
-    // Step 2: Click "Sign In to Account" should redirect to Replit Auth
+    // Click "Sign In to Account" should redirect to Replit Auth
     await page.click('text=Sign In to Account');
     await expect(page).toHaveURL(/\/api\/login/);
   });
 
-  test('should preserve redirect parameters through simplified flow', async ({ page }) => {
+  test('should preserve booking parameters in register URL', async ({ page }) => {
     const doctorId = '8be00061-3f91-4236-a09a-525b035a7d00';
     const slot = '2024-07-02T14:30:00.000Z';
     const price = '35.00';
-    const bookingUrl = `/book?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
+    const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
     
-    // Start with booking URL
-    await page.goto(bookingUrl);
-    await expect(page).toHaveURL(/\/login\?redirect=/);
+    // Navigate to register with booking parameters
+    await page.goto(registerUrl);
     
-    // Navigate to register
-    await page.click('text=Sign Up as New Patient');
-    await expect(page).toHaveURL(/\/register\?redirect=/);
-    
-    // Check that redirect parameter is preserved
-    let currentUrl = page.url();
-    let redirectParam = decodeURIComponent(new URL(currentUrl).searchParams.get('redirect') || '');
-    expect(redirectParam).toContain(`doctorId=${doctorId}`);
-    expect(redirectParam).toContain(`slot=${encodeURIComponent(slot)}`);
-    expect(redirectParam).toContain(`price=${price}`);
+    // Check that booking parameters are preserved in URL
+    const currentUrl = page.url();
+    const urlParams = new URL(currentUrl).searchParams;
+    expect(urlParams.get('doctorId')).toBe(doctorId);
+    expect(urlParams.get('slot')).toBe(slot);
+    expect(urlParams.get('price')).toBe(price);
   });
 
   test('should have back navigation from register to login', async ({ page }) => {
     // Start at register page
-    await page.goto('/register?redirect=%2Fcheckout');
+    await page.goto('/register');
     
     // Click back button
     await page.click('[aria-label="Go back"]');
