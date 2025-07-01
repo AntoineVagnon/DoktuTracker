@@ -98,54 +98,20 @@ export default function Register() {
 
             <CardContent className="p-0">
               <div className="space-y-6">
-                {/* Signup Form */}
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Create a password"
-                    />
-                  </div>
-                </div>
-
                 <div className="space-y-4">
                   <Button
                     onClick={handleCreateAccount}
                     className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded-lg"
                   >
-                    Create Account & Continue to Payment
+                    Create Account & Continue
                   </Button>
                   
                   <div className="text-center">
                     <button
                       onClick={openAuthModal}
-                      className="text-blue-600 hover:underline text-sm"
+                      className="text-gray-600 hover:text-gray-900 text-sm border border-gray-300 hover:bg-gray-50 w-full py-3 rounded-lg"
                     >
-                      Already have an account? Sign in
+                      Already have an account? Sign in instead
                     </button>
                   </div>
                 </div>
