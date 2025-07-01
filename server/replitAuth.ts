@@ -241,17 +241,48 @@ export async function setupAuth(app: Express) {
             <html>
             <head>
               <title>Authentication Success</title>
+              <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; padding: 50px; }
+                .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }
+                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+              </style>
             </head>
             <body>
-              <script>
-                if (window.opener) {
-                  window.opener.location.href = '${redirectUrl}';
-                  window.close();
-                } else {
-                  window.location.href = '${redirectUrl}';
-                }
-              </script>
+              <div class="spinner"></div>
               <p>Authentication successful. Redirecting...</p>
+              <script>
+                console.log('Auth callback executing, redirect URL:', '${redirectUrl}');
+                
+                function redirect() {
+                  if (window.opener && !window.opener.closed) {
+                    console.log('Redirecting opener to:', '${redirectUrl}');
+                    
+                    // Try postMessage first
+                    try {
+                      window.opener.postMessage({
+                        type: 'AUTH_SUCCESS',
+                        redirectUrl: '${redirectUrl}'
+                      }, window.location.origin);
+                    } catch (e) {
+                      console.log('PostMessage failed, using direct redirect');
+                    }
+                    
+                    // Also do direct redirect as fallback
+                    window.opener.location.href = '${redirectUrl}';
+                    
+                    setTimeout(() => {
+                      window.close();
+                    }, 1000);
+                  } else {
+                    console.log('No opener found, redirecting current window');
+                    window.location.href = '${redirectUrl}';
+                  }
+                }
+                
+                // Try redirect immediately and also after a short delay
+                redirect();
+                setTimeout(redirect, 500);
+              </script>
             </body>
             </html>
           `;
