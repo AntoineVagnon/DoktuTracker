@@ -1,0 +1,70 @@
+````
+❗️ Fix booking‐summary on `register-form` so it reads & displays the URL params (doctorId, slot, price) instead of showing `null`
+
+1. **Open** `pages/register-form.tsx`.
+
+2. **Import** your date formatter (e.g. from `date-fns`):
+   ```ts
+   import { format } from 'date-fns';
+````
+
+3. **Read the query params** at the top of the component:
+
+   ```ts
+   const router = useRouter();
+   const { doctorId, slot, price } = router.query as {
+     doctorId?: string;
+     slot?: string;
+     price?: string;
+   };
+   ```
+
+   * Provide fallbacks if necessary:
+
+     ```ts
+     const slotDate = slot ? new Date(slot) : null;
+     const displayPrice = price ?? '0';
+     ```
+
+4. **Render the Booking Summary** using those values:
+
+   ```jsx
+   <div className="booking-summary border rounded-lg p-4 mb-6 max-w-sm">
+     <h2 className="text-lg font-medium mb-2">Booking Summary</h2>
+     <p className="flex justify-between">
+       <span>Date:</span>
+       <span>
+         {slotDate
+           ? format(slotDate, 'dd/MM/yyyy')
+           : '—'}
+       </span>
+     </p>
+     <p className="flex justify-between">
+       <span>Time:</span>
+       <span>
+         {slotDate
+           ? format(slotDate, 'HH:mm')
+           : '—'}
+       </span>
+     </p>
+     <p className="flex justify-between">
+       <span>Price:</span>
+       <span>€{displayPrice}</span>
+     </p>
+     <p className="mt-2 text-xs text-gray-500">
+       Your appointment will be confirmed after payment
+     </p>
+   </div>
+   ```
+
+5. **Remove** any hard-coded or placeholder values (`null`, blank) in the booking-summary markup.
+
+6. **Test** by clicking a slot as a guest:
+
+   * You should see `/register-form?doctorId=<id>&slot=2025-07-01T15:30:00Z&price=35.00`
+   * The summary card must display `01/07/2025`, `15:30`, and `€35.00`.
+
+With this patch, the booking summary on your `/register-form` page will correctly show the date, time and price from the query string instead of `null`.
+
+```
+```

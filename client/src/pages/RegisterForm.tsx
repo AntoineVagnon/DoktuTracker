@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useLocation, useRoute } from "wouter";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, Clock, Euro, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -29,25 +30,9 @@ export default function RegisterForm() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Format booking details for display
-  const formatSlotDateTime = (slotString: string) => {
-    if (!slotString) return { date: '', time: '' };
-    const date = new Date(slotString);
-    return {
-      date: date.toLocaleDateString('en-GB', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      }),
-      time: date.toLocaleTimeString('en-GB', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      })
-    };
-  };
-
-  const { date, time } = formatSlotDateTime(slot || '');
+  // Prepare booking data with fallbacks
+  const slotDate = slot ? new Date(slot) : null;
+  const displayPrice = price ?? '0';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -92,34 +77,32 @@ export default function RegisterForm() {
             
             {/* Booking Summary Panel */}
             <div className="order-2 lg:order-1">
-              <Card className="rounded-2xl shadow-lg p-6 sticky top-8">
-                <CardHeader className="p-0 mb-6">
-                  <CardTitle className="text-xl font-bold text-gray-900">
-                    Booking Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="space-y-4">
-                    <div className="flex items-center text-gray-600">
-                      <Calendar className="h-5 w-5 mr-3" />
-                      <span>{date}</span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <Clock className="h-5 w-5 mr-3" />
-                      <span>{time}</span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <Euro className="h-5 w-5 mr-3" />
-                      <span className="font-semibold">€{price}</span>
-                    </div>
-                    <div className="pt-4 border-t">
-                      <p className="text-sm text-gray-500">
-                        Your appointment will be confirmed after payment
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="booking-summary border rounded-lg p-4 mb-6 max-w-sm">
+                <h2 className="text-lg font-medium mb-2">Booking Summary</h2>
+                <p className="flex justify-between">
+                  <span>Date:</span>
+                  <span>
+                    {slotDate
+                      ? format(slotDate, 'dd/MM/yyyy')
+                      : '—'}
+                  </span>
+                </p>
+                <p className="flex justify-between">
+                  <span>Time:</span>
+                  <span>
+                    {slotDate
+                      ? format(slotDate, 'HH:mm')
+                      : '—'}
+                  </span>
+                </p>
+                <p className="flex justify-between">
+                  <span>Price:</span>
+                  <span>€{displayPrice}</span>
+                </p>
+                <p className="mt-2 text-xs text-gray-500">
+                  Your appointment will be confirmed after payment
+                </p>
+              </div>
             </div>
 
             {/* Registration Form */}
