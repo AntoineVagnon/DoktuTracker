@@ -22,12 +22,18 @@ export default function Login() {
   };
 
   const handleLogin = () => {
-    // Store role and redirect URL for post-auth routing
-    sessionStorage.setItem('loginRole', role);
-    if (redirectUrl && redirectUrl !== '/') {
-      sessionStorage.setItem('loginRedirect', redirectUrl);
+    if (role === 'patient') {
+      // For patients, go to the login form page
+      const loginFormUrl = redirectUrl && redirectUrl !== '/' ? `/login-form?redirect=${encodeURIComponent(redirectUrl)}` : '/login-form';
+      window.location.href = loginFormUrl;
+    } else {
+      // For doctors and admins, use the API login (OIDC)
+      sessionStorage.setItem('loginRole', role);
+      if (redirectUrl && redirectUrl !== '/') {
+        sessionStorage.setItem('loginRedirect', redirectUrl);
+      }
+      window.location.href = "/api/login";
     }
-    window.location.href = "/api/login";
   };
 
   const getRoleTitle = () => {

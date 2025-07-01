@@ -11,12 +11,9 @@ export default function Register() {
   const redirectUrl = urlParams.get('redirect') || '/';
 
   const handleRegister = () => {
-    // Store redirect URL and proceed with Replit Auth registration
-    // If no redirect or just '/', user will go to dashboard after registration
-    if (redirectUrl && redirectUrl !== '/') {
-      sessionStorage.setItem('loginRedirect', redirectUrl);
-    }
-    window.location.href = "/api/login";
+    // Route to the registration form (step 2)
+    const registerFormUrl = redirectUrl && redirectUrl !== '/' ? `/register-form?redirect=${encodeURIComponent(redirectUrl)}` : '/register-form';
+    window.location.href = registerFormUrl;
   };
 
   const handleBackToLogin = () => {
@@ -63,7 +60,7 @@ export default function Register() {
                     className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded-lg"
                     aria-label="Create new patient account with secure authentication"
                   >
-                    Create Account & Continue to Payment
+                    Create Account & Continue
                   </Button>
                   
                   <Button

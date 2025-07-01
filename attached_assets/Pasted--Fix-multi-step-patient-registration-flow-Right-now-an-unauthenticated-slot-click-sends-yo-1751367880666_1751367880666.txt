@@ -1,0 +1,64 @@
+````
+✅ Fix multi-step patient registration flow
+
+Right now an unauthenticated slot-click sends you to `/login?redirect=/book…`, and the “Sign Up as New Patient” button simply opens `/register`. We need `/register` to be **step 1** of a multi-step patient signup, not a dead end. Please update as follows:
+
+---
+
+### 1. `/login` (Patient Portal)
+
+- **URL**: `/login?redirect=<url>`  
+- **UI**: two cards—New Patient and Returning Patient—exactly as today.  
+- **New Patient button**:  
+  ```tsx
+  // from /login
+  router.push(`/register?redirect=${encodeURIComponent(redirectParam)}`)
+````
+
+* **Returning Patient**: push to `/login-form?redirect=…` (see below).
+
+### 2. `/login-form` page
+
+* **Create new page** `pages/login-form.tsx`.
+* **UI**: standard email+password form.
+* **Behavior**: after successful login, redirect to `redirect` param or `/dashboard`.
+
+### 3. `/register` page (step 1)
+
+* **Retain** the “Quick registration” info box and “Create Account & Continue” button layout.
+* **Change** that primary button so it navigates to a **new** `/register-form` route, carrying the same `redirect` query param:
+
+  ```tsx
+  router.push(`/register-form?redirect=${encodeURIComponent(redirect)}`)
+  ```
+
+### 4. `/register-form` page (step 2)
+
+* **Create new page** `pages/register-form.tsx`.
+* **UI**: full signup form collecting name, email, password (confirm).
+* **Behavior**:
+
+  1. On submit, POST to `/api/auth/register` with the form values.
+  2. On 201 success, automatically log in the user (set session).
+  3. Redirect to the original `redirect` param, which will be the `/checkout?doctorId=…&slot=…&price=…` URL if coming from booking, or empty → default `/dashboard`.
+
+### 5. Preserve booking flow
+
+* **Checkout** and **dashboard** logic stays exactly the same.
+* No other pages are affected.
+
+### 6. Tests
+
+* **Playwright e2e/auth-patient-flow\.spec.ts**:
+
+  1. As unauthenticated, click slot → `/login?redirect=/book?…`.
+  2. Click “Sign Up as New Patient” → lands on `/register?redirect=…`.
+  3. Click “Create Account & Continue” → `/register-form?redirect=…`.
+  4. Fill the form → submit → expect navigation to `/checkout?…`.
+  5. Simulate payment → expect `/dashboard`.
+  6. Repeat for returning patient: “Returning Patient” → `/login-form?redirect=…` → login → `/checkout?…`.
+
+With this change, `/register` becomes **step 1** (info + button), and `/register-form` is **step 2** (actual form). Users will never get stuck on a blank register page—they’ll always end up at the real signup form and then land back into checkout or their dashboard.
+
+```
+```
