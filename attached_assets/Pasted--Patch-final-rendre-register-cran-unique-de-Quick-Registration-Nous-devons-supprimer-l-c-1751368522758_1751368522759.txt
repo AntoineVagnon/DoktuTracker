@@ -1,0 +1,54 @@
+❗️ Patch final — rendre `/register` écran unique de Quick Registration
+
+Nous devons supprimer l’écran intermédiaire “Patient Portal” (choix Nouveau vs Existant) et faire de `/register` l’unique étape “Quick registration” :
+
+1. **Supprimer l’écran Patient Portal**  
+   - Retirer tout code ou route qui affiche la page de choix “New Patient / Returning Patient” avant `/register`.
+
+2. **Refondre `pages/register.tsx`**  
+   - Lire `const { redirect: redirectParam } = router.query;`  
+   - Calculer :  
+     ```ts
+     const redirectUrl = redirectParam
+       ? decodeURIComponent(redirectParam as string)
+       : '/dashboard';
+     ```
+   - Ne rendre que la carte Quick Registration :
+     ```jsx
+     <Link href="/login" className="back-link">← Back to login options</Link>
+     <h1>Create your account</h1>
+     <p className="subtitle">Join Doktu to book your first consultation</p>
+
+     <div className="info-box">
+       Quick registration: We'll create your secure account using Replit Auth. You'll be able to book appointments and access your medical history immediately.
+     </div>
+
+     <button
+       className="btn-primary w-full"
+       onClick={() =>
+         signIn('replit', { callbackUrl: redirectUrl })
+       }
+     >
+       Create Account & Continue
+     </button>
+
+     <button
+       className="btn-secondary w-full mt-2"
+       onClick={() =>
+         router.push(`/login?redirect=${encodeURIComponent(redirectParam as string)}`)
+       }
+     >
+       Already have an account? Sign in instead
+     </button>
+     ```
+   - **Ne plus** afficher de choix “New Patient / Returning Patient” sur `/register`.
+
+3. **Conserver `/login` inchangé**  
+   - `/login` reste votre écran Patient Portal (choix New vs Returning) pour les autres flux.
+
+4. **Tests Playwright**  
+   - Accéder à `/register?redirect=/checkout?...` → vérifier qu’on voit **uniquement** la carte Quick Registration.  
+   - Cliquer sur “Create Account & Continue” → `signIn('replit', { callbackUrl: '/checkout?...' })` est appelé.  
+   - Cliquer sur “Already have an account? Sign in instead” → URL `/login?redirect=/checkout?...`.
+
+Après ce patch, **`/register`** ne contiendra plus que la vaste carte de Quick Registration (étape 1), sans écran intermédiaire.  

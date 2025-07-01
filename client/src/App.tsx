@@ -11,9 +11,7 @@ import Dashboard from "@/pages/Dashboard";
 import DoctorProfile from "@/pages/DoctorProfile";
 import BookAppointment from "@/pages/BookAppointment";
 import Login from "@/pages/Login";
-import LoginForm from "@/pages/LoginForm";
 import Register from "@/pages/Register";
-import RegisterForm from "@/pages/RegisterForm";
 import Checkout from "@/pages/Checkout";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -25,9 +23,7 @@ function Router() {
     <Switch>
       <Route path="/" component={isLoading || !isAuthenticated ? Landing : Home} />
       <Route path="/login" component={Login} />
-      <Route path="/login-form" component={LoginForm} />
       <Route path="/register" component={Register} />
-      <Route path="/register-form" component={RegisterForm} />
       <Route path="/book" component={BookAppointment} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/doctor/:id" component={DoctorProfile} />

@@ -8,16 +8,24 @@ import Footer from "@/components/Footer";
 export default function Register() {
   const [location] = useLocation();
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
-  const redirectUrl = urlParams.get('redirect') || '/';
+  const redirectParam = urlParams.get('redirect');
+  
+  const redirectUrl = redirectParam 
+    ? decodeURIComponent(redirectParam) 
+    : '/dashboard';
 
-  const handleRegister = () => {
-    // Route to the registration form (step 2)
-    const registerFormUrl = redirectUrl && redirectUrl !== '/' ? `/register-form?redirect=${encodeURIComponent(redirectUrl)}` : '/register-form';
-    window.location.href = registerFormUrl;
+  const handleCreateAccount = () => {
+    // Store redirect URL and proceed with Replit Auth registration
+    if (redirectParam && redirectUrl !== '/dashboard') {
+      sessionStorage.setItem('loginRedirect', redirectUrl);
+    }
+    window.location.href = "/api/login";
   };
 
   const handleBackToLogin = () => {
-    window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
+    // Go back to login page with redirect parameter
+    const loginUrl = redirectParam ? `/login?redirect=${encodeURIComponent(redirectParam)}` : '/login';
+    window.location.href = loginUrl;
   };
 
   return (
@@ -56,7 +64,7 @@ export default function Register() {
 
                 <div className="space-y-4">
                   <Button
-                    onClick={handleRegister}
+                    onClick={handleCreateAccount}
                     className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded-lg"
                     aria-label="Create new patient account with secure authentication"
                   >
