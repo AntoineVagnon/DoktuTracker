@@ -12,8 +12,9 @@ export default function Login() {
   const redirectUrl = urlParams.get('redirect') || '/';
 
   const handleNewPatient = () => {
-    // Redirect to register page with redirect URL
-    window.location.href = `/register?redirect=${encodeURIComponent(redirectUrl)}`;
+    // Store redirect URL and go to Replit Auth
+    sessionStorage.setItem('loginRedirect', redirectUrl);
+    window.location.href = "/api/login";
   };
 
   const handleReturningPatient = () => {
