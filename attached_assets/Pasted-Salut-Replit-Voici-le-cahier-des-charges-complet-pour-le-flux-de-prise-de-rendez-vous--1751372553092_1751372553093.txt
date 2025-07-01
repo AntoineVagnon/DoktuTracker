@@ -1,0 +1,82 @@
+Salut Replit,
+
+Voici le cahier des charges complet pour le flux de prise de rendez-vous :
+
+---
+
+## 1. Sélection du créneau
+
+* Quand l’utilisateur non authentifié clique sur “Book Now” / un créneau, il doit être redirigé vers :
+
+  ```
+  /auth-choice?doctorId=<ID>&slot=<ISO_DATE>&price=<PRICE>
+  ```
+
+## 2. Page “Choix d’authentification” (`/auth-choice`)
+
+* Afficher **deux** blocs côte à côte (responsive) :
+
+  * **New Patient**
+
+    * Titre : “New Patient”
+    * Texte explicatif “First time using Doktu? …”
+    * Bouton bleu “Sign Up as New Patient”
+  * **Returning Patient**
+
+    * Titre : “Returning Patient”
+    * Texte “Already have a Doktu account? …”
+    * Bouton vert “Sign In to Account”
+* **En-tête** : pas de “Back to login options”
+* **Rappel du RDV** : un petit encadré résumé en haut ou à gauche contenant la date, l’heure et le prix (récupérés depuis les query-params)
+
+## 3. Nouveau patient → Formulaire d’inscription (`/register-form`)
+
+* URL conservée :
+
+  ```
+  /register-form?doctorId=<ID>&slot=<ISO_DATE>&price=<PRICE>
+  ```
+* Mise en page : deux colonnes
+
+  1. **Booking Summary** (gauche)
+
+     * Date (format DD/MM/YYYY)
+     * Heure (HH\:mm)
+     * Prix (€xx)
+     * Note “Your appointment will be confirmed after payment”
+  2. **Create Your Account** (droite)
+
+     * Titre simple “Create Your Account”
+     * Champs : Prénom, Nom, Email, Mot de passe (≥ 8 caractères)
+     * Bouton bleu “Create Account & Continue to Payment”
+     * Lien “Already have an account? Sign in” redirigeant vers `/login-book?doctorId=...&slot=...&price=...`
+* **À supprimer** :
+
+  * Le bloc “Quick registration: … using Replit Auth”
+  * Tout lien “Back to login options”
+
+## 4. Patient existant → Formulaire de login dédié (`/login-book`)
+
+* URL :
+
+  ```
+  /login-book?doctorId=<ID>&slot=<ISO_DATE>&price=<PRICE>
+  ```
+* Mise en page similaire à `/register-form` : résumé RDV + formulaire de login (Email + Password) + bouton vert “Sign In & Continue to Booking”
+* Pas de redirection `/login?redirect=`
+
+## 5. Après inscription ou login validé
+
+* Lancer le paiement (Stripe ou équivalent)
+* À confirmation du paiement, rediriger automatiquement vers **Patient Dashboard**
+
+## 6. Header global (toutes pages)
+
+* Les boutons “Sign In” et “Sign Up Free” doivent ouvrir une **modale centrée à l’écran** (pas de page externe)
+* La modale header n’est utilisée **que** pour un login/inscription hors-flux de booking (home, dashboard…)
+* Les pages `/auth-choice`, `/register-form`, `/login-book` sont **exclusives** au flux de réservation
+
+---
+
+Voilà, chaque étape doit fonctionner **uniquement** avec les query-params passés et sans hard-code de valeurs “null”.
+Merci de mettre en place ces modifications pour que le résumé de RDV s’affiche correctement et que le parcours booking soit fluide !
