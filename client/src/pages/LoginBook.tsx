@@ -48,12 +48,31 @@ export default function LoginBook() {
     setIsLoading(true);
 
     try {
-      // Direct redirect to Replit Auth with booking parameters
-      // The server will store these in session and redirect to /payment after auth
-      const authUrl = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
-      window.location.href = authUrl;
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Login failed');
+      }
+
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+
+      // Redirect to payment page with booking parameters
+      const paymentUrl = `/payment?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+      window.location.href = paymentUrl;
+
     } catch (error) {
-      console.error('Auth error:', error);
+      console.error('Login error:', error);
       toast({
         title: "Authentication Failed",
         description: error instanceof Error ? error.message : "Please check your credentials and try again.",

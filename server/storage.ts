@@ -27,6 +27,10 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   
+  // Custom auth operations for booking flow
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: Omit<UpsertUser, 'id'>): Promise<User>;
+  
   // Doctor operations
   getDoctors(): Promise<(Doctor & { user: User })[]>;
   getDoctor(id: string): Promise<(Doctor & { user: User }) | undefined>;
@@ -86,6 +90,22 @@ export class DatabaseStorage implements IStorage {
           ...userData,
           updatedAt: new Date(),
         },
+      })
+      .returning();
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(userData: Omit<UpsertUser, 'id'>): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...userData,
+        id: Math.random().toString(36).substr(2, 9), // Generate simple ID
       })
       .returning();
     return user;

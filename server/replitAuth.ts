@@ -13,6 +13,12 @@ declare module "express-session" {
   interface SessionData {
     bookingRedirect?: string;
     loginRedirect?: string;
+    user?: {
+      id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+    };
   }
 }
 

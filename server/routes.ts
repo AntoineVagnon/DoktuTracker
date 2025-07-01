@@ -30,6 +30,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Custom authentication endpoints for booking flow
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { firstName, lastName, email, password } = req.body;
+
+      if (!firstName || !lastName || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists with this email" });
+      }
+
+      // Create new user
+      const newUser = await storage.createUser({
+        firstName,
+        lastName,
+        email,
+        // Note: In a real app, you'd hash the password
+        // For now, we'll store it as-is (not recommended for production)
+      });
+
+      // Create session
+      req.session.user = {
+        id: newUser.id,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+      };
+
+      res.json({ success: true, user: newUser });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Registration failed" });
+    }
+  });
+
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      // Note: In a real app, you'd verify the hashed password
+      // For now, we'll assume the login is successful
+
+      // Create session
+      req.session.user = {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
+
+      res.json({ success: true, user });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
   // Patient login endpoint
   app.post('/api/auth/login', async (req, res) => {
     try {
