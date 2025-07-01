@@ -122,16 +122,16 @@ export async function setupAuth(app: Express) {
     
     if (doctorId && slot && price) {
       // Safely convert query params to strings
-      const doctorIdStr = typeof doctorId === 'string' ? doctorId : Array.isArray(doctorId) ? doctorId[0] : String(doctorId);
-      const slotStr = typeof slot === 'string' ? slot : Array.isArray(slot) ? slot[0] : String(slot);
-      const priceStr = typeof price === 'string' ? price : Array.isArray(price) ? price[0] : String(price);
+      const doctorIdStr = Array.isArray(doctorId) ? doctorId[0] : String(doctorId);
+      const slotStr = Array.isArray(slot) ? slot[0] : String(slot);
+      const priceStr = Array.isArray(price) ? price[0] : String(price);
       req.session!.bookingRedirect = `/payment?doctorId=${doctorIdStr}&slot=${encodeURIComponent(slotStr)}&price=${priceStr}`;
       console.log('Stored booking redirect:', req.session!.bookingRedirect);
     }
     
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
-      scope: ["openid", "email", "profile", "offline_access"],
+      scope: ["openid", "email", "profile", "offline_access"]
     })(req, res, next);
   });
 
@@ -193,7 +193,6 @@ export async function setupAuth(app: Express) {
     console.log('OAuth callback received with query:', req.query);
     console.log('Session data:', req.session);
     console.log('Request hostname:', req.hostname);
-    console.log('Available strategies:', passport._strategies);
     
     passport.authenticate(`replitauth:${req.hostname}`, async (err: any, user: any) => {
       if (err) {
