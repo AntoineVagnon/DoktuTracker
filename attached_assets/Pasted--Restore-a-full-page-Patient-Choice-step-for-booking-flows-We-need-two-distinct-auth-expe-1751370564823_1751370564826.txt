@@ -1,0 +1,94 @@
+````
+❗️ Restore a full‐page Patient Choice step for booking flows
+
+We need two distinct auth experiences:
+
+- **Header / Home** “Sign In” / “Sign Up Free” → opens the site‐wide modal (no booking context).
+- **Booking** slot clicks → full‐page “Patient Choice” step before login/register forms.
+
+Please implement the following:
+
+---
+
+## 1. Slot‐click handler
+
+In your slot button handler (e.g. `DoctorProfile.tsx`):
+
+```ts
+if (user) {
+  router.push(`/checkout?doctorId=${id}&slot=${slot}&price=${price}`);
+} else {
+  router.push(
+    `/auth-choice?doctorId=${id}&slot=${slot}&price=${price}`
+  );
+}
+````
+
+## 2. New **`pages/auth-choice.tsx`** (“Patient Choice”)
+
+* **URL**: `/auth-choice?doctorId=…&slot=…&price=…`
+* **UI**: two centered cards:
+
+  1. **New Patient**
+
+     * Title: “New Patient”
+     * Description: “First time using Doktu? Create your patient account to book your consultation.”
+     * Button: “Sign Up as New Patient” → navigate to `/register-form?doctorId=…&slot=…&price=…`
+  2. **Returning Patient**
+
+     * Title: “Returning Patient”
+     * Description: “Already have a Doktu account? Sign in to continue booking.”
+     * Button: “Sign In to Account” → navigate to `/login-form?doctorId=…&slot=…&price=…`
+
+Preserve `doctorId`, `slot`, and `price` in each query.
+
+## 3. Dedicated form pages
+
+### a) **`pages/register-form.tsx`**
+
+* Read `doctorId`, `slot`, `price` from `router.query`.
+* Show the **booking summary** panel (date, time, price).
+* Render the **full signup form** (name, email, password).
+* On submit:
+
+  1. POST to `/api/auth/register` with form + booking params.
+  2. On success, auto‐login and `router.push(`/checkout?doctorId=…\&slot=…\&price=…`)`.
+
+### b) **`pages/login-form.tsx`**
+
+* Read `doctorId`, `slot`, `price` from `router.query`.
+* Show the **booking summary** panel.
+* Render the **login form** (email, password).
+* On submit:
+
+  1. POST to `/api/auth/login` with credentials.
+  2. On success, `router.push(`/checkout?doctorId=…\&slot=…\&price=…`)`.
+
+## 4. Checkout & payment
+
+* **`/checkout`** remains unchanged: shows summary, processes Stripe modal/redirect, then on success → `/dashboard`.
+
+## 5. Header modal
+
+* Leave the existing header AuthModal untouched—only for site‐wide login/signup, always after construct.
+
+## 6. Remove old intermediates
+
+* Delete or disable the previous `/login` and `/register` choice screens if they’re now replaced.
+* Rename pages so that header links use the AuthModal and booking flows use the new routes above.
+
+## 7. E2E Tests
+
+Create `e2e/booking‐auth‐flow.spec.ts`:
+
+1. **Unauthenticated** → click slot → lands on `/auth‐choice?...`
+2. Click **Sign Up as New Patient** → `/register‐form?...` → fill form → `/checkout?...`
+3. Click **Sign In to Account** → `/login‐form?...` → login → `/checkout?...`
+4. Complete payment → lands `/dashboard`.
+
+---
+
+With these changes, clicking a slot as a guest shows a **full‐page choice** (new vs returning), then the correct form, then checkout, then dashboard. Header actions remain modal‐based.
+
+```
+```
