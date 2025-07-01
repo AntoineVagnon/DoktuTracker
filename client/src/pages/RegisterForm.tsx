@@ -45,14 +45,43 @@ export default function RegisterForm() {
     setIsLoading(true);
 
     try {
-      // Redirect to Replit Auth with booking parameters
-      // The server will store these in session and redirect to /payment after auth
-      const authUrl = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
-      window.location.href = authUrl;
+      // Open authentication in a popup window
+      const authUrl = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}&popup=1`;
+      
+      // Create popup window
+      const popup = window.open(
+        authUrl,
+        'replitAuth',
+        'width=500,height=600,scrollbars=yes,resizable=yes'
+      );
+
+      if (!popup) {
+        throw new Error('Popup blocked. Please allow popups for this site.');
+      }
+
+      // Listen for popup to close or redirect
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          // Check if user is now authenticated
+          window.location.reload();
+        }
+      }, 1000);
+
+      // Timeout after 5 minutes
+      setTimeout(() => {
+        clearInterval(checkClosed);
+        if (!popup.closed) {
+          popup.close();
+        }
+        setIsLoading(false);
+      }, 300000);
+
     } catch (error) {
+      console.error('Auth error:', error);
       toast({
-        title: "Registration Failed",
-        description: "Please try again or contact support.",
+        title: "Authentication Failed",
+        description: error instanceof Error ? error.message : "Please try again or contact support.",
         variant: "destructive",
       });
       setIsLoading(false);

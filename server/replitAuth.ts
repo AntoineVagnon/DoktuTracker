@@ -150,7 +150,24 @@ export async function setupAuth(app: Express) {
           if (bookingRedirect) {
             delete req.session.bookingRedirect;
             console.log('Redirecting to booking payment:', bookingRedirect);
-            return res.redirect(bookingRedirect);
+            
+            // Check if this is from a popup (based on referrer or query param)
+            const isPopup = req.headers.referer?.includes('replitAuth') || req.query.popup;
+            if (isPopup) {
+              // For popup, close popup and redirect parent window
+              return res.send(`
+                <script>
+                  if (window.opener) {
+                    window.opener.location.href = "${bookingRedirect}";
+                    window.close();
+                  } else {
+                    window.location.href = "${bookingRedirect}";
+                  }
+                </script>
+              `);
+            } else {
+              return res.redirect(bookingRedirect);
+            }
           }
           
           // Priority 2: Get user from database to check role
