@@ -11,7 +11,7 @@ export default function Register() {
   const redirectUrl = urlParams.get('redirect') || '/';
 
   const handleRegister = () => {
-    // Store redirect URL and proceed with Replit Auth registration
+    // Store redirect URL and proceed with registration
     // If no redirect or just '/', user will go to dashboard after registration
     if (redirectUrl && redirectUrl !== '/') {
       sessionStorage.setItem('loginRedirect', redirectUrl);

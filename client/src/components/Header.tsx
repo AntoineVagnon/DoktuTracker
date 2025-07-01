@@ -74,10 +74,10 @@ export default function Header() {
             {!isAuthenticated ? (
               <>
                 <Button variant="ghost" asChild>
-                  <a href="/api/login">Sign In</a>
+                  <Link href="/login">Sign In</Link>
                 </Button>
-                <Button className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-lg transition-all duration-200">
-                  <a href="/api/login">Sign Up Free</a>
+                <Button className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-lg transition-all duration-200" asChild>
+                  <Link href="/register">Sign Up Free</Link>
                 </Button>
               </>
             ) : (
@@ -135,10 +135,10 @@ export default function Header() {
                     ))}
                     <div className="pt-4 space-y-2">
                       <Button variant="ghost" className="w-full justify-start" asChild>
-                        <a href="/api/login">Sign In</a>
+                        <Link href="/login">Sign In</Link>
                       </Button>
-                      <Button className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
-                        <a href="/api/login">Sign Up Free</a>
+                      <Button className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]" asChild>
+                        <Link href="/register">Sign Up Free</Link>
                       </Button>
                     </div>
                   </nav>
