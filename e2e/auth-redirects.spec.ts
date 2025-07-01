@@ -68,7 +68,7 @@ test.describe('Auth Redirects Flow', () => {
     await expect(page).toHaveURL(/\/api\/login/);
     
     // Mock successful auth and redirect to checkout
-    await page.goto('/checkout?doctorId=1&slot=2024-07-01T09:00:00Z&price=35.00');
+    await page.goto('/checkout?doctorId=1&slot=2024-07-01T09:00:00Z&price=3.00');
     
     // Should be on checkout page
     await expect(page).toHaveURL(/\/checkout/);
@@ -127,11 +127,11 @@ test.describe('Auth Redirects Flow', () => {
 
   test('Checkout → Payment Success → Dashboard', async ({ page }) => {
     // Start at checkout page (user already authenticated)
-    await page.goto('/checkout?doctorId=1&slot=2024-07-01T09:00:00Z&price=35.00');
+    await page.goto('/checkout?doctorId=1&slot=2024-07-01T09:00:00Z&price=3.00');
     
     // Should show appointment summary
     await expect(page.getByText('Payment')).toBeVisible();
-    await expect(page.getByText('€35.00')).toBeVisible();
+    await expect(page.getByText('€3.00')).toBeVisible();
     
     // Click payment button
     await page.getByRole('button', { name: /Pay.*Book Appointment/i }).click();
@@ -188,7 +188,7 @@ test.describe('Auth Redirects Flow', () => {
   test('Authentication state persistence across navigation', async ({ page }) => {
     // Mock login by setting session storage
     await page.evaluate(() => {
-      sessionStorage.setItem('loginRedirect', '/checkout?doctorId=1&slot=test&price=35.00');
+      sessionStorage.setItem('loginRedirect', '/checkout?doctorId=1&slot=test&price=3.00');
     });
     
     // Navigate to home page

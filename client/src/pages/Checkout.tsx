@@ -29,7 +29,7 @@ export default function Checkout() {
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
-  const price = urlParams.get('price') || '35.00';
+  const price = urlParams.get('price') || '3.00';
 
   const { data: doctor, isLoading: doctorLoading } = useQuery<Doctor>({
     queryKey: ['/api/public/doctors', doctorId],

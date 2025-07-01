@@ -26,7 +26,7 @@ test.describe('Multi-step Patient Authentication Flow', () => {
 
   test('should navigate through simplified new patient registration', async ({ page }) => {
     // Step 1: Go directly to register with booking parameters
-    await page.goto('/register?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00');
+    await page.goto('/register?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=3.00');
     
     // Verify the register page has the right content
     await expect(page.locator('h1')).toContainText('Create your account');
@@ -49,7 +49,7 @@ test.describe('Multi-step Patient Authentication Flow', () => {
   test('should preserve booking parameters in register URL', async ({ page }) => {
     const doctorId = '8be00061-3f91-4236-a09a-525b035a7d00';
     const slot = '2024-07-02T14:30:00.000Z';
-    const price = '35.00';
+    const price = '3.00';
     const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
     
     // Navigate to register with booking parameters

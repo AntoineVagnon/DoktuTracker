@@ -159,7 +159,7 @@ export default function DoctorProfile() {
       slotTime = slot.id.replace(':00Z', 'Z'); // Remove extra :00 if present
     }
     
-    const price = doctor?.consultation_price || '35.00';
+    const price = doctor?.consultation_price || '3.00';
     
     if (isAuthenticated) {
       // User is already logged in, go directly to payment
@@ -403,7 +403,7 @@ export default function DoctorProfile() {
               <Card>
                 <CardHeader className="text-center">
                   <CardTitle className="text-2xl text-[hsl(207,100%,52%)]">
-                    €{doctor?.consultation_price || '35'}
+                    €{doctor?.consultation_price || '3'}
                   </CardTitle>
                   <p className="text-sm text-gray-600">30 min consultation</p>
                 </CardHeader>

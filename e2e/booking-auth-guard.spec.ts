@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Simplified Slot Click Flow', () => {
   test('should redirect to 404 for old booking URLs', async ({ page }) => {
     // The old booking URL should no longer work since we removed the route
-    const oldBookingUrl = '/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00';
+    const oldBookingUrl = '/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=3.00';
     
     await page.goto(oldBookingUrl);
     
@@ -25,7 +25,7 @@ test.describe('Simplified Slot Click Flow', () => {
   test('should show error for booking with non-existent doctor', async ({ page }) => {
     // This test would require authentication setup
     // For now, we'll just verify the redirect behavior
-    const bookingUrl = '/book?doctorId=non-existent-id&slot=2024-07-02T10:00:00.000Z&price=35.00';
+    const bookingUrl = '/book?doctorId=non-existent-id&slot=2024-07-02T10:00:00.000Z&price=3.00';
     
     await page.goto(bookingUrl);
     
@@ -65,7 +65,7 @@ test.describe('Simplified Slot Click Flow', () => {
   test('should preserve booking parameters through login redirect', async ({ page }) => {
     const doctorId = '8be00061-3f91-4236-a09a-525b035a7d00';
     const slot = '2024-07-02T14:30:00.000Z';
-    const price = '35.00';
+    const price = '3.00';
     const bookingUrl = `/book?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
     
     // Try to access booking page directly
@@ -85,7 +85,7 @@ test.describe('Simplified Slot Click Flow', () => {
 
   test('should show loading state while checking authentication', async ({ page }) => {
     // Navigate to booking page
-    await page.goto('/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00');
+    await page.goto('/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=3.00');
     
     // We should see either a loading spinner briefly or get redirected
     // Since auth check is fast, we mainly verify no error pages appear
@@ -98,7 +98,7 @@ test.describe('Simplified Slot Click Flow', () => {
   test('should handle edge cases with special characters in slot parameter', async ({ page }) => {
     const slotWithSpecialChars = '2024-07-02T10:00:00.000Z';
     const encodedSlot = encodeURIComponent(slotWithSpecialChars);
-    const bookingUrl = `/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=${encodedSlot}&price=35.00`;
+    const bookingUrl = `/book?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=${encodedSlot}&price=3.00`;
     
     await page.goto(bookingUrl);
     

@@ -49,7 +49,7 @@ test.describe('Booking Authentication Flow', () => {
 
   test('should navigate through returning patient login flow', async ({ page }) => {
     // Step 1: Navigate to auth-choice with booking parameters
-    await page.goto('/auth-choice?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00');
+    await page.goto('/auth-choice?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=3.00');
     
     // Step 2: Click "Sign In to Account"
     await page.click('text=Sign In to Account');
@@ -76,13 +76,13 @@ test.describe('Booking Authentication Flow', () => {
 
   test('should have back navigation between forms and auth-choice', async ({ page }) => {
     // Test register-form back navigation
-    await page.goto('/register-form?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00');
+    await page.goto('/register-form?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=3.00');
     
     await page.click('[aria-label*="Back"], text=Back to patient choice');
     await expect(page).toHaveURL(/\/auth-choice\?doctorId=.*&slot=.*&price=/);
     
     // Test login-form back navigation
-    await page.goto('/login-form?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00');
+    await page.goto('/login-form?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=3.00');
     
     await page.click('[aria-label*="Back"], text=Back to patient choice');
     await expect(page).toHaveURL(/\/auth-choice\?doctorId=.*&slot=.*&price=/);
@@ -91,7 +91,7 @@ test.describe('Booking Authentication Flow', () => {
   test('should preserve booking parameters through all steps', async ({ page }) => {
     const doctorId = '8be00061-3f91-4236-a09a-525b035a7d00';
     const slot = '2024-07-02T14:30:00.000Z';
-    const price = '35.00';
+    const price = '3.00';
     
     // Start at auth-choice
     await page.goto(`/auth-choice?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`);
@@ -119,23 +119,23 @@ test.describe('Booking Authentication Flow', () => {
   });
 
   test('should display correct booking summary information', async ({ page }) => {
-    await page.goto('/auth-choice?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T14:30:00.000Z&price=35.00');
+    await page.goto('/auth-choice?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T14:30:00.000Z&price=3.00');
     
     // Verify booking summary displays correctly formatted date/time
     await expect(page.locator('text=Tuesday, July 2, 2024')).toBeVisible();
     await expect(page.locator('text=14:30')).toBeVisible();
-    await expect(page.locator('text=€35.00')).toBeVisible();
+    await expect(page.locator('text=€3.00')).toBeVisible();
   });
 
   test('should handle cross-links between register and login forms', async ({ page }) => {
     // Start at register-form
-    await page.goto('/register-form?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00');
+    await page.goto('/register-form?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=3.00');
     
     // Look for "Already have an account?" link (not implemented in current form, but should be)
     // This would be a link at the bottom of the register form
     
     // Start at login-form
-    await page.goto('/login-form?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=35.00');
+    await page.goto('/login-form?doctorId=8be00061-3f91-4236-a09a-525b035a7d00&slot=2024-07-02T10:00:00.000Z&price=3.00');
     
     // Look for "Don't have an account? Sign up here" link
     await page.click('text=Sign up here');

@@ -165,6 +165,7 @@ Changelog:
 - July 1, 2025: Updated slot click handler to use auth-choice flow for unauthenticated users
 - July 1, 2025: Maintained header AuthModal for casual site authentication separate from booking flows
 - July 1, 2025: Created comprehensive e2e test suite for new booking authentication flow
+- July 1, 2025: Updated consultation pricing across platform from €35 to €3 (database seed, client display, server logic, tests)
 ```
 
 ## User Preferences
