@@ -146,9 +146,6 @@ Changelog:
 - July 1, 2025: Enhanced Login page to show different content based on role parameter (patients can register, doctors/admins sign in only)
 - July 1, 2025: Implemented server-side role-based redirects in auth callback to route users to appropriate dashboards
 - July 1, 2025: Created comprehensive Playwright test suite for role-based authentication flows
-- July 1, 2025: Updated Header component to route Sign In/Sign Up buttons to internal auth pages instead of triggering Replit Auth popup
-- July 1, 2025: Removed Replit Auth popup integration from Header in favor of internal login flow (/login, /register)
-- July 1, 2025: Created Playwright tests to verify Header auth links route internally and prevent external popup behavior
 ```
 
 ## User Preferences
