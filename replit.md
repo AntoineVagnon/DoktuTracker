@@ -165,11 +165,6 @@ Changelog:
 - July 1, 2025: Updated slot click handler to use auth-choice flow for unauthenticated users
 - July 1, 2025: Maintained header AuthModal for casual site authentication separate from booking flows
 - July 1, 2025: Created comprehensive e2e test suite for new booking authentication flow
-- July 1, 2025: Simplified booking flow - removed intermediate auth-choice step
-- July 1, 2025: Updated slot clicks to go directly to /register-form with booking parameters
-- July 1, 2025: Fixed booking summary to properly read URL parameters using date-fns formatting
-- July 1, 2025: Streamlined register-form to show only registration button and sign-in option
-- July 1, 2025: Removed auth-choice and login-form pages in favor of direct Replit Auth integration
 ```
 
 ## User Preferences

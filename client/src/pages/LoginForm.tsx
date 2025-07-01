@@ -10,8 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-export default function RegisterForm() {
-  // No need for navigate since we're using window.location for simplicity
+export default function LoginForm() {
   const [location] = useLocation();
   const { toast } = useToast();
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
@@ -23,8 +22,6 @@ export default function RegisterForm() {
 
   // Form state
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
     email: '',
     password: ''
   });
@@ -55,8 +52,8 @@ export default function RegisterForm() {
       window.location.href = "/api/login";
     } catch (error) {
       toast({
-        title: "Registration Failed",
-        description: "Please try again or contact support.",
+        title: "Login Failed",
+        description: "Please check your credentials and try again.",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -105,7 +102,7 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            {/* Registration Form */}
+            {/* Login Form */}
             <div className="order-1 lg:order-2">
               <Card className="rounded-2xl shadow-lg p-6">
                 <CardHeader className="p-0 mb-6">
@@ -118,42 +115,15 @@ export default function RegisterForm() {
                   </button>
                   
                   <CardTitle className="text-2xl font-bold text-gray-900">
-                    Create Your Account
+                    Sign In to Your Account
                   </CardTitle>
                   <p className="text-gray-600 mt-2">
-                    Join Doktu to book your consultation
+                    Welcome back to Doktu
                   </p>
                 </CardHeader>
 
                 <CardContent className="p-0">
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="firstName">First Name</Label>
-                        <Input
-                          id="firstName"
-                          name="firstName"
-                          type="text"
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                          className="mt-1"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="lastName">Last Name</Label>
-                        <Input
-                          id="lastName"
-                          name="lastName"
-                          type="text"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          className="mt-1"
-                          required
-                        />
-                      </div>
-                    </div>
-
                     <div>
                       <Label htmlFor="email">Email Address</Label>
                       <Input
@@ -177,11 +147,15 @@ export default function RegisterForm() {
                         onChange={handleInputChange}
                         className="mt-1"
                         required
-                        minLength={8}
                       />
-                      <p className="text-sm text-gray-500 mt-1">
-                        Must be at least 8 characters long
-                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm">
+                        <a href="#" className="text-blue-600 hover:underline">
+                          Forgot your password?
+                        </a>
+                      </div>
                     </div>
 
                     <Button
@@ -189,19 +163,19 @@ export default function RegisterForm() {
                       disabled={isLoading}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
                     >
-                      {isLoading ? "Creating Account..." : "Create Account & Continue"}
+                      {isLoading ? "Signing In..." : "Sign In & Continue"}
                     </Button>
 
                     <div className="text-center text-sm text-gray-500">
                       <p>
-                        By creating an account, you agree to our{" "}
-                        <a href="#" className="text-blue-600 hover:underline">
-                          Terms of Service
-                        </a>{" "}
-                        and{" "}
-                        <a href="#" className="text-blue-600 hover:underline">
-                          Privacy Policy
-                        </a>
+                        Don't have an account?{" "}
+                        <button
+                          type="button"
+                          onClick={() => window.location.href = `/register-form?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`}
+                          className="text-blue-600 hover:underline"
+                        >
+                          Sign up here
+                        </button>
                       </p>
                     </div>
                   </form>
