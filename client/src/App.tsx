@@ -11,6 +11,9 @@ import Dashboard from "@/pages/Dashboard";
 import DoctorProfile from "@/pages/DoctorProfile";
 
 import Register from "@/pages/Register";
+import AuthChoice from "@/pages/AuthChoice";
+import RegisterForm from "@/pages/RegisterForm";
+import LoginForm from "@/pages/LoginForm";
 import Checkout from "@/pages/Checkout";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -22,6 +25,9 @@ function Router() {
     <Switch>
       <Route path="/" component={isLoading || !isAuthenticated ? Landing : Home} />
       <Route path="/register" component={Register} />
+      <Route path="/auth-choice" component={AuthChoice} />
+      <Route path="/register-form" component={RegisterForm} />
+      <Route path="/login-form" component={LoginForm} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       

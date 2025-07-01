@@ -35,11 +35,11 @@ export default function AuthChoice() {
   const { date, time } = formatSlotDateTime(slot || '');
 
   const handleNewPatient = () => {
-    navigate(`/register-form?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`);
+    window.location.href = `/register-form?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
   };
 
   const handleReturningPatient = () => {
-    navigate(`/login-form?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`);
+    window.location.href = `/login-form?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
   };
 
   return (
