@@ -1,0 +1,131 @@
+Il faut s’assurer que **toutes** les routes du flow conservent et transmettent les mêmes query-params (`doctorId`, `slot`, `price`) :
+
+---
+
+### 1. AuthChoice (`/auth-choice`)
+
+Au clic sur **Sign Up as New Patient** ou **Sign In to Account**, vos liens doivent inclure *exactement* ces paramètres :
+
+```tsx
+// AuthChoice.tsx
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+
+export function AuthChoice() {
+  const { doctorId, slot, price } = useRouter().query
+
+  return (
+    <div className="auth-choice">
+      {/* New Patient */}
+      <Link
+        href={{
+          pathname: '/register-form',
+          query: { doctorId, slot, price }
+        }}
+      >
+        <a className="btn btn-primary">Sign Up as New Patient</a>
+      </Link>
+
+      {/* Returning Patient */}
+      <Link
+        href={{
+          pathname: '/login-book',
+          query: { doctorId, slot, price }
+        }}
+      >
+        <a className="btn btn-success">Sign In to Account</a>
+      </Link>
+    </div>
+  )
+}
+```
+
+---
+
+### 2. Register Form (`/register-form`)
+
+Dans votre page `pages/register-form.tsx` :
+
+```tsx
+import { useRouter } from 'next/router'
+
+export default function RegisterFormPage() {
+  const router = useRouter()
+  const { doctorId, slot, price } = router.query as {
+    doctorId?: string
+    slot?: string
+    price?: string
+  }
+
+  // Si l’un des trois est manquant, rediriger ou afficher une erreur
+  if (!doctorId || !slot || !price) {
+    return <InvalidBookingRequest />
+  }
+
+  return (
+    <div className="register-flow">
+      {/* Colonne de gauche : Booking Summary */}
+      <BookingSummary
+        date={new Date(slot).toLocaleDateString()}
+        time={new Date(slot).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+        price={price}
+      />
+
+      {/* Colonne de droite : Formulaire d’inscription */}
+      <RegisterForm
+        onSubmit={() => {
+          // Après création de compte, lancer paiement et rediriger vers dashboard
+        }}
+      />
+    </div>
+  )
+}
+```
+
+---
+
+### 3. Login in Booking Flow (`/login-book`)
+
+Même principe pour `pages/login-book.tsx` :
+
+```tsx
+import { useRouter } from 'next/router'
+
+export default function LoginBookPage() {
+  const { doctorId, slot, price } = useRouter().query as {
+    doctorId?: string
+    slot?: string
+    price?: string
+  }
+
+  if (!doctorId || !slot || !price) return <InvalidBookingRequest />
+
+  return (
+    <div className="login-flow">
+      <BookingSummary /* identique */ />
+      <LoginForm
+        onSubmit={() => {
+          // Après login, lancer paiement et rediriger
+        }}
+      />
+    </div>
+  )
+}
+```
+
+---
+
+### 4. Résumé de ce qu’il faut dire à Replit
+
+> \*\*“Les boutons ‘Sign Up as New Patient’ et ‘Sign In to Account’
+> doivent impérativement transmettre les query‐params `doctorId`, `slot` et `price`
+> vers `/register-form` et `/login-book`.
+> Dans les pages `register-form` et `login-book`, récupérer ces valeurs via `router.query`
+> et les afficher dans le bloc ‘Booking Summary’.
+> Si l’un des paramètres est manquant, afficher une erreur `InvalidBookingRequest`.
+> Ne plus utiliser de liens `redirect=`, et ne plus laisser d’étapes intermédiaires :
+>
+> 1. sélection du créneau →
+> 2. choix New/Returning Patient →
+>    3a) formulaire d’inscription + summary → paiement → dashboard
+>    3b) formulaire de login + summary → paiement → dashboard”\*\*

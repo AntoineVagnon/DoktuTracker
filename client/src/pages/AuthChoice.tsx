@@ -8,12 +8,24 @@ import Footer from "@/components/Footer";
 
 export default function AuthChoice() {
   const [location] = useLocation();
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  
+  // Debug the URL parsing
+  console.log('AuthChoice - Full location:', location);
+  const queryString = location.split('?')[1] || '';
+  console.log('AuthChoice - Query string:', queryString);
+  
+  const urlParams = new URLSearchParams(queryString);
   
   // Extract booking parameters
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
+  
+  console.log('AuthChoice - Individual params:', {
+    doctorId: urlParams.get('doctorId'),
+    slot: urlParams.get('slot'), 
+    price: urlParams.get('price')
+  });
 
   const handleNewPatient = () => {
     console.log('AuthChoice - Parameters:', { doctorId, slot, price });
