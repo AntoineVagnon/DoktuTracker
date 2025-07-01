@@ -192,6 +192,8 @@ export async function setupAuth(app: Express) {
   app.get("/api/callback", (req, res, next) => {
     console.log('OAuth callback received with query:', req.query);
     console.log('Session data:', req.session);
+    console.log('Request hostname:', req.hostname);
+    console.log('Available strategies:', passport._strategies);
     
     passport.authenticate(`replitauth:${req.hostname}`, async (err: any, user: any) => {
       if (err) {
