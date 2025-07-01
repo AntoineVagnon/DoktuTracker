@@ -27,9 +27,9 @@ export default function LoginBook() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Prepare booking data with fallbacks
-  const slotDate = slot ? new Date(slot) : null;
-  const displayPrice = price ?? '0';
+  // Prepare booking data with fallbacks - handle null/undefined gracefully
+  const slotDate = slot && slot !== 'null' && slot !== 'undefined' ? new Date(slot) : null;
+  const displayPrice = price && price !== 'null' && price !== 'undefined' ? price : '0';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

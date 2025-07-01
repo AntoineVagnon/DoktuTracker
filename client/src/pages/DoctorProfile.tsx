@@ -151,7 +151,14 @@ export default function DoctorProfile() {
 
 
   const handleSlotClick = (slot: TimeSlot) => {
-    const slotTime = `${slot.date}T${slot.startTime}:00Z`;
+    // Fix the slot time format - handle both formats from the API
+    let slotTime = `${slot.date}T${slot.startTime}:00Z`;
+    
+    // If slot.id contains a full timestamp (from the API), use that instead
+    if (slot.id && slot.id.includes('T')) {
+      slotTime = slot.id.replace(':00Z', 'Z'); // Remove extra :00 if present
+    }
+    
     const price = doctor?.consultation_price || '35.00';
     
     if (isAuthenticated) {
@@ -406,13 +413,17 @@ export default function DoctorProfile() {
               {doctor?.availability && doctor.availability.length > 0 ? (
                 <AvailabilityCalendar 
                   doctorId={id!} 
-                  availableSlots={doctor.availability.map((timestamp: string) => ({
-                    id: timestamp,
-                    date: timestamp.split('T')[0],
-                    startTime: timestamp.split('T')[1].split(':').slice(0, 2).join(':'),
-                    endTime: '', // Will be calculated in the component
-                    isAvailable: true
-                  }))}
+                  availableSlots={doctor.availability.map((timestamp: string) => {
+                    // Fix the timestamp format from API (remove extra :00)
+                    const cleanTimestamp = timestamp.replace(':00Z', 'Z');
+                    return {
+                      id: cleanTimestamp,
+                      date: cleanTimestamp.split('T')[0],
+                      startTime: cleanTimestamp.split('T')[1].split(':').slice(0, 2).join(':'),
+                      endTime: '', // Will be calculated in the component
+                      isAvailable: true
+                    };
+                  })}
                   onSlotSelect={handleSlotClick}
                 />
               ) : (
