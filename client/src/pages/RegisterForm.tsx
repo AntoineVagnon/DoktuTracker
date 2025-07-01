@@ -109,14 +109,6 @@ export default function RegisterForm() {
             <div className="order-1 lg:order-2">
               <Card className="rounded-2xl shadow-lg p-6">
                 <CardHeader className="p-0 mb-6">
-                  <button 
-                    onClick={handleBack}
-                    className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to patient choice
-                  </button>
-                  
                   <CardTitle className="text-2xl font-bold text-gray-900">
                     Create Your Account
                   </CardTitle>
@@ -126,71 +118,23 @@ export default function RegisterForm() {
                 </CardHeader>
 
                 <CardContent className="p-0">
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="firstName">First Name</Label>
-                        <Input
-                          id="firstName"
-                          name="firstName"
-                          type="text"
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                          className="mt-1"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="lastName">Last Name</Label>
-                        <Input
-                          id="lastName"
-                          name="lastName"
-                          type="text"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          className="mt-1"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        className="mt-1"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        className="mt-1"
-                        required
-                        minLength={8}
-                      />
-                      <p className="text-sm text-gray-500 mt-1">
-                        Must be at least 8 characters long
-                      </p>
-                    </div>
-
+                  <div className="space-y-6">
                     <Button
-                      type="submit"
+                      onClick={handleSubmit}
                       disabled={isLoading}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
                     >
                       {isLoading ? "Creating Account..." : "Create Account & Continue"}
                     </Button>
+
+                    <div className="text-center">
+                      <button
+                        onClick={() => window.location.href = '/api/login'}
+                        className="text-gray-600 hover:text-gray-900 text-sm border border-gray-300 hover:bg-gray-50 w-full py-3 rounded-lg"
+                      >
+                        Already have an account? Sign in instead
+                      </button>
+                    </div>
 
                     <div className="text-center text-sm text-gray-500">
                       <p>
@@ -204,7 +148,7 @@ export default function RegisterForm() {
                         </a>
                       </p>
                     </div>
-                  </form>
+                  </div>
                 </CardContent>
               </Card>
             </div>

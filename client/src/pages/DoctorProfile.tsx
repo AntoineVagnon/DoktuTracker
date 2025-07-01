@@ -159,9 +159,9 @@ export default function DoctorProfile() {
       const checkoutUrl = `/checkout?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
       window.location.href = checkoutUrl;
     } else {
-      // User not logged in, go to auth choice page
-      const authChoiceUrl = `/auth-choice?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
-      window.location.href = authChoiceUrl;
+      // User not logged in, go directly to register form
+      const registerUrl = `/register-form?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
+      window.location.href = registerUrl;
     }
   };
 

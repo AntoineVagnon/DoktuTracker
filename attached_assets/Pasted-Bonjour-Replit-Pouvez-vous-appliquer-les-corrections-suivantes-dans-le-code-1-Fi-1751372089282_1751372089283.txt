@@ -1,0 +1,63 @@
+Bonjour Replit,
+
+Pouvez-vous appliquer les corrections suivantes dans le code ?
+
+---
+
+## 1. Fix du **booking summary** sur la page de formulaire d’inscription (`pages/register-form.tsx`)
+
+* Lire les paramètres d’URL `doctorId`, `slot`, `price` via `useRouter()` au début du composant.
+* Convertir `slot` en `Date` et formater avec `date-fns` :
+
+  ```ts
+  const router = useRouter();
+  const { doctorId, slot, price } = router.query as { doctorId?: string; slot?: string; price?: string };
+  const slotDate = slot ? new Date(slot) : null;
+  const displayPrice = price ?? '0';
+  ```
+* Remplacer tous les `null` ou placeholders dans la summary par :
+
+  ```jsx
+  <div className="booking-summary …">
+    <h2>Booking Summary</h2>
+    <p>Date: { slotDate ? format(slotDate, 'dd/MM/yyyy') : '—' }</p>
+    <p>Time: { slotDate ? format(slotDate, 'HH:mm') : '—' }</p>
+    <p>Price: €{displayPrice}</p>
+    <small>Your appointment will be confirmed after payment</small>
+  </div>
+  ```
+
+---
+
+## 2. Simplification des flux d’authentification pour le **booking**
+
+* Supprimer complètement l’étape intermédiaire “Patient Portal” (`/auth-choice`).
+* Quand un non-authentifié clique sur “Book Now” ou choisit un créneau, rediriger **directement** vers `/register-form?doctorId=…&slot=…&price=…` ou `/login?redirect=/book?doctorId=…&slot=…&price=…`.
+* Sur `/register-form`, afficher **uniquement** le formulaire d’inscription + booking summary, sans bloc “Quick registration” ni lien “Back to login options”.
+* Après inscription, lancer le paiement et rediriger vers le **patient dashboard** avec le rendez-vous confirmé.
+* Même logique pour `/login`: afficher le modal login (depuis le header), pas une page dédiée “Patient Portal”.
+
+---
+
+## 3. Modal login/signup sur la **Home**
+
+* Ne plus utiliser la pop-in Replit intégrée en iframe.
+* Ouvrir un **modal** React centré à l’endroit où l’utilisateur est (y compris après scroll).
+* Le modal doit contenir les deux onglets “Sign In” / “Sign Up Free” avec leurs formulaires respectifs, **sans** charger `cdn.segment.com` ni `gtag.js`.
+
+---
+
+## 4. Désactivation des scripts Analytics bloqués
+
+* Supprimer les imports ou `<Script>` de `https://cdn.segment.com/...` et de `www.googletagmanager.com/gtag/js`.
+
+---
+
+Merci d’implémenter ces changements pour garantir que :
+
+1. Le résumé de rendez-vous affiche bien la date, l’heure et le prix.
+2. L’utilisateur non connecté passe directement à l’inscription ou au login **dans le flow de réservation**.
+3. Le modal d’authentification est réactif et centré à tout moment.
+4. Les erreurs `ERR_BLOCKED_BY_CLIENT` liées à Segment/Google Analytics ont disparu.
+
+N’hésitez pas si vous avez besoin de précisions !
