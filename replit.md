@@ -159,6 +159,12 @@ Changelog:
 - July 1, 2025: Removed redirect parameter complexity - /register accepts doctorId, slot, price directly in URL
 - July 1, 2025: Streamlined flow: slot click → /register?doctorId=...&slot=...&price=... → Replit Auth → /checkout
 - July 1, 2025: Updated all Playwright tests to reflect simplified booking flow without intermediate redirects
+- July 1, 2025: Implemented full-page Patient Choice step with dual authentication approach
+- July 1, 2025: Created /auth-choice page for booking flows (New Patient vs Returning Patient)
+- July 1, 2025: Added dedicated /register-form and /login-form pages with booking summary panels
+- July 1, 2025: Updated slot click handler to use auth-choice flow for unauthenticated users
+- July 1, 2025: Maintained header AuthModal for casual site authentication separate from booking flows
+- July 1, 2025: Created comprehensive e2e test suite for new booking authentication flow
 ```
 
 ## User Preferences
