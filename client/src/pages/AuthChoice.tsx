@@ -16,7 +16,10 @@ export default function AuthChoice() {
   const price = urlParams.get('price');
 
   const handleNewPatient = () => {
-    window.location.href = `/register-form?doctorId=${doctorId || ''}&slot=${encodeURIComponent(slot || '')}&price=${price || ''}`;
+    console.log('AuthChoice - Parameters:', { doctorId, slot, price });
+    const registerUrl = `/register-form?doctorId=${doctorId || ''}&slot=${encodeURIComponent(slot || '')}&price=${price || ''}`;
+    console.log('AuthChoice - Redirecting to:', registerUrl);
+    window.location.href = registerUrl;
   };
 
   const handleReturningPatient = () => {

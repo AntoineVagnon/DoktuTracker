@@ -20,6 +20,9 @@ export default function RegisterForm() {
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
+  
+  console.log('RegisterForm - URL:', location);
+  console.log('RegisterForm - Parameters received:', { doctorId, slot, price });
 
   // Form state
   const [formData, setFormData] = useState({
