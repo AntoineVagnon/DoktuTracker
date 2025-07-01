@@ -8,6 +8,14 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
+// Extend session data interface
+declare module "express-session" {
+  interface SessionData {
+    bookingRedirect?: string;
+    loginRedirect?: string;
+  }
+}
+
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
 }
@@ -102,6 +110,15 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
+    // Store booking parameters for post-auth redirect
+    const { doctorId, slot, price } = req.query;
+    if (doctorId && slot && price) {
+      const doctorIdStr = Array.isArray(doctorId) ? doctorId[0] : String(doctorId);
+      const slotStr = Array.isArray(slot) ? slot[0] : String(slot);
+      const priceStr = Array.isArray(price) ? price[0] : String(price);
+      req.session!.bookingRedirect = `/payment?doctorId=${doctorIdStr}&slot=${encodeURIComponent(slotStr)}&price=${priceStr}`;
+    }
+    
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
@@ -123,7 +140,14 @@ export async function setupAuth(app: Express) {
         }
         
         try {
-          // Get user from database to check role
+          // Priority 1: Check for booking flow redirect
+          const bookingRedirect = req.session?.bookingRedirect;
+          if (bookingRedirect) {
+            delete req.session.bookingRedirect;
+            return res.redirect(bookingRedirect);
+          }
+          
+          // Priority 2: Get user from database to check role
           const dbUser = await storage.getUser(user.claims.sub);
           
           if (dbUser) {
@@ -135,7 +159,7 @@ export async function setupAuth(app: Express) {
             }
           }
           
-          // For patients or fallback, check for stored redirect
+          // Priority 3: Check for other stored redirects
           const storedRedirect = req.session?.loginRedirect;
           if (storedRedirect) {
             delete req.session.loginRedirect;

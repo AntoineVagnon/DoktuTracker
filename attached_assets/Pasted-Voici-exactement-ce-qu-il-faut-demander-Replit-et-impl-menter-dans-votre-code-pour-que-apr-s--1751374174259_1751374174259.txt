@@ -1,0 +1,53 @@
+Voici exactement ce qu’il faut demander à Replit (et implémenter dans votre code) pour que, **après l’authentification**, on revienne directement à la page de paiement et non à l’écran “Open in incognito” :
+
+---
+
+**Prompt à donner à l’agent Replit / à inclure dans votre ticket :**
+
+> **Objectif**
+> Quand un utilisateur termine le “Replit Auth” (flow signup **ou** login) issu du booking flow, on ne veut **pas** qu’il soit redirigé vers la page externe “Open in incognito…”.
+>
+> **Comportement attendu**
+>
+> 1. L’utilisateur clique sur un créneau → `/auth-choice?doctorId=…&slot=…&price=…`
+> 2. Choix “New Patient” → popup Replit Auth (ou redirection “embed”)
+> 3. **À la fin du flow Replit Auth** (callback), la popup se ferme **et** la fenêtre principale est directement redirigée vers :
+>
+> ```
+> /payment?doctorId=<same>&slot=<same>&price=<same>
+> ```
+>
+> **Détail technique**
+>
+> * Dans l’appel `replit.auth.login()` (ou `auth.signUp()`), préciser le `redirectUri` **pointant vers notre `/payment`**, en y joignant les mêmes query-params (`doctorId`, `slot`, `price`).
+> * Exemple (pseudo-code) :
+>
+>   ```ts
+>   import { auth } from '@replit/auth';
+>   const { doctorId, slot, price } = router.query;
+>
+>   async function handleSignup() {
+>     await auth.signUp({
+>       redirectUri: `${window.location.origin}/payment?doctorId=${doctorId}&slot=${slot}&price=${price}`
+>     });
+>   }
+>   ```
+> * Pareil pour `auth.login()` dans le flow “Returning Patient”.
+> * L’URL `/login?redirect=…` ne doit plus exister ; on appelle directement `auth.login({ redirectUri: … })`.
+>
+> **Résultat**
+> – Popup Replit Auth intégrée (pas de suggestion “Open in incognito”).
+> – Fermeture automatique de la popup
+> – Redirection immédiate vers notre page de paiement (`/payment?…`)
+> – Puis, après paiement réussi, on redirige vers le dashboard patient.
+
+---
+
+En résumé, il faut **souligner** dans votre message à Replit :
+
+1. **Supprimer** la redirection par défaut vers `preview.replit.com` “Open in incognito…”
+2. **Configurer** `redirectUri` de Replit Auth sur votre route `/payment` avec les bons query-params
+3. **Fermer** la popup et **rediriger** automatiquement la fenêtre parente vers `/payment`
+4. **Poursuivre** ensuite le flow (paiement → dashboard)
+
+Avec ces modifications, l’utilisateur **ne verra plus** l’écran externe, et l’UX du booking flow sera fluide jusqu’au paiement.
