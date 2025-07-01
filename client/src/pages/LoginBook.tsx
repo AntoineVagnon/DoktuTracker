@@ -48,10 +48,10 @@ export default function LoginBook() {
     setIsLoading(true);
 
     try {
-      // Login logic here - for now redirect to auth
-      const redirectUrl = `/checkout?doctorId=${doctorId}&slot=${slot}&price=${price}`;
-      sessionStorage.setItem('booking_redirect', redirectUrl);
-      window.location.href = '/api/login';
+      // Redirect to Replit Auth with booking parameters
+      // The server will store these in session and redirect to /payment after auth
+      const authUrl = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+      window.location.href = authUrl;
     } catch (error) {
       toast({
         title: "Login Failed",
