@@ -1,0 +1,42 @@
+We need to stop unauthenticated users from landing on the “Invalid Booking Request” page when they click a slot. Instead, they should be redirected into our login/register flow with a proper redirect back to checkout. 
+
+1. **Client‐side auth guard in `pages/book.tsx`**  
+   - At the top of the component, import your user hook and router:  
+     ```ts
+     import { useRouter } from 'next/router';
+     import { useUser } from '@/lib/auth';  // or wherever user state lives
+     ```
+   - In the body before rendering anything, add:  
+     ```ts
+     const router = useRouter();
+     const { user, isLoading: authLoading } = useUser();
+     // Wait for auth to finish loading
+     if (authLoading) return null;  
+     // If not logged in, redirect to login flow
+     if (!user) {
+       const redirect = encodeURIComponent(router.asPath);
+       router.push(`/login?redirect=${redirect}`);
+       return null;
+     }
+     ```
+   - Only after that guard do you parse and validate `doctorId`, `slot`, and `price` from `router.query`.
+
+2. **Query‐param validation**  
+   - After the auth guard, verify:  
+     ```ts
+     const { doctorId, slot, price } = router.query;
+     if (!doctorId || !slot || !price) {
+       return <ErrorCard title="Invalid Booking Request" message="The booking information is incomplete or invalid." />;
+     }
+     ```
+   - This keeps the existing error UI for truly malformed URLs.
+
+3. **Remove server‐side error page for missing auth**  
+   - Ensure `getServerSideProps` (if any) does not unconditionally throw or return an error when there’s no session; let the client‐side guard handle redirection.
+
+4. **Tests**  
+   - Playwright `e2e/book-guard.spec.ts`:  
+     1. As an unauthenticated user, click a slot → expect URL to change to `/login?redirect=/book?...`.  
+     2. After login, verify redirect to `/book?...` and the booking summary renders.
+
+After this change, clicking any time slot while logged out immediately sends the user to `/login?redirect=…`, so they never see the “Invalid Booking Request” page unless the URL truly lacks parameters. Thank you!
