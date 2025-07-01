@@ -30,6 +30,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Patient login endpoint
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+      
+      // TODO: Implement patient authentication logic
+      // For now, return a placeholder response
+      res.status(501).json({ message: "Patient authentication not yet implemented" });
+    } catch (error) {
+      console.error("Error during login:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  // Patient registration endpoint
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { firstName, lastName, email, password } = req.body;
+      
+      if (!firstName || !lastName || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+      
+      // TODO: Implement patient registration logic
+      // For now, return a placeholder response
+      res.status(501).json({ message: "Patient registration not yet implemented" });
+    } catch (error) {
+      console.error("Error during registration:", error);
+      res.status(500).json({ message: "Registration failed" });
+    }
+  });
+
   // Doctor routes
   app.get("/api/doctors", async (req, res) => {
     try {
