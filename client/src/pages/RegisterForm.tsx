@@ -11,18 +11,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export default function RegisterForm() {
-  // No need for navigate since we're using window.location for simplicity
-  const [location] = useLocation();
   const { toast } = useToast();
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Use window.location.search to get query params reliably
+  const urlParams = new URLSearchParams(window.location.search);
   
   // Extract booking parameters
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
-  
-  console.log('RegisterForm - URL:', location);
-  console.log('RegisterForm - Parameters received:', { doctorId, slot, price });
 
   // Form state
   const [formData, setFormData] = useState({

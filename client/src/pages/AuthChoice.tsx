@@ -7,31 +7,16 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export default function AuthChoice() {
-  const [location] = useLocation();
-  
-  // Debug the URL parsing
-  console.log('AuthChoice - Full location:', location);
-  const queryString = location.split('?')[1] || '';
-  console.log('AuthChoice - Query string:', queryString);
-  
-  const urlParams = new URLSearchParams(queryString);
+  // Use window.location.search instead of Wouter's location to get query params
+  const urlParams = new URLSearchParams(window.location.search);
   
   // Extract booking parameters
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
-  
-  console.log('AuthChoice - Individual params:', {
-    doctorId: urlParams.get('doctorId'),
-    slot: urlParams.get('slot'), 
-    price: urlParams.get('price')
-  });
 
   const handleNewPatient = () => {
-    console.log('AuthChoice - Parameters:', { doctorId, slot, price });
-    const registerUrl = `/register-form?doctorId=${doctorId || ''}&slot=${encodeURIComponent(slot || '')}&price=${price || ''}`;
-    console.log('AuthChoice - Redirecting to:', registerUrl);
-    window.location.href = registerUrl;
+    window.location.href = `/register-form?doctorId=${doctorId || ''}&slot=${encodeURIComponent(slot || '')}&price=${price || ''}`;
   };
 
   const handleReturningPatient = () => {

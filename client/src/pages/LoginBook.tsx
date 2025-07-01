@@ -11,9 +11,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export default function LoginBook() {
-  const [location] = useLocation();
   const { toast } = useToast();
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Use window.location.search to get query params reliably
+  const urlParams = new URLSearchParams(window.location.search);
   
   // Extract booking parameters
   const doctorId = urlParams.get('doctorId');
