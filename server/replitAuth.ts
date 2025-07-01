@@ -113,9 +113,10 @@ export async function setupAuth(app: Express) {
     // Store booking parameters for post-auth redirect
     const { doctorId, slot, price } = req.query;
     if (doctorId && slot && price) {
-      const doctorIdStr = Array.isArray(doctorId) ? doctorId[0] : String(doctorId);
-      const slotStr = Array.isArray(slot) ? slot[0] : String(slot);
-      const priceStr = Array.isArray(price) ? price[0] : String(price);
+      // Safely convert query params to strings
+      const doctorIdStr = typeof doctorId === 'string' ? doctorId : Array.isArray(doctorId) ? doctorId[0] : String(doctorId);
+      const slotStr = typeof slot === 'string' ? slot : Array.isArray(slot) ? slot[0] : String(slot);
+      const priceStr = typeof price === 'string' ? price : Array.isArray(price) ? price[0] : String(price);
       req.session!.bookingRedirect = `/payment?doctorId=${doctorIdStr}&slot=${encodeURIComponent(slotStr)}&price=${priceStr}`;
     }
     

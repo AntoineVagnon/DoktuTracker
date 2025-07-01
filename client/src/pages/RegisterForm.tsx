@@ -45,13 +45,10 @@ export default function RegisterForm() {
     setIsLoading(true);
 
     try {
-      // For now, use Replit Auth directly since we're using OIDC
-      // Store the checkout URL for post-auth redirect
-      const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
-      sessionStorage.setItem('loginRedirect', checkoutUrl);
-      
-      // Redirect to Replit Auth
-      window.location.href = "/api/login";
+      // Redirect to Replit Auth with booking parameters
+      // The server will store these in session and redirect to /payment after auth
+      const authUrl = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+      window.location.href = authUrl;
     } catch (error) {
       toast({
         title: "Registration Failed",

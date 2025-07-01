@@ -18,6 +18,7 @@ import LoginBook from "@/pages/LoginBook";
 import Checkout from "@/pages/Checkout";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
+import Payment from "@/pages/Payment";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/login-form" component={LoginForm} />
       <Route path="/login-book" component={LoginBook} />
       <Route path="/checkout" component={Checkout} />
+      <Route path="/payment" component={Payment} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       
       {isAuthenticated && (
