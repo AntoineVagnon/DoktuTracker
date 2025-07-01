@@ -189,13 +189,79 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  app.get("/api/callback", async (req, res, next) => {
+  app.get("/api/callback", (req, res, next) => {
     console.log('OAuth callback received with query:', req.query);
     console.log('Session data:', req.session);
     
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: '/api/auth-success',
-      failureRedirect: '/api/login'
+    passport.authenticate(`replitauth:${req.hostname}`, async (err: any, user: any) => {
+      if (err) {
+        console.error('OAuth authentication error:', err);
+        return next(err);
+      }
+      if (!user) {
+        console.log('No user returned from OAuth, redirecting to login');
+        return res.redirect("/api/login");
+      }
+      
+      console.log('User authenticated successfully:', user.claims);
+      
+      req.logIn(user, async (err) => {
+        if (err) {
+          console.error('Session login error:', err);
+          return next(err);
+        }
+        
+        try {
+          // Instead of redirecting to splash page, send HTML that closes the window and redirects parent
+          const bookingRedirect = req.session?.bookingRedirect;
+          console.log('Auth callback - bookingRedirect from session:', bookingRedirect);
+          
+          let redirectUrl = '/dashboard';
+          
+          if (bookingRedirect) {
+            delete req.session.bookingRedirect;
+            redirectUrl = bookingRedirect;
+          } else {
+            // Check user role for appropriate dashboard
+            const dbUser = await storage.getUser(user.claims.sub);
+            if (dbUser) {
+              if (dbUser.role === 'doctor') {
+                redirectUrl = '/doctor-dashboard';
+              } else if (dbUser.role === 'admin') {
+                redirectUrl = '/admin-dashboard';
+              }
+            }
+          }
+          
+          console.log('Final redirect URL:', redirectUrl);
+          
+          // Send HTML that redirects the parent window and closes popup
+          const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>Authentication Success</title>
+            </head>
+            <body>
+              <script>
+                if (window.opener) {
+                  window.opener.location.href = '${redirectUrl}';
+                  window.close();
+                } else {
+                  window.location.href = '${redirectUrl}';
+                }
+              </script>
+              <p>Authentication successful. Redirecting...</p>
+            </body>
+            </html>
+          `;
+          
+          return res.send(html);
+        } catch (error) {
+          console.error('Error in callback redirect logic:', error);
+          return res.redirect('/dashboard');
+        }
+      });
     })(req, res, next);
   });
 

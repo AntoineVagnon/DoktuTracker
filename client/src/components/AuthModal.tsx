@@ -57,8 +57,29 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
-      // Redirect to Replit Auth for login - server will handle redirect
-      window.location.href = "/api/login";
+      // Open login in popup to prevent splash page takeover
+      const popup = window.open("/api/login", "login", "width=500,height=600,scrollbars=yes,resizable=yes");
+      
+      // Monitor popup for completion
+      return new Promise((resolve, reject) => {
+        const checkClosed = setInterval(() => {
+          if (popup?.closed) {
+            clearInterval(checkClosed);
+            // Refresh the page to update auth state
+            window.location.reload();
+            resolve(data);
+          }
+        }, 1000);
+        
+        // Timeout after 5 minutes
+        setTimeout(() => {
+          clearInterval(checkClosed);
+          if (popup && !popup.closed) {
+            popup.close();
+          }
+          reject(new Error("Authentication timeout"));
+        }, 300000);
+      });
     },
     onError: (error: Error) => {
       toast({
@@ -71,8 +92,29 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
 
   const signupMutation = useMutation({
     mutationFn: async (data: SignupForm) => {
-      // Redirect to Replit Auth for signup - server will handle redirect
-      window.location.href = "/api/login";
+      // Open signup in popup to prevent splash page takeover
+      const popup = window.open("/api/login", "signup", "width=500,height=600,scrollbars=yes,resizable=yes");
+      
+      // Monitor popup for completion
+      return new Promise((resolve, reject) => {
+        const checkClosed = setInterval(() => {
+          if (popup?.closed) {
+            clearInterval(checkClosed);
+            // Refresh the page to update auth state
+            window.location.reload();
+            resolve(data);
+          }
+        }, 1000);
+        
+        // Timeout after 5 minutes
+        setTimeout(() => {
+          clearInterval(checkClosed);
+          if (popup && !popup.closed) {
+            popup.close();
+          }
+          reject(new Error("Authentication timeout"));
+        }, 300000);
+      });
     },
     onError: (error: Error) => {
       toast({

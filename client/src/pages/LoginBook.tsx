@@ -48,8 +48,30 @@ export default function LoginBook() {
     setIsLoading(true);
 
     try {
-      // Redirect to Replit Auth for login with booking parameters
-      window.location.href = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+      // Open authentication in popup with booking parameters
+      const popup = window.open(
+        `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`,
+        "booking-auth",
+        "width=500,height=600,scrollbars=yes,resizable=yes"
+      );
+      
+      // Monitor popup for completion
+      const checkClosed = setInterval(() => {
+        if (popup?.closed) {
+          clearInterval(checkClosed);
+          // The popup callback will redirect to payment page
+          // No need to reload here as the redirect happens in popup
+        }
+      }, 1000);
+      
+      // Timeout after 5 minutes
+      setTimeout(() => {
+        clearInterval(checkClosed);
+        if (popup && !popup.closed) {
+          popup.close();
+        }
+        setIsLoading(false);
+      }, 300000);
 
     } catch (error) {
       console.error('Login error:', error);
