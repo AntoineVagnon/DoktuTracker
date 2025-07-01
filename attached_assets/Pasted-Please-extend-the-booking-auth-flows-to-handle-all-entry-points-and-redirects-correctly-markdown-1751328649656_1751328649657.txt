@@ -1,0 +1,52 @@
+Please extend the booking & auth flows to handle all entry points and redirects correctly:
+
+markdown
+Copier
+Modifier
+We have multiple ways users can land on registration/login or start booking. Let’s consolidate redirect logic so:
+
+1. **Auth pages (`/login`, `/register`)**  
+   - Always accept an optional `redirect` query param.  
+   - If `redirect` is present after successful login/registration, route there.  
+   - If **no** `redirect` param (e.g. user clicked “Log In” from the Home page or header), default to `/dashboard`.  
+
+2. **Home page entry**  
+   - “Sign In” / “Sign Up” buttons on the Home page → `/login` or `/register` **without** a `redirect` param.  
+   - After auth, users go to `/dashboard`.
+
+3. **Booking entry**  
+   - Clicking a timeslot on DoctorProfile → `/book?doctorId=…&slot=…&price=…`.  
+   - From `/book`, New patient → `/register?redirect=/checkout?...`  
+   - From `/book`, Returning patient → `/login?redirect=/checkout?...`  
+   - After `/checkout` & payment success → `/dashboard`.
+
+4. **Dashboard-initiated booking**  
+   - On `/dashboard`, add a “Book New Appointment” button that opens a modal or navigates to the Doctors list (`/`) for slot selection.  
+   - If user is already authenticated (always true on `/dashboard`), clicking a slot in that flow should skip the auth redirect and go straight to `/checkout?doctorId=…&slot=…&price=…`.  
+
+5. **Implementation pointers**  
+   - In your auth pages (`pages/login.tsx`, `pages/register.tsx`), read `const { redirect } = router.query`. On success: `router.push(redirect ?? '/dashboard')`.  
+   - In slot click handler anywhere, build the proper `redirect` param if user is unauthenticated. If `user` exists, go directly to checkout.  
+   - Update `/dashboard` component:  
+     ```jsx
+     <Button onClick={() => router.push('/')}>Book New Appointment</Button>
+     ```
+   - Ensure `useUser()` runs early so the slot click logic picks the right branch.
+
+6. **Tests**  
+   - **Playwright** (`e2e/auth-redirects.spec.ts`):  
+     1. From Home, click “Sign Up” → `/register` → register → lands on `/dashboard`.  
+     2. From `/book`, click a slot as new patient → `/register?redirect=…` → after register → lands on `/checkout?...`.  
+     3. From `/dashboard`, click “Book New Appointment” → `/` → select slot → `/checkout?...` directly.  
+   - **RTL**: assert that login/register components use `redirect` param correctly.
+
+With these changes, all flows—Home → auth → dashboard; booking → auth → checkout → dashboard; dashboard → booking — will honor redirects and give a seamless user journey.```
+
+Paste that to the Replit AI Agent so it wires up every redirect and entry-point correctly.
+
+
+
+
+
+
+Demander à ChatGPT

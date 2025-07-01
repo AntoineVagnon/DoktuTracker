@@ -12,7 +12,10 @@ export default function Register() {
 
   const handleRegister = () => {
     // Store redirect URL and proceed with Replit Auth registration
-    sessionStorage.setItem('loginRedirect', redirectUrl);
+    // If no redirect or just '/', user will go to dashboard after registration
+    if (redirectUrl && redirectUrl !== '/') {
+      sessionStorage.setItem('loginRedirect', redirectUrl);
+    }
     window.location.href = "/api/login";
   };
 

@@ -12,14 +12,17 @@ export default function Login() {
   const redirectUrl = urlParams.get('redirect') || '/';
 
   const handleNewPatient = () => {
-    // Store redirect URL and go to Replit Auth
-    sessionStorage.setItem('loginRedirect', redirectUrl);
-    window.location.href = "/api/login";
+    // If there's a redirect URL, pass it to register; otherwise register will go to dashboard
+    const registerUrl = redirectUrl && redirectUrl !== '/' ? `/register?redirect=${encodeURIComponent(redirectUrl)}` : '/register';
+    window.location.href = registerUrl;
   };
 
   const handleReturningPatient = () => {
-    // Store redirect URL and go to Replit Auth
-    sessionStorage.setItem('loginRedirect', redirectUrl);
+    // Store redirect URL and proceed with Replit Auth login
+    // If no redirect or just '/', user will go to dashboard after login
+    if (redirectUrl && redirectUrl !== '/') {
+      sessionStorage.setItem('loginRedirect', redirectUrl);
+    }
     window.location.href = "/api/login";
   };
 
