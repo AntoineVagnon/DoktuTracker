@@ -112,12 +112,15 @@ export async function setupAuth(app: Express) {
   app.get("/api/login", (req, res, next) => {
     // Store booking parameters for post-auth redirect
     const { doctorId, slot, price } = req.query;
+    console.log('Login endpoint - query params:', { doctorId, slot, price });
+    
     if (doctorId && slot && price) {
       // Safely convert query params to strings
       const doctorIdStr = typeof doctorId === 'string' ? doctorId : Array.isArray(doctorId) ? doctorId[0] : String(doctorId);
       const slotStr = typeof slot === 'string' ? slot : Array.isArray(slot) ? slot[0] : String(slot);
       const priceStr = typeof price === 'string' ? price : Array.isArray(price) ? price[0] : String(price);
       req.session!.bookingRedirect = `/payment?doctorId=${doctorIdStr}&slot=${encodeURIComponent(slotStr)}&price=${priceStr}`;
+      console.log('Stored booking redirect:', req.session!.bookingRedirect);
     }
     
     passport.authenticate(`replitauth:${req.hostname}`, {
@@ -143,8 +146,10 @@ export async function setupAuth(app: Express) {
         try {
           // Priority 1: Check for booking flow redirect
           const bookingRedirect = req.session?.bookingRedirect;
+          console.log('Auth callback - bookingRedirect:', bookingRedirect);
           if (bookingRedirect) {
             delete req.session.bookingRedirect;
+            console.log('Redirecting to booking payment:', bookingRedirect);
             return res.redirect(bookingRedirect);
           }
           

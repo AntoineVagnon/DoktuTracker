@@ -48,30 +48,31 @@ export default function Payment() {
   const handlePayment = async () => {
     setIsProcessing(true);
     try {
-      // Create payment intent and redirect to Stripe checkout
-      const response = await fetch('/api/create-payment-intent', {
+      // Create appointment with payment
+      const response = await fetch('/api/appointments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           doctorId,
-          timeSlotId: slot, // Using slot as timeSlotId for now
-          amount: displayPrice,
+          timeSlotId: slot,
+          appointmentDate: slot,
+          consultationType: 'video',
+          price: displayPrice,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create payment intent');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create appointment');
       }
 
-      const { clientSecret } = await response.json();
+      const appointment = await response.json();
       
-      // For now, simulate successful payment and redirect to dashboard
-      // In a real implementation, this would integrate with Stripe
       toast({
-        title: "Payment Successful",
-        description: "Your appointment has been booked successfully!",
+        title: "Appointment Booked Successfully!",
+        description: "Your appointment has been confirmed. Check your email for details.",
       });
 
       // Redirect to patient dashboard
@@ -82,8 +83,8 @@ export default function Payment() {
     } catch (error) {
       console.error('Payment error:', error);
       toast({
-        title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        title: "Booking Failed",
+        description: error instanceof Error ? error.message : "There was an error booking your appointment. Please try again.",
         variant: "destructive",
       });
     } finally {
