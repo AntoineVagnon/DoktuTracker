@@ -114,8 +114,8 @@ test.describe('AuthModal Functionality', () => {
     // Verify modal is open
     await expect(page.getByText('Welcome to Doktu')).toBeVisible();
     
-    // Click on backdrop (outside modal content)
-    await page.locator('.fixed.inset-0').first().click({ position: { x: 10, y: 10 } });
+    // Click on backdrop (outside modal content) - target the backdrop with specific class
+    await page.locator('.auth-backdrop .absolute.inset-0').click({ position: { x: 10, y: 10 } });
     
     // Verify modal is closed
     await expect(page.getByText('Welcome to Doktu')).not.toBeVisible();

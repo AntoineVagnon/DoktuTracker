@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -99,16 +100,16 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
+  return createPortal(
+    <div className="auth-backdrop backdrop-blur-sm">
+      {/* Backdrop click handler */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0"
         onClick={handleClose}
       />
       
       {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+      <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md mx-4 p-6 z-10">
         {/* Close button */}
         <button
           onClick={handleClose}
@@ -272,6 +273,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
