@@ -18,7 +18,7 @@ import LoginBook from "@/pages/LoginBook";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Payment from "@/pages/Payment";
-import AuthRedirectHandler from "@/components/AuthRedirectHandler";
+
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -34,7 +34,6 @@ function Router() {
       <Route path="/checkout" component={Payment} />
       <Route path="/payment" component={Payment} />
       <Route path="/doctor/:id" component={DoctorProfile} />
-      <Route path="/auth-callback" component={AuthRedirectHandler} />
       
       {/* Dashboard routes - always accessible for role-based redirects */}
       <Route path="/dashboard" component={Dashboard} />

@@ -57,8 +57,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
-      // Store redirect URL and redirect to Replit Auth for login
-      sessionStorage.setItem('auth_redirect', '/dashboard');
+      // Redirect to Replit Auth for login - server will handle redirect
       window.location.href = "/api/login";
     },
     onError: (error: Error) => {
@@ -72,8 +71,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
 
   const signupMutation = useMutation({
     mutationFn: async (data: SignupForm) => {
-      // Store redirect URL and redirect to Replit Auth for signup
-      sessionStorage.setItem('auth_redirect', '/dashboard');
+      // Redirect to Replit Auth for signup - server will handle redirect
       window.location.href = "/api/login";
     },
     onError: (error: Error) => {

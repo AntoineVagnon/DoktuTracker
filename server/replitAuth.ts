@@ -150,12 +150,39 @@ export async function setupAuth(app: Express) {
         }
         
         try {
-          // Always redirect to auth-callback route on the client
-          // The client will handle the appropriate redirect based on stored session data
-          return res.redirect('/auth-callback');
+          // Priority 1: Check for booking flow redirect
+          const bookingRedirect = req.session?.bookingRedirect;
+          console.log('Auth callback - bookingRedirect:', bookingRedirect);
+          if (bookingRedirect) {
+            delete req.session.bookingRedirect;
+            console.log('Redirecting to booking payment:', bookingRedirect);
+            return res.redirect(bookingRedirect);
+          }
+          
+          // Priority 2: Get user from database to check role
+          const dbUser = await storage.getUser(user.claims.sub);
+          
+          if (dbUser) {
+            // Role-based redirect based on user role in database
+            if (dbUser.role === 'doctor') {
+              return res.redirect('/doctor-dashboard');
+            } else if (dbUser.role === 'admin') {
+              return res.redirect('/admin-dashboard');
+            }
+          }
+          
+          // Priority 3: Check for other stored redirects
+          const storedRedirect = req.session?.loginRedirect;
+          if (storedRedirect) {
+            delete req.session.loginRedirect;
+            return res.redirect(storedRedirect);
+          }
+          
+          // Default redirect for patients
+          return res.redirect('/dashboard');
         } catch (error) {
           console.error('Error in callback redirect logic:', error);
-          return res.redirect('/');
+          return res.redirect('/dashboard');
         }
       });
     })(req, res, next);

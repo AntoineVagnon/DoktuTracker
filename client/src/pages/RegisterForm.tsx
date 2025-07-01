@@ -56,12 +56,7 @@ export default function RegisterForm() {
     setIsLoading(true);
 
     try {
-      // Store booking parameters for after authentication
-      if (doctorId && slot && price) {
-        sessionStorage.setItem('booking_redirect', `/payment?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`);
-      }
-
-      // Redirect to Replit Auth for registration/login
+      // Redirect to Replit Auth for registration/login with booking parameters
       window.location.href = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
 
     } catch (error) {
