@@ -189,8 +189,21 @@ export default function RegisterForm() {
                       disabled={isLoading}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
                     >
-                      {isLoading ? "Creating Account..." : "Create Account & Continue"}
+                      {isLoading ? "Creating Account..." : "Create Account & Continue to Payment"}
                     </Button>
+
+                    <div className="text-center">
+                      <p className="text-sm text-gray-600">
+                        Already have an account?{' '}
+                        <button
+                          type="button"
+                          onClick={() => window.location.href = `/login-book?doctorId=${doctorId}&slot=${slot}&price=${price}`}
+                          className="text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                          Sign in
+                        </button>
+                      </p>
+                    </div>
 
                     <div className="text-center text-sm text-gray-500">
                       <p>

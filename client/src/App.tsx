@@ -14,6 +14,7 @@ import Register from "@/pages/Register";
 import AuthChoice from "@/pages/AuthChoice";
 import RegisterForm from "@/pages/RegisterForm";
 import LoginForm from "@/pages/LoginForm";
+import LoginBook from "@/pages/LoginBook";
 import Checkout from "@/pages/Checkout";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/auth-choice" component={AuthChoice} />
       <Route path="/register-form" component={RegisterForm} />
       <Route path="/login-form" component={LoginForm} />
+      <Route path="/login-book" component={LoginBook} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       
