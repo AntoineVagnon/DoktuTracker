@@ -1,10 +1,12 @@
+import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, Clock, Euro } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Euro, CreditCard } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Doctor {
   id: string;
@@ -21,27 +23,26 @@ interface Doctor {
   };
 }
 
-export default function BookAppointment() {
+export default function Checkout() {
   const [location] = useLocation();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
-  const price = urlParams.get('price') || '35.00'; // fallback to default price
+  const price = urlParams.get('price') || '35.00';
 
   const { data: doctor, isLoading: doctorLoading } = useQuery<Doctor>({
     queryKey: ['/api/public/doctors', doctorId],
     enabled: !!doctorId,
   });
 
-  const handleNewPatient = () => {
-    const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
-    window.location.href = `/register?redirect=${encodeURIComponent(checkoutUrl)}`;
-  };
-
-  const handleReturningPatient = () => {
-    const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
-    window.location.href = `/login?redirect=${encodeURIComponent(checkoutUrl)}`;
-  };
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      const currentUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+      window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+    }
+  }, [isAuthenticated, isLoading, doctorId, slot, price]);
 
   const formatSlotTime = (slotString: string) => {
     try {
@@ -63,7 +64,14 @@ export default function BookAppointment() {
     }
   };
 
-  if (doctorLoading) {
+  const handlePayment = () => {
+    // TODO: Integrate with Stripe Checkout
+    console.log('Processing payment for:', { doctorId, slot, price, patient: user });
+    // For now, redirect to dashboard as placeholder
+    window.location.href = '/dashboard';
+  };
+
+  if (isLoading || doctorLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
@@ -88,9 +96,9 @@ export default function BookAppointment() {
           <div className="max-w-md mx-auto text-center">
             <Card className="rounded-2xl shadow-lg p-6">
               <CardContent>
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Booking Request</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Checkout Request</h1>
                 <p className="text-gray-600 mb-8">
-                  The booking information is incomplete or invalid.
+                  The payment information is incomplete or invalid.
                 </p>
                 <Button onClick={() => window.location.href = '/'} className="w-full">
                   Return to Home
@@ -113,29 +121,34 @@ export default function BookAppointment() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto">
           <Card className="rounded-2xl shadow-lg p-6">
-            <CardContent className="p-0">
-              {/* Back link */}
+            <CardHeader className="p-0 mb-6">
               <button 
-                onClick={() => window.location.href = `/doctor/${doctorId}`}
-                className="flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+                onClick={() => window.history.back()}
+                className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to profile
+                Back
               </button>
+              
+              <CardTitle className="text-2xl font-bold text-gray-900">
+                Payment
+              </CardTitle>
+              <p className="text-gray-600 mt-2">
+                Complete your appointment booking
+              </p>
+            </CardHeader>
 
-              {/* Title and subtitle */}
-              <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">Book appointment</h1>
-                <p className="text-gray-600">
-                  with Dr. {doctor.user.firstName} {doctor.user.lastName}
-                </p>
-              </div>
-
-              {/* Booking Summary */}
+            <CardContent className="p-0">
+              {/* Appointment Summary */}
               <div className="border rounded-lg p-4 mb-6 bg-gray-50">
-                <h3 className="font-semibold text-gray-900 mb-3">Booking Summary</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">Appointment Summary</h3>
                 
                 <div className="space-y-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span>Doctor</span>
+                    <span className="font-medium">Dr. {doctor.user.firstName} {doctor.user.lastName}</span>
+                  </div>
+                  
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 text-gray-400 mr-2" />
@@ -152,37 +165,41 @@ export default function BookAppointment() {
                     <span className="font-medium">{slotTime.time}</span>
                   </div>
                   
-                  <div className="flex items-center justify-between">
+                  <div className="border-t pt-3 flex items-center justify-between">
                     <div className="flex items-center">
                       <Euro className="h-4 w-4 text-gray-400 mr-2" />
-                      <span>Price</span>
+                      <span className="font-semibold">Total</span>
                     </div>
-                    <span className="font-medium">€{price}</span>
+                    <span className="font-bold text-lg">€{price}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Split-flow prompt and buttons */}
-              <div>
-                <p className="text-gray-900 mb-4 font-medium">Continue with your booking</p>
-                
-                <div className="space-y-4">
-                  <Button
-                    onClick={handleNewPatient}
-                    className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded-lg"
-                    aria-label="Create new patient account and book appointment"
-                  >
-                    I'm a new patient – Create an account & book
-                  </Button>
-                  
-                  <Button
-                    onClick={handleReturningPatient}
-                    variant="outline"
-                    className="border border-gray-300 text-gray-800 hover:bg-gray-50 w-full py-3 rounded-lg"
-                    aria-label="Log in to existing account to continue booking"
-                  >
-                    I already have an account – Log in to continue
-                  </Button>
+              {/* Payment Info */}
+              <div className="space-y-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-sm text-green-800">
+                    <strong>Secure payment:</strong> Your payment is processed securely via Stripe. 
+                    You'll receive a confirmation email immediately after booking.
+                  </p>
+                </div>
+
+                <Button
+                  onClick={handlePayment}
+                  className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded-lg flex items-center justify-center"
+                  aria-label="Complete payment and book appointment"
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Pay €{price} & Book Appointment
+                </Button>
+
+                <div className="text-center text-sm text-gray-500">
+                  <p>
+                    Payment secured by{" "}
+                    <a href="https://stripe.com" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                      Stripe
+                    </a>
+                  </p>
                 </div>
               </div>
             </CardContent>

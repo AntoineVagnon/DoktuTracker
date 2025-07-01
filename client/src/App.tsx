@@ -11,6 +11,8 @@ import Dashboard from "@/pages/Dashboard";
 import DoctorProfile from "@/pages/DoctorProfile";
 import BookAppointment from "@/pages/BookAppointment";
 import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import Checkout from "@/pages/Checkout";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
 
@@ -19,23 +21,18 @@ function Router() {
 
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
+      <Route path="/" component={isLoading || !isAuthenticated ? Landing : Home} />
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      <Route path="/book" component={BookAppointment} />
+      <Route path="/checkout" component={Checkout} />
+      <Route path="/doctor/:id" component={DoctorProfile} />
+      
+      {isAuthenticated && (
         <>
-          <Route path="/" component={Landing} />
-          <Route path="/login" component={Login} />
-          <Route path="/doctor/:id" component={DoctorProfile} />
-          <Route path="/book/:id" component={BookAppointment} />
-          <Route path="/booking" component={BookAppointment} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Home} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/doctor-dashboard" component={DoctorDashboard} />
           <Route path="/admin" component={AdminDashboard} />
-          <Route path="/doctor/:id" component={DoctorProfile} />
-          <Route path="/book/:id" component={BookAppointment} />
-          <Route path="/booking" component={BookAppointment} />
         </>
       )}
       <Route component={NotFound} />

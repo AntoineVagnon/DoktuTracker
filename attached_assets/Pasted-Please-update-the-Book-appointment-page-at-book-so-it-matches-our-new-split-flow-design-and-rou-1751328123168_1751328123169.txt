@@ -1,0 +1,49 @@
+Please update the “Book appointment” page at `/book` so it matches our new split-flow design and routing:
+
+1. **Page layout & styling**  
+   - Wrap the content in a centered card with rounded corners (`rounded-2xl`), soft shadow, and `max-w-md mx-auto p-6`.  
+   - At the top: a back link to profile (`< Back to profile`).  
+   - Title: `<h1>Book appointment</h1>` and subheading: `<p class="text-gray-600">with Dr. {doctor.user.firstName} {doctor.user.lastName}</p>`.  
+   - Under that, a “Booking Summary” panel with date, time, and price in a light-bordered box (`border rounded-lg p-4 mb-6`).
+
+2. **Split-flow buttons**  
+   - Below the summary, a prompt: `<p>Continue with your booking</p>`.  
+   - Two stacked `<button>`s:  
+     - **New patient** (primary style—`bg-blue-600 text-white w-full py-3 rounded-lg mb-4`): text “I’m a new patient – Create an account & book”.  
+     - **Returning patient** (secondary style—`border border-gray-300 text-gray-800 w-full py-3 rounded-lg`): text “I already have an account – Log in to continue”.  
+   - Ensure both are focusable and have `aria-label`.
+
+3. **Routing logic**  
+   - Extract `doctorId`, `slotTime`, and `price` from the query string (passed to `/book` via slot click).  
+   - **New patient button** `onClick`:  
+     ```ts
+     router.push(`/register?redirect=${encodeURIComponent(
+       `/checkout?doctorId=${doctorId}&slot=${slotTime}&price=${price}`
+     )}`);
+     ```  
+   - **Returning patient button** `onClick`:  
+     ```ts
+     router.push(`/login?redirect=${encodeURIComponent(
+       `/checkout?doctorId=${doctorId}&slot=${slotTime}&price=${price}`
+     )}`);
+     ```
+
+4. **Next steps in flow**  
+   - **Registration** (`/register`): collect name, email, password; on success redirect to the `redirect` param (the checkout URL).  
+   - **Login** (`/login`): standard auth; on success redirect to checkout URL.  
+   - **Checkout** (`/checkout`): embed Stripe Checkout (inside modal first, fallback to redirect). After payment success webhook → create appointment, then redirect to `/dashboard`.  
+   - **Dashboard** (`/dashboard`): show upcoming appointment with date/time and doctor info.
+
+5. **Tests**  
+   - **Playwright e2e** (`e2e/book-flow.spec.ts`):  
+     1. Click slot → `/book?doctorId=…&slot=…&price=…`.  
+     2. Click “New patient” → lands on `/register` with correct `redirect`.  
+     3. Simulate registration → verify URL changes to `/checkout?…`.  
+     4. Stub Stripe payment success → verify redirect to `/dashboard`.  
+     5. Repeat for “I already have an account” → `/login` → `/checkout` → `/dashboard`.  
+
+6. **Accessibility & performance**  
+   - Buttons have `aria-label`.  
+   - FCP < 1.5 s on LTE.  
+
+Apply these changes so users choosing “new” or “returning” follow the correct registration/login → payment → dashboard journey. Thank you!  
