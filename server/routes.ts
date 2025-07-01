@@ -449,6 +449,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin: Create doctor account
+  app.post("/api/admin/create-doctor", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (adminUser?.role !== "admin") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const { email, firstName, lastName, specialty, bio, education, experience, languages, rppsNumber, consultationPrice } = req.body;
+
+      if (!email || !firstName || !lastName || !specialty) {
+        return res.status(400).json({ message: "Email, first name, last name, and specialty are required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists with this email" });
+      }
+
+      // Create user account
+      const doctorUser = await storage.createUser({
+        firstName,
+        lastName,
+        email,
+        role: 'doctor'
+      });
+
+      // Create doctor profile
+      const doctorData = {
+        userId: doctorUser.id,
+        specialty,
+        bio: bio || '',
+        education: education || '',
+        experience: experience || '',
+        languages: languages || [],
+        rppsNumber: rppsNumber || '',
+        consultationPrice: consultationPrice || '35.00'
+      };
+
+      const doctor = await storage.createDoctor(doctorData);
+
+      res.json({ 
+        success: true, 
+        message: "Doctor account created successfully",
+        doctor: {
+          id: doctor.id,
+          email: doctorUser.email,
+          firstName: doctorUser.firstName,
+          lastName: doctorUser.lastName,
+          specialty: doctor.specialty
+        }
+      });
+    } catch (error) {
+      console.error("Error creating doctor:", error);
+      res.status(500).json({ message: "Failed to create doctor account" });
+    }
+  });
+
+  // Admin: Create admin account
+  app.post("/api/admin/create-admin", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (adminUser?.role !== "admin") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const { email, firstName, lastName } = req.body;
+
+      if (!email || !firstName || !lastName) {
+        return res.status(400).json({ message: "Email, first name, and last name are required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists with this email" });
+      }
+
+      // Create admin account
+      const newAdmin = await storage.createUser({
+        firstName,
+        lastName,
+        email,
+        role: 'admin'
+      });
+
+      res.json({ 
+        success: true, 
+        message: "Admin account created successfully",
+        admin: {
+          id: newAdmin.id,
+          email: newAdmin.email,
+          firstName: newAdmin.firstName,
+          lastName: newAdmin.lastName,
+          role: newAdmin.role
+        }
+      });
+    } catch (error) {
+      console.error("Error creating admin:", error);
+      res.status(500).json({ message: "Failed to create admin account" });
+    }
+  });
+
+  // Admin: Get all users
+  app.get("/api/admin/users", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (adminUser?.role !== "admin") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
   // Cron job to unlock expired slots
   setInterval(async () => {
     try {

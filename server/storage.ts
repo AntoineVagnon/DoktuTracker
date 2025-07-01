@@ -5,39 +5,39 @@ import {
   appointments,
   appointmentChanges,
   reviews,
-  videoTests,
   auditEvents,
-  type User,
   type UpsertUser,
+  type User,
   type Doctor,
-  type InsertDoctor,
   type TimeSlot,
-  type InsertTimeSlot,
   type Appointment,
-  type InsertAppointment,
   type Review,
+  type InsertDoctor,
+  type InsertTimeSlot,
+  type InsertAppointment,
   type InsertReview,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, gte, lte, desc, asc, sql, ne } from "drizzle-orm";
+import { eq, desc, and, gte, lte, isNull, or, count, avg, sql } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
 // Interface for storage operations
 export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
-  
+
   // Custom auth operations for booking flow
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: Omit<UpsertUser, 'id'>): Promise<User>;
-  
+
   // Doctor operations
   getDoctors(): Promise<(Doctor & { user: User })[]>;
   getDoctor(id: string): Promise<(Doctor & { user: User }) | undefined>;
   getDoctorByUserId(userId: string): Promise<Doctor | undefined>;
   createDoctor(doctor: InsertDoctor): Promise<Doctor>;
   updateDoctorOnlineStatus(doctorId: string, isOnline: boolean): Promise<void>;
-  
+
   // Time slot operations
   getDoctorTimeSlots(doctorId: string, date?: string): Promise<TimeSlot[]>;
   createTimeSlot(slot: InsertTimeSlot): Promise<TimeSlot>;
@@ -45,7 +45,7 @@ export interface IStorage {
   lockTimeSlot(id: string, lockedBy: string, durationMinutes: number): Promise<void>;
   unlockTimeSlot(id: string): Promise<void>;
   unlockExpiredSlots(): Promise<void>;
-  
+
   // Appointment operations
   getAppointments(patientId?: string, doctorId?: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User })[]>;
   getAppointment(id: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User }) | undefined>;
@@ -54,11 +54,11 @@ export interface IStorage {
   updateAppointmentPayment(id: string, paymentIntentId: string): Promise<void>;
   rescheduleAppointment(id: string, newSlotId: string, reason: string): Promise<void>;
   cancelAppointment(id: string, cancelledBy: string, reason: string): Promise<void>;
-  
+
   // Review operations
   createReview(review: InsertReview): Promise<Review>;
   getDoctorReviews(doctorId: string): Promise<(Review & { patient: User })[]>;
-  
+
   // Admin operations
   getKPIs(): Promise<{
     totalAppointments: number;
@@ -68,7 +68,7 @@ export interface IStorage {
     totalRevenue: number;
     newPatientsThisMonth: number;
   }>;
-  
+
   // Stripe operations
   updateUserStripeInfo(userId: string, customerId?: string, subscriptionId?: string): Promise<User>;
 }
@@ -176,14 +176,14 @@ export class DatabaseStorage implements IStorage {
   // Time slot operations
   async getDoctorTimeSlots(doctorId: string, date?: string): Promise<TimeSlot[]> {
     let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorId));
-    
+
     if (date) {
       query = query.where(and(
         eq(doctorTimeSlots.doctorId, doctorId),
         eq(doctorTimeSlots.date, date)
       ));
     }
-    
+
     return await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
   }
 
@@ -269,7 +269,7 @@ export class DatabaseStorage implements IStorage {
 
   async rescheduleAppointment(id: string, newSlotId: string, reason: string): Promise<void> {
     const [appointment] = await db.select().from(appointments).where(eq(appointments.id, id));
-    
+
     await db
       .update(appointments)
       .set({ 
@@ -307,7 +307,7 @@ export class DatabaseStorage implements IStorage {
   // Review operations
   async createReview(review: InsertReview): Promise<Review> {
     const [newReview] = await db.insert(reviews).values(review).returning();
-    
+
     // Update doctor's average rating
     const avgRating = await db
       .select({ avg: sql<number>`AVG(${reviews.rating})` })
