@@ -133,6 +133,13 @@ Changelog:
 - June 30, 2025: Created Login page with "New Patient" vs "Returning Patient" options that store redirect URLs
 - June 30, 2025: Built BookAppointment page with doctor info, appointment details, and payment integration
 - June 30, 2025: Added redirect handling in Home component to process post-login booking flow
+- July 1, 2025: Extended booking & auth flows with comprehensive redirect logic for all entry points
+- July 1, 2025: Implemented proper redirect parameter handling in Login/Register pages (default to dashboard if no redirect)
+- July 1, 2025: Updated Home page with internal Sign In/Sign Up buttons (no redirect params for home entry)
+- July 1, 2025: Added Book New Appointment button in authenticated Home page quick actions
+- July 1, 2025: Enhanced DoctorProfile slot clicks to bypass auth for authenticated users (direct to checkout)
+- July 1, 2025: Created comprehensive Playwright test suite for auth redirect flows and booking journeys
+- July 1, 2025: Implemented split-flow design: /book → /register or /login → /checkout → /dashboard
 ```
 
 ## User Preferences

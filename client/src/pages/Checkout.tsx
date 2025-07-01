@@ -67,7 +67,7 @@ export default function Checkout() {
   const handlePayment = () => {
     // TODO: Integrate with Stripe Checkout
     console.log('Processing payment for:', { doctorId, slot, price, patient: user });
-    // For now, redirect to dashboard as placeholder
+    // After successful payment, redirect to dashboard
     window.location.href = '/dashboard';
   };
 

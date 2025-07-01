@@ -64,10 +64,10 @@ export default function Home() {
       color: "green",
     },
     {
-      title: "Book Appointment",
-      description: "Schedule a consultation with a specialist",
+      title: "Book New Appointment",
+      description: "Select a doctor and schedule your next consultation",
       icon: Star,
-      href: "#doctors",
+      href: "/#doctors",
       color: "purple",
     },
   ];
@@ -119,9 +119,14 @@ export default function Home() {
             <p className="text-xl text-gray-600 mb-6">
               Connect with certified healthcare professionals for expert medical care
             </p>
-            <Button size="lg" asChild>
-              <a href="/api/login">Get Started - Login with Replit</a>
-            </Button>
+            <div className="flex gap-4 justify-center">
+              <Button size="lg" asChild>
+                <Link href="/login">Sign In</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/register">Sign Up</Link>
+              </Button>
+            </div>
           </div>
         )}
 
@@ -222,9 +227,14 @@ export default function Home() {
                 <p className="text-blue-100 mb-6">
                   Join thousands of patients who trust our platform for their healthcare needs.
                 </p>
-                <Button size="lg" className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" asChild>
-                  <a href="/api/login">Login with Replit</a>
-                </Button>
+                <div className="flex gap-4 justify-center">
+                  <Button size="lg" className="bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" asChild>
+                    <Link href="/login">Sign In</Link>
+                  </Button>
+                  <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-[hsl(207,100%,52%)]" asChild>
+                    <Link href="/register">Sign Up</Link>
+                  </Button>
+                </div>
               </>
             )}
           </CardContent>

@@ -153,10 +153,16 @@ export default function DoctorProfile() {
   const handleSlotClick = (slot: TimeSlot) => {
     const slotTime = `${slot.date}T${slot.startTime}:00Z`;
     const price = doctor?.consultation_price || '35.00';
-    const bookingUrl = `/book?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
     
-    // Always redirect to booking page (no auth check needed for /book)
-    window.location.href = bookingUrl;
+    if (isAuthenticated) {
+      // User is already logged in, go directly to checkout
+      const checkoutUrl = `/checkout?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
+      window.location.href = checkoutUrl;
+    } else {
+      // User not logged in, go to booking page for auth flow
+      const bookingUrl = `/book?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
+      window.location.href = bookingUrl;
+    }
   };
 
 
