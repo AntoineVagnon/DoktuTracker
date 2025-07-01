@@ -6,10 +6,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, User, Calendar, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import AuthModal from "@/components/AuthModal";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<"login" | "signup">("login");
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -73,11 +76,23 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             {!isAuthenticated ? (
               <>
-                <Button variant="ghost" asChild>
-                  <a href="/api/login">Sign In</a>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => {
+                    setAuthModalTab("login");
+                    setIsAuthModalOpen(true);
+                  }}
+                >
+                  Sign In
                 </Button>
-                <Button className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-lg transition-all duration-200">
-                  <a href="/api/login">Sign Up Free</a>
+                <Button 
+                  className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-lg transition-all duration-200"
+                  onClick={() => {
+                    setAuthModalTab("signup");
+                    setIsAuthModalOpen(true);
+                  }}
+                >
+                  Sign Up Free
                 </Button>
               </>
             ) : (
@@ -134,11 +149,24 @@ export default function Header() {
                       </a>
                     ))}
                     <div className="pt-4 space-y-2">
-                      <Button variant="ghost" className="w-full justify-start" asChild>
-                        <a href="/api/login">Sign In</a>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start"
+                        onClick={() => {
+                          setAuthModalTab("login");
+                          setIsAuthModalOpen(true);
+                        }}
+                      >
+                        Sign In
                       </Button>
-                      <Button className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
-                        <a href="/api/login">Sign Up Free</a>
+                      <Button 
+                        className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]"
+                        onClick={() => {
+                          setAuthModalTab("signup");
+                          setIsAuthModalOpen(true);
+                        }}
+                      >
+                        Sign Up Free
                       </Button>
                     </div>
                   </nav>
@@ -148,6 +176,13 @@ export default function Header() {
           </div>
         </div>
       </div>
+      
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultTab={authModalTab}
+      />
     </header>
   );
 }
