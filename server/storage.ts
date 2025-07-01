@@ -18,7 +18,7 @@ import {
   type InsertReview,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lte, isNull, or, count, avg, sql } from "drizzle-orm";
+import { eq, desc, asc, and, gte, lte, isNull, or, count, avg, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
 // Interface for storage operations

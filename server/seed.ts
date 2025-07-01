@@ -12,7 +12,7 @@ const sampleDoctors = [
     experience: "15+ years",
     languages: ["English", "French"],
     rppsNumber: "10003456789",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.9",
     reviewCount: 127,
     profileImageUrl: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face"
@@ -26,7 +26,7 @@ const sampleDoctors = [
     experience: "12+ years",
     languages: ["English", "Mandarin"],
     rppsNumber: "10003456790",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.8",
     reviewCount: 89,
     profileImageUrl: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face"
@@ -40,7 +40,7 @@ const sampleDoctors = [
     experience: "10+ years",
     languages: ["English", "Spanish"],
     rppsNumber: "10003456791",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.7",
     reviewCount: 156,
     profileImageUrl: "https://images.unsplash.com/photo-1594824309293-e3ed3a647ab7?w=400&h=400&fit=crop&crop=face"
@@ -54,7 +54,7 @@ const sampleDoctors = [
     experience: "18+ years",
     languages: ["English"],
     rppsNumber: "10003456792",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.6",
     reviewCount: 203,
     profileImageUrl: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop&crop=face"
@@ -68,7 +68,7 @@ const sampleDoctors = [
     experience: "8+ years",
     languages: ["English", "Mandarin"],
     rppsNumber: "10003456793",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.9",
     reviewCount: 74,
     profileImageUrl: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=400&fit=crop&crop=face"
@@ -82,7 +82,7 @@ const sampleDoctors = [
     experience: "20+ years",
     languages: ["English"],
     rppsNumber: "10003456794",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.8",
     reviewCount: 145,
     profileImageUrl: "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=400&h=400&fit=crop&crop=face"
@@ -96,7 +96,7 @@ const sampleDoctors = [
     experience: "14+ years",
     languages: ["English", "Spanish"],
     rppsNumber: "10003456795",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.7",
     reviewCount: 98,
     profileImageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop&crop=face"
@@ -110,7 +110,7 @@ const sampleDoctors = [
     experience: "16+ years",
     languages: ["English", "Korean"],
     rppsNumber: "10003456796",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.9",
     reviewCount: 112,
     profileImageUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop&crop=face"
@@ -124,7 +124,7 @@ const sampleDoctors = [
     experience: "11+ years",
     languages: ["English"],
     rppsNumber: "10003456797",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.6",
     reviewCount: 67,
     profileImageUrl: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=400&h=400&fit=crop&crop=face"
@@ -138,7 +138,7 @@ const sampleDoctors = [
     experience: "13+ years",
     languages: ["English", "Russian"],
     rppsNumber: "10003456798",
-    consultationPrice: "35.00",
+    consultationPrice: "3.00",
     rating: "4.8",
     reviewCount: 93,
     profileImageUrl: "https://images.unsplash.com/photo-1643297654416-05795882dd98?w=400&h=400&fit=crop&crop=face"
