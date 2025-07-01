@@ -213,7 +213,7 @@ export async function setupAuth(app: Express) {
         }
         
         try {
-          // Instead of redirecting to splash page, send HTML that closes the window and redirects parent
+          // Handle post-authentication redirects
           const bookingRedirect = req.session?.bookingRedirect;
           console.log('Auth callback - bookingRedirect from session:', bookingRedirect);
           
@@ -222,23 +222,47 @@ export async function setupAuth(app: Express) {
           if (bookingRedirect) {
             delete req.session.bookingRedirect;
             redirectUrl = bookingRedirect;
+            console.log('Using booking redirect:', redirectUrl);
           } else {
             // Check user role for appropriate dashboard
-            const dbUser = await storage.getUser(user.claims.sub);
-            if (dbUser) {
-              if (dbUser.role === 'doctor') {
-                redirectUrl = '/doctor-dashboard';
-              } else if (dbUser.role === 'admin') {
-                redirectUrl = '/admin-dashboard';
+            try {
+              const dbUser = await storage.getUser(user.claims.sub);
+              if (dbUser) {
+                if (dbUser.role === 'doctor') {
+                  redirectUrl = '/doctor-dashboard';
+                } else if (dbUser.role === 'admin') {
+                  redirectUrl = '/admin-dashboard';
+                }
+                console.log('Role-based redirect for user:', dbUser.role, '→', redirectUrl);
               }
+            } catch (dbError) {
+              console.error('Error fetching user from database:', dbError);
+              // Continue with default redirect
             }
           }
           
           console.log('Final redirect URL:', redirectUrl);
           
-          // Direct redirect - no popup handling needed
-          console.log('Redirecting directly to:', redirectUrl);
-          return res.redirect(redirectUrl);
+          // Send a simple HTML page that immediately redirects
+          // This helps ensure the redirect happens even if there's a brief preview screen
+          const redirectHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>Redirecting...</title>
+              <meta http-equiv="refresh" content="0; url=${redirectUrl}">
+            </head>
+            <body>
+              <p>Authentication successful. Redirecting to your dashboard...</p>
+              <script>
+                // Immediate redirect
+                window.location.href = '${redirectUrl}';
+              </script>
+            </body>
+            </html>
+          `;
+          
+          return res.send(redirectHtml);
         } catch (error) {
           console.error('Error in callback redirect logic:', error);
           return res.redirect('/dashboard');
