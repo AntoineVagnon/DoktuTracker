@@ -119,13 +119,21 @@ export default function Home() {
             <p className="text-xl text-gray-600 mb-6">
               Connect with certified healthcare professionals for expert medical care
             </p>
-            <div className="flex gap-4 justify-center">
-              <Button size="lg" asChild>
-                <Link href="/login">Sign In</Link>
+            <div className="flex flex-col gap-4 items-center">
+              <Button size="lg" asChild className="w-full max-w-xs">
+                <Link href="/register">Register as Patient</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/register">Sign Up</Link>
-              </Button>
+              <div className="flex gap-4">
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/login?role=patient">Login as Patient</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/login?role=doctor">Login as Doctor</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/login?role=admin">Login as Admin</Link>
+                </Button>
+              </div>
             </div>
           </div>
         )}

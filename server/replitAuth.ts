@@ -109,9 +109,46 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
+    passport.authenticate(`replitauth:${req.hostname}`, (err: any, user: any) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.redirect("/api/login");
+      }
+      
+      req.logIn(user, async (err) => {
+        if (err) {
+          return next(err);
+        }
+        
+        try {
+          // Get user from database to check role
+          const dbUser = await storage.getUser(user.claims.sub);
+          
+          if (dbUser) {
+            // Role-based redirect based on user role in database
+            if (dbUser.role === 'doctor') {
+              return res.redirect('/doctor/dashboard');
+            } else if (dbUser.role === 'admin') {
+              return res.redirect('/admin/dashboard');
+            }
+          }
+          
+          // For patients or fallback, check for stored redirect
+          const storedRedirect = req.session?.loginRedirect;
+          if (storedRedirect) {
+            delete req.session.loginRedirect;
+            return res.redirect(storedRedirect);
+          }
+          
+          // Default redirect for patients
+          return res.redirect('/dashboard');
+        } catch (error) {
+          console.error('Error in callback redirect logic:', error);
+          return res.redirect('/');
+        }
+      });
     })(req, res, next);
   });
 

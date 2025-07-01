@@ -1,0 +1,52 @@
+1. **User roles & endpoints**  
+   - **Patients** can **register** and **login**.  
+     - Registration: `GET /register` → create patient account → redirect to `redirect` query or `/dashboard`.  
+     - Login: `GET /login` → authenticate patient → redirect to `redirect` or `/dashboard`.  
+   - **Doctors** and **Admins** do **not** self-register; their accounts are seeded/created manually in the database.  
+     - Login only: `/login?role=doctor` and `/login?role=admin`.
+
+2. **Home page UI** (`pages/index.tsx`)  
+   - Replace generic “Sign Up Free” / “Sign In” with three buttons:  
+     - **“Register as patient”** → `/register`  
+     - **“Login as patient”** → `/login?role=patient`  
+     - **Dropdown or two links**:  
+       - **“Login as doctor”** → `/login?role=doctor`  
+       - **“Login as admin”** → `/login?role=admin`  
+
+3. **Login page** (`pages/login.tsx`)  
+   - Read `const { role = 'patient', redirect } = router.query`.  
+   - On submit, call backend auth with role context:  
+     ```ts
+     await signIn({ email, password, role });
+     ```  
+   - After successful login, inspect returned session’s `user.role`.  
+   - Redirect logic:  
+     ```ts
+     if (session.user.role === 'doctor') {
+       router.push('/doctor/dashboard');
+     } else if (session.user.role === 'admin') {
+       router.push('/admin/dashboard');
+     } else {
+       router.push(redirect ?? '/dashboard');
+     }
+     ```
+
+4. **Protect routes**  
+   - **/doctor/dashboard**: accessible only to `user.role === 'doctor'`. Others → 403 or redirect.  
+   - **/admin/dashboard**: only `role === 'admin'`.  
+   - **/dashboard**: only `role === 'patient'`.  
+
+5. **Backend**  
+   - Ensure the login endpoint accepts a `role` parameter and verifies credentials against the correct table (`patients`, `doctors`, `admins`).  
+   - After login, the JWT/session must include `user.role`.  
+
+6. **Tests**  
+   - **Playwright** (`e2e/auth-roles.spec.ts`):  
+     1. Click “Login as doctor” → `/login?role=doctor` → submit doctor creds → lands on `/doctor/dashboard`.  
+     2. Click “Login as admin” → `/login?role=admin` → submit admin creds → lands on `/admin/dashboard`.  
+     3. Click “Login as patient” → `/login?role=patient` → submit patient creds → lands on `/dashboard`.  
+     4. From `/dashboard`, try to access `/doctor/dashboard` → expect redirect/403.  
+
+   - **RTL unit**: login form reads `role` from URL and hides patient-only fields when `role !== 'patient'`.
+
+With these changes, patients can self-register/login, while doctors and admins can only login (no register), and each role is routed to its own dashboard with proper route guards.  
