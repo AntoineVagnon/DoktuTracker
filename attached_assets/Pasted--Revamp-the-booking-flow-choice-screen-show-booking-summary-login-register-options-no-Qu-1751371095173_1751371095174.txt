@@ -1,0 +1,57 @@
+````
+❗️ Revamp the booking‐flow choice screen: show booking summary + login/register options (no Quick‐registration box, no “back to login options” link)
+
+When an unauthenticated user clicks a time slot, they land on `/auth-choice?doctorId=…&slot=…&price=…`. We need that page to:
+
+1. **Read URL params**  
+   ```ts
+   const { doctorId, slot, price } = router.query;
+````
+
+2. **Render a compact “Booking Summary” panel** at the top:
+
+   ```jsx
+   <div className="booking-summary border rounded-lg p-4 mb-8">
+     <h2 className="text-lg font-semibold mb-2">Booking Summary</h2>
+     <div className="grid grid-cols-2 gap-2 text-sm">
+       <span>Date:</span><span>{format(new Date(slot), 'dd/MM/yyyy')}</span>
+       <span>Time:</span><span>{format(new Date(slot), 'HH:mm')}</span>
+       <span>Price:</span><span>€{price}</span>
+     </div>
+   </div>
+   ```
+
+3. **Below the summary**, show two centered cards side by side:
+
+   * **New Patient** (blue)
+
+     * Icon: patient with plus
+     * Title: `New Patient`
+     * Text: `First time using Doktu? Create your patient account to book your consultation.`
+     * Button: `Sign Up as New Patient` → router.push(`/register-form?doctorId=${doctorId}&slot=${slot}&price=${price}`)
+
+   * **Returning Patient** (green)
+
+     * Icon: arrow entering door
+     * Title: `Returning Patient`
+     * Text: `Already have a Doktu account? Sign in to continue booking.`
+     * Button: `Sign In to Account` → router.push(`/login-form?doctorId=${doctorId}&slot=${slot}&price=${price}`)
+
+4. **Remove** any:
+
+   * “Quick registration” info box
+   * “← Back to login options” link
+
+5. **Ensure responsive & accessible**:
+
+   * Cards stack vertically on mobile
+   * Buttons have `aria-label`
+
+6. **Tests**
+
+   * Add `e2e/auth-choice.spec.ts`: verify URL params parsed, summary shows correct values, both buttons navigate with preserved params.
+
+With this change, your `/auth-choice` page will mirror the desired design: a booking‐summary block up top and two clear login/register options below—no extra copy or back link.
+
+```
+```

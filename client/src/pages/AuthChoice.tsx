@@ -1,7 +1,8 @@
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserPlus, LogIn, Calendar, Clock, Euro } from "lucide-react";
+import { UserPlus, LogIn } from "lucide-react";
+import { format } from "date-fns";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -13,26 +14,6 @@ export default function AuthChoice() {
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
-
-  // Format booking details for display
-  const formatSlotDateTime = (slotString: string) => {
-    if (!slotString) return { date: '', time: '' };
-    const date = new Date(slotString);
-    return {
-      date: date.toLocaleDateString('en-GB', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      }),
-      time: date.toLocaleTimeString('en-GB', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      })
-    };
-  };
-
-  const { date, time } = formatSlotDateTime(slot || '');
 
   const handleNewPatient = () => {
     window.location.href = `/register-form?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
@@ -47,53 +28,41 @@ export default function AuthChoice() {
       <Header />
       
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-2xl mx-auto">
           
-          {/* Booking Summary */}
+          {/* Compact Booking Summary */}
           {doctorId && slot && price && (
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                Complete Your Booking
-              </h1>
-              <div className="bg-white rounded-lg shadow-sm border p-4 inline-block">
-                <div className="flex items-center space-x-6 text-gray-600">
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{date}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{time}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Euro className="h-4 w-4 mr-2" />
-                    <span className="text-sm">€{price}</span>
-                  </div>
-                </div>
+            <div className="booking-summary border rounded-lg p-4 mb-8 bg-white">
+              <h2 className="text-lg font-semibold mb-2">Booking Summary</h2>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <span>Date:</span><span>{format(new Date(slot), 'dd/MM/yyyy')}</span>
+                <span>Time:</span><span>{format(new Date(slot), 'HH:mm')}</span>
+                <span>Price:</span><span>€{price}</span>
               </div>
             </div>
           )}
 
           {/* Patient Choice Cards */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6">
             
             {/* New Patient Card */}
-            <Card className="rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader className="text-center p-8">
-                <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <UserPlus className="h-8 w-8 text-blue-600" />
+            <Card className="rounded-lg shadow-lg hover:shadow-xl transition-shadow border-blue-200">
+              <CardHeader className="text-center p-6">
+                <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                  <UserPlus className="h-6 w-6 text-blue-600" />
                 </div>
-                <CardTitle className="text-xl font-bold text-gray-900">
+                <CardTitle className="text-lg font-bold text-gray-900">
                   New Patient
                 </CardTitle>
-                <p className="text-gray-600 mt-2">
+                <p className="text-gray-600 text-sm mt-2">
                   First time using Doktu? Create your patient account to book your consultation.
                 </p>
               </CardHeader>
-              <CardContent className="px-8 pb-8">
+              <CardContent className="px-6 pb-6">
                 <Button
                   onClick={handleNewPatient}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg"
+                  aria-label="Sign up as new patient to book consultation"
                 >
                   Sign Up as New Patient
                 </Button>
@@ -101,22 +70,23 @@ export default function AuthChoice() {
             </Card>
 
             {/* Returning Patient Card */}
-            <Card className="rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader className="text-center p-8">
-                <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                  <LogIn className="h-8 w-8 text-green-600" />
+            <Card className="rounded-lg shadow-lg hover:shadow-xl transition-shadow border-green-200">
+              <CardHeader className="text-center p-6">
+                <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                  <LogIn className="h-6 w-6 text-green-600" />
                 </div>
-                <CardTitle className="text-xl font-bold text-gray-900">
+                <CardTitle className="text-lg font-bold text-gray-900">
                   Returning Patient
                 </CardTitle>
-                <p className="text-gray-600 mt-2">
+                <p className="text-gray-600 text-sm mt-2">
                   Already have a Doktu account? Sign in to continue booking.
                 </p>
               </CardHeader>
-              <CardContent className="px-8 pb-8">
+              <CardContent className="px-6 pb-6">
                 <Button
                   onClick={handleReturningPatient}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg"
+                  aria-label="Sign in to existing account to book consultation"
                 >
                   Sign In to Account
                 </Button>
