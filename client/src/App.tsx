@@ -35,15 +35,10 @@ function Router() {
       <Route path="/payment" component={Payment} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       
-      {isAuthenticated && (
-        <>
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/doctor/dashboard" component={DoctorDashboard} />
-          <Route path="/admin/dashboard" component={AdminDashboard} />
-          <Route path="/doctor-dashboard" component={DoctorDashboard} />
-          <Route path="/admin" component={AdminDashboard} />
-        </>
-      )}
+      {/* Dashboard routes - always accessible for role-based redirects */}
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/doctor-dashboard" component={DoctorDashboard} />
+      <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

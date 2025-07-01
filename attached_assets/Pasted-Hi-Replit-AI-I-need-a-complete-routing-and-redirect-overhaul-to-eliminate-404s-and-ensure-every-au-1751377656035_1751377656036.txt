@@ -1,0 +1,77 @@
+Hi Replit AI,
+
+I need a complete routing and redirect overhaul to eliminate 404s and ensure every auth and booking flow lands users on the correct dashboard. Please implement the following:
+
+1. Dashboards
+Patient dashboard: route /dashboard
+
+Doctor dashboard: route /doctor-dashboard
+
+Admin dashboard: route /admin-dashboard
+
+All three must exist in the router and never return 404.
+
+2. Header login/signup (global)
+Clicking Sign In or Sign Up in the header opens the modal.
+
+On successful login or registration from the header modal:
+
+Patients → redirect to /dashboard
+
+Doctors → redirect to /doctor-dashboard
+
+Admins → redirect to /admin-dashboard
+
+No intermediate pages or redirects should throw 404.
+
+3. Booking flow (authenticated and unauthenticated)
+Slot selection on doctor profile → click “Book Now.”
+
+Auth choice:
+
+If unauthenticated, skip the “two-step” landing; immediately show a single decision page at /auth-choice?doctorId=…&slot=…&price=… with two clearly-labeled cards:
+
+New Patient → “Sign Up & Continue” button
+
+Returning Patient → “Sign In & Continue” button
+
+No “Back to login options” link; the global header handles fallback.
+
+Auth forms:
+
+Sign In button → /login?redirect=/booking?doctorId=…&slot=…&price=…
+
+Sign Up button → /register-form?doctorId=…&slot=…&price=…
+
+Both pages must render the Booking Summary panel with date, time, price pulled from the query. No blank or “—” values.
+
+After auth:
+
+Redirect automatically to the Stripe payment page at /checkout?doctorId=…&slot=…&price=….
+
+On successful payment, redirect to /dashboard (patient) or /doctor-dashboard if the booker is a doctor.
+
+4. Edge cases & consistency
+If an authenticated patient begins booking from their own /dashboard, all the above slot → auth steps still apply, but skip the auth choice page entirely.
+
+Do not mix up the header-triggered login/register flow with the booking flow redirects—each should land in the right context.
+
+Remove or disable any residual “quick registration” banners or unsupported sandbox flags.
+
+Ensure all callback URLs are wired through Replit Auth so session state persists across redirects.
+
+Please apply just the routing updates and page-existence checks to satisfy these specifications. Once done, I should never see a 404 in any of these flows, and every successful auth or booking should land me on the appropriate dashboard with all booking details preserved.
+
+
+
+
+
+
+
+Demander à ChatGPT
+
+
+
+Outils
+
+

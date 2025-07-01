@@ -165,9 +165,9 @@ export async function setupAuth(app: Express) {
           if (dbUser) {
             // Role-based redirect based on user role in database
             if (dbUser.role === 'doctor') {
-              return res.redirect('/doctor/dashboard');
+              return res.redirect('/doctor-dashboard');
             } else if (dbUser.role === 'admin') {
-              return res.redirect('/admin/dashboard');
+              return res.redirect('/admin-dashboard');
             }
           }
           

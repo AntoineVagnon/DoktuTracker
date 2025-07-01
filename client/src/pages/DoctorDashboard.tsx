@@ -1,56 +1,31 @@
-import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, Clock, TrendingUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Clock, User, Euro, Video } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { format } from "date-fns";
 
 export default function DoctorDashboard() {
-  const { toast } = useToast();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
-  // Check if user has doctor role
-  useEffect(() => {
-    if (user && user.role !== 'doctor') {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access the doctor dashboard.",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/dashboard";
-      }, 500);
-      return;
-    }
-  }, [user, toast]);
+  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery({
+    queryKey: ["/api/appointments", "doctor"],
+    enabled: !!user,
+  });
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" aria-label="Loading"/>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+        <Footer />
       </div>
     );
-  }
-
-  if (!isAuthenticated || !user || user.role !== 'doctor') {
-    return null;
   }
 
   return (
@@ -59,15 +34,13 @@ export default function DoctorDashboard() {
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Welcome back, Dr. {user.firstName} {user.lastName}
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">Doctor Dashboard</h1>
           <p className="text-gray-600 mt-2">
-            Manage your appointments and patient consultations
+            Welcome back, Dr. {user?.firstName} {user?.lastName}
           </p>
         </div>
 
-        {/* Quick Stats */}
+        {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -75,128 +48,93 @@ export default function DoctorDashboard() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">5</div>
-              <p className="text-xs text-muted-foreground">+2 from yesterday</p>
+              <div className="text-2xl font-bold">3</div>
+              <p className="text-xs text-muted-foreground">2 confirmed, 1 pending</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">142</div>
-              <p className="text-xs text-muted-foreground">+12 this week</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Hours This Week</CardTitle>
+              <CardTitle className="text-sm font-medium">This Week</CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">32</div>
-              <p className="text-xs text-muted-foreground">6 hours remaining</p>
+              <div className="text-2xl font-bold">12</div>
+              <p className="text-xs text-muted-foreground">appointments scheduled</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Patient Rating</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
+              <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">4.8</div>
-              <p className="text-xs text-muted-foreground">+0.2 from last month</p>
+              <div className="text-2xl font-bold">89</div>
+              <p className="text-xs text-muted-foreground">active patients</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+              <Euro className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">€2,340</div>
+              <p className="text-xs text-muted-foreground">this month</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Today's Schedule */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Today's Schedule</CardTitle>
-              <CardDescription>Your upcoming appointments for today</CardDescription>
-            </CardHeader>
-            <CardContent>
+        {/* Upcoming Appointments */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Upcoming Appointments</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {appointmentsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              </div>
+            ) : appointments.length > 0 ? (
               <div className="space-y-4">
-                <div className="flex items-center p-3 bg-blue-50 rounded-lg">
-                  <div className="mr-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                {appointments.map((appointment: any) => (
+                  <div key={appointment.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div>
+                        <h3 className="font-medium">
+                          {appointment.patient?.firstName} {appointment.patient?.lastName}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {format(new Date(appointment.appointmentDate), 'PPP')} at{' '}
+                          {format(new Date(appointment.appointmentDate), 'p')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant={appointment.status === 'confirmed' ? 'default' : 'secondary'}>
+                        {appointment.status}
+                      </Badge>
+                      <Button size="sm" variant="outline">
+                        <Video className="h-4 w-4 mr-2" />
+                        Join Call
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-medium">John Smith</p>
-                    <p className="text-sm text-gray-600">General Consultation</p>
-                  </div>
-                  <div className="text-sm font-medium">9:00 AM</div>
-                </div>
-                
-                <div className="flex items-center p-3 bg-green-50 rounded-lg">
-                  <div className="mr-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium">Maria Garcia</p>
-                    <p className="text-sm text-gray-600">Follow-up Consultation</p>
-                  </div>
-                  <div className="text-sm font-medium">10:30 AM</div>
-                </div>
-                
-                <div className="flex items-center p-3 bg-orange-50 rounded-lg">
-                  <div className="mr-3">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium">David Lee</p>
-                    <p className="text-sm text-gray-600">General Consultation</p>
-                  </div>
-                  <div className="text-sm font-medium">2:00 PM</div>
-                </div>
+                ))}
               </div>
-              
-              <Button className="w-full mt-4" variant="outline">
-                View Full Schedule
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Manage your practice efficiently</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <Button className="h-20 flex flex-col items-center justify-center">
-                  <Calendar className="h-6 w-6 mb-2" />
-                  <span className="text-sm">Manage Schedule</span>
-                </Button>
-                
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
-                  <Users className="h-6 w-6 mb-2" />
-                  <span className="text-sm">Patient List</span>
-                </Button>
-                
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
-                  <Clock className="h-6 w-6 mb-2" />
-                  <span className="text-sm">Availability</span>
-                </Button>
-                
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
-                  <TrendingUp className="h-6 w-6 mb-2" />
-                  <span className="text-sm">Analytics</span>
-                </Button>
+            ) : (
+              <div className="text-center py-8">
+                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments scheduled</h3>
+                <p className="text-gray-500">Your upcoming appointments will appear here.</p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
-      
+
       <Footer />
     </div>
   );
