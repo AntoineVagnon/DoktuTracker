@@ -151,6 +151,10 @@ export default function DoctorProfile() {
 
 
   const handleSlotClick = (slot: TimeSlot) => {
+    console.log('Slot clicked:', slot);
+    console.log('Doctor:', doctor);
+    console.log('ID:', id);
+    
     // Fix the slot time format - handle both formats from the API
     let slotTime = `${slot.date}T${slot.startTime}:00Z`;
     
@@ -161,6 +165,12 @@ export default function DoctorProfile() {
     
     const price = doctor?.consultation_price || '35.00';
     
+    console.log('Generated URL params:', { 
+      doctorId: id, 
+      slot: slotTime, 
+      price: price 
+    });
+    
     if (isAuthenticated) {
       // User is already logged in, go directly to checkout
       const checkoutUrl = `/checkout?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
@@ -168,6 +178,7 @@ export default function DoctorProfile() {
     } else {
       // User not logged in, go to auth choice page
       const authChoiceUrl = `/auth-choice?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
+      console.log('Redirecting to:', authChoiceUrl);
       window.location.href = authChoiceUrl;
     }
   };

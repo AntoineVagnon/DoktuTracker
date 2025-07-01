@@ -137,6 +137,18 @@ export default function AvailabilityCalendar({
     const slot = getSlotForDateTime(date, timeStr);
     if (slot && onSlotSelect) {
       onSlotSelect(slot);
+    } else {
+      // Create a slot if none found (fallback for calendar functionality)
+      const fallbackSlot: TimeSlot = {
+        id: `${format(date, 'yyyy-MM-dd')}T${timeStr}:00Z`,
+        date: format(date, 'yyyy-MM-dd'),
+        startTime: timeStr,
+        endTime: '',
+        isAvailable: true
+      };
+      if (onSlotSelect) {
+        onSlotSelect(fallbackSlot);
+      }
     }
   };
 
