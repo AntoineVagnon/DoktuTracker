@@ -47,9 +47,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create new user
       const newUser = await storage.createUser({
-        firstName,
-        lastName,
-        email,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        role: 'patient',
         // Note: In a real app, you'd hash the password
         // For now, we'll store it as-is (not recommended for production)
       });
@@ -57,9 +58,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create session
       req.session.user = {
         id: newUser.id,
-        email: newUser.email,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
+        email: newUser.email || '',
+        firstName: newUser.firstName || '',
+        lastName: newUser.lastName || '',
       };
 
       res.json({ success: true, user: newUser });
@@ -89,9 +90,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create session
       req.session.user = {
         id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        email: user.email || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
       };
 
       res.json({ success: true, user });
@@ -361,13 +362,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Payment routes
-  app.post("/api/create-payment-intent", isAuthenticated, async (req, res) => {
+  app.post("/api/create-payment-intent", async (req, res) => {
     try {
-      const { amount, appointmentId } = req.body;
+      const { amount, doctorId, slot, appointmentId } = req.body;
+      
+      // Check if user is authenticated (either through Replit Auth or custom auth)
+      const isAuthenticated = req.isAuthenticated() || req.session?.user;
+      
+      if (!isAuthenticated) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "eur",
-        metadata: { appointmentId },
+        metadata: { 
+          appointmentId: appointmentId || '',
+          doctorId: doctorId || '',
+          slot: slot || '',
+          type: 'consultation'
+        },
       });
 
       res.json({ clientSecret: paymentIntent.client_secret });
