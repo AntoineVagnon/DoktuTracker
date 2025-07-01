@@ -162,9 +162,9 @@ export default function DoctorProfile() {
     const price = doctor?.consultation_price || '35.00';
     
     if (isAuthenticated) {
-      // User is already logged in, go directly to checkout
-      const checkoutUrl = `/checkout?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
-      window.location.href = checkoutUrl;
+      // User is already logged in, go directly to payment
+      const paymentUrl = `/payment?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;
+      window.location.href = paymentUrl;
     } else {
       // User not logged in, go to auth choice page
       const authChoiceUrl = `/auth-choice?doctorId=${id}&slot=${encodeURIComponent(slotTime)}&price=${price}`;

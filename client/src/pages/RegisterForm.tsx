@@ -28,6 +28,17 @@ export default function RegisterForm() {
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [doctor, setDoctor] = useState<any>(null);
+
+  // Fetch doctor information if booking parameters exist
+  useEffect(() => {
+    if (doctorId) {
+      fetch(`/api/public/doctors/${doctorId}`)
+        .then(res => res.json())
+        .then(data => setDoctor(data))
+        .catch(err => console.error('Error fetching doctor:', err));
+    }
+  }, [doctorId]);
 
   // Prepare booking data with fallbacks - handle null/undefined gracefully
   const slotDate = slot && slot !== 'null' && slot !== 'undefined' ? new Date(slot) : null;
@@ -95,6 +106,14 @@ export default function RegisterForm() {
             <div className="order-2 lg:order-1">
               <div className="booking-summary border rounded-lg p-4 mb-6 max-w-sm">
                 <h2 className="text-lg font-medium mb-2">Booking Summary</h2>
+                
+                {doctor && (
+                  <p className="flex justify-between mb-2">
+                    <span>Doctor:</span>
+                    <span>Dr. {doctor.user?.firstName} {doctor.user?.lastName}</span>
+                  </p>
+                )}
+                
                 <p className="flex justify-between">
                   <span>Date:</span>
                   <span>

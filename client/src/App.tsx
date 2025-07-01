@@ -15,7 +15,6 @@ import AuthChoice from "@/pages/AuthChoice";
 import RegisterForm from "@/pages/RegisterForm";
 import LoginForm from "@/pages/LoginForm";
 import LoginBook from "@/pages/LoginBook";
-import Checkout from "@/pages/Checkout";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Payment from "@/pages/Payment";
@@ -31,7 +30,7 @@ function Router() {
       <Route path="/register-form" component={RegisterForm} />
       <Route path="/login-form" component={LoginForm} />
       <Route path="/login-book" component={LoginBook} />
-      <Route path="/checkout" component={Checkout} />
+      <Route path="/checkout" component={Payment} />
       <Route path="/payment" component={Payment} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       
