@@ -1,0 +1,178 @@
+✅ Spec complete — ready for Replit Agent
+
+# Doktu — Rebuild Requirements (v4)
+
+---
+
+## 1 — Elevator pitch
+
+Replace the current **Replit OIDC** flow with **Supabase GoTrue** so that all patients, doctors, and admins authenticate directly through Supabase.
+
+* Keep existing front-end URLs (`/api/auth/login`, `/api/auth/register`, `/api/auth/logout`).
+* Seamlessly migrate existing OIDC accounts and sessions.
+* Retire legacy OIDC endpoints (`/api/login`, `/api/callback`, `/api/logout`) with 302 redirects.
+  All changes must remain HIPAA/GDPR-compliant (data in `eu-central-1`) and keep p95 auth latency ≤ 150 ms.
+
+---
+
+## 2 — Primary user roles
+
+| Role    | Creation path                 | Access gating                             |
+| ------- | ----------------------------- | ----------------------------------------- |
+| patient | Self sign-up                  | Immediate                                 |
+| doctor  | Self sign-up → licence upload | Locked until admin sets `approved = true` |
+| admin   | Invited from `/admin`         | Immediate                                 |
+
+---
+
+## 3 — Key user flows
+
+1. **Patient sign-up** → email verify → booking wizard.
+2. **Doctor sign-up** → licence upload → admin approval → `/doctor` dashboard.
+3. **Forgot password** → Supabase magic-link reset (rate-limited).
+4. **Session refresh** → GoTrue refresh token when access token < 2 min TTL.
+5. **Admin approves doctor** → audit trail entry + “Welcome Doctor” email via webhook.
+6. **Legacy Replit account migration (one-time)** → soft launch → cut-over → OIDC routes redirect.
+
+---
+
+## 4 — Non-functional must-haves
+
+* p95 latency on `/api/auth/*` < 150 ms.
+* 99.9 % monthly auth uptime.
+* AES-256 at rest, TLS 1.3 in transit.
+* WCAG 2.1 AA for all auth UI.
+
+---
+
+## 5 — Tech-stack decisions
+
+| Concern          | Choice                     | Notes                                |
+| ---------------- | -------------------------- | ------------------------------------ |
+| Auth engine      | **Supabase GoTrue**        | Replaces Replit OIDC                 |
+| Login methods    | Email + password only      | Google/Apple later                   |
+| Password hashing | bcrypt (12 rounds)         | Handled by GoTrue                    |
+| CAPTCHA          | Google reCAPTCHA v3 ≥ 0.7  | On sign-up & reset-pwd               |
+| JWT TTLs         | Access 15 min, Refresh 7 d | GoTrue default                       |
+| Session store    | Supabase refresh token     | Drop `sessions` table post-migration |
+
+---
+
+## 6 — Secrets already present in Replit
+
+`SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SENDGRID_API_KEY`, `RECAPTCHA_SITE_KEY`, `RECAPTCHA_SECRET_KEY`
+
+---
+
+## 7 — Database schema & migration
+
+### 7.1 Core additions (idempotent)
+
+```sql
+-- Extend GoTrue user record
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='auth' AND table_name='users' AND column_name='role'
+  ) THEN
+    ALTER TABLE auth.users
+      ADD COLUMN role text
+        CHECK (role IN ('patient','doctor','admin'))
+        DEFAULT 'patient';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='auth' AND table_name='users' AND column_name='approved'
+  ) THEN
+    ALTER TABLE auth.users
+      ADD COLUMN approved boolean DEFAULT false;
+  END IF;
+END $$;
+
+-- Minimal audit trail
+CREATE TABLE IF NOT EXISTS audit_events_auth (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    uuid REFERENCES auth.users(id),
+  event      text   NOT NULL,   -- login, logout, pwd_reset, doctor_approved …
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+```
+
+### 7.2 One-time migration script
+
+* **Input tables**: existing Replit OIDC user profile table(s) + `sessions`.
+* **Steps**:
+
+  1. For each distinct OIDC user:
+
+     * `insert into auth.users (id, email, role, confirmed_at)` with role = `patient` (or derived).
+     * Copy profile fields into existing `public.profiles` (if present).
+  2. Mark migrated users in a temp tracking table to allow rollback.
+* **Verification**: count of rows migrated must equal distinct OIDC users.
+* **Rollback**: delete inserted rows from `auth.users` where `id` in tracking table.
+* **Drop**: after successful verification, `DROP TABLE sessions;`.
+
+---
+
+## 8 — UI references
+
+* Auth modals: shadcn/ui `Dialog`.
+* Doctor licence upload: drop-zone (`accept="image/*,application/pdf"`).
+* Emails: Supabase default template + Doktu logo SVG + primary colour **#0A84FF**.
+
+---
+
+## 9 — “Don’t break these” rules
+
+* Keep existing RLS policies; JWT **must include `role` claim**.
+* Leave react-big-calendar, per-visit Stripe, and admin analytics untouched.
+
+---
+
+## 10 — Membership plans
+
+Out of MVP scope (handled in Payments module).
+
+---
+
+## 11 — Rate limits
+
+* **POST `/api/auth/*`** → 10 req/min/IP
+* **POST `/api/auth/forgot-password`** → 1 req/10 min/email
+
+---
+
+## 12 — Webhooks
+
+* `POST /api/webhooks/auth/doctor-approved` → SendGrid “Welcome Doctor”.
+* Placeholder `user-deleted` webhook for GDPR Art 17 (not MVP).
+
+---
+
+## 13 — Testing & CI
+
+* **Unit (Vitest)**: patient sign-up, doctor approval, token refresh, rate-limit rejects.
+* **E2E (Playwright)**: patient happy path, cross-tab logout, legacy user migration success.
+* **Accessibility (axe)**: auth modals.
+
+---
+
+## 14 — Deployment
+
+1. GitHub Actions:
+
+   * Run tests ➜ build Docker ➜ apply SQL migration ➜ run migration script ➜ Fly.io deploy.
+2. On first deploy, run migration script; exit non-zero if discrepancies.
+3. After cut-over:
+
+   * Remove Replit OIDC code (`server/replitAuth.ts`, old routes).
+   * Keep `/api/auth/*` endpoints as thin proxies to Supabase SDK, so front-end paths remain unchanged.
+   * Add 302 redirects from `/api/login`, `/api/callback`, `/api/logout` to `/login` UI route.
+
+---
+
+## 15 — Open questions
+
+None — all migration and replacement decisions confirmed.

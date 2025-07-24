@@ -1,0 +1,227 @@
+import { createClient } from '@supabase/supabase-js';
+import type { Express, RequestHandler } from 'express';
+import { storage } from './storage';
+import './types'; // Import session types
+
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+  throw new Error('SUPABASE_URL and SUPABASE_KEY must be set');
+}
+
+// Initialize Supabase client
+export const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
+
+export async function setupSupabaseAuth(app: Express) {
+  // Login endpoint
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password required' });
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return res.status(401).json({ error: error.message });
+      }
+
+      // Store session in request for middleware
+      req.session.supabaseSession = data.session;
+      
+      // Get user profile
+      const user = await storage.getUser(data.user.id);
+      
+      res.json({ 
+        user,
+        session: data.session,
+        message: 'Login successful' 
+      });
+      
+    } catch (error: any) {
+      console.error('Login error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Register endpoint
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { email, password, firstName, lastName, role = 'patient' } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password required' });
+      }
+
+      // Create user in Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            role: role
+          }
+        }
+      });
+
+      if (error) {
+        return res.status(400).json({ error: error.message });
+      }
+
+      if (data.user) {
+        // Create user profile in our database
+        const user = await storage.upsertUser({
+          id: data.user.id,
+          email: data.user.email!,
+          firstName,
+          lastName,
+          role,
+          profileImageUrl: data.user.user_metadata?.profile_image_url
+        });
+
+        // Store session if user is confirmed
+        if (data.session) {
+          req.session.supabaseSession = data.session;
+        }
+
+        res.json({ 
+          user,
+          session: data.session,
+          message: data.session ? 'Registration successful' : 'Check your email to confirm your account'
+        });
+      }
+      
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Logout endpoint
+  app.post('/api/auth/logout', async (req, res) => {
+    try {
+      const session = req.session.supabaseSession;
+      
+      if (session) {
+        await supabase.auth.signOut();
+      }
+      
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Session destroy error:', err);
+        }
+        res.json({ message: 'Logout successful' });
+      });
+      
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Get current user endpoint
+  app.get('/api/auth/user', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json(user);
+    } catch (error: any) {
+      console.error('Get user error:', error);
+      res.status(500).json({ message: 'Failed to fetch user' });
+    }
+  });
+
+  // Password reset endpoint
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${req.protocol}://${req.get('host')}/reset-password`
+      });
+
+      if (error) {
+        return res.status(400).json({ error: error.message });
+      }
+
+      res.json({ message: 'Password reset email sent' });
+      
+    } catch (error: any) {
+      console.error('Password reset error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Legacy Replit OIDC redirect endpoints (for migration)
+  app.get('/api/login', (req, res) => {
+    res.redirect(302, '/login');
+  });
+
+  app.get('/api/callback', (req, res) => {
+    res.redirect(302, '/login');
+  });
+
+  app.get('/api/logout', (req, res) => {
+    res.redirect(302, '/login');
+  });
+}
+
+// Authentication middleware
+export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  try {
+    const session = req.session.supabaseSession;
+    
+    if (!session || !session.access_token) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    // Check if token is expired
+    const now = Math.floor(Date.now() / 1000);
+    if (session.expires_at && now >= session.expires_at) {
+      // Try to refresh token
+      const { data, error } = await supabase.auth.refreshSession(session);
+      
+      if (error || !data.session) {
+        return res.status(401).json({ error: 'Session expired' });
+      }
+      
+      // Update session
+      req.session.supabaseSession = data.session;
+      req.user = { id: data.user.id, email: data.user.email };
+    } else {
+      // Verify current token
+      const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
+      
+      if (error || !user) {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+      
+      req.user = { id: user.id, email: user.email };
+    }
+
+    next();
+  } catch (error: any) {
+    console.error('Auth middleware error:', error);
+    res.status(401).json({ error: 'Authentication failed' });
+  }
+};
