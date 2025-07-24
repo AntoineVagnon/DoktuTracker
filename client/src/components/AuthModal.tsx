@@ -57,9 +57,17 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
-      // Store modal state and redirect directly - popup will handle redirect back
+      const response = await apiRequest("POST", "/api/auth/login", data);
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
       onClose();
-      window.location.href = "/api/login";
+      // Refresh page to update auth state
+      window.location.reload();
     },
     onError: (error: Error) => {
       toast({
@@ -72,9 +80,21 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
 
   const signupMutation = useMutation({
     mutationFn: async (data: SignupForm) => {
-      // Store modal state and redirect directly - server will handle redirect back
+      const response = await apiRequest("POST", "/api/auth/register", data);
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Account Created",
+        description: data.message || "Your account has been created successfully!",
+      });
       onClose();
-      window.location.href = "/api/login";
+      // Redirect to dashboard for patients
+      if (data.user?.role === 'patient') {
+        window.location.href = '/dashboard';
+      } else {
+        window.location.reload();
+      }
     },
     onError: (error: Error) => {
       toast({

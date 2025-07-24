@@ -153,7 +153,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin routes
   app.get("/api/admin/kpis", isAuthenticated, async (req, res) => {
     try {
-      // TODO: Add admin role check
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get user to check role
+      const user = await storage.getUser(userId);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const kpis = await storage.getKPIs();
       res.json(kpis);
     } catch (error) {
