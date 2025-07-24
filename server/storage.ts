@@ -134,7 +134,7 @@ export class DatabaseStorage implements IStorage {
         consultationPrice: doctors.consultationPrice,
         rating: doctors.rating,
         reviewCount: doctors.reviewCount,
-        // isOnline: doctors.isOnline, // Column doesn't exist in DB yet
+        isOnline: doctors.isOnline,
         createdAt: doctors.createdAt,
         updatedAt: doctors.updatedAt,
         user: {

@@ -2,26 +2,28 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from "@shared/schema";
 
-// Build connection string from Replit PostgreSQL environment variables
-const connectionString = process.env.PGHOST && process.env.PGUSER && process.env.PGPASSWORD && process.env.PGDATABASE
-  ? `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`
-  : process.env.DATABASE_URL;
+const connectionString = process.env.SUPABASE_CONNEXION_STRING || process.env.DATABASE_URL;
 
 if (!connectionString) {
   throw new Error(
-    "Database connection info must be set. Did you forget to provision a database?",
+    "SUPABASE_CONNEXION_STRING or DATABASE_URL must be set. Did you forget to provision a database?",
   );
 }
 
-console.log('Connecting to Replit PostgreSQL database');
+console.log('Connecting to Supabase database via pooler');
 console.log('Connection string format:', connectionString.replace(/:([^@]*?)@/, ':***@'));
 
-// Configure postgres client with proper settings
+// Force pooler connection if old format is detected
+const poolerConnectionString = connectionString.includes('db.hzmrkvooqjbxptqjqxii.supabase.co')
+  ? 'postgresql://postgres.hzmrkvooqjbxptqjqxii:kDa2KgKJv9K3w8yY@aws-0-eu-central-1.pooler.supabase.com:5432/postgres'
+  : connectionString;
+
+// Configure postgres client with proper settings for Supabase
 console.log('Creating database client...');
 
-const client = postgres(connectionString, { 
+const client = postgres(poolerConnectionString, { 
   prepare: false,
-  ssl: connectionString.includes('neon.tech') ? 'require' : false, // Neon requires SSL
+  ssl: 'require', // Force SSL for Supabase
   max: 10,
   idle_timeout: 20,
   connect_timeout: 10,
