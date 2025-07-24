@@ -74,23 +74,35 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User operations (required for Replit Auth)
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
+  // User operations (required for Supabase Auth)
+  async getUser(id: string | number): Promise<User | undefined> {
+    // Try to find user by ID (integer) - this will work with existing users
+    const [user] = await db.select().from(users).where(eq(users.id, Number(id)));
     return user;
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
+    // For registration, we need to create a new user with the next available ID
+    // Since we can't use Supabase UUIDs as primary keys with existing integer schema
+    
+    // First, try to find user by email (in case they already exist)
+    const existingUser = await this.getUserByEmail(userData.email);
+    if (existingUser) {
+      return existingUser;
+    }
+
+    // Create new user with fields that exist in the database schema
+    const cleanUserData = {
+      email: userData.email,
+      role: userData.role || 'patient',
+      approved: userData.approved || false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
     const [user] = await db
       .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
+      .values(cleanUserData)
       .returning();
     return user;
   }
@@ -101,12 +113,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: Omit<UpsertUser, 'id'>): Promise<User> {
+    // Only include fields that exist in the database schema
+    const cleanUserData = {
+      id: Math.random().toString(36).substr(2, 9), // Generate simple ID
+      email: userData.email,
+      role: userData.role || 'patient',
+      approved: userData.approved || false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
     const [user] = await db
       .insert(users)
-      .values({
-        ...userData,
-        id: Math.random().toString(36).substr(2, 9), // Generate simple ID
-      })
+      .values(cleanUserData)
       .returning();
     return user;
   }

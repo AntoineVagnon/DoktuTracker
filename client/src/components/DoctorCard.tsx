@@ -8,10 +8,8 @@ import { Link } from "wouter";
 interface Doctor {
   id: string;
   user: {
-    firstName: string;
-    lastName: string;
-    profileImageUrl?: string;
-  };
+    email: string;
+  } | null;
   specialty: string;
   rating: string;
   reviewCount: number;
@@ -26,8 +24,10 @@ interface DoctorCardProps {
 }
 
 export default function DoctorCard({ doctor, availableSlots = [], onBookClick }: DoctorCardProps) {
-  const doctorName = `Dr. ${doctor.user.firstName} ${doctor.user.lastName}`;
-  const initials = `${doctor.user.firstName[0]}${doctor.user.lastName[0]}`.toUpperCase();
+  // Handle null user case and extract name from email
+  const userName = doctor.user?.email ? doctor.user.email.split('@')[0] : 'Unknown';
+  const doctorName = `Dr. ${userName}`;
+  const initials = userName ? userName.substring(0, 2).toUpperCase() : 'DR';
   
   const gradientColors = [
     "from-blue-500 to-blue-600",
@@ -39,7 +39,7 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
     "from-pink-500 to-pink-600",
   ];
   
-  const gradientClass = gradientColors[parseInt(doctor.id.slice(-1), 16) % gradientColors.length];
+  const gradientClass = gradientColors[parseInt(String(doctor.id).slice(-1), 16) % gradientColors.length];
 
   const handleBookClick = () => {
     if (onBookClick) {
@@ -54,7 +54,6 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
           {/* Avatar */}
           <div className="mx-auto mb-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src={doctor.user.profileImageUrl} alt={doctorName} />
               <AvatarFallback className={`bg-gradient-to-br ${gradientClass} text-white font-bold text-xl`}>
                 {initials}
               </AvatarFallback>

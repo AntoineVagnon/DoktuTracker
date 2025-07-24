@@ -33,10 +33,18 @@ export async function setupSupabaseAuth(app: Express) {
       }
 
       // Store session in request for middleware
-      req.session.supabaseSession = data.session;
+      (req.session as any).supabaseSession = data.session;
 
-      // Get user profile
-      const user = await storage.getUser(data.user.id);
+      // Get or create user profile in database
+      // For login, find user by email since Supabase UUIDs don't match our integer IDs
+      let user = await storage.getUserByEmail(data.user.email || email);
+      if (!user) {
+        user = await storage.upsertUser({
+          id: data.user.id,
+          email: data.user.email || email,
+          role: 'patient'
+        });
+      }
 
       res.json({ 
         user,
@@ -77,19 +85,16 @@ export async function setupSupabaseAuth(app: Express) {
       }
 
       if (data.user) {
-        // Create user profile in our database
+        // Create user profile in our database - only use fields that exist
         const user = await storage.upsertUser({
-          id: data.user.id,
+          id: data.user.id, // This will be ignored in favor of auto-increment
           email: data.user.email!,
-          firstName,
-          lastName,
-          role,
-          profileImageUrl: data.user.user_metadata?.profile_image_url
+          role
         });
 
         // Store session if user is confirmed
         if (data.session) {
-          req.session.supabaseSession = data.session;
+          (req.session as any).supabaseSession = data.session;
         }
 
         res.json({ 

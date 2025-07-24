@@ -7,6 +7,7 @@ import {
   index,
   uuid,
   integer,
+  serial,
   decimal,
   boolean,
   time,
@@ -26,17 +27,17 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table (required for Replit Auth)
+// User storage table - matched to actual Supabase schema
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().notNull(),
+  id: integer("id").primaryKey(), // Use integer to match actual database
   email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
+  // firstName: varchar("first_name"), // Column doesn't exist in Supabase
+  // lastName: varchar("last_name"), // Column doesn't exist in Supabase  
+  // profileImageUrl: varchar("profile_image_url"), // Column doesn't exist in Supabase
   role: varchar("role").notNull().default("patient"), // patient, doctor, admin
   approved: boolean("approved").default(false), // for doctor approval
-  stripeCustomerId: varchar("stripe_customer_id"),
-  stripeSubscriptionId: varchar("stripe_subscription_id"),
+  // stripeCustomerId: varchar("stripe_customer_id"), // Column doesn't exist in Supabase
+  // stripeSubscriptionId: varchar("stripe_subscription_id"), // Column doesn't exist in Supabase
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

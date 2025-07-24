@@ -49,8 +49,6 @@ export default function CreateAccount() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          firstName: 'Antoine',
-          lastName: 'Vagnon',
           role: 'patient'
         }),
       });
