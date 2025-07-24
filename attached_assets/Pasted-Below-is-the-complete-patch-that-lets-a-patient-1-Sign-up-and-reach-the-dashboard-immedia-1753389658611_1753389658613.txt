@@ -1,0 +1,162 @@
+Below is the **complete patch** that lets a patient:
+
+1. **Sign up and reach the dashboard immediately** (email not yet verified).
+2. Receive a **custom verification email** with a link to `/verify?token=…`.
+3. See a **blocking banner** until the address is confirmed.
+4. After clicking the link, be marked `email_verified = true`, banner disappears, and all booking actions unlock.
+
+Everything is additive and keeps the rest of your flow intact.
+
+---
+
+## 1 — Supabase settings (one-time)
+
+| Setting                                           | Value                    | Why                                                     |
+| ------------------------------------------------- | ------------------------ | ------------------------------------------------------- |
+| **Auth → Advanced → Disable Email Confirmations** | **ON**                   | Supabase stops blocking unconfirmed users.              |
+| **Emails → SMTP Settings → Enable Custom SMTP**   | Configure SendGrid creds | You still need to send the verification email yourself. |
+
+*(The built-in Supabase e-mail templates are now unused.)*
+
+---
+
+## 2 — Database migration
+
+```sql
+-- Add a flag to track late confirmation
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='auth' AND table_name='users' AND column_name='email_verified'
+  ) THEN
+    ALTER TABLE auth.users
+      ADD COLUMN email_verified boolean DEFAULT false;
+  END IF;
+END $$;
+```
+
+---
+
+## 3 — Back-end routes (`server/routes/auth.ts`)
+
+```ts
+import { createClient } from '@supabase/supabase-js'
+import sendgrid from '@sendgrid/mail'
+import express from 'express'
+
+export const authRouter = express.Router()
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY!)
+
+/* ---------- 1. Register ---------- */
+authRouter.post('/register', async (req, res) => {
+  const { email, password, fullName } = req.body
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: fullName ?? '', role: 'patient' } }
+  })
+  if (error) return res.status(400).json({ error: error.message })
+
+  /* Generate verification link */
+  const { data: linkData, error: linkErr } =
+    await supabase.auth.admin.generateLink({ type: 'email', email })
+  if (linkErr) return res.status(500).json({ error: linkErr.message })
+
+  /* Send custom e-mail */
+  await sendgrid.send({
+    to: email,
+    from: 'noreply@doktu.com',
+    subject: 'Confirm your e-mail for Doktu',
+    html: `<p>Welcome to Doktu!</p>
+           <p>Please confirm your address by clicking
+           <a href="${process.env.FRONTEND_URL}/verify?token=${linkData.properties.token}">
+           this link</a>.</p>`
+  })
+
+  return res.status(201).json({ message: 'Registered. Check your inbox.' })
+})
+
+/* ---------- 2. Verify ---------- */
+authRouter.get('/verify', async (req, res) => {
+  const { token } = req.query
+  if (!token) return res.status(400).send('Missing token')
+
+  /* Consume token */
+  const { data, error } =
+    await supabase.auth.verifyOtp({ token: token as string, type: 'email' })
+  if (error) return res.status(400).send('Invalid or expired token')
+
+  /* Mark user as verified */
+  await supabase
+    .from('auth.users')
+    .update({ email_verified: true })
+    .eq('id', data.user.id)
+
+  return res.redirect(`${process.env.FRONTEND_URL}/dashboard?verified=1`)
+})
+```
+
+Mount once in `server/routes.ts`:
+
+```ts
+import { authRouter } from './routes/auth'
+app.use('/api/auth', authRouter)
+```
+
+---
+
+## 4 — Front-end changes
+
+### 4.1 Banner component (`components/VerifyEmailBanner.tsx`)
+
+```tsx
+export const VerifyEmailBanner = () => (
+  <div className="bg-yellow-100 p-4 rounded-xl text-sm text-yellow-900 flex items-center gap-2">
+    <svg /* icon */ className="h-4 w-4" />
+    <span>Veuillez confirmer votre e-mail pour accéder aux réservations.</span>
+    <button
+      className="ml-auto underline font-medium"
+      onClick={() => fetch('/api/auth/resend-verification', { method: 'POST' })}
+    >
+      Renvoyer le lien
+    </button>
+  </div>
+)
+```
+
+### 4.2 Dashboard guard
+
+```tsx
+const { data: { session } } = await supabase.auth.getSession()
+const unverified = !session?.user?.user_metadata?.email_verified
+return (
+  <>
+    {unverified && <VerifyEmailBanner />}
+    {/* pass `disabled={unverified}` to “Book Appointment” etc. */}
+  </>
+)
+```
+
+*(Bonus: create `/api/auth/resend-verification` that re-calls `generateLink` and SendGrid.)*
+
+---
+
+## 5 — Tests
+
+| Scope    | Check                                                                                                     |
+| -------- | --------------------------------------------------------------------------------------------------------- |
+| **Unit** | `/register` returns 201 & SendGrid called once. `/verify` 302-redirects and sets `email_verified = true`. |
+| **E2E**  | Sign up → dashboard with banner → link → reload → banner gone, booking buttons enabled.                   |
+
+---
+
+## 6 — Deployment notes
+
+1. Run the SQL migration (step 2).
+2. Deploy new routes.
+3. Toggle **Disable Email Confirmations = ON** in Supabase.
+4. Configure SMTP credentials in **Emails → SMTP Settings** (prod only).
+
+Your users can now explore Doktu right after registration, yet must finish the e-mail verification before booking an appointment.
