@@ -18,7 +18,7 @@ export async function setupSupabaseAuth(app: Express) {
   app.post('/api/auth/login', async (req, res) => {
     try {
       const { email, password } = req.body;
-      
+
       if (!email || !password) {
         return res.status(400).json({ error: 'Email and password required' });
       }
@@ -34,16 +34,16 @@ export async function setupSupabaseAuth(app: Express) {
 
       // Store session in request for middleware
       req.session.supabaseSession = data.session;
-      
+
       // Get user profile
       const user = await storage.getUser(data.user.id);
-      
+
       res.json({ 
         user,
         session: data.session,
         message: 'Login successful' 
       });
-      
+
     } catch (error: any) {
       console.error('Login error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -54,7 +54,7 @@ export async function setupSupabaseAuth(app: Express) {
   app.post('/api/auth/register', async (req, res) => {
     try {
       const { email, password, firstName, lastName, role = 'patient' } = req.body;
-      
+
       if (!email || !password) {
         return res.status(400).json({ error: 'Email and password required' });
       }
@@ -98,7 +98,7 @@ export async function setupSupabaseAuth(app: Express) {
           message: data.session ? 'Registration successful' : 'Check your email to confirm your account'
         });
       }
-      
+
     } catch (error: any) {
       console.error('Registration error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -109,18 +109,18 @@ export async function setupSupabaseAuth(app: Express) {
   app.post('/api/auth/logout', async (req, res) => {
     try {
       const session = req.session.supabaseSession;
-      
+
       if (session) {
         await supabase.auth.signOut();
       }
-      
+
       req.session.destroy((err) => {
         if (err) {
           console.error('Session destroy error:', err);
         }
         res.json({ message: 'Logout successful' });
       });
-      
+
     } catch (error: any) {
       console.error('Logout error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -151,7 +151,7 @@ export async function setupSupabaseAuth(app: Express) {
   app.post('/api/auth/forgot-password', async (req, res) => {
     try {
       const { email } = req.body;
-      
+
       if (!email) {
         return res.status(400).json({ error: 'Email required' });
       }
@@ -165,7 +165,7 @@ export async function setupSupabaseAuth(app: Express) {
       }
 
       res.json({ message: 'Password reset email sent' });
-      
+
     } catch (error: any) {
       console.error('Password reset error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -190,7 +190,7 @@ export async function setupSupabaseAuth(app: Express) {
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   try {
     const session = req.session.supabaseSession;
-    
+
     if (!session || !session.access_token) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
@@ -200,22 +200,22 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     if (session.expires_at && now >= session.expires_at) {
       // Try to refresh token
       const { data, error } = await supabase.auth.refreshSession(session);
-      
+
       if (error || !data.session) {
         return res.status(401).json({ error: 'Session expired' });
       }
-      
+
       // Update session
       req.session.supabaseSession = data.session;
       req.user = { id: data.user.id, email: data.user.email };
     } else {
       // Verify current token
       const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
-      
+
       if (error || !user) {
         return res.status(401).json({ error: 'Invalid token' });
       }
-      
+
       req.user = { id: user.id, email: user.email };
     }
 

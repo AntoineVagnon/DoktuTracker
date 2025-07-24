@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
 import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema } from "@shared/schema";
+import { authRouter } from "./routes/auth";
 import { z } from "zod";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -17,6 +18,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Supabase authentication
   await setupSupabaseAuth(app);
+
+  // Mount auth router
+  app.use('/api/auth', authRouter);
 
   // Test callback endpoint for OAuth troubleshooting
   app.get('/test-callback', (req, res) => {
