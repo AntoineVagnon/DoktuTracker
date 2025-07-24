@@ -48,8 +48,27 @@ export default function LoginBook() {
     setIsLoading(true);
 
     try {
-      // Redirect directly to authentication with booking parameters
-      window.location.href = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+      // Login with Supabase Auth API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      // Successful login - redirect to checkout with booking parameters
+      const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+      window.location.href = checkoutUrl;
 
     } catch (error) {
       console.error('Login error:', error);

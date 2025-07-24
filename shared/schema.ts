@@ -54,7 +54,7 @@ export const doctors = pgTable("doctors", {
   consultationPrice: decimal("consultation_price", { precision: 10, scale: 2 }).notNull().default("35.00"),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("5.00"),
   reviewCount: integer("review_count").default(0),
-  isOnline: boolean("is_online").default(false),
+  // isOnline: boolean("is_online").default(false), // Column not in Supabase
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

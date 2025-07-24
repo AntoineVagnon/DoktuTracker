@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
 import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -15,8 +15,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup Replit authentication
-  await setupAuth(app);
+  // Setup Supabase authentication
+  await setupSupabaseAuth(app);
 
   // Test callback endpoint for OAuth troubleshooting
   app.get('/test-callback', (req, res) => {
@@ -193,20 +193,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current user endpoint
   app.get("/api/auth/user", async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
+      const session = req.session.supabaseSession;
+
+      if (!session || !session.access_token) {
         return res.status(401).json({ error: "Not authenticated" });
       }
 
-      const user = req.user as any;
-      const userId = user?.claims?.sub;
+      // Verify current token with Supabase
+      const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
 
-      if (!userId) {
-        return res.status(401).json({ error: "Invalid session" });
+      if (error || !user) {
+        return res.status(401).json({ error: "Invalid token" });
       }
 
-      const dbUser = await storage.getUser(userId);
+      // Get user from database or create if doesn't exist
+      let dbUser = await storage.getUser(user.id);
+      
       if (!dbUser) {
-        return res.status(404).json({ message: "User not found" });
+        // Create user if doesn't exist (for Supabase users)
+        dbUser = await storage.upsertUser({
+          id: user.id,
+          email: user.email,
+          firstName: user.user_metadata?.first_name || null,
+          lastName: user.user_metadata?.last_name || null,
+          profileImageUrl: user.user_metadata?.avatar_url || null,
+          role: 'patient' // Default role
+        });
       }
 
       res.json(dbUser);

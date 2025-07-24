@@ -113,11 +113,46 @@ export class DatabaseStorage implements IStorage {
 
   // Doctor operations
   async getDoctors(): Promise<(Doctor & { user: User })[]> {
-    return await db
-      .select()
+    const results = await db
+      .select({
+        // Doctor fields
+        id: doctors.id,
+        userId: doctors.userId,
+        specialty: doctors.specialty,
+        bio: doctors.bio,
+        education: doctors.education,
+        experience: doctors.experience,
+        languages: doctors.languages,
+        rppsNumber: doctors.rppsNumber,
+        consultationPrice: doctors.consultationPrice,
+        rating: doctors.rating,
+        reviewCount: doctors.reviewCount,
+        createdAt: doctors.createdAt,
+        updatedAt: doctors.updatedAt,
+        // User fields
+        user: {
+          id: users.id,
+          email: users.email,
+          firstName: sql`NULL`.as('firstName'), // Column doesn't exist in Supabase
+          lastName: sql`NULL`.as('lastName'), // Column doesn't exist in Supabase
+          profileImageUrl: users.profileImageUrl,
+          role: users.role,
+          approved: users.approved,
+          stripeCustomerId: users.stripeCustomerId,
+          stripeSubscriptionId: users.stripeSubscriptionId,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt
+        }
+      })
       .from(doctors)
       .innerJoin(users, eq(doctors.userId, users.id))
       .orderBy(desc(doctors.rating), asc(doctors.createdAt));
+    
+    // Add default isOnline property since it may not exist in database
+    return results.map(result => ({
+      ...result,
+      isOnline: false // Default value since column doesn't exist
+    }));
   }
 
   async getDoctor(id: string): Promise<(Doctor & { user: User }) | undefined> {
@@ -134,16 +169,16 @@ export class DatabaseStorage implements IStorage {
         consultationPrice: doctors.consultationPrice,
         rating: doctors.rating,
         reviewCount: doctors.reviewCount,
-        isOnline: doctors.isOnline,
         createdAt: doctors.createdAt,
         updatedAt: doctors.updatedAt,
         user: {
           id: users.id,
           email: users.email,
-          firstName: users.firstName,
-          lastName: users.lastName,
+          firstName: sql`NULL`.as('firstName'), // Column doesn't exist in Supabase
+          lastName: sql`NULL`.as('lastName'), // Column doesn't exist in Supabase
           profileImageUrl: users.profileImageUrl,
           role: users.role,
+          approved: users.approved,
           stripeCustomerId: users.stripeCustomerId,
           stripeSubscriptionId: users.stripeSubscriptionId,
           createdAt: users.createdAt,
@@ -153,7 +188,14 @@ export class DatabaseStorage implements IStorage {
       .from(doctors)
       .innerJoin(users, eq(doctors.userId, users.id))
       .where(eq(doctors.id, id));
-    return result;
+    
+    if (!result) return undefined;
+    
+    // Add default isOnline property since it may not exist in database
+    return {
+      ...result,
+      isOnline: false // Default value since column doesn't exist
+    };
   }
 
   async getDoctorByUserId(userId: string): Promise<Doctor | undefined> {
@@ -167,10 +209,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateDoctorOnlineStatus(doctorId: string, isOnline: boolean): Promise<void> {
-    await db
-      .update(doctors)
-      .set({ isOnline, updatedAt: new Date() })
-      .where(eq(doctors.id, doctorId));
+    // Skip updating isOnline since column doesn't exist in database
+    // This method is kept for compatibility but does nothing
+    console.log(`Skipping isOnline update for doctor ${doctorId} - column not in database schema`);
   }
 
   // Time slot operations
