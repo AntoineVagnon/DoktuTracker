@@ -3,9 +3,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import Header from "@/components/Header";
+import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
+import { Calendar, Clock, User, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -17,6 +20,23 @@ export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [showVerificationBanner, setShowVerificationBanner] = useState(false);
+  const [verificationJustCompleted, setVerificationJustCompleted] = useState(false);
+
+  useEffect(() => {
+    // Check if user just completed verification
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('verified') === '1') {
+      setVerificationJustCompleted(true);
+      // Clear the URL parameter
+      window.history.replaceState({}, '', '/dashboard');
+    }
+
+    // Show banner if user is not email verified and didn't just complete verification
+    if (user && !user.email_verified && !verificationJustCompleted) {
+      setShowVerificationBanner(true);
+    }
+  }, [user, verificationJustCompleted]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -95,7 +115,7 @@ export default function Dashboard() {
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    
+
     return (
       <Badge variant={config.variant} className={config.className}>
         {config.label}
@@ -108,7 +128,7 @@ export default function Dashboard() {
     const now = new Date();
     const timeDiff = appointmentTime.getTime() - now.getTime();
     const minutesDiff = timeDiff / (1000 * 60);
-    
+
     return minutesDiff <= 5 && minutesDiff >= -30 && appointment.status === "paid";
   };
 
@@ -132,7 +152,7 @@ export default function Dashboard() {
             <h1 className="text-3xl font-bold text-gray-900">Patient Dashboard</h1>
             <p className="text-gray-600">Welcome back, {user?.firstName || "Patient"}</p>
           </div>
-          
+
           <Button className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
             <Plus className="h-4 w-4 mr-2" />
             Book New Appointment
@@ -202,7 +222,7 @@ export default function Dashboard() {
                               </div>
                               {getStatusBadge(appointment.status)}
                             </div>
-                            
+
                             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                               <div className="flex items-center">
                                 <Clock className="h-4 w-4 mr-1" />
@@ -221,11 +241,11 @@ export default function Dashboard() {
                                   Join Video Call
                                 </Button>
                               )}
-                              
+
                               <Button variant="outline" size="sm">
                                 Reschedule
                               </Button>
-                              
+
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
@@ -276,11 +296,11 @@ export default function Dashboard() {
                               </div>
                               {getStatusBadge(appointment.status)}
                             </div>
-                            
+
                             <p className="text-sm text-gray-600 mb-2">
                               {format(new Date(appointment.appointmentDate), "MMM d, yyyy 'at' h:mm a")}
                             </p>
-                            
+
                             {appointment.status === "completed" && (
                               <Button variant="ghost" size="sm">
                                 <Star className="h-4 w-4 mr-2" />
@@ -343,17 +363,17 @@ export default function Dashboard() {
                   <Calendar className="h-4 w-4 mr-2" />
                   Book Appointment
                 </Button>
-                
+
                 <Button variant="outline" className="w-full">
                   <CalendarCheck className="h-4 w-4 mr-2" />
                   My Calendar
                 </Button>
-                
+
                 <Button variant="outline" className="w-full">
                   <User className="h-4 w-4 mr-2" />
                   My Doctors
                 </Button>
-                
+
                 <Button variant="outline" className="w-full">
                   <Settings className="h-4 w-4 mr-2" />
                   My Profile
