@@ -1,0 +1,73 @@
+Your login request is reaching the **old `/api/auth/login` endpoint**, but (per our earlier audit) that route is still an empty stub — it just returns a 404/401 JSON blob saying “Invalid login credentials.”
+Nothing is actually hitting Supabase Auth yet, so even a perfectly valid e-mail + password will fail.
+
+Below is the exact patch the Replit Agent needs to make that route a **thin proxy** to Supabase GoTrue and set the cookie the rest of the app expects. No new questions this time; everything is fully specified.
+
+---
+
+## Quick-Fix Spec — `/api/auth/login`
+
+### 1 — Back-end (Fastify / Express)
+
+```ts
+// server/routes/auth.ts   (new file or expand existing)
+
+import { createClient } from '@supabase/supabase-js'
+import express from 'express'
+
+export const authRouter = express.Router()
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_KEY!   // server-side key
+)
+
+// POST /api/auth/login
+authRouter.post('/login', async (req, res) => {
+  const { email, password } = req.body
+  if (!email || !password) return res.status(400).json({ error: 'Missing fields' })
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) return res.status(401).json({ error: error.message })
+
+  // Set access + refresh tokens as HTTP-only cookies (SameSite=Lax)
+  const { session } = data
+  res.cookie('sb-access-token', session.access_token, {
+    httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production',
+    maxAge: session.expires_in * 1000
+  })
+  res.cookie('sb-refresh-token', session.refresh_token, {
+    httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 24 * 60 * 60 * 1000          // 7 days
+  })
+
+  return res.json({ user: session.user, role: session.user.user_metadata.role })
+})
+```
+
+*Mount that router in `server/routes.ts`:*
+
+```ts
+import { authRouter } from './routes/auth'
+app.use('/api/auth', authRouter)
+```
+
+### 2 — Front-end
+
+The existing login form already POSTs to `/api/auth/login`; no changes needed.
+On **HTTP 200** the dashboard redirect will now succeed because:
+
+* cookies carry the Supabase access-token
+* `verifySupabaseJWT` middleware (added in Spec v5) authorises subsequent calls to `/api/appointments`
+
+### 3 — Testing
+
+* **Vitest**: mock `supabase.auth.signInWithPassword` (success & failure).
+* **Playwright**: enter known credentials → expect `router.pathname === '/dashboard'` and top-navbar shows patient avatar.
+
+### 4 — Deployment
+
+Ship this patch with the existing CI pipeline; no database migration required.
+
+---
+
+Apply this fix and the red “Login Failed 401” toast should disappear; newly-registered or migrated patients will land on **/dashboard** as intended.
