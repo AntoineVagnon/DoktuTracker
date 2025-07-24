@@ -6,14 +6,15 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 
-export default function TestLogin() {
+export default function CreateAccount() {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    email: 'antoine.vagnon@gmail.com', // Pre-filled for testing
-    password: ''
+    email: 'antoine.vagnon@gmail.com',
+    password: '',
+    confirmPassword: ''
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [loginResult, setLoginResult] = useState<any>(null);
+  const [result, setResult] = useState<any>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,11 +27,21 @@ export default function TestLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setLoginResult(null);
+    setResult(null);
+
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      // Test Supabase Auth API
-      const response = await fetch('/api/auth/login', {
+      // Create account with Supabase Auth API
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,46 +49,34 @@ export default function TestLogin() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
+          firstName: 'Antoine',
+          lastName: 'Vagnon',
+          role: 'patient'
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
+        throw new Error(data.error || 'Registration failed');
       }
 
-      setLoginResult(data);
+      setResult(data);
       toast({
-        title: "Login Successful!",
-        description: `Welcome back ${data.user?.email || 'User'}`,
+        title: "Account Created!",
+        description: `Account created successfully for ${data.user?.email || formData.email}`,
       });
 
-      // Redirect to dashboard after successful login
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 1000);
-
     } catch (error) {
-      console.error('Login error:', error);
-      setLoginResult({ error: error instanceof Error ? error.message : 'Login failed' });
+      console.error('Registration error:', error);
+      setResult({ error: error instanceof Error ? error.message : 'Registration failed' });
       toast({
-        title: "Login Failed",
-        description: error instanceof Error ? error.message : "Please check your credentials and try again.",
+        title: "Registration Failed",
+        description: error instanceof Error ? error.message : "Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const testCurrentUser = async () => {
-    try {
-      const response = await fetch('/api/auth/user');
-      const data = await response.json();
-      setLoginResult({ currentUser: data });
-    } catch (error) {
-      setLoginResult({ error: 'Failed to fetch current user' });
     }
   };
 
@@ -90,10 +89,10 @@ export default function TestLogin() {
           <Card className="rounded-2xl shadow-lg">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-center">
-                Supabase Login Test
+                Create Supabase Account
               </CardTitle>
               <p className="text-gray-600 text-center">
-                Test authentication with your Supabase credentials
+                Create your account in the Supabase Auth system
               </p>
             </CardHeader>
 
@@ -119,8 +118,22 @@ export default function TestLogin() {
                     id="password"
                     name="password"
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder="Create a password"
                     value={formData.password}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
                     onChange={handleInputChange}
                     required
                     className="w-full"
@@ -132,34 +145,24 @@ export default function TestLogin() {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Signing In..." : "Sign In"}
+                  {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
               </form>
 
-              <div className="space-y-2">
-                <Button 
-                  onClick={testCurrentUser}
-                  variant="outline"
-                  className="w-full"
-                >
-                  Test Current User
-                </Button>
-              </div>
-
-              {loginResult && (
+              {result && (
                 <div className="mt-6 p-4 bg-gray-100 rounded-lg">
                   <h3 className="font-medium mb-2">Result:</h3>
                   <pre className="text-sm overflow-auto">
-                    {JSON.stringify(loginResult, null, 2)}
+                    {JSON.stringify(result, null, 2)}
                   </pre>
                 </div>
               )}
 
               <div className="text-center">
                 <p className="text-sm text-gray-600">
-                  Need to create an account?{' '}
-                  <a href="/create-account" className="text-blue-600 hover:underline">
-                    Create Account
+                  Already have an account?{' '}
+                  <a href="/test-login" className="text-blue-600 hover:underline">
+                    Sign In
                   </a>
                 </p>
               </div>

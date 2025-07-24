@@ -129,17 +129,17 @@ export class DatabaseStorage implements IStorage {
         reviewCount: doctors.reviewCount,
         createdAt: doctors.createdAt,
         updatedAt: doctors.updatedAt,
-        // User fields
+        // User fields  
         user: {
           id: users.id,
           email: users.email,
           firstName: sql`NULL`.as('firstName'), // Column doesn't exist in Supabase
           lastName: sql`NULL`.as('lastName'), // Column doesn't exist in Supabase
-          profileImageUrl: users.profileImageUrl,
+          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Column doesn't exist in Supabase
           role: users.role,
           approved: users.approved,
-          stripeCustomerId: users.stripeCustomerId,
-          stripeSubscriptionId: users.stripeSubscriptionId,
+          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Column doesn't exist in Supabase
+          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Column doesn't exist in Supabase
           createdAt: users.createdAt,
           updatedAt: users.updatedAt
         }
@@ -176,11 +176,11 @@ export class DatabaseStorage implements IStorage {
           email: users.email,
           firstName: sql`NULL`.as('firstName'), // Column doesn't exist in Supabase
           lastName: sql`NULL`.as('lastName'), // Column doesn't exist in Supabase
-          profileImageUrl: users.profileImageUrl,
+          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Column doesn't exist in Supabase
           role: users.role,
           approved: users.approved,
-          stripeCustomerId: users.stripeCustomerId,
-          stripeSubscriptionId: users.stripeSubscriptionId,
+          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Column doesn't exist in Supabase
+          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Column doesn't exist in Supabase
           createdAt: users.createdAt,
           updatedAt: users.updatedAt
         }
