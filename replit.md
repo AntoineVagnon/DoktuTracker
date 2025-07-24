@@ -166,6 +166,11 @@ Changelog:
 - July 1, 2025: Maintained header AuthModal for casual site authentication separate from booking flows
 - July 1, 2025: Created comprehensive e2e test suite for new booking authentication flow
 - July 1, 2025: Updated consultation pricing across platform from €35 to €3 (database seed, client display, server logic, tests)
+- July 24, 2025: Completely switched from Replit Auth to pure Supabase Auth for all authentication
+- July 24, 2025: Fixed database schema mismatches by updating schema to match actual Supabase database structure
+- July 24, 2025: Resolved DoctorCard component crashes by adding null checks and using email-based names
+- July 24, 2025: Added username field requirement to match Supabase database constraints
+- July 24, 2025: Created comprehensive registration and login flow with proper error handling
 ```
 
 ## User Preferences

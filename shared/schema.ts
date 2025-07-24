@@ -30,6 +30,7 @@ export const sessions = pgTable(
 // User storage table - matched to actual Supabase schema
 export const users = pgTable("users", {
   id: integer("id").primaryKey(), // Use integer to match actual database
+  username: varchar("username").notNull(), // Required field in your database
   email: varchar("email").unique(),
   // firstName: varchar("first_name"), // Column doesn't exist in Supabase
   // lastName: varchar("last_name"), // Column doesn't exist in Supabase  

@@ -11,7 +11,9 @@ export default function CreateAccount() {
   const [formData, setFormData] = useState({
     email: 'antoine.vagnon@gmail.com',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    firstName: 'Antoine',
+    lastName: 'Vagnon'
   });
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -49,6 +51,8 @@ export default function CreateAccount() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           role: 'patient'
         }),
       });
@@ -108,6 +112,35 @@ export default function CreateAccount() {
                     required
                     className="w-full"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      placeholder="First name"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      placeholder="Last name"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">

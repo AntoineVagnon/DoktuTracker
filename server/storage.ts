@@ -92,7 +92,14 @@ export class DatabaseStorage implements IStorage {
     }
 
     // Create new user with fields that exist in the database schema
+    // Generate username from email
+    if (!userData.email) {
+      throw new Error('Email is required');
+    }
+    const username = userData.email.split('@')[0];
+    
     const cleanUserData = {
+      username: username,
       email: userData.email,
       role: userData.role || 'patient',
       approved: userData.approved || false,
@@ -107,15 +114,21 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
+  async getUserByEmail(email: string | null | undefined): Promise<User | undefined> {
+    if (!email) return undefined;
     const [user] = await db.select().from(users).where(eq(users.email, email));
     return user;
   }
 
   async createUser(userData: Omit<UpsertUser, 'id'>): Promise<User> {
     // Only include fields that exist in the database schema
+    if (!userData.email) {
+      throw new Error('Email is required');
+    }
+    const username = userData.email.split('@')[0];
+    
     const cleanUserData = {
-      id: Math.random().toString(36).substr(2, 9), // Generate simple ID
+      username: username,
       email: userData.email,
       role: userData.role || 'patient',
       approved: userData.approved || false,
