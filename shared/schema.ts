@@ -123,6 +123,70 @@ export const videoTests = pgTable("video_tests", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Payment transactions
+export const payments = pgTable("payments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  appointmentId: uuid("appointment_id").references(() => appointments.id).notNull(),
+  patientId: varchar("patient_id").references(() => users.id).notNull(),
+  stripePaymentIntentId: varchar("stripe_payment_intent_id").unique().notNull(),
+  stripeChargeId: varchar("stripe_charge_id"),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: varchar("currency").notNull().default("EUR"),
+  status: varchar("status").notNull(), // pending, succeeded, failed, refunded
+  paymentMethod: varchar("payment_method"), // card, sepa, etc.
+  refundAmount: decimal("refund_amount", { precision: 10, scale: 2 }),
+  refundReason: text("refund_reason"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Patient profiles (extended user data)
+export const patientProfiles = pgTable("patient_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").references(() => users.id).notNull().unique(),
+  phone: varchar("phone", { length: 20 }),
+  dateOfBirth: date("date_of_birth"),
+  gender: varchar("gender"),
+  address: text("address"),
+  city: varchar("city"),
+  postalCode: varchar("postal_code"),
+  country: varchar("country").default("FR"),
+  emergencyContactName: varchar("emergency_contact_name"),
+  emergencyContactPhone: varchar("emergency_contact_phone"),
+  medicalHistory: text("medical_history"),
+  allergies: text("allergies").array(),
+  currentMedications: text("current_medications").array(),
+  insuranceProvider: varchar("insurance_provider"),
+  insuranceNumber: varchar("insurance_number"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Admin dashboard metrics
+export const dashboardMetrics = pgTable("dashboard_metrics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  metricType: varchar("metric_type").notNull(), // daily_revenue, monthly_appointments, etc.
+  period: date("period").notNull(),
+  value: decimal("value", { precision: 15, scale: 2 }).notNull(),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// System notifications
+export const notifications = pgTable("notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  type: varchar("type").notNull(), // appointment_reminder, payment_confirmation, etc.
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").default(false),
+  scheduledFor: timestamp("scheduled_for"),
+  sentAt: timestamp("sent_at"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Audit events
 export const auditEvents = pgTable("audit_events", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -169,3 +233,33 @@ export const insertReviewSchema = createInsertSchema(reviews).omit({
 });
 export type InsertReview = z.infer<typeof insertReviewSchema>;
 export type Review = typeof reviews.$inferSelect;
+
+export const insertPaymentSchema = createInsertSchema(payments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+export type Payment = typeof payments.$inferSelect;
+
+export const insertPatientProfileSchema = createInsertSchema(patientProfiles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertPatientProfile = z.infer<typeof insertPatientProfileSchema>;
+export type PatientProfile = typeof patientProfiles.$inferSelect;
+
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type Notification = typeof notifications.$inferSelect;
+
+export const insertDashboardMetricSchema = createInsertSchema(dashboardMetrics).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertDashboardMetric = z.infer<typeof insertDashboardMetricSchema>;
+export type DashboardMetric = typeof dashboardMetrics.$inferSelect;
