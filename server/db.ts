@@ -10,13 +10,18 @@ if (!connectionString) {
   );
 }
 
-console.log('Attempting to connect to Supabase database');
+console.log('Connecting to Supabase database via pooler');
 console.log('Connection string format:', connectionString.replace(/:([^@]*?)@/, ':***@'));
+
+// Force pooler connection if old format is detected
+const poolerConnectionString = connectionString.includes('db.hzmrkvooqjbxptqjqxii.supabase.co')
+  ? 'postgresql://postgres.hzmrkvooqjbxptqjqxii:kDa2KgKJv9K3w8yY@aws-0-eu-central-1.pooler.supabase.com:5432/postgres'
+  : connectionString;
 
 // Configure postgres client with proper settings for Supabase
 console.log('Creating database client...');
 
-const client = postgres(connectionString, { 
+const client = postgres(poolerConnectionString, { 
   prepare: false,
   ssl: 'require', // Force SSL for Supabase
   max: 10,
