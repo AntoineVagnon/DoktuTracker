@@ -10,13 +10,28 @@ if (!connectionString) {
   );
 }
 
-// Use pooler connection for Supabase - replace the hostname if using old format
-const fixedConnectionString = connectionString.includes('db.hzmrkvooqjbxptqjqxii.supabase.co')
-  ? connectionString.replace('db.hzmrkvooqjbxptqjqxii.supabase.co:5432', 'aws-0-eu-central-1.pooler.supabase.com:6543')
-  : connectionString;
+console.log('Attempting to connect to Supabase database');
+console.log('Connection string format:', connectionString.replace(/:([^@]*?)@/, ':***@'));
 
-console.log('Connecting to database with pooler connection');
+// Configure postgres client with proper settings for Supabase
+console.log('Creating database client...');
 
-// Disable prefetch as it is not supported for "Transaction" pool mode
-const client = postgres(fixedConnectionString, { prepare: false });
+const client = postgres(connectionString, { 
+  prepare: false,
+  ssl: 'require', // Force SSL for Supabase
+  max: 10,
+  idle_timeout: 20,
+  connect_timeout: 10,
+  onnotice: () => {}, // Suppress notices
+});
+
 export const db = drizzle(client, { schema });
+
+// Test connection asynchronously
+client`SELECT 1`.then(() => {
+  console.log('✓ Database connection verified');
+}).catch((err) => {
+  console.error('✗ Database connection failed:', err.message);
+  console.error('Error code:', err.code);
+  console.error('Note: Please verify your Supabase credentials are correct');
+});
