@@ -1,0 +1,135 @@
+✅ Spec complete — ready for Replit Agent
+
+# Doktu — Rebuild Requirements (v5)
+
+> **Purpose of this revision**
+> Patch the codebase so that a newly-registered **patient** can reach the existing dashboard at `/dashboard` without a 404.
+> Fixes cover: authentication middleware, database column, API route, and front-end guards.
+
+---
+
+## 1 — Elevator pitch
+
+Swap out all remaining Replit-OIDC hooks for **Supabase-Auth middleware**, add the missing `doctors.is_online` column, and update both the back-end appointments route and the front-end auth guard so the pre-built patient dashboard loads correctly after sign-up.
+
+---
+
+## 2 — Primary user roles
+
+Unchanged from v4 (`patient`, `doctor`, `admin`).
+
+---
+
+## 3 — Key user flows (delta)
+
+* **Patient registration → auto-login → redirect**
+
+  * After `supabase.auth.signUp`, wait for `supabase.auth.getSession()` to resolve **before** `router.push('/dashboard')`.
+  * Dashboard renders because JWT + role claim are now present.
+
+---
+
+## 4 — Non-functional must-haves
+
+Remain as in v4 (p95 ≤ 150 ms, 99.9 % uptime, etc.).
+
+---
+
+## 5 — Tech-stack decisions (delta)
+
+| Concern            | Decision                                       | Implementation notes                                                                                                         |
+| ------------------ | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Auth middleware    | **`verifySupabaseJWT`** Express/Fastify plugin | Parses `sb-access-token` (Bearer or cookie) → verifies via Supabase JWKS → attaches `req.supabaseUser` & `req.supabaseRole`. |
+| Legacy field       | **Add `is_online` to `doctors`**               | Boolean, default `false`, nullable.                                                                                          |
+| Appointments route | Use `req.supabaseUser.id`                      | Replace all references to `req.supabaseSession`.                                                                             |
+
+---
+
+## 6 — Secrets
+
+Unchanged.
+
+---
+
+## 7 — Database schema (delta)
+
+```sql
+-- Only add if missing
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name   = 'doctors'
+      AND column_name  = 'is_online'
+  ) THEN
+    ALTER TABLE public.doctors
+      ADD COLUMN is_online boolean DEFAULT false;
+  END IF;
+END $$;
+```
+
+---
+
+## 8 — UI references (delta)
+
+* **AuthGuard** (`client/src/hooks/useAuth.ts` or similar):
+
+  * Read access token from Supabase client (`supabase.auth.getSession()`); if absent, `router.push('/login')`.
+  * Confirm `session.user.role === 'patient'` before showing patient dashboard.
+
+* **Registration page** (`client/src/pages/Register.tsx`):
+
+  * After `await supabase.auth.signUp`, poll `supabase.auth.getSession()` (max 3 s) then `router.push('/dashboard')`.
+
+---
+
+## 9 — “Don’t break these” rules
+
+Same as v4.
+
+---
+
+## 10 — Membership plans
+
+No change.
+
+---
+
+## 11 — Rate limits
+
+No change.
+
+---
+
+## 12 — Webhooks
+
+No change.
+
+---
+
+## 13 — Testing & CI (delta)
+
+* **Unit (Vitest)**
+
+  * `verifySupabaseJWT` — valid token attaches `supabaseUser`, invalid → 401.
+* **E2E (Playwright)**
+
+  * Register new patient → redirected to `/dashboard` → appointments tab displays empty state (200).
+* **Regression**
+
+  * Existing doctor and admin dashboards still load.
+
+---
+
+## 14 — Deployment workflow (delta)
+
+1. **SQL migration** (adds `is_online`) runs in CI before app start.
+2. Build & deploy Docker image.
+3. On first request, new `verifySupabaseJWT` middleware supersedes old Replit OIDC code (which has been removed).
+
+---
+
+## 15 — Open questions
+
+None — all four blocking points confirmed and resolved.
