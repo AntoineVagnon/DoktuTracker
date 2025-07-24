@@ -1,18 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
-import { Calendar, Clock, User, Heart } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Clock, User, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle } from "lucide-react";
+import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { format } from "date-fns";
 
@@ -33,8 +31,11 @@ export default function Dashboard() {
     }
 
     // Show banner if user is not email verified and didn't just complete verification
-    if (user && !user.email_verified && !verificationJustCompleted) {
-      setShowVerificationBanner(true);
+    // Note: email_verified property is not available in current user schema
+    // This feature will be implemented when email verification is added
+    if (user && !verificationJustCompleted) {
+      // Placeholder for email verification check
+      // setShowVerificationBanner(true);
     }
   }, [user, verificationJustCompleted]);
 
@@ -117,7 +118,7 @@ export default function Dashboard() {
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
 
     return (
-      <Badge variant={config.variant} className={config.className}>
+      <Badge variant={config.variant} {...(config.className && { className: config.className })}>
         {config.label}
       </Badge>
     );

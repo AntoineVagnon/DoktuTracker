@@ -2,9 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema } from "@shared/schema";
-import { authRouter } from "./routes/auth";
 import { z } from "zod";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -12,15 +11,12 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2025-05-28.basil",
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup Supabase authentication
-  await setupSupabaseAuth(app);
-
-  // Mount auth router
-  app.use('/api/auth', authRouter);
+  // Setup Replit authentication
+  await setupAuth(app);
 
   // Test callback endpoint for OAuth troubleshooting
   app.get('/test-callback', (req, res) => {
@@ -92,7 +88,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Appointment routes
   app.get("/api/appointments", isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user?.id;
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
       const appointments = await storage.getAppointments(userId);
       res.json(appointments);
     } catch (error) {
@@ -103,9 +104,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/appointments", isAuthenticated, async (req, res) => {
     try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
       const appointmentData = insertAppointmentSchema.parse({
         ...req.body,
-        patientId: req.user?.id,
+        patientId: userId,
       });
       const appointment = await storage.createAppointment(appointmentData);
       res.json(appointment);
@@ -132,9 +139,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Review routes
   app.post("/api/reviews", isAuthenticated, async (req, res) => {
     try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
       const reviewData = insertReviewSchema.parse({
         ...req.body,
-        patientId: req.user?.id,
+        patientId: userId,
       });
       const review = await storage.createReview(reviewData);
       res.json(review);
@@ -157,14 +170,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin routes
   app.get("/api/admin/kpis", isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user?.id;
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
       // Get user to check role
-      const user = await storage.getUser(userId);
-      if (!user || user.role !== 'admin') {
+      const dbUser = await storage.getUser(userId);
+      if (!dbUser || dbUser.role !== 'admin') {
         return res.status(403).json({ message: "Admin access required" });
       }
 
@@ -176,23 +190,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get current user endpoint - allow unauthenticated requests
+  // Get current user endpoint
   app.get("/api/auth/user", async (req, res) => {
     try {
-      const session = req.session.supabaseSession;
-
-      if (!session || !session.access_token) {
+      if (!req.isAuthenticated()) {
         return res.status(401).json({ error: "Not authenticated" });
       }
 
-      // Verify current token
-      const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
 
-      if (error || !user) {
-        return res.status(401).json({ error: "Invalid token" });
+      if (!userId) {
+        return res.status(401).json({ error: "Invalid session" });
       }
 
-      const dbUser = await storage.getUser(user.id);
+      const dbUser = await storage.getUser(userId);
       if (!dbUser) {
         return res.status(404).json({ message: "User not found" });
       }
