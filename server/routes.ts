@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { setupSupabaseAuth, isAuthenticated } from "./supabaseAuth";
+import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
 import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -169,6 +169,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching KPIs:", error);
       res.status(500).json({ message: "Failed to fetch KPIs" });
+    }
+  });
+
+  // Get current user endpoint - allow unauthenticated requests
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      const session = req.session.supabaseSession;
+
+      if (!session || !session.access_token) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      // Verify current token
+      const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
+
+      if (error || !user) {
+        return res.status(401).json({ error: "Invalid token" });
+      }
+
+      const dbUser = await storage.getUser(user.id);
+      if (!dbUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(dbUser);
+    } catch (error: any) {
+      console.error("Get user error:", error);
+      res.status(401).json({ error: "Authentication failed" });
     }
   });
 
