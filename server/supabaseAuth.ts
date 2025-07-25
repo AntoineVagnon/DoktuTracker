@@ -234,7 +234,7 @@ export async function setupSupabaseAuth(app: Express) {
       console.log('Attempting to update password with recovery token');
 
       // Create a new supabase client instance for this specific request
-      const { createClient } = require('@supabase/supabase-js');
+      const { createClient } = await import('@supabase/supabase-js');
       const tempSupabase = createClient(
         process.env.SUPABASE_URL || '',
         process.env.SUPABASE_ANON_KEY || ''
