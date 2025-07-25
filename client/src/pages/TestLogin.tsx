@@ -188,6 +188,12 @@ export default function TestLogin() {
                 >
                   Forgot your password? Reset it
                 </button>
+                
+                <p className="text-xs text-gray-500 mt-2">
+                  After receiving the email, if the reset link doesn't work, manually go to:
+                  <br />
+                  <strong>/password-reset</strong> and paste the tokens from the URL hash
+                </p>
               </div>
 
               <div className="space-y-2">

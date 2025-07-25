@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Password Reset Redirect</title>
+</head>
+<body>
+    <h1>Testing Password Reset Flow</h1>
+    <p>This page will test the password reset redirect with actual tokens.</p>
+    
+    <script>
+        // Extract the tokens from current URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const fullUrl = window.location.href;
+        
+        console.log('Full URL:', fullUrl);
+        console.log('URL params:', Array.from(urlParams.entries()));
+        
+        // Check if we have the recovery URL format
+        if (fullUrl.includes('doktu-tracker.replit.app/#access_token=')) {
+            const hashPart = fullUrl.split('#')[1];
+            console.log('Hash part:', hashPart);
+            
+            // Redirect to password reset page with the hash
+            const newUrl = 'https://doktu-tracker.replit.app/password-reset#' + hashPart;
+            console.log('Redirecting to:', newUrl);
+            window.location.href = newUrl;
+        } else {
+            console.log('No password reset tokens found');
+            document.body.innerHTML += '<p>No password reset tokens found in URL</p>';
+        }
+    </script>
+</body>
+</html>
