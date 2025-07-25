@@ -18,6 +18,7 @@ import LoginBook from "@/pages/LoginBook";
 import TestLogin from "@/pages/TestLogin";
 import AuthCallback from "@/pages/AuthCallback";
 import CreateAccount from "@/pages/CreateAccount";
+import PasswordReset from "@/pages/PasswordReset";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Payment from "@/pages/Payment";
@@ -37,6 +38,7 @@ function Router() {
       <Route path="/test-login" component={TestLogin} />
       <Route path="/create-account" component={CreateAccount} />
       <Route path="/auth/callback" component={AuthCallback} />
+      <Route path="/password-reset" component={PasswordReset} />
       <Route path="/checkout" component={Payment} />
       <Route path="/payment" component={Payment} />
       <Route path="/doctor/:id" component={DoctorProfile} />

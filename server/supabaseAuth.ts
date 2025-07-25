@@ -202,8 +202,12 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(400).json({ error: 'Email required' });
       }
 
+      const siteUrl = process.env.NODE_ENV === 'development' 
+        ? 'http://localhost:5000' 
+        : 'https://doktu-tracker.replit.app';
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${process.env.SITE_URL || 'http://localhost:5000'}/auth/callback`
+        redirectTo: `${siteUrl}/auth/callback`
       });
 
       if (error) {

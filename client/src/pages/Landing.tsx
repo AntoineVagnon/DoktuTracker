@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,16 +11,28 @@ import DoctorCard from "@/components/DoctorCard";
 
 export default function Landing() {
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
+  const [, setLocation] = useLocation();
 
   const { data: doctors = [], isLoading } = useQuery({
     queryKey: ["/api/doctors"],
   });
 
   useEffect(() => {
+    // Check if this is a password reset redirect from Supabase
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    const accessToken = hashParams.get('access_token');
+    
+    if (type === 'recovery' && accessToken) {
+      console.log('Detected password reset redirect, redirecting to password reset page');
+      setLocation('/password-reset');
+      return;
+    }
+
     const img = new Image();
     img.onload = () => setHeroImageLoaded(true);
     img.src = "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600";
-  }, []);
+  }, [setLocation]);
 
   // Transform the doctor data to match DoctorCard interface
   const featuredDoctors = doctors.slice(0, 5).map((doctor: any) => ({
