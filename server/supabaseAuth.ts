@@ -203,7 +203,7 @@ export async function setupSupabaseAuth(app: Express) {
       }
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${process.env.SITE_URL || 'https://doktu-tracker.replit.app'}/auth/callback`
+        redirectTo: `${process.env.SITE_URL || 'http://localhost:5000'}/auth/callback`
       });
 
       if (error) {

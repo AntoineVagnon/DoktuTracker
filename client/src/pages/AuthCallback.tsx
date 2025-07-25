@@ -25,7 +25,13 @@ export default function AuthCallback() {
         const accessToken = hashParams.get('access_token');
         const refreshToken = hashParams.get('refresh_token');
         
-        console.log('Auth callback params:', { type, accessToken: !!accessToken });
+        console.log('Auth callback params:', { 
+          type, 
+          accessToken: !!accessToken, 
+          refreshToken: !!refreshToken,
+          hash: window.location.hash,
+          hashParams: Array.from(hashParams.entries())
+        });
 
         if (type === 'recovery' && accessToken) {
           // Password reset flow
@@ -58,6 +64,8 @@ export default function AuthCallback() {
             throw new Error('Email confirmation failed');
           }
         } else {
+          console.log('No valid auth type found, setting error state');
+          console.log('Available hash params:', Array.from(hashParams.entries()));
           throw new Error('Invalid callback parameters');
         }
       } catch (error) {
