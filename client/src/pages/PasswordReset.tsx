@@ -89,6 +89,10 @@ export default function PasswordReset() {
   // Check if we have the recovery tokens
   const hashParams = new URLSearchParams(window.location.hash.substring(1));
   const hasTokens = hashParams.has('access_token') && hashParams.get('type') === 'recovery';
+  
+  console.log('PasswordReset page loaded');
+  console.log('Hash params:', Array.from(hashParams.entries()));
+  console.log('Has tokens:', hasTokens);
 
   if (!hasTokens) {
     return (

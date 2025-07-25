@@ -18,15 +18,26 @@ export default function Landing() {
   });
 
   useEffect(() => {
+    console.log('Landing page loaded, checking for password reset tokens');
+    console.log('Current URL hash:', window.location.hash);
+    
     // Check if this is a password reset redirect from Supabase
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const type = hashParams.get('type');
     const accessToken = hashParams.get('access_token');
     
+    console.log('Hash params:', { type, accessToken: !!accessToken });
+    console.log('All hash params:', Array.from(hashParams.entries()));
+    
     if (type === 'recovery' && accessToken) {
-      console.log('Detected password reset redirect, redirecting to password reset page');
-      setLocation('/password-reset');
+      console.log('✅ Detected password reset redirect, redirecting to password reset page');
+      // Use setTimeout to ensure the redirect happens after current render
+      setTimeout(() => {
+        setLocation('/password-reset');
+      }, 100);
       return;
+    } else {
+      console.log('❌ No password reset tokens found, loading normal landing page');
     }
 
     const img = new Image();

@@ -29,7 +29,7 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={isLoading || !isAuthenticated ? Landing : Home} />
+      <Route path="/" component={Landing} />
       <Route path="/register" component={Register} />
       <Route path="/auth-choice" component={AuthChoice} />
       <Route path="/register-form" component={RegisterForm} />
