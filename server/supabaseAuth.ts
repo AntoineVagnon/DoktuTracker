@@ -23,12 +23,15 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(400).json({ error: 'Email and password required' });
       }
 
+      console.log('Attempting login for:', email);
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.error('Supabase login error:', error.message);
         return res.status(401).json({ error: error.message });
       }
 
@@ -187,6 +190,31 @@ export async function setupSupabaseAuth(app: Express) {
     } catch (error: any) {
       console.error('Delete user error:', error);
       res.status(500).json({ error: 'Delete user failed' });
+    }
+  });
+
+  // Password reset endpoint
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${process.env.SITE_URL || 'https://doktu-tracker.replit.app'}/auth/callback`
+      });
+
+      if (error) {
+        console.error('Password reset error:', error);
+        return res.status(400).json({ error: error.message });
+      }
+
+      res.json({ message: 'Password reset email sent' });
+    } catch (error: any) {
+      console.error('Password reset error:', error);
+      res.status(500).json({ error: 'Password reset failed' });
     }
   });
 

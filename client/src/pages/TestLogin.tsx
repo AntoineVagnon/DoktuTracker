@@ -12,7 +12,7 @@ export default function TestLogin() {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     email: 'antoine.vagnon@gmail.com', // Pre-filled for testing
-    password: ''
+    password: 'MyNewPassword123!'
   });
   const [isLoading, setIsLoading] = useState(false);
   const [loginResult, setLoginResult] = useState<any>(null);
@@ -156,6 +156,39 @@ export default function TestLogin() {
                   {isLoading ? "Signing In..." : "Sign In"}
                 </Button>
               </form>
+              
+              <div className="text-center">
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/auth/reset-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: formData.email })
+                      });
+                      const data = await response.json();
+                      
+                      if (response.ok) {
+                        toast({
+                          title: "Password Reset Sent",
+                          description: "Check your email for password reset instructions",
+                        });
+                      } else {
+                        toast({
+                          title: "Reset Failed", 
+                          description: data.error,
+                          variant: "destructive"
+                        });
+                      }
+                    } catch (error) {
+                      console.error('Reset error:', error);
+                    }
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-500 underline"
+                >
+                  Forgot your password? Reset it
+                </button>
+              </div>
 
               <div className="space-y-2">
                 <Button 

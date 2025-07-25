@@ -10,8 +10,8 @@ export default function CreateAccount() {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     email: 'antoine.vagnon@gmail.com',
-    password: '',
-    confirmPassword: '',
+    password: 'MyNewPassword123!',
+    confirmPassword: 'MyNewPassword123!',
     firstName: 'Antoine',
     lastName: 'Vagnon'
   });
