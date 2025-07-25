@@ -218,6 +218,90 @@ export async function setupSupabaseAuth(app: Express) {
     }
   });
 
+  // Update password endpoint (for password reset flow)
+  app.post('/api/auth/update-password', async (req, res) => {
+    try {
+      const { access_token, refresh_token, password } = req.body;
+
+      if (!access_token || !password) {
+        return res.status(400).json({ error: 'Access token and password required' });
+      }
+
+      // Set session for the password update
+      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+        access_token,
+        refresh_token
+      });
+
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        return res.status(401).json({ error: 'Invalid session tokens' });
+      }
+
+      // Update password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: password
+      });
+
+      if (updateError) {
+        console.error('Password update error:', updateError);
+        return res.status(400).json({ error: updateError.message });
+      }
+
+      res.json({ message: 'Password updated successfully' });
+    } catch (error: any) {
+      console.error('Update password error:', error);
+      res.status(500).json({ error: 'Password update failed' });
+    }
+  });
+
+  // Email confirmation endpoint
+  app.post('/api/auth/confirm', async (req, res) => {
+    try {
+      const { access_token, refresh_token } = req.body;
+
+      if (!access_token) {
+        return res.status(400).json({ error: 'Access token required' });
+      }
+
+      // Set session to confirm user
+      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+        access_token,
+        refresh_token
+      });
+
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        return res.status(401).json({ error: 'Invalid session tokens' });
+      }
+
+      // Store session in request
+      (req.session as any).supabaseSession = sessionData.session;
+      (req.session as any).userId = sessionData.user?.id;
+
+      // Get or create user profile in database
+      const user = await storage.getUserByEmail(sessionData.user?.email || '');
+      let profile = user;
+      
+      if (!profile) {
+        profile = await storage.upsertUser({
+          id: sessionData.user?.id || '',
+          email: sessionData.user?.email || '',
+          role: 'patient'
+        });
+      }
+
+      res.json({ 
+        message: 'Email confirmed successfully',
+        user: profile,
+        session: sessionData.session
+      });
+    } catch (error: any) {
+      console.error('Email confirmation error:', error);
+      res.status(500).json({ error: 'Email confirmation failed' });
+    }
+  });
+
   // Get current user endpoint
   app.get('/api/auth/user', isAuthenticated, async (req, res) => {
     try {
