@@ -231,19 +231,30 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(400).json({ error: 'Access token and password required' });
       }
 
-      // Set session for the password update
-      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+      console.log('Attempting to update password with recovery token');
+
+      // Create a new supabase client instance for this specific request
+      const { createClient } = require('@supabase/supabase-js');
+      const tempSupabase = createClient(
+        process.env.SUPABASE_URL || '',
+        process.env.SUPABASE_ANON_KEY || ''
+      );
+
+      // Set the session with the recovery tokens
+      const { data: sessionData, error: sessionError } = await tempSupabase.auth.setSession({
         access_token,
         refresh_token
       });
 
-      if (sessionError) {
+      if (sessionError || !sessionData.user) {
         console.error('Session error:', sessionError);
-        return res.status(401).json({ error: 'Invalid session tokens' });
+        return res.status(401).json({ error: 'Invalid or expired recovery token' });
       }
 
-      // Update password
-      const { error: updateError } = await supabase.auth.updateUser({
+      console.log('Recovery session established for user:', sessionData.user.email);
+
+      // Update password using the temporary client with the recovery session
+      const { error: updateError } = await tempSupabase.auth.updateUser({
         password: password
       });
 
@@ -252,6 +263,7 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(400).json({ error: updateError.message });
       }
 
+      console.log('Password updated successfully for user:', sessionData.user.email);
       res.json({ message: 'Password updated successfully' });
     } catch (error: any) {
       console.error('Update password error:', error);

@@ -171,6 +171,9 @@ Changelog:
 - July 24, 2025: Resolved DoctorCard component crashes by adding null checks and using email-based names
 - July 24, 2025: Added username field requirement to match Supabase database constraints
 - July 24, 2025: Created comprehensive registration and login flow with proper error handling
+- July 25, 2025: Implemented complete password reset flow with email verification and secure token handling
+- July 25, 2025: Fixed Supabase redirect URLs and added development environment testing capabilities
+- July 25, 2025: Created dedicated PasswordReset page with proper token validation and password update API
 ```
 
 ## User Preferences
