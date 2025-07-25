@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import { CheckCircle } from 'lucide-react';
 
 export default function TestLogin() {
   const { toast } = useToast();
@@ -14,6 +16,16 @@ export default function TestLogin() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [loginResult, setLoginResult] = useState<any>(null);
+  const [message, setMessage] = useState('');
+
+  // Check for success message in URL params
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlMessage = urlParams.get('message');
+    if (urlMessage) {
+      setMessage(urlMessage);
+    }
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -98,6 +110,15 @@ export default function TestLogin() {
             </CardHeader>
 
             <CardContent className="space-y-6">
+              {message && (
+                <Alert className="bg-green-50 border-green-200">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-700">
+                    {message}
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>

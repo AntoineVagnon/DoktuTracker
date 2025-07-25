@@ -132,6 +132,44 @@ export async function setupSupabaseAuth(app: Express) {
     }
   });
 
+  // Email confirmation endpoint
+  app.post('/api/auth/confirm', async (req, res) => {
+    try {
+      const { accessToken, refreshToken } = req.body;
+
+      if (!accessToken || !refreshToken) {
+        return res.status(400).json({ error: 'Access token and refresh token required' });
+      }
+
+      // Set the session using the tokens
+      const { data, error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      });
+
+      if (error) {
+        console.error('Email confirmation error:', error);
+        return res.status(400).json({ error: error.message });
+      }
+
+      if (data.user) {
+        // Store session
+        (req.session as any).supabaseSession = data.session;
+        
+        return res.json({ 
+          user: data.user, 
+          session: data.session,
+          message: 'Email confirmed successfully' 
+        });
+      }
+
+      return res.status(400).json({ error: 'No user found' });
+    } catch (error: any) {
+      console.error('Email confirmation error:', error);
+      res.status(500).json({ error: 'Email confirmation failed' });
+    }
+  });
+
   // Get current user endpoint
   app.get('/api/auth/user', isAuthenticated, async (req, res) => {
     try {
