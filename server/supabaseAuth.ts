@@ -233,15 +233,8 @@ export async function setupSupabaseAuth(app: Express) {
 
       console.log('Attempting to update password with recovery token');
 
-      // Create a new supabase client instance for this specific request
-      const { createClient } = await import('@supabase/supabase-js');
-      const tempSupabase = createClient(
-        process.env.SUPABASE_URL || '',
-        process.env.SUPABASE_ANON_KEY || ''
-      );
-
-      // Set the session with the recovery tokens
-      const { data: sessionData, error: sessionError } = await tempSupabase.auth.setSession({
+      // Use the existing supabase client and set session temporarily
+      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
         access_token,
         refresh_token
       });
@@ -253,8 +246,8 @@ export async function setupSupabaseAuth(app: Express) {
 
       console.log('Recovery session established for user:', sessionData.user.email);
 
-      // Update password using the temporary client with the recovery session
-      const { error: updateError } = await tempSupabase.auth.updateUser({
+      // Update password using the existing client with the recovery session
+      const { error: updateError } = await supabase.auth.updateUser({
         password: password
       });
 
