@@ -19,10 +19,11 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type = urlParams.get('type');
-        const accessToken = urlParams.get('access_token');
-        const refreshToken = urlParams.get('refresh_token');
+        // Supabase returns tokens in hash fragment, not search params
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const type = hashParams.get('type');
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
         
         console.log('Auth callback params:', { type, accessToken: !!accessToken });
 
@@ -97,9 +98,9 @@ export default function AuthCallback() {
     setIsSubmitting(true);
 
     try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const accessToken = urlParams.get('access_token');
-      const refreshToken = urlParams.get('refresh_token');
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
 
       const response = await fetch('/api/auth/update-password', {
         method: 'POST',
