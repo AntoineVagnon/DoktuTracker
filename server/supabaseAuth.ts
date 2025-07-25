@@ -233,30 +233,57 @@ export async function setupSupabaseAuth(app: Express) {
 
       console.log('Attempting to update password with recovery token');
 
-      // Use the existing supabase client and set session temporarily
-      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
-        access_token,
-        refresh_token
-      });
+      // Create a temporary Supabase client specifically for this password reset
+      const tempSupabase = createClient(
+        process.env.SUPABASE_URL || '',
+        process.env.SUPABASE_KEY || ''
+      );
 
-      if (sessionError || !sessionData.user) {
-        console.error('Session error:', sessionError);
+      // Try to get user from the access token directly
+      const { data: { user }, error: userError } = await tempSupabase.auth.getUser(access_token);
+
+      if (userError || !user) {
+        console.error('User retrieval error:', userError);
         return res.status(401).json({ error: 'Invalid or expired recovery token' });
       }
 
-      console.log('Recovery session established for user:', sessionData.user.email);
+      console.log('Recovery token validated for user:', user.email);
 
-      // Update password using the existing client with the recovery session
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: password
+      // Set session with the recovery token and update password
+      const sessionSetResult = await tempSupabase.auth.setSession({
+        access_token,
+        refresh_token: refresh_token || ''
       });
 
-      if (updateError) {
-        console.error('Password update error:', updateError);
-        return res.status(400).json({ error: updateError.message });
+      if (sessionSetResult.error) {
+        console.log('Session set failed, trying alternative approach...');
+        
+        // Alternative: Use the access token directly in headers
+        const { error: updateError } = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${access_token}`,
+            'Content-Type': 'application/json',
+            'apikey': process.env.SUPABASE_KEY || ''
+          },
+          body: JSON.stringify({ password })
+        }).then(res => res.json());
+
+        if (updateError) {
+          throw new Error(updateError.message || 'Password update failed');
+        }
+      } else {
+        // Session established, update password normally
+        const { error: updateError } = await tempSupabase.auth.updateUser({
+          password: password
+        });
+
+        if (updateError) {
+          throw new Error(updateError.message || 'Password update failed');
+        }
       }
 
-      console.log('Password updated successfully for user:', sessionData.user.email);
+      console.log('Password updated successfully for user:', user.email);
       res.json({ message: 'Password updated successfully' });
     } catch (error: any) {
       console.error('Update password error:', error);
