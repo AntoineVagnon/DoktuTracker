@@ -15,6 +15,28 @@ export default function PasswordReset() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [hasTokens, setHasTokens] = useState(false);
+
+  useEffect(() => {
+    console.log('PasswordReset page loaded');
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const allParams = Array.from(hashParams.entries());
+    console.log('Hash params:', allParams);
+    
+    const accessToken = hashParams.get('access_token');
+    const type = hashParams.get('type');
+    const hasValidTokens = accessToken && type === 'recovery';
+    
+    console.log('Has tokens:', hasValidTokens);
+    setHasTokens(hasValidTokens);
+    
+    if (!hasValidTokens) {
+      console.log('No valid tokens found, redirecting to test-login');
+      setTimeout(() => {
+        setLocation('/test-login');
+      }, 2000);
+    }
+  }, [setLocation]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,14 +107,6 @@ export default function PasswordReset() {
       setIsSubmitting(false);
     }
   };
-
-  // Check if we have the recovery tokens
-  const hashParams = new URLSearchParams(window.location.hash.substring(1));
-  const hasTokens = hashParams.has('access_token') && hashParams.get('type') === 'recovery';
-  
-  console.log('PasswordReset page loaded');
-  console.log('Hash params:', Array.from(hashParams.entries()));
-  console.log('Has tokens:', hasTokens);
 
   if (!hasTokens) {
     return (
