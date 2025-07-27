@@ -50,10 +50,7 @@ export default function SlotSelection({ doctorId, consultationPrice }: SlotSelec
 
   const holdSlotMutation = useMutation({
     mutationFn: async ({ slotId, sessionId }: { slotId: string; sessionId?: string }) => {
-      return apiRequest('/api/slots/hold', {
-        method: 'POST',
-        body: { slotId, sessionId }
-      });
+      return apiRequest('POST', '/api/slots/hold', { slotId, sessionId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/slots/held'] });
