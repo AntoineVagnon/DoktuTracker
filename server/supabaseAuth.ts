@@ -249,47 +249,31 @@ export async function setupSupabaseAuth(app: Express) {
 
       console.log('Recovery token validated for user:', user.email);
 
-      // Set session with the recovery token and update password
-      const sessionSetResult = await tempSupabase.auth.setSession({
-        access_token,
-        refresh_token: refresh_token || ''
+      // Use the access token directly to update password via Supabase API
+      console.log('Updating password directly via Supabase API...');
+      
+      const updateResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${access_token}`,
+          'Content-Type': 'application/json',
+          'apikey': process.env.SUPABASE_KEY || ''
+        },
+        body: JSON.stringify({ password })
       });
 
-      if (sessionSetResult.error) {
-        console.log('Session set failed, trying alternative approach...');
-        
-        // Alternative: Use the access token directly in headers
-        const { error: updateError } = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${access_token}`,
-            'Content-Type': 'application/json',
-            'apikey': process.env.SUPABASE_KEY || ''
-          },
-          body: JSON.stringify({ password })
-        }).then(res => res.json());
-
-        if (updateError) {
-          const errorMsg = updateError.message || 'Password update failed';
-          if (errorMsg.includes('should be different')) {
-            throw new Error('Please choose a different password than your current one');
-          }
-          throw new Error(errorMsg);
+      const updateResult = await updateResponse.json();
+      
+      if (!updateResponse.ok) {
+        console.error('Password update failed:', updateResult);
+        const errorMsg = updateResult.error?.message || updateResult.message || 'Password update failed';
+        if (errorMsg.includes('should be different')) {
+          throw new Error('Please choose a different password than your current one');
         }
-      } else {
-        // Session established, update password normally
-        const { error: updateError } = await tempSupabase.auth.updateUser({
-          password: password
-        });
-
-        if (updateError) {
-          const errorMsg = updateError.message || 'Password update failed';
-          if (errorMsg.includes('should be different')) {
-            throw new Error('Please choose a different password than your current one');
-          }
-          throw new Error(errorMsg);
-        }
+        throw new Error(errorMsg);
       }
+
+      console.log('Password update successful:', updateResult.user?.email);
 
       console.log('Password updated successfully for user:', user.email);
       res.json({ message: 'Password updated successfully' });
