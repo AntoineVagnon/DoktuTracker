@@ -4,14 +4,19 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import { Star, Search, Calendar, Video, Shield, Clock, UserCheck, Pill, Smartphone, History, CheckCircle, Phone, ArrowRight, Play } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DoctorCard from "@/components/DoctorCard";
+import AuthModal from "@/components/AuthModal";
 
 export default function Landing() {
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
   const [, setLocation] = useLocation();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<"login" | "signup">("login");
+  const { toast } = useToast();
 
   const { data: doctors = [], isLoading } = useQuery({
     queryKey: ["/api/doctors"],
@@ -39,10 +44,28 @@ export default function Landing() {
       console.log('❌ No password reset tokens found, loading normal landing page');
     }
 
+    // Check for password reset success redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetSuccess = urlParams.get('reset');
+    
+    if (resetSuccess === 'success') {
+      toast({
+        title: "Password Updated Successfully",
+        description: "You can now log in with your new password",
+      });
+      
+      // Open login modal automatically
+      setAuthModalTab("login");
+      setIsAuthModalOpen(true);
+      
+      // Clean up URL without causing refresh
+      window.history.replaceState({}, '', '/');
+    }
+
     const img = new Image();
     img.onload = () => setHeroImageLoaded(true);
     img.src = "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600";
-  }, [setLocation]);
+  }, [setLocation, toast]);
 
   // Transform the doctor data to match DoctorCard interface
   const featuredDoctors = doctors.slice(0, 5).map((doctor: any) => ({
@@ -517,6 +540,13 @@ export default function Landing() {
       </section>
 
       <Footer />
+      
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultTab={authModalTab}
+      />
     </div>
   );
 }

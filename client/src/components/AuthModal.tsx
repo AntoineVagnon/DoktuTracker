@@ -128,10 +128,19 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     setIsResettingPassword(true);
     
     try {
+      // Store context for password reset flow
+      sessionStorage.setItem('password_reset_context', JSON.stringify({
+        source: 'homepage_modal',
+        timestamp: Date.now()
+      }));
+
       const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ 
+          email,
+          context: 'homepage_modal'
+        })
       });
 
       const data = await response.json();
