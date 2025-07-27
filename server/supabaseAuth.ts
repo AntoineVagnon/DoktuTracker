@@ -45,7 +45,8 @@ export async function setupSupabaseAuth(app: Express) {
         user = await storage.upsertUser({
           id: data.user.id,
           email: data.user.email || email,
-          role: 'patient'
+          role: 'patient',
+          username: (data.user.email || email).split('@')[0]
         });
       }
 

@@ -91,7 +91,7 @@ export default function PasswordReset() {
         });
         
         setTimeout(() => {
-          setLocation('/test-login');
+          setLocation('/dashboard');
         }, 2000);
       } else {
         throw new Error(data.error || 'Password update failed');
