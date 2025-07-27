@@ -31,10 +31,9 @@ export default function Landing() {
     
     if (type === 'recovery' && accessToken) {
       console.log('✅ Detected password reset redirect, redirecting to password reset page');
-      // Use setTimeout to ensure the redirect happens after current render
-      setTimeout(() => {
-        setLocation('/password-reset');
-      }, 100);
+      // Preserve the hash params when redirecting
+      const fullHash = window.location.hash;
+      window.location.href = `/password-reset${fullHash}`;
       return;
     } else {
       console.log('❌ No password reset tokens found, loading normal landing page');
