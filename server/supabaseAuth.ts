@@ -35,8 +35,15 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(401).json({ error: error.message });
       }
 
-      // Store session in request for middleware
+      // Store session in Express session
       (req.session as any).supabaseSession = data.session;
+      (req.session as any).userId = data.user.id;
+      
+      console.log('Session stored:', {
+        userId: data.user.id,
+        email: data.user.email,
+        sessionId: req.session.id
+      });
 
       // Get or create user profile in database
       // For login, find user by email since Supabase UUIDs don't match our integer IDs
@@ -49,6 +56,19 @@ export async function setupSupabaseAuth(app: Express) {
           username: (data.user.email || email).split('@')[0]
         });
       }
+
+      // Save session before responding
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) {
+            console.error('Session save error:', err);
+            reject(err);
+          } else {
+            console.log('Session saved successfully');
+            resolve(true);
+          }
+        });
+      });
 
       res.json({ 
         user,
@@ -393,15 +413,25 @@ export async function setupSupabaseAuth(app: Express) {
 // Authentication middleware
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   try {
-    const session = req.session.supabaseSession;
+    const session = (req.session as any)?.supabaseSession;
+    const userId = (req.session as any)?.userId;
+
+    console.log('Auth middleware - Session check:', {
+      hasSession: !!session,
+      hasAccessToken: !!session?.access_token,
+      userId: userId,
+      sessionId: req.session.id
+    });
 
     if (!session || !session.access_token) {
+      console.log('Auth middleware - No session or access token');
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
     // Check if token is expired
     const now = Math.floor(Date.now() / 1000);
     if (session.expires_at && now >= session.expires_at) {
+      console.log('Auth middleware - Token expired');
       // Try to refresh token
       const { data, error } = await supabase.auth.refreshSession(session);
 
@@ -412,20 +442,33 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
       // Update session
       req.session.supabaseSession = data.session;
       req.user = { id: data.user.id, email: data.user.email };
-    } else {
-      // Verify current token
-      const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
-
-      if (error || !user) {
-        return res.status(401).json({ error: 'Invalid token' });
-      }
-
-      req.user = { id: user.id, email: user.email };
     }
 
+    // Get user data to attach to request
+    const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
+    
+    if (error || !user) {
+      console.log('Auth middleware - Invalid session:', error?.message);
+      return res.status(401).json({ error: 'Invalid session' });
+    }
+
+    console.log('Auth middleware - User validated:', user.email);
+
+    // Get user profile from database 
+    const userProfile = await storage.getUserByEmail(user.email!);
+    
+    if (!userProfile) {
+      console.log('Auth middleware - No user profile found for:', user.email);
+      return res.status(404).json({ error: 'User profile not found' });
+    }
+
+    // Attach user profile to request for use in route handlers
+    (req as any).user = userProfile;
+    
+    console.log('Auth middleware - Success for:', userProfile.email);
     next();
   } catch (error: any) {
-    console.error('Auth middleware error:', error);
-    res.status(401).json({ error: 'Authentication failed' });
+    console.error('Authentication middleware error:', error);
+    return res.status(500).json({ error: 'Authentication failed' });
   }
 };
