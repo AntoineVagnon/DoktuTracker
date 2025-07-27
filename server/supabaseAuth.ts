@@ -225,7 +225,7 @@ export async function setupSupabaseAuth(app: Express) {
   // Password reset endpoint
   app.post('/api/auth/reset-password', async (req, res) => {
     try {
-      const { email } = req.body;
+      const { email, context } = req.body;
 
       if (!email) {
         return res.status(400).json({ error: 'Email required' });
@@ -235,8 +235,9 @@ export async function setupSupabaseAuth(app: Express) {
         ? 'http://localhost:5000' 
         : 'https://doktu-tracker.replit.app';
       
+      // Always redirect to password-reset page, not /auth/callback
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/auth/callback`
+        redirectTo: `${siteUrl}/password-reset`
       });
 
       if (error) {
@@ -389,7 +390,7 @@ export async function setupSupabaseAuth(app: Express) {
       }
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${req.protocol}://${req.get('host')}/reset-password`
+        redirectTo: `${req.protocol}://${req.get('host')}/password-reset`
       });
 
       if (error) {
@@ -406,11 +407,11 @@ export async function setupSupabaseAuth(app: Express) {
 
   // Legacy Replit OIDC redirect endpoints (for migration)
   app.get('/api/login', (req, res) => {
-    res.redirect(302, '/login');
+    res.redirect(302, '/');
   });
 
   app.get('/api/callback', (req, res) => {
-    res.redirect(302, '/login');
+    res.redirect(302, '/');
   });
 
   // Legacy logout redirect - now handled by POST /api/auth/logout

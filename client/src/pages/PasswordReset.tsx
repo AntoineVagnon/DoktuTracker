@@ -54,9 +54,9 @@ export default function PasswordReset() {
     setHasTokens(hasValidTokens);
     
     if (!hasValidTokens) {
-      console.log('No valid tokens found, redirecting to test-login');
+      console.log('No valid tokens found, redirecting to homepage');
       setTimeout(() => {
-        setLocation('/test-login');
+        setLocation('/');
       }, 2000);
     }
   }, [setLocation, isAuthenticated, toast]);
@@ -163,17 +163,17 @@ export default function PasswordReset() {
                   <AlertCircle className="h-16 w-16 text-red-500 mx-auto" />
                   <div className="space-y-2">
                     <Button 
-                      onClick={() => setLocation('/test-login')}
-                      className="w-full"
-                    >
-                      Go to Login
-                    </Button>
-                    <Button 
                       onClick={() => setLocation('/')}
-                      variant="outline"
                       className="w-full"
                     >
                       Go to Home
+                    </Button>
+                    <Button 
+                      onClick={() => setLocation('/test-login')}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Try Again
                     </Button>
                   </div>
                 </div>
@@ -206,7 +206,10 @@ export default function PasswordReset() {
                 <div className="text-center space-y-4">
                   <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
                   <p className="text-gray-600">
-                    Redirecting you to login...
+                    {redirectContext?.source === 'homepage_modal' 
+                      ? 'Redirecting you to homepage...'
+                      : 'Redirecting you to dashboard...'
+                    }
                   </p>
                 </div>
               ) : (
