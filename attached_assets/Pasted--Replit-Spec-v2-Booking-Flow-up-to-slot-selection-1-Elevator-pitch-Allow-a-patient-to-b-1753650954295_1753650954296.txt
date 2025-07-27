@@ -1,0 +1,99 @@
+# Replit Spec v2 — Booking Flow (up to slot selection)
+
+1 — Elevator pitch  
+Allow a patient to book a consultation slot with a doctor via the homepage or patient dashboard, whether logged in or not. The flow always goes through the doctor’s profile, where the patient selects a slot. Once the slot is selected, it is locked for 15 minutes and the user is redirected to the payment page (outside the scope of this spec).
+
+2 — Primary user roles  
+• Patients (authenticated or not)  
+• Doctors (slot availability)  
+• Support/Admin (for logs or audit)
+
+3 — Key user flows  
+
+### A. Logged-in patient from homepage  
+- Starts from `/`  
+- Clicks on a doctor card → redirected to `/doctor/:id`  
+- Selects a valid slot  
+- Slot is locked for 15 minutes  
+- Redirected to payment page `/payment` with all booking context
+
+### B. Logged-in patient from dashboard  
+- On `/dashboard`, clicks **“Book an appointment”**  
+- Lands on a doctor list page  
+- Selects a doctor → redirected to `/doctor/:id`  
+- Selects a slot → redirected to `/payment`
+
+### C. Unauthenticated user  
+- Starts on `/`, clicks a doctor card  
+- On `/doctor/:id`, selects a slot  
+- Booking context is saved in `sessionStorage` (doctorId, slotId, etc., TTL: 15 min)  
+- Redirected to an interstitial page:  
+  → “Do you already have an account?” → `/sign-in`  
+  → “Are you new?” → `/sign-up`  
+- After login or registration, redirected to `/book/:id` to complete payment
+
+4 — Non-functional must-haves  
+• All times must be displayed and calculated in CET  
+• UX must be responsive and mobile-friendly  
+• No slot should be shown if < 60 minutes from now  
+• A slot is only bookable if it’s available for both the doctor and the patient  
+• Must handle conflicts gracefully with clear messages and UI refresh
+
+5 — Tech-stack decisions  
+• Frontend: Next.js 13 · Zustand · React Query  
+• Backend: Fastify · Supabase · Redis  
+• Slot locking via `/api/slots/hold`  
+• Booking context saved in `sessionStorage` for unauthenticated users  
+
+6 — Secrets already present in Replit  
+No new secrets required
+
+7 — Database schema  
+• `slots.locked_until timestamptz` (used to track locked slots)  
+• (Optional) `appointment_pending` table for analytics/audit  
+• A slot is not selectable if:  
+  – Already booked  
+  – Locked (`locked_until > now()`)  
+  – Less than 60 minutes from current time  
+• When a new slot is selected, the previously held one is immediately released  
+
+8 — UI references  
+• Use the layout as shown in the provided screenshot  
+  – Weekly calendar  
+  – Daily slot list (scrollable)  
+  – CTA: “Available slots – €X.XX – 30 min consultation”  
+• If no slots are available: show message “No available slots at the moment.”  
+• Doctors with no availability should:  
+  – Not appear on the homepage  
+  – Appear at the bottom of search results
+
+9 — “Don’t break these” rules  
+• Never redirect to `/login` (currently 404)  
+• Always fallback to `/` when needed  
+• If a new slot is selected, the previously held slot must be released  
+• Booking context must remain isolated to the same device (via sessionStorage only)
+
+10 — Membership plans (new)  
+No changes
+
+11 — Rate limits  
+POST `/api/slots/hold` → max 10 requests per minute per IP
+
+12 — Webhooks  
+None
+
+13 — Testing & CI  
+Vitest:  
+• Slot lock duration (15 minutes)  
+• Slot validation (not overlapping, not <60min)  
+• CET timezone rendering  
+Playwright:  
+• Logged-in booking (from `/`, from `/dashboard`)  
+• Unauthenticated → sign-in → slot persist → payment  
+• Double-booking conflict resolution
+
+14 — Deployment  
+No additional requirements
+
+15 — Open questions  
+None
