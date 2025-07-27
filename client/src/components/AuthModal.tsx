@@ -35,6 +35,7 @@ interface AuthModalProps {
 
 export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const { toast } = useToast();
 
   const loginForm = useForm<LoginForm>({
@@ -113,9 +114,52 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     signupMutation.mutate(data);
   };
 
+  const handlePasswordReset = async () => {
+    const email = loginForm.getValues("email");
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsResettingPassword(true);
+    
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Reset Email Sent",
+          description: "Check your email for password reset instructions",
+        });
+        onClose();
+      } else {
+        throw new Error(data.error || 'Password reset failed');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Reset Failed",
+        description: error.message || "An error occurred while sending reset email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
   const handleClose = () => {
     loginForm.reset();
     signupForm.reset();
+    setIsResettingPassword(false);
     onClose();
   };
 
@@ -194,7 +238,16 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
               </Button>
             </form>
 
-            <div className="text-center">
+            <div className="text-center space-y-3">
+              <button
+                type="button"
+                onClick={handlePasswordReset}
+                disabled={isResettingPassword}
+                className="text-sm text-blue-600 hover:underline font-medium disabled:opacity-50"
+              >
+                {isResettingPassword ? "Sending reset email..." : "Forgot your password? Reset it"}
+              </button>
+              
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Don't have an account?{" "}
                 <button
