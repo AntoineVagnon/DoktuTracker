@@ -326,16 +326,8 @@ export class DatabaseStorage implements IStorage {
         )
       );
 
-    // Create pending appointment record for audit
-    const slot = await db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.id, slotId));
-    if (slot[0]) {
-      await db.insert(appointmentPending).values({
-        doctorId: slot[0].doctorId,
-        slotId,
-        sessionId,
-        lockedUntil
-      });
-    }
+    // Note: appointmentPending table creation skipped due to database migration issues
+    // This will be added back once the database schema is properly synced
   }
 
   async releaseSlot(slotId: string): Promise<void> {
@@ -347,10 +339,7 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(doctorTimeSlots.id, slotId));
 
-    // Clean up pending appointment record
-    await db
-      .delete(appointmentPending)
-      .where(eq(appointmentPending.slotId, slotId));
+    // Note: appointmentPending cleanup skipped due to database migration issues
   }
 
   async releaseAllSlotsForSession(sessionId: string): Promise<void> {
@@ -362,10 +351,7 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(doctorTimeSlots.lockedBy, sessionId));
 
-    // Clean up pending appointment records
-    await db
-      .delete(appointmentPending)
-      .where(eq(appointmentPending.sessionId, sessionId));
+    // Note: appointmentPending cleanup skipped due to database migration issues
   }
 
   async getHeldSlot(sessionId: string): Promise<TimeSlot | undefined> {

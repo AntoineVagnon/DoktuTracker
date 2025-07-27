@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { Calendar, Clock, Euro, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, Euro, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 interface SlotSelectionProps {
   doctorId: string;
@@ -37,7 +38,9 @@ export default function SlotSelection({ doctorId, consultationPrice }: SlotSelec
   const { isAuthenticated } = useAuth();
   const [selectedWeekStart, setSelectedWeekStart] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [isHoldingSlot, setIsHoldingSlot] = useState(false);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Mock availability data - in real app this would come from API
   const mockSlots = [
@@ -50,10 +53,22 @@ export default function SlotSelection({ doctorId, consultationPrice }: SlotSelec
 
   const holdSlotMutation = useMutation({
     mutationFn: async ({ slotId, sessionId }: { slotId: string; sessionId?: string }) => {
-      return apiRequest('POST', '/api/slots/hold', { slotId, sessionId });
+      const response = await apiRequest('POST', '/api/slots/hold', { slotId, sessionId });
+      return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/slots/held'] });
+      toast({
+        title: "Slot secured",
+        description: data.message,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Slot unavailable",
+        description: error.message || "This slot is no longer available. Please select another time.",
+        variant: "destructive",
+      });
     }
   });
 
@@ -88,18 +103,35 @@ export default function SlotSelection({ doctorId, consultationPrice }: SlotSelec
     const slotDateTime = new Date(`${date}T${time}:00`);
     
     if (!isSlotAvailable(slotDateTime, time)) {
-      return; // Slot not available
+      toast({
+        title: "Slot unavailable",
+        description: "This time slot is no longer available. Please select another time.",
+        variant: "destructive",
+      });
+      return;
     }
 
     setSelectedSlot(slotId);
+    setIsHoldingSlot(true);
 
     if (isAuthenticated) {
-      // Authenticated user - hold slot and go to payment
+      // Show "Securing your slot..." message
+      toast({
+        title: "Securing your slot...",
+        description: "Please wait while we reserve your appointment time.",
+      });
+
       try {
         await holdSlotMutation.mutateAsync({ slotId });
-        setLocation(`/payment?doctorId=${doctorId}&slot=${date}T${time}&price=${consultationPrice}`);
+        
+        // Small delay to show the securing message
+        setTimeout(() => {
+          setLocation(`/payment?doctorId=${doctorId}&slot=${date}T${time}&price=${consultationPrice}`);
+        }, 1000);
       } catch (error) {
         console.error('Failed to hold slot:', error);
+        setIsHoldingSlot(false);
+        setSelectedSlot(null);
       }
     } else {
       // Unauthenticated user - save to sessionStorage and go to auth choice
@@ -110,6 +142,7 @@ export default function SlotSelection({ doctorId, consultationPrice }: SlotSelec
       };
       sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
       setLocation('/book-appointment-choice');
+      setIsHoldingSlot(false);
     }
   };
 
@@ -204,21 +237,31 @@ export default function SlotSelection({ doctorId, consultationPrice }: SlotSelec
                     className={`text-xs h-8 ${
                       !available 
                         ? 'opacity-50 cursor-not-allowed' 
+                        : selectedSlot === slotId && isHoldingSlot
+                        ? 'bg-blue-600 text-white animate-pulse'
                         : selectedSlot === slotId
                         ? 'bg-blue-500 text-white'
                         : 'hover:bg-blue-50'
                     }`}
-                    onClick={() => available && handleSlotClick(mockSlots[0].date, time)}
-                    disabled={!available || holdSlotMutation.isPending}
+                    onClick={() => available && !isHoldingSlot && handleSlotClick(mockSlots[0].date, time)}
+                    disabled={!available || isHoldingSlot}
                   >
-                    {time}
+                    {selectedSlot === slotId && isHoldingSlot ? (
+                      <div className="flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        {time}
+                      </div>
+                    ) : (
+                      time
+                    )}
                   </Button>
                 );
               })}
             </div>
             
-            {holdSlotMutation.isPending && (
-              <div className="text-xs text-blue-600 text-center mt-2">
+            {isHoldingSlot && (
+              <div className="flex items-center justify-center gap-2 text-xs text-blue-600 mt-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
                 Securing your slot...
               </div>
             )}
