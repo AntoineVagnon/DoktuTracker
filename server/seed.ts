@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { users, doctors, doctorTimeSlots } from "@shared/schema";
 import { nanoid } from "nanoid";
+import { supabase } from "./supabaseAuth";
 
 const sampleDoctors = [
   {
@@ -184,21 +185,43 @@ export async function seedDatabase() {
   try {
     // Create users and doctors
     for (const doctorData of sampleDoctors) {
-      const userId = nanoid();
+      const email = `${doctorData.firstName.toLowerCase()}.${doctorData.lastName.toLowerCase()}@doktu.com`;
+      const password = "password123"; // Default password for all doctors
       
-      // Create user first
+      // Create Supabase Auth user first
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          first_name: doctorData.firstName,
+          last_name: doctorData.lastName,
+          role: 'doctor'
+        }
+      });
+
+      if (authError) {
+        console.error(`❌ Failed to create auth user for ${email}:`, authError);
+        continue;
+      }
+
+      if (!authData.user) {
+        console.error(`❌ No user data returned for ${email}`);
+        continue;
+      }
+
+      // Create user record in database
       await db.insert(users).values({
-        id: userId,
-        email: `${doctorData.firstName.toLowerCase()}.${doctorData.lastName.toLowerCase()}@doktu.com`,
-        firstName: doctorData.firstName,
-        lastName: doctorData.lastName,
-        profileImageUrl: doctorData.profileImageUrl,
-        role: "doctor"
+        id: parseInt(authData.user.id), // Convert UUID to integer if needed
+        username: email.split('@')[0],
+        email: email,
+        role: "doctor",
+        approved: true
       });
       
       // Create doctor profile
       const [doctor] = await db.insert(doctors).values({
-        userId,
+        userId: authData.user.id,
         specialty: doctorData.specialty,
         bio: doctorData.bio,
         education: doctorData.education,
@@ -207,8 +230,7 @@ export async function seedDatabase() {
         rppsNumber: doctorData.rppsNumber,
         consultationPrice: doctorData.consultationPrice,
         rating: doctorData.rating,
-        reviewCount: doctorData.reviewCount,
-        isOnline: Math.random() > 0.3 // 70% chance of being online
+        reviewCount: doctorData.reviewCount
       }).returning();
       
       // Generate time slots for this doctor
@@ -219,10 +241,14 @@ export async function seedDatabase() {
         await db.insert(doctorTimeSlots).values(slot);
       }
       
-      console.log(`✅ Created doctor: Dr. ${doctorData.firstName} ${doctorData.lastName}`);
+      console.log(`✅ Created doctor: Dr. ${doctorData.firstName} ${doctorData.lastName} (${email} / password123)`);
     }
     
     console.log("🎉 Database seeding completed successfully!");
+    console.log("\n📋 Doctor login credentials:");
+    console.log("Email: sarah.miller@doktu.com");
+    console.log("Password: password123");
+    console.log("\nAll doctors use the same password: password123");
     
   } catch (error) {
     console.error("❌ Database seeding failed:", error);
