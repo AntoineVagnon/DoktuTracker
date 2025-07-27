@@ -174,6 +174,8 @@ Changelog:
 - July 25, 2025: Implemented complete password reset flow with email verification and secure token handling
 - July 25, 2025: Fixed Supabase redirect URLs and added development environment testing capabilities
 - July 25, 2025: Created dedicated PasswordReset page with proper token validation and password update API
+- July 27, 2025: Added password reset functionality to AuthModal with "Forgot Password" link in login form
+- July 27, 2025: Updated Supabase redirect URLs to match production deployment for seamless password reset flow
 ```
 
 ## User Preferences
