@@ -4,6 +4,7 @@ import {
   doctorTimeSlots,
   appointments,
   appointmentChanges,
+  appointmentPending,
   reviews,
   auditEvents,
   type UpsertUser,
@@ -11,10 +12,12 @@ import {
   type Doctor,
   type TimeSlot,
   type Appointment,
+  type AppointmentPending,
   type Review,
   type InsertDoctor,
   type InsertTimeSlot,
   type InsertAppointment,
+  type InsertAppointmentPending,
   type InsertReview,
 } from "@shared/schema";
 import { db } from "./db";
@@ -45,6 +48,12 @@ export interface IStorage {
   lockTimeSlot(id: string, lockedBy: string, durationMinutes: number): Promise<void>;
   unlockTimeSlot(id: string): Promise<void>;
   unlockExpiredSlots(): Promise<void>;
+  
+  // Slot holding operations (for booking flow)
+  holdSlot(slotId: string, sessionId: string, durationMinutes: number): Promise<void>;
+  releaseSlot(slotId: string): Promise<void>;
+  releaseAllSlotsForSession(sessionId: string): Promise<void>;
+  getHeldSlot(sessionId: string): Promise<TimeSlot | undefined>;
 
   // Appointment operations
   getAppointments(patientId?: string, doctorId?: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User })[]>;
@@ -289,6 +298,87 @@ export class DatabaseStorage implements IStorage {
       .update(doctorTimeSlots)
       .set({ lockedUntil: null, lockedBy: null })
       .where(lte(doctorTimeSlots.lockedUntil, new Date()));
+  }
+
+  // Slot holding operations (for booking flow)
+  async holdSlot(slotId: string, sessionId: string, durationMinutes: number = 15): Promise<void> {
+    const lockedUntil = new Date();
+    lockedUntil.setMinutes(lockedUntil.getMinutes() + durationMinutes);
+
+    // First release any other slots held by this session
+    await this.releaseAllSlotsForSession(sessionId);
+
+    // Hold the new slot
+    await db
+      .update(doctorTimeSlots)
+      .set({ 
+        lockedUntil, 
+        lockedBy: sessionId 
+      })
+      .where(
+        and(
+          eq(doctorTimeSlots.id, slotId),
+          eq(doctorTimeSlots.isAvailable, true),
+          or(
+            isNull(doctorTimeSlots.lockedUntil),
+            lte(doctorTimeSlots.lockedUntil, new Date())
+          )
+        )
+      );
+
+    // Create pending appointment record for audit
+    const slot = await db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.id, slotId));
+    if (slot[0]) {
+      await db.insert(appointmentPending).values({
+        doctorId: slot[0].doctorId,
+        slotId,
+        sessionId,
+        lockedUntil
+      });
+    }
+  }
+
+  async releaseSlot(slotId: string): Promise<void> {
+    await db
+      .update(doctorTimeSlots)
+      .set({ 
+        lockedUntil: null, 
+        lockedBy: null 
+      })
+      .where(eq(doctorTimeSlots.id, slotId));
+
+    // Clean up pending appointment record
+    await db
+      .delete(appointmentPending)
+      .where(eq(appointmentPending.slotId, slotId));
+  }
+
+  async releaseAllSlotsForSession(sessionId: string): Promise<void> {
+    await db
+      .update(doctorTimeSlots)
+      .set({ 
+        lockedUntil: null, 
+        lockedBy: null 
+      })
+      .where(eq(doctorTimeSlots.lockedBy, sessionId));
+
+    // Clean up pending appointment records
+    await db
+      .delete(appointmentPending)
+      .where(eq(appointmentPending.sessionId, sessionId));
+  }
+
+  async getHeldSlot(sessionId: string): Promise<TimeSlot | undefined> {
+    const [slot] = await db
+      .select()
+      .from(doctorTimeSlots)
+      .where(
+        and(
+          eq(doctorTimeSlots.lockedBy, sessionId),
+          gte(doctorTimeSlots.lockedUntil, new Date())
+        )
+      );
+    return slot;
   }
 
   // Appointment operations

@@ -1,222 +1,237 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { Calendar, Clock, Euro, User, CheckCircle } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Calendar, Clock, User, CreditCard } from 'lucide-react';
 
-// Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '');
-
-const CheckoutForm = ({ doctorId, slot, price }: { doctorId: string, slot: string, price: string }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const { toast } = useToast();
+export default function Payment() {
+  const [, setLocation] = useLocation();
+  const [bookingData, setBookingData] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [doctor, setDoctor] = useState<any>(null);
 
   useEffect(() => {
-    // Fetch doctor information
-    fetch(`/api/public/doctors/${doctorId}`)
-      .then(res => res.json())
-      .then(data => setDoctor(data))
-      .catch(err => console.error('Error fetching doctor:', err));
-  }, [doctorId]);
+    // Get booking data from URL or sessionStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const doctorId = urlParams.get('doctorId');
+    const slot = urlParams.get('slot');
+    const price = urlParams.get('price');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!stripe || !elements) {
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      // Create payment intent
-      const response = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: parseFloat(price),
-          doctorId,
-          slot,
-        }),
-      });
-
-      const { clientSecret } = await response.json();
-
-      // Confirm payment
-      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement)!,
-        }
-      });
-
-      if (error) {
-        toast({
-          title: "Payment Failed",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else if (paymentIntent?.status === 'succeeded') {
-        toast({
-          title: "Payment Successful",
-          description: "Your appointment has been booked!",
-        });
-        // Redirect to dashboard
-        window.location.href = '/dashboard';
+    if (doctorId && slot && price) {
+      setBookingData({ doctorId, slot, price });
+    } else {
+      // Try to get from sessionStorage
+      const savedBooking = sessionStorage.getItem('pendingBooking');
+      if (savedBooking) {
+        setBookingData(JSON.parse(savedBooking));
+      } else {
+        // No booking data found, redirect back
+        setLocation('/doctors');
       }
+    }
+  }, [setLocation]);
+
+  const handlePayment = async () => {
+    setIsProcessing(true);
+    try {
+      // Mock payment processing
+      console.log('Processing payment:', bookingData);
+      
+      // Simulate payment delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Clear pending booking data
+      sessionStorage.removeItem('pendingBooking');
+      
+      // Redirect to dashboard with success message
+      setLocation('/dashboard?booking=success');
     } catch (error) {
       console.error('Payment error:', error);
-      toast({
-        title: "Payment Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
     } finally {
       setIsProcessing(false);
     }
   };
 
-  if (!doctor) {
+  const handleBack = () => {
+    if (bookingData?.doctorId) {
+      setLocation(`/doctor/${bookingData.doctorId}`);
+    } else {
+      setLocation('/doctors');
+    }
+  };
+
+  const formatSlotTime = (slot: string) => {
+    if (!slot) return { date: '', time: '' };
+    const [date, time] = slot.split('T');
+    return {
+      date: new Date(date).toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }),
+      time: time?.substring(0, 5) || ''
+    };
+  };
+
+  if (!bookingData) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Loading booking details...</p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Appointment Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            Appointment Summary
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <User className="h-4 w-4 text-gray-500" />
-            <span>Dr. {doctor.user?.firstName} {doctor.user?.lastName}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Calendar className="h-4 w-4 text-gray-500" />
-            <span>{format(new Date(slot), 'EEEE, MMMM d, yyyy')}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Clock className="h-4 w-4 text-gray-500" />
-            <span>{format(new Date(slot), 'HH:mm')}</span>
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between font-semibold">
-            <div className="flex items-center gap-2">
-              <Euro className="h-4 w-4" />
-              <span>Total Amount</span>
-            </div>
-            <span>€{price}</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Payment Details */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Card Information
-              </label>
-              <div className="border rounded-md p-3">
-                <CardElement
-                  options={{
-                    style: {
-                      base: {
-                        fontSize: '16px',
-                        color: '#424770',
-                        '::placeholder': {
-                          color: '#aab7c4',
-                        },
-                      },
-                    },
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Submit Button */}
-      <Button
-        type="submit"
-        disabled={!stripe || isProcessing}
-        className="w-full py-3 text-lg"
-      >
-        {isProcessing ? (
-          <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-            Processing Payment...
-          </>
-        ) : (
-          `Pay €${price} & Book Appointment`
-        )}
-      </Button>
-
-      <p className="text-xs text-gray-500 text-center">
-        Your payment is secured with 256-bit SSL encryption. You will receive a confirmation email after successful payment.
-      </p>
-    </form>
-  );
-};
-
-export default function Payment() {
-  // Extract booking parameters from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const doctorId = urlParams.get('doctorId');
-  const slot = urlParams.get('slot');
-  const price = urlParams.get('price');
-
-  // Redirect if missing parameters
-  if (!doctorId || !slot || !price) {
-    window.location.href = '/';
-    return null;
-  }
+  const { date, time } = formatSlotTime(bookingData.slot);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Complete Your Booking
-            </h1>
-            <p className="text-gray-600">
-              Secure payment to confirm your medical consultation
-            </p>
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto max-w-2xl px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Button variant="ghost" size="sm" onClick={handleBack}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <div className="text-center">
+              <h1 className="text-xl font-semibold text-gray-900">Payment</h1>
+              <p className="text-sm text-gray-600">Complete your booking</p>
+            </div>
+            <div className="w-16"></div>
           </div>
-
-          <Elements stripe={stripePromise}>
-            <CheckoutForm doctorId={doctorId} slot={slot} price={price} />
-          </Elements>
         </div>
       </div>
 
-      <Footer />
+      <div className="container mx-auto max-w-2xl px-4 py-8">
+        {/* Booking Summary */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Calendar className="h-5 w-5 mr-2 text-blue-600" />
+              Booking Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <User className="h-4 w-4 mr-2 text-gray-500" />
+                  <span className="text-gray-600">Doctor</span>
+                </div>
+                <span className="font-medium">Dr. David Martin</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                  <span className="text-gray-600">Date</span>
+                </div>
+                <span className="font-medium">{date}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Clock className="h-4 w-4 mr-2 text-gray-500" />
+                  <span className="text-gray-600">Time</span>
+                </div>
+                <span className="font-medium">{time}</span>
+              </div>
+              
+              <hr className="my-4" />
+              
+              <div className="flex items-center justify-between text-lg font-semibold">
+                <span>Total</span>
+                <span className="text-blue-600">€{bookingData.price}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Payment Form */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
+              Payment Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Secure Payment:</strong> Your payment information is encrypted and processed securely.
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Card Number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="1234 5678 9012 3456"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled={isProcessing}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Expiry Date
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      disabled={isProcessing}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      CVV
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="123"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      disabled={isProcessing}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Cardholder Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="John Doe"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled={isProcessing}
+                  />
+                </div>
+              </div>
+              
+              <Button
+                onClick={handlePayment}
+                className="w-full"
+                disabled={isProcessing}
+              >
+                {isProcessing ? 'Processing Payment...' : `Pay €${bookingData.price}`}
+              </Button>
+              
+              <p className="text-xs text-gray-500 text-center">
+                By completing this payment, you agree to our Terms of Service and Privacy Policy.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

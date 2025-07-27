@@ -74,6 +74,16 @@ export const doctorTimeSlots = pgTable("doctor_time_slots", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Pending appointments (for analytics/audit)
+export const appointmentPending = pgTable("appointment_pending", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  doctorId: uuid("doctor_id").references(() => doctors.id).notNull(),
+  slotId: uuid("slot_id").references(() => doctorTimeSlots.id).notNull(),
+  sessionId: varchar("session_id").notNull(),
+  lockedUntil: timestamp("locked_until").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Appointments
 export const appointments = pgTable("appointments", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -221,6 +231,14 @@ export const insertTimeSlotSchema = createInsertSchema(doctorTimeSlots).omit({
 });
 export type InsertTimeSlot = z.infer<typeof insertTimeSlotSchema>;
 export type TimeSlot = typeof doctorTimeSlots.$inferSelect;
+
+// Pending appointment types
+export const insertAppointmentPendingSchema = createInsertSchema(appointmentPending).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertAppointmentPending = z.infer<typeof insertAppointmentPendingSchema>;
+export type AppointmentPending = typeof appointmentPending.$inferSelect;
 
 export const insertAppointmentSchema = createInsertSchema(appointments).omit({
   id: true,

@@ -195,12 +195,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const session = req.session.supabaseSession;
 
-      if (!session || !session.access_token) {
+      if (!session || !session.accessToken) {
         return res.status(401).json({ error: "Not authenticated" });
       }
 
       // Verify current token with Supabase
-      const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
+      const { data: { user }, error } = await supabase.auth.getUser(session.accessToken);
 
       if (error || !user) {
         return res.status(401).json({ error: "Invalid token" });
@@ -212,7 +212,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!dbUser) {
         // Create user if doesn't exist (for Supabase users)
         dbUser = await storage.upsertUser({
-          id: user.id,
+          id: parseInt(user.id),
           email: user.email,
           firstName: user.user_metadata?.first_name || null,
           lastName: user.user_metadata?.last_name || null,
@@ -225,6 +225,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Get user error:", error);
       res.status(401).json({ error: "Authentication failed" });
+    }
+  });
+
+  // Slot holding routes for booking flow
+  app.post('/api/slots/hold', async (req, res) => {
+    try {
+      const { slotId, sessionId } = z.object({
+        slotId: z.string(),
+        sessionId: z.string().optional(),
+      }).parse(req.body);
+      
+      const actualSessionId = sessionId || req.session.id;
+      
+      await storage.holdSlot(slotId, actualSessionId, 15);
+      
+      res.json({ 
+        success: true, 
+        message: 'Slot held for 15 minutes',
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000)
+      });
+    } catch (error: any) {
+      console.error('Hold slot error:', error);
+      res.status(400).json({ error: error.message || 'Failed to hold slot' });
+    }
+  });
+
+  app.post('/api/slots/release', async (req, res) => {
+    try {
+      const { slotId } = z.object({ slotId: z.string() }).parse(req.body);
+      
+      await storage.releaseSlot(slotId);
+      
+      res.json({ success: true, message: 'Slot released' });
+    } catch (error: any) {
+      console.error('Release slot error:', error);
+      res.status(400).json({ error: error.message || 'Failed to release slot' });
+    }
+  });
+
+  app.get('/api/slots/held', async (req, res) => {
+    try {
+      const sessionId = req.session.id;
+      const heldSlot = await storage.getHeldSlot(sessionId);
+      
+      res.json({ heldSlot });
+    } catch (error: any) {
+      console.error('Get held slot error:', error);
+      res.status(500).json({ error: 'Failed to get held slot' });
     }
   });
 

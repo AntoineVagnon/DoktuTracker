@@ -23,6 +23,10 @@ import TestPasswordReset from "@/pages/TestPasswordReset";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Payment from "@/pages/Payment";
+import DoctorList from "@/pages/DoctorList";
+import BookAppointmentChoice from "@/pages/BookAppointmentChoice";
+import PatientLogin from "@/pages/PatientLogin";
+import PatientRegistration from "@/pages/PatientRegistration";
 
 
 function Router() {
@@ -44,6 +48,10 @@ function Router() {
       <Route path="/checkout" component={Payment} />
       <Route path="/payment" component={Payment} />
       <Route path="/doctor/:id" component={DoctorProfile} />
+      <Route path="/doctors" component={DoctorList} />
+      <Route path="/book-appointment-choice" component={BookAppointmentChoice} />
+      <Route path="/patient-login" component={PatientLogin} />
+      <Route path="/patient-registration" component={PatientRegistration} />
       
       {/* Dashboard routes - always accessible for role-based redirects */}
       <Route path="/dashboard" component={Dashboard} />
