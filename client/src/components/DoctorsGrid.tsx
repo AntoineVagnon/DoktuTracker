@@ -103,7 +103,7 @@ export function DoctorsGrid() {
             
             {/* Rating */}
             <div className="flex items-center space-x-1">
-              {doctor.avgRating ? (
+              {typeof doctor.avgRating === 'number' && !isNaN(doctor.avgRating) ? (
                 <>
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span className="text-sm font-medium">{doctor.avgRating.toFixed(1)}</span>

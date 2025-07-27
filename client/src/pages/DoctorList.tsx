@@ -26,8 +26,8 @@ type Doctor = {
 
 export default function DoctorList() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [specialtyFilter, setSpecialtyFilter] = useState('');
-  const [locationFilter, setLocationFilter] = useState('');
+  const [specialtyFilter, setSpecialtyFilter] = useState('all');
+  const [locationFilter, setLocationFilter] = useState('anytime');
 
   const { data: doctors, isLoading, error } = useQuery<Doctor[]>({
     queryKey: ['/api/doctors'],
@@ -39,7 +39,7 @@ export default function DoctorList() {
       doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
       doctor.bio?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesSpecialty = !specialtyFilter || doctor.specialty === specialtyFilter;
+    const matchesSpecialty = !specialtyFilter || specialtyFilter === 'all' || doctor.specialty === specialtyFilter;
     
     return matchesSearch && matchesSpecialty;
   }) || [];
@@ -122,7 +122,7 @@ export default function DoctorList() {
                 <SelectValue placeholder="All Specialties" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Specialties</SelectItem>
+                <SelectItem value="all">All Specialties</SelectItem>
                 {specialties.map((specialty) => (
                   <SelectItem key={specialty} value={specialty}>
                     {specialty}
@@ -135,7 +135,7 @@ export default function DoctorList() {
                 <SelectValue placeholder="Anytime" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Anytime</SelectItem>
+                <SelectItem value="anytime">Anytime</SelectItem>
                 <SelectItem value="today">Today</SelectItem>
                 <SelectItem value="tomorrow">Tomorrow</SelectItem>
                 <SelectItem value="this-week">This Week</SelectItem>
@@ -192,8 +192,15 @@ export default function DoctorList() {
                       <div className="flex items-center space-x-4 text-sm">
                         <div className="flex items-center">
                           <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                          <span className="font-medium">{doctor.rating.toFixed(1)}</span>
-                          <span className="text-gray-500 ml-1">({doctor.reviewCount} reviews)</span>
+                          <span className="font-medium">
+                            {typeof doctor.rating === 'number' && !isNaN(doctor.rating) 
+                              ? doctor.rating.toFixed(1)
+                              : 'No rating'
+                            }
+                          </span>
+                          <span className="text-gray-500 ml-1">
+                            ({typeof doctor.reviewCount === 'number' ? doctor.reviewCount : 0} reviews)
+                          </span>
                         </div>
                       </div>
                     </div>
