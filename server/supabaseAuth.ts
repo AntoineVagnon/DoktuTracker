@@ -270,7 +270,11 @@ export async function setupSupabaseAuth(app: Express) {
         }).then(res => res.json());
 
         if (updateError) {
-          throw new Error(updateError.message || 'Password update failed');
+          const errorMsg = updateError.message || 'Password update failed';
+          if (errorMsg.includes('should be different')) {
+            throw new Error('Please choose a different password than your current one');
+          }
+          throw new Error(errorMsg);
         }
       } else {
         // Session established, update password normally
@@ -279,7 +283,11 @@ export async function setupSupabaseAuth(app: Express) {
         });
 
         if (updateError) {
-          throw new Error(updateError.message || 'Password update failed');
+          const errorMsg = updateError.message || 'Password update failed';
+          if (errorMsg.includes('should be different')) {
+            throw new Error('Please choose a different password than your current one');
+          }
+          throw new Error(errorMsg);
         }
       }
 
