@@ -137,22 +137,30 @@ export async function setupSupabaseAuth(app: Express) {
   // Logout endpoint
   app.post('/api/auth/logout', async (req, res) => {
     try {
-      const session = req.session.supabaseSession;
+      const session = (req.session as any)?.supabaseSession;
+
+      console.log('Logout request - Session exists:', !!session);
 
       if (session) {
+        // Sign out from Supabase
         await supabase.auth.signOut();
+        console.log('Supabase signout completed');
       }
 
+      // Destroy the Express session
       req.session.destroy((err) => {
         if (err) {
           console.error('Session destroy error:', err);
+          return res.status(500).json({ error: 'Logout failed, please try again.' });
         }
-        res.json({ message: 'Logout successful' });
+        
+        console.log('Session destroyed successfully');
+        res.json({ message: 'Logout successful', redirect: '/' });
       });
 
     } catch (error: any) {
       console.error('Logout error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'Logout failed, please try again.' });
     }
   });
 
@@ -405,8 +413,9 @@ export async function setupSupabaseAuth(app: Express) {
     res.redirect(302, '/login');
   });
 
+  // Legacy logout redirect - now handled by POST /api/auth/logout
   app.get('/api/logout', (req, res) => {
-    res.redirect(302, '/login');
+    res.redirect(302, '/');
   });
 }
 

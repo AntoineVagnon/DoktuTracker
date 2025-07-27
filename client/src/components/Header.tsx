@@ -6,14 +6,18 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, User, Calendar, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import AuthModal from "@/components/AuthModal";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<"login" | "signup">("login");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,6 +45,48 @@ export default function Header() {
     if (user?.role === "doctor") return "/doctor-dashboard";
     if (user?.role === "admin") return "/admin";
     return "/dashboard";
+  };
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    
+    setIsLoggingOut(true);
+    
+    try {
+      const response = await apiRequest("POST", "/api/auth/logout");
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Clear any local storage items
+        sessionStorage.clear();
+        localStorage.removeItem('auth_redirect');
+        localStorage.removeItem('booking_redirect');
+        
+        toast({
+          title: "Logged out successfully",
+          description: "You have been logged out of your account.",
+        });
+        
+        // Redirect to homepage
+        setLocation('/');
+        
+        // Refresh page to update auth state
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      } else {
+        throw new Error(data.error || 'Logout failed');
+      }
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Logout Failed",
+        description: error.message || "Logout failed, please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -118,11 +164,9 @@ export default function Header() {
                       <span>My Appointments</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <a href="/api/logout" className="flex items-center">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </a>
+                  <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
