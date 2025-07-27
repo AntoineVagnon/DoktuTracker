@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,14 +19,25 @@ export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [showVerificationBanner, setShowVerificationBanner] = useState(false);
   const [verificationJustCompleted, setVerificationJustCompleted] = useState(false);
 
   useEffect(() => {
-    // Check if user just completed verification
+    // Check if user just completed verification or booking
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('verified') === '1') {
       setVerificationJustCompleted(true);
+      // Clear the URL parameter
+      window.history.replaceState({}, '', '/dashboard');
+    }
+
+    // Check for booking success
+    if (urlParams.get('booking') === 'success') {
+      toast({
+        title: "Booking Confirmed!",
+        description: "Your appointment has been successfully booked. You'll receive a confirmation email shortly.",
+      });
       // Clear the URL parameter
       window.history.replaceState({}, '', '/dashboard');
     }
@@ -37,7 +49,7 @@ export default function Dashboard() {
       // Placeholder for email verification check
       // setShowVerificationBanner(true);
     }
-  }, [user, verificationJustCompleted]);
+  }, [user, verificationJustCompleted, toast]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -142,6 +154,10 @@ export default function Dashboard() {
     }
   };
 
+  const handleBookAppointment = () => {
+    setLocation('/doctors');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -154,7 +170,10 @@ export default function Dashboard() {
             <p className="text-gray-600">Welcome back, {user?.firstName || "Patient"}</p>
           </div>
 
-          <Button className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
+          <Button 
+            onClick={handleBookAppointment}
+            className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Book New Appointment
           </Button>
@@ -198,7 +217,7 @@ export default function Dashboard() {
                         <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments scheduled</h3>
                         <p className="text-gray-600 mb-4">Book an appointment with our specialist</p>
-                        <Button>
+                        <Button onClick={handleBookAppointment}>
                           <Plus className="h-4 w-4 mr-2" />
                           Book an appointment
                         </Button>
@@ -323,7 +342,7 @@ export default function Dashboard() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-gray-600">Browse our available doctors and schedule your consultation.</p>
-                    <Button className="mt-4">Browse Doctors</Button>
+                    <Button onClick={handleBookAppointment} className="mt-4">Browse Doctors</Button>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -360,7 +379,10 @@ export default function Dashboard() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
+                <Button 
+                  onClick={handleBookAppointment}
+                  className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]"
+                >
                   <Calendar className="h-4 w-4 mr-2" />
                   Book Appointment
                 </Button>
