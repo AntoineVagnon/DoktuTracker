@@ -1,0 +1,65 @@
+# Doctor Dashboard — Unified Navigation & Layout Redesign
+
+## Feature: Unified navigation experience for doctors
+
+  As a doctor
+  I want to navigate between dashboard sections via a single sidebar
+  So that the interface remains consistent across all pages and devices
+
+  Background:
+    Given I am logged in as a doctor
+
+  ## Main Dashboard Layout
+
+  Scenario: Display updated main dashboard layout
+    When I access the main dashboard
+    Then I should see a greeting message "Welcome back James" without the title "Dr."
+    And I should only see one button labeled "View Calendar"
+    And the quick actions section should not be visible
+    And the main navigation should be visible as a vertical sidebar
+
+  ## Navigation structure (desktop)
+
+  Scenario: Replace top navigation and quick actions with vertical sidebar
+    Given I am on any page of the doctor dashboard
+    Then I should see a vertical sidebar on the left containing:
+      | Dashboard         |
+      | Calendar          |
+      | Patient Records   |
+      | Settings          |
+    And the current active page should be clearly highlighted
+    And the sidebar should remain persistent during navigation
+
+  ## Navigation on mobile
+
+  Scenario: Collapse sidebar on mobile
+    Given I am on a mobile device
+    Then the vertical sidebar should be collapsed by default
+    And I should see a hamburger menu to open it
+    And the menu should contain the same navigation links
+
+  ## Settings page layout
+
+  Scenario: Display sub-sections in Settings page
+    Given I access the "Settings" page
+    Then I should see the following sub-sections as horizontal tabs:
+      | My Profile               |
+      | Professional Information |
+      | Payment Methods          |
+      | Security                 |
+    And the first visible tab should be "My Profile"
+
+  ## Edge case: direct sub-page access
+
+  Scenario: Ensure navigation consistency when accessing sub-page directly
+    Given I open a sub-page like "/doctor-settings" directly
+    Then the main sidebar should still be visible
+    And the active page in the sidebar should be highlighted as "Settings"
+    And the correct horizontal sub-tab should be selected
+
+  ## Future-proofing (optional)
+
+  Scenario: Make sidebar extensible
+    Then the sidebar design should allow for future entries like:
+      | Analytics         |
+      | Notifications     |

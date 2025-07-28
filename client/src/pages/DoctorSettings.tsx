@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, User, Briefcase, CreditCard, Shield, Eye, EyeOff } from "lucide-react";
-import { Link } from "wouter";
+import { User, Briefcase, CreditCard, Shield, Eye, EyeOff } from "lucide-react";
+import DoctorLayout from "@/components/DoctorLayout";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -21,29 +21,23 @@ export default function DoctorSettings() {
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <DoctorLayout>
+        <Card className="w-full max-w-md mx-auto">
           <CardContent className="p-6 text-center">
             <div className="text-red-500 mb-4">Failed to load profile data</div>
             <Button onClick={handleRetry}>Retry</Button>
           </CardContent>
         </Card>
-      </div>
+      </DoctorLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-6">
+    <DoctorLayout>
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <Link href="/doctor-dashboard">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
-            </Button>
-          </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
         </div>
 
         {/* Settings Tabs */}
@@ -247,6 +241,6 @@ export default function DoctorSettings() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </DoctorLayout>
   );
 }

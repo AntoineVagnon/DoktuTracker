@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Plus } from "lucide-react";
-import { Link } from "wouter";
+import { Plus } from "lucide-react";
+import DoctorLayout from "@/components/DoctorLayout";
 import { useState } from "react";
 
 export default function DoctorCalendar() {
@@ -108,19 +108,11 @@ export default function DoctorCalendar() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
+    <DoctorLayout>
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Link href="/doctor-dashboard">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Retour au tableau de bord
-              </Button>
-            </Link>
-            <h1 className="text-2xl font-bold text-gray-900">Calendrier & Disponibilités</h1>
-          </div>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-900">Calendar</h1>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             Edit calendar
@@ -158,6 +150,6 @@ export default function DoctorCalendar() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </DoctorLayout>
   );
 }
