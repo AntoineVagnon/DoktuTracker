@@ -182,6 +182,11 @@ Changelog:
 - July 28, 2025: Updated redirect URLs for doctor dashboard (/doctor-dashboard instead of /doctor/dashboard)
 - July 28, 2025: Created SQL migration script for removing obsolete password_hash column (manual execution required)
 - July 28, 2025: User successfully removed password_hash column from Supabase users table - authentication now fully migrated to Supabase Auth
+- July 28, 2025: Implemented complete structured name system with title/firstName/lastName fields in users table
+- July 28, 2025: Created nameUtils.ts utility functions for consistent name rendering across UI components
+- July 28, 2025: Updated DoctorCard and Home components to use formatUserFullName() and getUserInitials()
+- July 28, 2025: Created SQL migration scripts to normalize name storage and eliminate doctors.name redundancy
+- July 28, 2025: Structured name system ready - requires manual SQL migration execution in Supabase
 ```
 
 ## User Preferences

@@ -98,7 +98,7 @@ export class DatabaseStorage implements IStorage {
       return existingUser;
     }
 
-    // Create new user with basic fields for now
+    // Create new user with structured name fields
     if (!userData.email) {
       throw new Error('Email is required');
     }
@@ -107,8 +107,14 @@ export class DatabaseStorage implements IStorage {
     const cleanUserData = {
       username: username,
       email: userData.email,
+      title: userData.title || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
       role: userData.role || 'patient',
       approved: userData.approved || false,
+      stripeCustomerId: userData.stripeCustomerId || null,
+      stripeSubscriptionId: userData.stripeSubscriptionId || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -127,7 +133,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: Omit<UpsertUser, 'id'>): Promise<User> {
-    // Create user with basic fields for now
+    // Create user with structured name fields
     if (!userData.email) {
       throw new Error('Email is required');
     }
@@ -136,8 +142,14 @@ export class DatabaseStorage implements IStorage {
     const cleanUserData = {
       username: username,
       email: userData.email,
+      title: userData.title || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
       role: userData.role || 'patient',
       approved: userData.approved || false,
+      stripeCustomerId: userData.stripeCustomerId || null,
+      stripeSubscriptionId: userData.stripeSubscriptionId || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -167,18 +179,19 @@ export class DatabaseStorage implements IStorage {
         reviewCount: doctors.reviewCount,
         createdAt: doctors.createdAt,
         updatedAt: doctors.updatedAt,
-        // User fields - use existing columns until migration is complete
+        // User fields with structured names - using new columns after migration
         user: {
           id: users.id,
           username: users.username,
           email: users.email,
-          firstName: sql`NULL`.as('firstName'), // Will be added during migration
-          lastName: sql`NULL`.as('lastName'), // Will be added during migration
-          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Will be added during migration
+          title: users.title,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImageUrl: users.profileImageUrl,
           role: users.role,
           approved: users.approved,
-          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Will be added during migration
-          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Will be added during migration
+          stripeCustomerId: users.stripeCustomerId,
+          stripeSubscriptionId: users.stripeSubscriptionId,
           createdAt: users.createdAt,
           updatedAt: users.updatedAt
         }
@@ -211,13 +224,14 @@ export class DatabaseStorage implements IStorage {
           id: users.id,
           username: users.username,
           email: users.email,
-          firstName: sql`NULL`.as('firstName'), // Will be added during migration
-          lastName: sql`NULL`.as('lastName'), // Will be added during migration
-          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Will be added during migration
+          title: users.title,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImageUrl: users.profileImageUrl,
           role: users.role,
           approved: users.approved,
-          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Will be added during migration
-          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Will be added during migration
+          stripeCustomerId: users.stripeCustomerId,
+          stripeSubscriptionId: users.stripeSubscriptionId,
           createdAt: users.createdAt,
           updatedAt: users.updatedAt
         }
