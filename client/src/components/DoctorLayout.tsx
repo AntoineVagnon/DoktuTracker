@@ -57,7 +57,7 @@ export default function DoctorLayout({ children }: DoctorLayoutProps) {
       
       <div className="flex-1 flex flex-col">
         {/* Transparent sticky header for doctor interface */}
-        <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
+        <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
           <div className="flex h-16 items-center justify-end px-6">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

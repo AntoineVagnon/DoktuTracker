@@ -49,7 +49,7 @@ export default function DoctorSidebar({ className }: DoctorSidebarProps) {
   return (
     <>
       {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
+      <div className="lg:hidden fixed top-4 left-4 z-30">
         <Button
           variant="outline"
           size="sm"
@@ -63,14 +63,14 @@ export default function DoctorSidebar({ className }: DoctorSidebarProps) {
       {/* Mobile overlay */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed left-0 top-0 z-40 h-full w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out",
+        "fixed left-0 top-0 z-10 h-full w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out",
         "lg:translate-x-0 lg:static lg:z-auto lg:h-screen",
         isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         className
