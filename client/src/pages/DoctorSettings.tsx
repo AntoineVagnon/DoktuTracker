@@ -42,22 +42,26 @@ export default function DoctorSettings() {
 
         {/* Settings Tabs */}
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-4 h-auto p-1">
+            <TabsTrigger value="profile" className="flex items-center gap-2 py-3">
               <User className="h-4 w-4" />
-              My Profile
+              <span className="hidden sm:inline">My Profile</span>
+              <span className="sm:hidden">Profile</span>
             </TabsTrigger>
-            <TabsTrigger value="professional" className="flex items-center gap-2">
+            <TabsTrigger value="professional" className="flex items-center gap-2 py-3">
               <Briefcase className="h-4 w-4" />
-              Professional Information
+              <span className="hidden sm:inline">Professional Information</span>
+              <span className="sm:hidden">Professional</span>
             </TabsTrigger>
-            <TabsTrigger value="payment" className="flex items-center gap-2">
+            <TabsTrigger value="payment" className="flex items-center gap-2 py-3">
               <CreditCard className="h-4 w-4" />
-              Payment Methods
+              <span className="hidden sm:inline">Payment Methods</span>
+              <span className="sm:hidden">Payment</span>
             </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2">
+            <TabsTrigger value="security" className="flex items-center gap-2 py-3">
               <Shield className="h-4 w-4" />
-              Security
+              <span className="hidden sm:inline">Security</span>
+              <span className="sm:hidden">Security</span>
             </TabsTrigger>
           </TabsList>
 

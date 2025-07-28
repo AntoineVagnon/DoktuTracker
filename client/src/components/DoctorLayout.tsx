@@ -1,5 +1,4 @@
-import DoctorSidebar from "./DoctorSidebar";
-import Header from "./Header";
+import DoctorTopNavigation from "./DoctorTopNavigation";
 import Footer from "./Footer";
 
 interface DoctorLayoutProps {
@@ -8,18 +7,14 @@ interface DoctorLayoutProps {
 
 export default function DoctorLayout({ children }: DoctorLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <DoctorSidebar />
+    <div className="min-h-screen bg-gray-50">
+      <DoctorTopNavigation />
       
-      <div className="flex-1 flex flex-col">
-        <Header />
-        
-        <main className="flex-1 p-6 lg:p-8">
-          {children}
-        </main>
-        
-        <Footer />
-      </div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {children}
+      </main>
+      
+      <Footer />
     </div>
   );
 }
