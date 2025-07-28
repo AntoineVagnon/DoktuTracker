@@ -49,12 +49,11 @@ export default function DoctorSidebar({ className }: DoctorSidebarProps) {
   return (
     <>
       {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-2 left-2 z-30">
+      <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
           variant="outline"
           size="sm"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="bg-white shadow-md"
         >
           {isMobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </Button>
@@ -63,15 +62,14 @@ export default function DoctorSidebar({ className }: DoctorSidebarProps) {
       {/* Mobile overlay */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed left-0 top-0 z-10 h-full w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out",
-        "lg:translate-x-0 lg:static lg:z-auto lg:h-screen",
+        "fixed left-0 top-0 z-40 h-full w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0",
         isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         className
       )}>
@@ -113,7 +111,7 @@ export default function DoctorSidebar({ className }: DoctorSidebarProps) {
         </div>
       </div>
 
-      {/* Spacer for main content on desktop */}
+      {/* Spacer for main content */}
       <div className="hidden lg:block w-64 flex-shrink-0" />
     </>
   );
