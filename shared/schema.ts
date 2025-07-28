@@ -27,10 +27,9 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table - enhanced with structured name fields
+// User storage table - normalized with structured name fields only
 export const users = pgTable("users", {
   id: integer("id").primaryKey(), // Use integer to match actual database
-  username: varchar("username").notNull(), // Required field in your database
   email: varchar("email").unique(),
   title: varchar("title"), // Dr., M., Mme., etc.
   firstName: varchar("first_name"), // Structured first name

@@ -98,14 +98,12 @@ export class DatabaseStorage implements IStorage {
       return existingUser;
     }
 
-    // Create new user with structured name fields
+    // Create new user with structured name fields only
     if (!userData.email) {
       throw new Error('Email is required');
     }
-    const username = userData.email.split('@')[0];
     
     const cleanUserData = {
-      username: username,
       email: userData.email,
       title: userData.title || null,
       firstName: userData.firstName || null,
@@ -133,14 +131,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: Omit<UpsertUser, 'id'>): Promise<User> {
-    // Create user with structured name fields
+    // Create user with structured name fields only
     if (!userData.email) {
       throw new Error('Email is required');
     }
-    const username = userData.email.split('@')[0];
     
     const cleanUserData = {
-      username: username,
       email: userData.email,
       title: userData.title || null,
       firstName: userData.firstName || null,
@@ -179,13 +175,13 @@ export class DatabaseStorage implements IStorage {
         reviewCount: doctors.reviewCount,
         createdAt: doctors.createdAt,
         updatedAt: doctors.updatedAt,
-        // User fields with structured names - using new columns after migration
+        // User fields with structured names - using actual database columns
         user: {
           id: users.id,
-          username: users.username,
+          username: sql`NULL`.as('username'), // Removed from database
           email: users.email,
           title: users.title,
-          firstName: users.firstName,
+          firstName: users.firstName, 
           lastName: users.lastName,
           profileImageUrl: users.profileImageUrl,
           role: users.role,
@@ -222,7 +218,7 @@ export class DatabaseStorage implements IStorage {
         updatedAt: doctors.updatedAt,
         user: {
           id: users.id,
-          username: users.username,
+          username: sql`NULL`.as('username'), // Removed from database
           email: users.email,
           title: users.title,
           firstName: users.firstName,

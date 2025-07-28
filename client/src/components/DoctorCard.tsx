@@ -9,11 +9,10 @@ import { formatUserFullName, getUserInitials } from "@/lib/nameUtils";
 interface Doctor {
   id: string;
   user: {
-    username?: string;
     email: string;
-    firstName?: string | null;
-    lastName?: string | null;
-    title?: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    title: string | null;
     role?: string;
   } | null;
   specialty: string;
