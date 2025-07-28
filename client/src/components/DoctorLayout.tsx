@@ -32,9 +32,7 @@ export default function DoctorLayout({ children }: DoctorLayoutProps) {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await apiRequest("/api/auth/logout", {
-        method: "POST"
-      });
+      await apiRequest("/api/auth/logout", "POST");
       
       toast({
         title: "Logged out successfully",
