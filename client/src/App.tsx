@@ -21,6 +21,8 @@ import CreateAccount from "@/pages/CreateAccount";
 import PasswordReset from "@/pages/PasswordReset";
 import TestPasswordReset from "@/pages/TestPasswordReset";
 import DoctorDashboard from "@/pages/DoctorDashboard";
+import DoctorCalendar from "@/pages/DoctorCalendar";
+import DoctorSettings from "@/pages/DoctorSettings";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Payment from "@/pages/Payment";
 import DoctorList from "@/pages/DoctorList";
@@ -56,6 +58,8 @@ function Router() {
       {/* Dashboard routes - always accessible for role-based redirects */}
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/doctor-dashboard" component={DoctorDashboard} />
+      <Route path="/doctor-calendar" component={DoctorCalendar} />
+      <Route path="/doctor-settings" component={DoctorSettings} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>

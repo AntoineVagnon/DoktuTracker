@@ -419,7 +419,7 @@ export class PostgresStorage implements IStorage {
       .from(appointments)
       .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
       .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
-      .innerJoin(patientUsers, eq(appointments.patientId, sql`CAST(${patientUsers.id} AS TEXT)`));
+      .innerJoin(patientUsers, eq(sql`CAST(${appointments.patientId} AS INTEGER)`, patientUsers.id));
 
     let query = baseQuery;
     if (patientId) {
@@ -496,7 +496,7 @@ export class PostgresStorage implements IStorage {
       .from(appointments)
       .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
       .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
-      .innerJoin(patientUsers, eq(appointments.patientId, sql`CAST(${patientUsers.id} AS TEXT)`))
+      .innerJoin(patientUsers, eq(sql`CAST(${appointments.patientId} AS INTEGER)`, patientUsers.id))
       .where(eq(appointments.id, id));
     return result;
   }
@@ -594,7 +594,7 @@ export class PostgresStorage implements IStorage {
         }
       })
       .from(reviews)
-      .innerJoin(users, eq(reviews.patientId, sql`CAST(${users.id} AS TEXT)`))
+      .innerJoin(users, eq(sql`CAST(${reviews.patientId} AS INTEGER)`, users.id))
       .where(eq(reviews.doctorId, doctorId))
       .orderBy(desc(reviews.createdAt));
 
