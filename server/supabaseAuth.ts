@@ -49,12 +49,17 @@ export async function setupSupabaseAuth(app: Express) {
       // For login, find user by email since Supabase UUIDs don't match our integer IDs
       let user = await storage.getUserByEmail(data.user.email || email);
       if (!user) {
+        // For new users, determine role from user metadata or default to patient
+        const userRole = data.user.user_metadata?.role || 'patient';
         user = await storage.upsertUser({
           id: data.user.id,
           email: data.user.email || email,
-          role: 'patient',
+          role: userRole,
           username: (data.user.email || email).split('@')[0]
         });
+        console.log('Created new user profile:', { email: user.email, role: user.role });
+      } else {
+        console.log('Found existing user:', { email: user.email, role: user.role });
       }
 
       // Save session before responding
@@ -113,7 +118,8 @@ export async function setupSupabaseAuth(app: Express) {
         const user = await storage.upsertUser({
           id: data.user.id, // This will be ignored in favor of auto-increment
           email: data.user.email!,
-          role
+          role,
+          username: email.split('@')[0] // Add username field that's required
         });
 
         // Store session if user is confirmed

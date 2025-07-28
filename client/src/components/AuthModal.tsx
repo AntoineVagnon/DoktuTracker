@@ -59,6 +59,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
       const response = await apiRequest("POST", "/api/auth/login", data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Login failed");
+      }
       return await response.json();
     },
     onSuccess: (data) => {
@@ -67,13 +71,28 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         description: "Welcome back!",
       });
       onClose();
-      // Refresh page to update auth state
-      window.location.reload();
+      
+      // Role-based redirect based on the authenticated user's role
+      const userRole = data.user?.role;
+      if (userRole === 'doctor') {
+        window.location.href = '/doctor/dashboard';
+      } else if (userRole === 'admin') {
+        window.location.href = '/admin/dashboard';
+      } else {
+        // Default to patient dashboard
+        window.location.href = '/dashboard';
+      }
     },
     onError: (error: Error) => {
+      // Improve error message for common cases
+      let errorMessage = error.message;
+      if (errorMessage === "Invalid login credentials") {
+        errorMessage = "Incorrect email or password";
+      }
+      
       toast({
         title: "Login Failed",
-        description: error.message || "An error occurred during login",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -82,6 +101,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   const signupMutation = useMutation({
     mutationFn: async (data: SignupForm) => {
       const response = await apiRequest("POST", "/api/auth/register", data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Registration failed");
+      }
       return await response.json();
     },
     onSuccess: (data) => {
@@ -90,12 +113,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         description: data.message || "Your account has been created successfully!",
       });
       onClose();
-      // Redirect to dashboard for patients
-      if (data.user?.role === 'patient') {
-        window.location.href = '/dashboard';
-      } else {
-        window.location.reload();
-      }
+      // For new patients, redirect to dashboard
+      // New users are patients by default
+      window.location.href = '/dashboard';
     },
     onError: (error: Error) => {
       toast({
