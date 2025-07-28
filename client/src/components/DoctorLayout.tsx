@@ -55,14 +55,14 @@ export default function DoctorLayout({ children }: DoctorLayoutProps) {
     <div className="min-h-screen bg-gray-50 flex">
       <DoctorSidebar />
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col lg:ml-0">
         {/* Transparent sticky header for doctor interface */}
-        <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-          <div className="flex h-16 items-center justify-end px-6">
+        <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
+          <div className="flex h-16 items-center justify-end px-4 lg:px-6">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
                     <AvatarFallback className="bg-blue-500 text-white text-sm font-medium">
                       {getUserInitials(user)}
                     </AvatarFallback>
