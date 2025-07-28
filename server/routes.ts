@@ -89,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/appointments", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.claims?.sub;
+      const userId = user?.id; // Use the correct user ID from Supabase Auth middleware
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -105,7 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/appointments", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.claims?.sub;
+      const userId = user?.id; // Use the correct user ID from Supabase Auth middleware
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
