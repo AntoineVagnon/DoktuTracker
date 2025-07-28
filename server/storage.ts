@@ -22,6 +22,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, gte, lte, isNull, or, count, avg, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 
 // Interface for storage operations
@@ -118,7 +119,7 @@ export class DatabaseStorage implements IStorage {
 
     const [user] = await db
       .insert(users)
-      .values(cleanUserData)
+      .values([cleanUserData])
       .returning();
     return user;
   }
@@ -147,7 +148,7 @@ export class DatabaseStorage implements IStorage {
 
     const [user] = await db
       .insert(users)
-      .values(cleanUserData)
+      .values([cleanUserData])
       .returning();
     return user;
   }
@@ -192,7 +193,10 @@ export class DatabaseStorage implements IStorage {
     // Add default isOnline property since it may not exist in database
     return results.map(result => ({
       ...result,
-      isOnline: false // Default value since column doesn't exist
+      user: {
+        ...result.user,
+        username: result.user.email?.split('@')[0] || 'unknown'
+      }
     }));
   }
 
@@ -235,7 +239,10 @@ export class DatabaseStorage implements IStorage {
     // Add default isOnline property since it may not exist in database
     return {
       ...result,
-      isOnline: false // Default value since column doesn't exist
+      user: {
+        ...result.user,
+        username: result.user.email?.split('@')[0] || 'unknown'
+      }
     };
   }
 
@@ -257,16 +264,20 @@ export class DatabaseStorage implements IStorage {
 
   // Time slot operations
   async getDoctorTimeSlots(doctorId: string, date?: string): Promise<TimeSlot[]> {
-    let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorId));
+    let baseQuery = db.select().from(doctorTimeSlots);
 
     if (date) {
-      query = query.where(and(
-        eq(doctorTimeSlots.doctorId, doctorId),
-        eq(doctorTimeSlots.date, date)
-      ));
+      return await baseQuery
+        .where(and(
+          eq(doctorTimeSlots.doctorId, doctorId),
+          eq(doctorTimeSlots.date, date)
+        ))
+        .orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
     }
 
-    return await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
+    return await baseQuery
+      .where(eq(doctorTimeSlots.doctorId, doctorId))
+      .orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
   }
 
   async createTimeSlot(slot: InsertTimeSlot): Promise<TimeSlot> {
@@ -369,30 +380,138 @@ export class DatabaseStorage implements IStorage {
 
   // Appointment operations
   async getAppointments(patientId?: string, doctorId?: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User })[]> {
-    let query = db
-      .select()
+    const patientUsers = alias(users, 'patient_users');
+    const doctorUsers = alias(users, 'doctor_users');
+    
+    let baseQuery = db
+      .select({
+        // Appointment fields
+        id: appointments.id,
+        doctorId: appointments.doctorId,
+        patientId: appointments.patientId,
+        slotId: appointments.slotId,
+        status: appointments.status,
+        appointmentDate: appointments.appointmentDate,
+        price: appointments.price,
+        paymentIntentId: appointments.paymentIntentId,
+        notes: appointments.notes,
+        cancelReason: appointments.cancelReason,
+        cancelledBy: appointments.cancelledBy,
+        videoRoomId: appointments.videoRoomId,
+        createdAt: appointments.createdAt,
+        updatedAt: appointments.updatedAt,
+        // Doctor with user info
+        doctor: {
+          id: doctors.id,
+          userId: doctors.userId,
+          specialty: doctors.specialty,
+          bio: doctors.bio,
+          education: doctors.education,
+          experience: doctors.experience,
+          languages: doctors.languages,
+          rppsNumber: doctors.rppsNumber,
+          consultationPrice: doctors.consultationPrice,
+          rating: doctors.rating,
+          reviewCount: doctors.reviewCount,
+          createdAt: doctors.createdAt,
+          updatedAt: doctors.updatedAt,
+          user: {
+            id: doctorUsers.id,
+            username: doctorUsers.username,
+            email: doctorUsers.email,
+            role: doctorUsers.role,
+            approved: doctorUsers.approved,
+            createdAt: doctorUsers.createdAt,
+            updatedAt: doctorUsers.updatedAt
+          }
+        },
+        // Patient info
+        patient: {
+          id: patientUsers.id,
+          username: patientUsers.username,
+          email: patientUsers.email,
+          role: patientUsers.role,
+          approved: patientUsers.approved,
+          createdAt: patientUsers.createdAt,
+          updatedAt: patientUsers.updatedAt
+        }
+      })
       .from(appointments)
       .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
-      .innerJoin(users, eq(doctors.userId, users.id))
-      .innerJoin(users, eq(appointments.patientId, users.id));
+      .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
+      .innerJoin(patientUsers, eq(appointments.patientId, sql`CAST(${patientUsers.id} AS TEXT)`));
 
     if (patientId) {
-      query = query.where(eq(appointments.patientId, patientId));
+      baseQuery = baseQuery.where(eq(appointments.patientId, patientId));
     }
     if (doctorId) {
-      query = query.where(eq(appointments.doctorId, doctorId));
+      baseQuery = baseQuery.where(eq(appointments.doctorId, doctorId));
     }
 
-    return await query.orderBy(desc(appointments.appointmentDate));
+    return await baseQuery.orderBy(desc(appointments.appointmentDate));
   }
 
   async getAppointment(id: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User }) | undefined> {
+    const patientUsers = alias(users, 'patient_users');
+    const doctorUsers = alias(users, 'doctor_users');
+    
     const [result] = await db
-      .select()
+      .select({
+        // Appointment fields
+        id: appointments.id,
+        doctorId: appointments.doctorId,
+        patientId: appointments.patientId,
+        slotId: appointments.slotId,
+        status: appointments.status,
+        appointmentDate: appointments.appointmentDate,
+        price: appointments.price,
+        paymentIntentId: appointments.paymentIntentId,
+        notes: appointments.notes,
+        cancelReason: appointments.cancelReason,
+        cancelledBy: appointments.cancelledBy,
+        videoRoomId: appointments.videoRoomId,
+        createdAt: appointments.createdAt,
+        updatedAt: appointments.updatedAt,
+        // Doctor with user info
+        doctor: {
+          id: doctors.id,
+          userId: doctors.userId,
+          specialty: doctors.specialty,
+          bio: doctors.bio,
+          education: doctors.education,
+          experience: doctors.experience,
+          languages: doctors.languages,
+          rppsNumber: doctors.rppsNumber,
+          consultationPrice: doctors.consultationPrice,
+          rating: doctors.rating,
+          reviewCount: doctors.reviewCount,
+          createdAt: doctors.createdAt,
+          updatedAt: doctors.updatedAt,
+          user: {
+            id: doctorUsers.id,
+            username: doctorUsers.username,
+            email: doctorUsers.email,
+            role: doctorUsers.role,
+            approved: doctorUsers.approved,
+            createdAt: doctorUsers.createdAt,
+            updatedAt: doctorUsers.updatedAt
+          }
+        },
+        // Patient info
+        patient: {
+          id: patientUsers.id,
+          username: patientUsers.username,
+          email: patientUsers.email,
+          role: patientUsers.role,
+          approved: patientUsers.approved,
+          createdAt: patientUsers.createdAt,
+          updatedAt: patientUsers.updatedAt
+        }
+      })
       .from(appointments)
       .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
-      .innerJoin(users, eq(doctors.userId, users.id))
-      .innerJoin(users, eq(appointments.patientId, users.id))
+      .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
+      .innerJoin(patientUsers, eq(appointments.patientId, sql`CAST(${patientUsers.id} AS TEXT)`))
       .where(eq(appointments.id, id));
     return result;
   }
@@ -481,12 +600,33 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getDoctorReviews(doctorId: string): Promise<(Review & { patient: User })[]> {
-    return await db
-      .select()
+    const results = await db
+      .select({
+        // Review fields
+        id: reviews.id,
+        doctorId: reviews.doctorId,
+        patientId: reviews.patientId,
+        appointmentId: reviews.appointmentId,
+        rating: reviews.rating,
+        comment: reviews.comment,
+        createdAt: reviews.createdAt,
+        // Patient info
+        patient: {
+          id: users.id,
+          username: users.username,
+          email: users.email,
+          role: users.role,
+          approved: users.approved,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt
+        }
+      })
       .from(reviews)
-      .innerJoin(users, eq(reviews.patientId, users.id))
+      .innerJoin(users, eq(reviews.patientId, sql`CAST(${users.id} AS TEXT)`))
       .where(eq(reviews.doctorId, doctorId))
       .orderBy(desc(reviews.createdAt));
+    
+    return results;
   }
 
   // Admin operations
@@ -542,16 +682,16 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  // Stripe operations
+  // Stripe operations - simplified since columns don't exist in current schema
   async updateUserStripeInfo(userId: string, customerId?: string, subscriptionId?: string): Promise<User> {
-    const updateData: Partial<User> = { updatedAt: new Date() };
-    if (customerId) updateData.stripeCustomerId = customerId;
-    if (subscriptionId) updateData.stripeSubscriptionId = subscriptionId;
+    const updateData = { updatedAt: new Date() };
+    // Note: stripeCustomerId and stripeSubscriptionId columns don't exist in current schema
+    // Would need schema migration to add these fields
 
     const [user] = await db
       .update(users)
       .set(updateData)
-      .where(eq(users.id, userId))
+      .where(eq(users.id, Number(userId)))
       .returning();
     return user;
   }

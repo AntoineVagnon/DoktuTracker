@@ -195,12 +195,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const session = req.session.supabaseSession;
 
-      if (!session || !session.accessToken) {
+      if (!session || !session.access_token) {
         return res.status(401).json({ error: "Not authenticated" });
       }
 
       // Verify current token with Supabase
-      const { data: { user }, error } = await supabase.auth.getUser(session.accessToken);
+      const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
 
       if (error || !user) {
         return res.status(401).json({ error: "Invalid token" });
@@ -214,9 +214,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         dbUser = await storage.upsertUser({
           id: parseInt(user.id),
           email: user.email,
-          firstName: user.user_metadata?.first_name || null,
-          lastName: user.user_metadata?.last_name || null,
-          profileImageUrl: user.user_metadata?.avatar_url || null,
           role: 'patient' // Default role
         });
       }
