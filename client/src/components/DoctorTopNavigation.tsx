@@ -125,11 +125,15 @@ export default function DoctorTopNavigation() {
                   <Link key={item.name} href={item.href}>
                     <Button
                       variant={item.current ? "default" : "ghost"}
-                      className={`flex items-center gap-2 ${item.current ? 'bg-white shadow-sm' : 'hover:bg-white/50'}`}
+                      className={`flex items-center gap-2 px-4 py-2 min-w-fit ${
+                        item.current 
+                          ? 'bg-white shadow-sm text-gray-900 font-medium' 
+                          : 'hover:bg-white/50 text-gray-600 hover:text-gray-900'
+                      }`}
                       size="sm"
                     >
-                      <Icon className="h-4 w-4" />
-                      {item.name}
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="whitespace-nowrap">{item.name}</span>
                     </Button>
                   </Link>
                 );

@@ -318,7 +318,7 @@ export class PostgresStorage implements IStorage {
 
     await db.insert(appointmentPending).values({
       id: nanoid(),
-      timeSlotId: slotId,
+      slotId: slotId,
       sessionId,
       expiresAt
     });
@@ -365,7 +365,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        slotId: appointments.timeSlotId,
+        slotId: appointments.slotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,
@@ -442,7 +442,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        slotId: appointments.timeSlotId,
+        slotId: appointments.slotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,
@@ -526,7 +526,7 @@ export class PostgresStorage implements IStorage {
     await db
       .update(appointments)
       .set({ 
-        timeSlotId: newSlotId, 
+        slotId: newSlotId, 
         rescheduleCount: (appointment.rescheduleCount || 0) + 1,
         updatedAt: new Date() 
       })
