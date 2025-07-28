@@ -318,14 +318,14 @@ export class PostgresStorage implements IStorage {
 
     await db.insert(appointmentPending).values({
       id: nanoid(),
-      slotId,
+      timeSlotId: slotId,
       sessionId,
       expiresAt
     });
   }
 
   async releaseSlot(slotId: string): Promise<void> {
-    await db.delete(appointmentPending).where(eq(appointmentPending.slotId, slotId));
+    await db.delete(appointmentPending).where(eq(appointmentPending.timeSlotId, slotId));
   }
 
   async releaseAllSlotsForSession(sessionId: string): Promise<void> {
@@ -349,7 +349,7 @@ export class PostgresStorage implements IStorage {
         }
       })
       .from(appointmentPending)
-      .innerJoin(doctorTimeSlots, eq(appointmentPending.slotId, doctorTimeSlots.id))
+      .innerJoin(doctorTimeSlots, eq(appointmentPending.timeSlotId, doctorTimeSlots.id))
       .where(eq(appointmentPending.sessionId, sessionId));
 
     return pending?.slot;
@@ -365,7 +365,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        slotId: appointments.slotId,
+        slotId: appointments.timeSlotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,
@@ -442,7 +442,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        slotId: appointments.slotId,
+        slotId: appointments.timeSlotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,
@@ -526,7 +526,7 @@ export class PostgresStorage implements IStorage {
     await db
       .update(appointments)
       .set({ 
-        slotId: newSlotId, 
+        timeSlotId: newSlotId, 
         rescheduleCount: (appointment.rescheduleCount || 0) + 1,
         updatedAt: new Date() 
       })
