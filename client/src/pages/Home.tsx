@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Star, TrendingUp } from "lucide-react";
 import { DoctorsGrid } from "@/components/DoctorsGrid";
+import { formatUserDisplayName } from "@/lib/nameUtils";
 
 export default function Home() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -43,7 +44,7 @@ export default function Home() {
   };
 
   const getUserGreeting = () => {
-    const name = user?.firstName || "there";
+    const name = user ? formatUserDisplayName(user) : "there";
     const hour = new Date().getHours();
 
     if (hour < 12) return `Good morning, ${name}!`;

@@ -1,0 +1,95 @@
+# User Story — Name Structuring for Users (Doctors and Patients)
+
+## Feature: User names should be stored and rendered using structured fields (title, first name, last name)
+
+---
+
+## Context and Data Issue
+
+Currently, the `users` table in Supabase stores names in a single `username` field (e.g., `"dr.james.rodriguez"`).  
+This creates several problems:
+
+- ⚠️ No separation between title, first name, and last name  
+- ⚠️ UI components must "guess" how to extract initials or format names  
+- ⚠️ Redundant "Dr." appears in many places (`"Dr. Dr. James Rodriguez"`)  
+- ⚠️ Sorting, searching, and filtering are error-prone  
+- ⚠️ Inconsistent rendering between doctors and patients  
+- ⚠️ Difficult to localize or internationalize (e.g., in German or French)
+
+This issue affects:  
+- Homepage doctor cards  
+- `/doctor/:id` profile pages  
+- `/dashboard` (patient and doctor dashboards)  
+- Avatar initials in header  
+- Appointments, calendars, billing, and internal logs
+
+---
+
+## Solution — Structured Fields
+
+Supabase `users` table must be updated to include explicit structured fields:
+
+| Field        | Type     | Notes                            |
+|--------------|----------|----------------------------------|
+| `title`      | varchar  | Optional (e.g., "Dr.")           |
+| `first_name` | varchar  | Required                         |
+| `last_name`  | varchar  | Required                         |
+
+Legacy field `username` can be deprecated or retained for compatibility only.
+
+---
+
+### Scenario: Display doctor’s name on homepage or doctor catalog
+Given I am on the homepage or doctor list  
+When a doctor card is rendered  
+Then the name should be formatted using `title`, `first_name`, and `last_name`  
+And never show double titles like “Dr. Dr. Lisa Martinez”
+
+---
+
+### Scenario: Display doctor name in the doctor dashboard
+Given I am logged in as a doctor  
+When I view `/doctor`  
+Then all references to my name should be pulled from structured fields  
+And initials should use `first_name[0] + last_name[0]`
+
+---
+
+### Scenario: Display patient name in the patient dashboard
+Given I am logged in as a patient  
+When I view `/dashboard`  
+Then the welcome message should say “Welcome back, Marie”  
+And the avatar should use initials “MD” from `Marie Dubois`
+
+---
+
+### Scenario: Fallback if structured fields are missing
+Given a user has `null` or empty values for name fields  
+When the name is rendered  
+Then fallback to email (e.g., `pierre.martin@example.com`)  
+Or use “Unknown User” if even the email is missing
+
+---
+
+### Scenario: Legacy username format
+Given a user has a `username` like `dr.james.rodriguez`  
+And their `first_name`, `last_name`, and `title` are missing  
+Then the system may attempt to infer them using a parsing function  
+And populate the structured fields if possible  
+And UI should still render using fallback-safe values
+
+---
+
+### Scenario: Search and filter by name
+When I search for doctors or patients by name  
+Then the system must use `first_name` and `last_name`  
+And not rely on `username`
+
+---
+
+### Developer Notes
+- Normalize display in all UI components: doctor cards, dashboards, headers, appointment details, etc.  
+- Ensure migrations are in place to parse legacy `username` values  
+- Avoid relying on `username` for anything but backward compatibility  
+- Support multiple locales in future (e.g., title position varies)
+

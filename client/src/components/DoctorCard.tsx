@@ -4,17 +4,23 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Clock } from "lucide-react";
 import { Link } from "wouter";
+import { formatUserFullName, getUserInitials } from "@/lib/nameUtils";
 
 interface Doctor {
   id: string;
   user: {
+    username?: string;
     email: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    title?: string | null;
+    role?: string;
   } | null;
   specialty: string;
   rating: string;
   reviewCount: number;
   consultationPrice: string;
-  isOnline: boolean;
+  isOnline?: boolean;
 }
 
 interface DoctorCardProps {
@@ -24,10 +30,9 @@ interface DoctorCardProps {
 }
 
 export default function DoctorCard({ doctor, availableSlots = [], onBookClick }: DoctorCardProps) {
-  // Handle null user case and extract name from email
-  const userName = doctor.user?.email ? doctor.user.email.split('@')[0] : 'Unknown';
-  const doctorName = `Dr. ${userName}`;
-  const initials = userName ? userName.substring(0, 2).toUpperCase() : 'DR';
+  // Use structured name functions for proper display
+  const doctorName = doctor.user ? formatUserFullName({ ...doctor.user, role: 'doctor' }) : 'Unknown Doctor';
+  const initials = doctor.user ? getUserInitials(doctor.user) : 'DR';
   
   const gradientColors = [
     "from-blue-500 to-blue-600",

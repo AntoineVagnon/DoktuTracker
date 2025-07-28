@@ -92,17 +92,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    // For registration, we need to create a new user with the next available ID
-    // Since we can't use Supabase UUIDs as primary keys with existing integer schema
-    
     // First, try to find user by email (in case they already exist)
     const existingUser = await this.getUserByEmail(userData.email);
     if (existingUser) {
       return existingUser;
     }
 
-    // Create new user with fields that exist in the database schema
-    // Generate username from email
+    // Create new user with basic fields for now
     if (!userData.email) {
       throw new Error('Email is required');
     }
@@ -119,7 +115,7 @@ export class DatabaseStorage implements IStorage {
 
     const [user] = await db
       .insert(users)
-      .values([cleanUserData])
+      .values(cleanUserData)
       .returning();
     return user;
   }
@@ -131,7 +127,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: Omit<UpsertUser, 'id'>): Promise<User> {
-    // Only include fields that exist in the database schema
+    // Create user with basic fields for now
     if (!userData.email) {
       throw new Error('Email is required');
     }
@@ -148,7 +144,7 @@ export class DatabaseStorage implements IStorage {
 
     const [user] = await db
       .insert(users)
-      .values([cleanUserData])
+      .values(cleanUserData)
       .returning();
     return user;
   }
@@ -171,17 +167,18 @@ export class DatabaseStorage implements IStorage {
         reviewCount: doctors.reviewCount,
         createdAt: doctors.createdAt,
         updatedAt: doctors.updatedAt,
-        // User fields  
+        // User fields - use existing columns until migration completes
         user: {
           id: users.id,
+          username: users.username,
           email: users.email,
-          firstName: sql`NULL`.as('firstName'), // Column doesn't exist in Supabase
-          lastName: sql`NULL`.as('lastName'), // Column doesn't exist in Supabase
-          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Column doesn't exist in Supabase
+          firstName: sql`NULL`.as('firstName'), // Will be migrated
+          lastName: sql`NULL`.as('lastName'), // Will be migrated
+          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Will be migrated
           role: users.role,
           approved: users.approved,
-          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Column doesn't exist in Supabase
-          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Column doesn't exist in Supabase
+          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Will be migrated
+          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Will be migrated
           createdAt: users.createdAt,
           updatedAt: users.updatedAt
         }
@@ -190,14 +187,8 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(users, eq(doctors.userId, users.id))
       .orderBy(desc(doctors.rating), asc(doctors.createdAt));
     
-    // Add default isOnline property since it may not exist in database
-    return results.map(result => ({
-      ...result,
-      user: {
-        ...result.user,
-        username: result.user.email?.split('@')[0] || 'unknown'
-      }
-    }));
+    // Return results with structured name support
+    return results;
   }
 
   async getDoctor(id: string): Promise<(Doctor & { user: User }) | undefined> {
@@ -218,14 +209,15 @@ export class DatabaseStorage implements IStorage {
         updatedAt: doctors.updatedAt,
         user: {
           id: users.id,
+          username: users.username,
           email: users.email,
-          firstName: sql`NULL`.as('firstName'), // Column doesn't exist in Supabase
-          lastName: sql`NULL`.as('lastName'), // Column doesn't exist in Supabase
-          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Column doesn't exist in Supabase
+          firstName: sql`NULL`.as('firstName'), // Will be migrated
+          lastName: sql`NULL`.as('lastName'), // Will be migrated
+          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Will be migrated
           role: users.role,
           approved: users.approved,
-          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Column doesn't exist in Supabase
-          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Column doesn't exist in Supabase
+          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Will be migrated
+          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Will be migrated
           createdAt: users.createdAt,
           updatedAt: users.updatedAt
         }
@@ -236,14 +228,8 @@ export class DatabaseStorage implements IStorage {
     
     if (!result) return undefined;
     
-    // Add default isOnline property since it may not exist in database
-    return {
-      ...result,
-      user: {
-        ...result.user,
-        username: result.user.email?.split('@')[0] || 'unknown'
-      }
-    };
+    // Return result with structured name support
+    return result;
   }
 
   async getDoctorByUserId(userId: string): Promise<Doctor | undefined> {
@@ -441,14 +427,15 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
       .innerJoin(patientUsers, eq(appointments.patientId, sql`CAST(${patientUsers.id} AS TEXT)`));
 
+    let query = baseQuery;
     if (patientId) {
-      baseQuery = baseQuery.where(eq(appointments.patientId, patientId));
+      query = query.where(eq(appointments.patientId, patientId));
     }
     if (doctorId) {
-      baseQuery = baseQuery.where(eq(appointments.doctorId, doctorId));
+      query = query.where(eq(appointments.doctorId, doctorId));
     }
 
-    return await baseQuery.orderBy(desc(appointments.appointmentDate));
+    return await query.orderBy(desc(appointments.appointmentDate));
   }
 
   async getAppointment(id: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User }) | undefined> {

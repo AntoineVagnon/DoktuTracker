@@ -27,18 +27,19 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table - matched to actual Supabase schema
+// User storage table - enhanced with structured name fields
 export const users = pgTable("users", {
   id: integer("id").primaryKey(), // Use integer to match actual database
   username: varchar("username").notNull(), // Required field in your database
   email: varchar("email").unique(),
-  // firstName: varchar("first_name"), // Column doesn't exist in Supabase
-  // lastName: varchar("last_name"), // Column doesn't exist in Supabase  
-  // profileImageUrl: varchar("profile_image_url"), // Column doesn't exist in Supabase
+  title: varchar("title"), // Dr., M., Mme., etc.
+  firstName: varchar("first_name"), // Structured first name
+  lastName: varchar("last_name"), // Structured last name  
+  profileImageUrl: varchar("profile_image_url"), // Profile image URL
   role: varchar("role").notNull().default("patient"), // patient, doctor, admin
   approved: boolean("approved").default(false), // for doctor approval
-  // stripeCustomerId: varchar("stripe_customer_id"), // Column doesn't exist in Supabase
-  // stripeSubscriptionId: varchar("stripe_subscription_id"), // Column doesn't exist in Supabase
+  stripeCustomerId: varchar("stripe_customer_id"), // Stripe customer ID
+  stripeSubscriptionId: varchar("stripe_subscription_id"), // Stripe subscription ID
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -97,6 +98,7 @@ export const appointments = pgTable("appointments", {
   notes: text("notes"),
   prescription: text("prescription"),
   rescheduleCount: integer("reschedule_count").default(0),
+  cancelReason: text("cancel_reason"), // Reason for cancellation
   cancelledBy: varchar("cancelled_by"), // patient, doctor, admin
   videoRoomId: varchar("video_room_id"),
   createdAt: timestamp("created_at").defaultNow(),
