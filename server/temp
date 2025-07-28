@@ -1,0 +1,273 @@
+        doctorId: appointments.doctorId,
+        patientId: appointments.patientId,
+        timeSlotId: appointments.timeSlotId,
+        status: appointments.status,
+        appointmentDate: appointments.appointmentDate,
+        price: appointments.price,
+        paymentIntentId: appointments.paymentIntentId,
+        notes: appointments.notes,
+        cancelReason: appointments.cancelReason,
+        cancelledBy: appointments.cancelledBy,
+        videoRoomId: appointments.videoRoomId,
+        createdAt: appointments.createdAt,
+        updatedAt: appointments.updatedAt,
+        // Doctor with user info
+        doctor: {
+          id: doctors.id,
+          userId: doctors.userId,
+          specialty: doctors.specialty,
+          bio: doctors.bio,
+          education: doctors.education,
+          experience: doctors.experience,
+          languages: doctors.languages,
+          rppsNumber: doctors.rppsNumber,
+          consultationPrice: doctors.consultationPrice,
+          rating: doctors.rating,
+          reviewCount: doctors.reviewCount,
+          createdAt: doctors.createdAt,
+          updatedAt: doctors.updatedAt,
+          user: {
+            id: doctorUsers.id,
+            email: doctorUsers.email,
+            title: doctorUsers.title,
+            firstName: doctorUsers.firstName,
+            lastName: doctorUsers.lastName,
+            role: doctorUsers.role,
+            approved: doctorUsers.approved,
+            createdAt: doctorUsers.createdAt,
+            updatedAt: doctorUsers.updatedAt
+          }
+        },
+        // Patient info
+        patient: {
+          id: patientUsers.id,
+          email: patientUsers.email,
+          title: patientUsers.title,
+          firstName: patientUsers.firstName,
+          lastName: patientUsers.lastName,
+          role: patientUsers.role,
+          approved: patientUsers.approved,
+          createdAt: patientUsers.createdAt,
+          updatedAt: patientUsers.updatedAt
+        }
+      })
+      .from(appointments)
+      .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
+      .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
+      .innerJoin(patientUsers, eq(sql`CAST(${appointments.patientId} AS INTEGER)`, patientUsers.id));
+
+    let query = baseQuery;
+    if (patientId) {
+      query = query.where(eq(appointments.patientId, patientId));
+    }
+    if (doctorId) {
+      query = query.where(eq(appointments.doctorId, doctorId));
+    }
+
+    return await query.orderBy(desc(appointments.appointmentDate));
+  }
+
+  async getAppointment(id: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User }) | undefined> {
+    const patientUsers = alias(users, 'patient_users');
+    const doctorUsers = alias(users, 'doctor_users');
+    
+    const [result] = await db
+      .select({
+        // Appointment fields
+        id: appointments.id,
+        doctorId: appointments.doctorId,
+        patientId: appointments.patientId,
+        timeSlotId: appointments.timeSlotId,
+        status: appointments.status,
+        appointmentDate: appointments.appointmentDate,
+        price: appointments.price,
+        paymentIntentId: appointments.paymentIntentId,
+        notes: appointments.notes,
+        cancelReason: appointments.cancelReason,
+        cancelledBy: appointments.cancelledBy,
+        videoRoomId: appointments.videoRoomId,
+        createdAt: appointments.createdAt,
+        updatedAt: appointments.updatedAt,
+        // Doctor with user info
+        doctor: {
+          id: doctors.id,
+          userId: doctors.userId,
+          specialty: doctors.specialty,
+          bio: doctors.bio,
+          education: doctors.education,
+          experience: doctors.experience,
+          languages: doctors.languages,
+          rppsNumber: doctors.rppsNumber,
+          consultationPrice: doctors.consultationPrice,
+          rating: doctors.rating,
+          reviewCount: doctors.reviewCount,
+          createdAt: doctors.createdAt,
+          updatedAt: doctors.updatedAt,
+          user: {
+            id: doctorUsers.id,
+            email: doctorUsers.email,
+            title: doctorUsers.title,
+            firstName: doctorUsers.firstName,
+            lastName: doctorUsers.lastName,
+            role: doctorUsers.role,
+            approved: doctorUsers.approved,
+            createdAt: doctorUsers.createdAt,
+            updatedAt: doctorUsers.updatedAt
+          }
+        },
+        // Patient info
+        patient: {
+          id: patientUsers.id,
+          email: patientUsers.email,
+          title: patientUsers.title,
+          firstName: patientUsers.firstName,
+          lastName: patientUsers.lastName,
+          role: patientUsers.role,
+          approved: patientUsers.approved,
+          createdAt: patientUsers.createdAt,
+          updatedAt: patientUsers.updatedAt
+        }
+      })
+      .from(appointments)
+      .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
+      .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
+      .innerJoin(patientUsers, eq(sql`CAST(${appointments.patientId} AS INTEGER)`, patientUsers.id))
+      .where(eq(appointments.id, id));
+    return result;
+  }
+
+  async createAppointment(appointment: InsertAppointment): Promise<Appointment> {
+    const [newAppointment] = await db.insert(appointments).values(appointment).returning();
+    return newAppointment;
+  }
+
+  async updateAppointmentStatus(id: string, status: string): Promise<void> {
+    await db
+      .update(appointments)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(appointments.id, id));
+  }
+
+  async updateAppointmentPayment(id: string, paymentIntentId: string): Promise<void> {
+    await db
+      .update(appointments)
+      .set({ paymentIntentId, status: "paid", updatedAt: new Date() })
+      .where(eq(appointments.id, id));
+  }
+
+  async rescheduleAppointment(id: string, newSlotId: string, reason: string): Promise<void> {
+    const [appointment] = await db.select().from(appointments).where(eq(appointments.id, id));
+
+    await db
+      .update(appointments)
+      .set({ 
+        slotId: newSlotId, 
+        rescheduleCount: (appointment.rescheduleCount || 0) + 1,
+        updatedAt: new Date() 
+      })
+      .where(eq(appointments.id, id));
+
+    // Log the change
+    await db.insert(appointmentChanges).values({
+      appointmentId: id,
+      action: "reschedule",
+      reason,
+      before: { slotId: appointment.slotId },
+      after: { slotId: newSlotId },
+    });
+  }
+
+  async cancelAppointment(id: string, cancelledBy: string, reason: string): Promise<void> {
+    await db
+      .update(appointments)
+      .set({ 
+        status: "cancelled", 
+        cancelledBy, 
+        cancelReason: reason,
+        updatedAt: new Date() 
+      })
+      .where(eq(appointments.id, id));
+
+    // Log the change
+    await db.insert(appointmentChanges).values({
+      appointmentId: id,
+      action: "cancel",
+      reason,
+      before: { status: "confirmed" },
+      after: { status: "cancelled", cancelledBy, cancelReason: reason },
+    });
+  }
+
+  async createReview(review: InsertReview): Promise<Review> {
+    const [newReview] = await db.insert(reviews).values(review).returning();
+    return newReview;
+  }
+
+  async getDoctorReviews(doctorId: string): Promise<(Review & { patient: User })[]> {
+    const result = await db
+      .select({
+        // Review fields
+        id: reviews.id,
+        doctorId: reviews.doctorId,
+        patientId: reviews.patientId,
+        appointmentId: reviews.appointmentId,
+        rating: reviews.rating,
+        comment: reviews.comment,
+        createdAt: reviews.createdAt,
+        updatedAt: reviews.updatedAt,
+        // Patient info
+        patient: {
+          id: users.id,
+          email: users.email,
+          title: users.title,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          role: users.role,
+          approved: users.approved,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt
+        }
+      })
+      .from(reviews)
+      .innerJoin(users, eq(sql`CAST(${reviews.patientId} AS INTEGER)`, users.id))
+      .where(eq(reviews.doctorId, doctorId))
+      .orderBy(desc(reviews.createdAt));
+
+    return result;
+  }
+
+  async getKPIs(): Promise<{
+    totalAppointments: number;
+    completedAppointments: number;
+    totalRevenue: number;
+    averageRating: number;
+  }> {
+    const [appointmentStats] = await db
+      .select({
+        total: count(),
+        completed: count(sql`CASE WHEN status = 'completed' THEN 1 END`),
+        revenue: sql<number>`COALESCE(SUM(CASE WHEN status = 'completed' THEN CAST(price AS DECIMAL) ELSE 0 END), 0)`
+      })
+      .from(appointments);
+
+    const [ratingStats] = await db
+      .select({
+        averageRating: avg(reviews.rating)
+      })
+      .from(reviews);
+
+    return {
+      totalAppointments: appointmentStats.total,
+      completedAppointments: appointmentStats.completed,
+      totalRevenue: appointmentStats.revenue,
+      averageRating: Number(ratingStats.averageRating) || 0
+    };
+  }
+
+  async getAuditEvents(): Promise<any[]> {
+    return await db.select().from(auditEvents).orderBy(desc(auditEvents.createdAt)).limit(100);
+  }
+}
+
+// Export the storage instance
+export const storage = new PostgresStorage();
