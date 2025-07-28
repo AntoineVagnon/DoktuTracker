@@ -167,18 +167,18 @@ export class DatabaseStorage implements IStorage {
         reviewCount: doctors.reviewCount,
         createdAt: doctors.createdAt,
         updatedAt: doctors.updatedAt,
-        // User fields - use existing columns until migration completes
+        // User fields - use existing columns until migration is complete
         user: {
           id: users.id,
           username: users.username,
           email: users.email,
-          firstName: sql`NULL`.as('firstName'), // Will be migrated
-          lastName: sql`NULL`.as('lastName'), // Will be migrated
-          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Will be migrated
+          firstName: sql`NULL`.as('firstName'), // Will be added during migration
+          lastName: sql`NULL`.as('lastName'), // Will be added during migration
+          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Will be added during migration
           role: users.role,
           approved: users.approved,
-          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Will be migrated
-          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Will be migrated
+          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Will be added during migration
+          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Will be added during migration
           createdAt: users.createdAt,
           updatedAt: users.updatedAt
         }
@@ -211,13 +211,13 @@ export class DatabaseStorage implements IStorage {
           id: users.id,
           username: users.username,
           email: users.email,
-          firstName: sql`NULL`.as('firstName'), // Will be migrated
-          lastName: sql`NULL`.as('lastName'), // Will be migrated
-          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Will be migrated
+          firstName: sql`NULL`.as('firstName'), // Will be added during migration
+          lastName: sql`NULL`.as('lastName'), // Will be added during migration
+          profileImageUrl: sql`NULL`.as('profileImageUrl'), // Will be added during migration
           role: users.role,
           approved: users.approved,
-          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Will be migrated
-          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Will be migrated
+          stripeCustomerId: sql`NULL`.as('stripeCustomerId'), // Will be added during migration
+          stripeSubscriptionId: sql`NULL`.as('stripeSubscriptionId'), // Will be added during migration
           createdAt: users.createdAt,
           updatedAt: users.updatedAt
         }
