@@ -181,6 +181,7 @@ Changelog:
 - July 28, 2025: Resolved all TypeScript LSP diagnostics in storage.ts and routes.ts for proper type safety
 - July 28, 2025: Updated redirect URLs for doctor dashboard (/doctor-dashboard instead of /doctor/dashboard)
 - July 28, 2025: Created SQL migration script for removing obsolete password_hash column (manual execution required)
+- July 28, 2025: User successfully removed password_hash column from Supabase users table - authentication now fully migrated to Supabase Auth
 ```
 
 ## User Preferences

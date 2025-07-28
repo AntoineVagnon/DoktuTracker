@@ -16,5 +16,6 @@ ALTER TABLE users DROP COLUMN IF EXISTS password_hash;
 -- - This column is now obsolete and should be removed for clean schema
 -- - All authentication now goes through Supabase Auth APIs
 
--- STATUS: Column exists but is not used by the application code
--- All password operations are handled by Supabase Auth service
+-- STATUS: ✅ COMPLETED - Column has been successfully removed
+-- All password operations are now handled by Supabase Auth service
+-- Migration completed on July 28, 2025
