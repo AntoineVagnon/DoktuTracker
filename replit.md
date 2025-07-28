@@ -176,6 +176,11 @@ Changelog:
 - July 25, 2025: Created dedicated PasswordReset page with proper token validation and password update API
 - July 27, 2025: Added password reset functionality to AuthModal with "Forgot Password" link in login form
 - July 27, 2025: Updated Supabase redirect URLs to match production deployment for seamless password reset flow
+- July 28, 2025: Fixed doctor authentication system - resolved 401 Unauthorized errors and updated API endpoints
+- July 28, 2025: Corrected user ID structure in appointment API to work with Supabase Auth instead of legacy Replit Auth
+- July 28, 2025: Resolved all TypeScript LSP diagnostics in storage.ts and routes.ts for proper type safety
+- July 28, 2025: Updated redirect URLs for doctor dashboard (/doctor-dashboard instead of /doctor/dashboard)
+- July 28, 2025: Created SQL migration script for removing obsolete password_hash column (manual execution required)
 ```
 
 ## User Preferences

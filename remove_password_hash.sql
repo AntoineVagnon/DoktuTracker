@@ -1,10 +1,20 @@
--- Remove obsolete password_hash column from users table
--- This aligns with Supabase Auth architecture where passwords are managed by Supabase
+-- IMPORTANT: Remove obsolete password_hash column from users table
+-- This column is no longer used after switching to Supabase Auth
 
--- Migration to run in Supabase SQL Editor:
+-- MANUAL MIGRATION REQUIRED:
+-- 1. Go to your Supabase Dashboard: https://supabase.com/dashboard
+-- 2. Navigate to SQL Editor 
+-- 3. Copy and paste the command below:
+
 ALTER TABLE users DROP COLUMN IF EXISTS password_hash;
 
--- Alternative approaches if direct SQL access is available:
--- 1. Via Supabase Dashboard > SQL Editor: paste and run the ALTER statement above
--- 2. The column exists but is no longer used by the application
--- 3. All password management is now handled by Supabase Auth, not the users table
+-- 4. Click "Run" to execute
+
+-- WHY THIS IS NEEDED:
+-- - The password_hash column was used with the old Replit Auth system
+-- - Supabase Auth manages passwords separately in its auth.users table
+-- - This column is now obsolete and should be removed for clean schema
+-- - All authentication now goes through Supabase Auth APIs
+
+-- STATUS: Column exists but is not used by the application code
+-- All password operations are handled by Supabase Auth service
