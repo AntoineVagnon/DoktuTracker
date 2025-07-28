@@ -11,7 +11,7 @@ import { format } from "date-fns";
 export default function DoctorDashboard() {
   const { user, isLoading } = useAuth();
 
-  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery({
+  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<any[]>({
     queryKey: ["/api/appointments", "doctor"],
     enabled: !!user,
   });
@@ -36,7 +36,7 @@ export default function DoctorDashboard() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Doctor Dashboard</h1>
           <p className="text-gray-600 mt-2">
-            Welcome back, Dr. {user?.firstName} {user?.lastName}
+            Welcome back, Dr. {user?.email?.split('@')[0]}
           </p>
         </div>
 

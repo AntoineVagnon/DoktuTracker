@@ -75,9 +75,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       // Role-based redirect based on the authenticated user's role
       const userRole = data.user?.role;
       if (userRole === 'doctor') {
-        window.location.href = '/doctor/dashboard';
+        window.location.href = '/doctor-dashboard';
       } else if (userRole === 'admin') {
-        window.location.href = '/admin/dashboard';
+        window.location.href = '/admin-dashboard';
       } else {
         // Default to patient dashboard
         window.location.href = '/dashboard';
