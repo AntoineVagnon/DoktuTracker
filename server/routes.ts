@@ -273,6 +273,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+
+
+  // Time slots management for doctors
+  app.get("/api/time-slots", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user?.id || user.role !== 'doctor') {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const timeSlots = await storage.getDoctorTimeSlots(user.id);
+      res.json(timeSlots);
+    } catch (error) {
+      console.error("Error fetching time slots:", error);
+      res.status(500).json({ message: "Failed to fetch time slots" });
+    }
+  });
+
+  app.post("/api/time-slots", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user?.id || user.role !== 'doctor') {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const { startTime, endTime } = req.body;
+      
+      if (!startTime || !endTime) {
+        return res.status(400).json({ error: "Start time and end time are required" });
+      }
+
+      const { nanoid } = await import('nanoid');
+      const timeSlot = await storage.createTimeSlot({
+        id: nanoid(),
+        doctorId: user.id,
+        startTime: new Date(startTime),
+        endTime: new Date(endTime),
+        isAvailable: true,
+        isLocked: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      
+      res.status(201).json(timeSlot);
+    } catch (error) {
+      console.error("Error creating time slot:", error);
+      res.status(500).json({ message: "Failed to create time slot" });
+    }
+  });
+
+  app.put("/api/time-slots/:id", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user?.id || user.role !== 'doctor') {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const { id } = req.params;
+      const { startTime, endTime } = req.body;
+      
+      if (!startTime || !endTime) {
+        return res.status(400).json({ error: "Start time and end time are required" });
+      }
+
+      const timeSlot = await storage.updateTimeSlot(id, {
+        startTime: new Date(startTime),
+        endTime: new Date(endTime)
+      });
+      
+      res.json(timeSlot);
+    } catch (error) {
+      console.error("Error updating time slot:", error);
+      res.status(500).json({ message: "Failed to update time slot" });
+    }
+  });
+
+  app.delete("/api/time-slots/:id", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user?.id || user.role !== 'doctor') {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const { id } = req.params;
+      await storage.deleteTimeSlot(id);
+      
+      res.json({ message: "Time slot deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting time slot:", error);
+      res.status(500).json({ message: "Failed to delete time slot" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

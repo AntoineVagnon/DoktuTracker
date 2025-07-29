@@ -78,7 +78,7 @@ export const doctorTimeSlots = pgTable("doctor_time_slots", {
 export const appointmentPending = pgTable("appointment_pending", {
   id: uuid("id").primaryKey().defaultRandom(),
   doctorId: uuid("doctor_id").references(() => doctors.id).notNull(),
-  timeSlotId: uuid("time_slot_id").references(() => doctorTimeSlots.id).notNull(),
+  slotId: uuid("slot_id").references(() => doctorTimeSlots.id).notNull(),
   sessionId: varchar("session_id").notNull(),
   lockedUntil: timestamp("locked_until").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
@@ -89,7 +89,7 @@ export const appointments = pgTable("appointments", {
   id: uuid("id").primaryKey().defaultRandom(),
   patientId: varchar("patient_id").references(() => users.id).notNull(),
   doctorId: uuid("doctor_id").references(() => doctors.id).notNull(),
-  timeSlotId: uuid("time_slot_id").references(() => doctorTimeSlots.id),
+  slotId: uuid("slot_id").references(() => doctorTimeSlots.id),
   appointmentDate: timestamp("appointment_date").notNull(),
   status: varchar("status").notNull().default("pending"), // pending, confirmed, paid, completed, cancelled
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),

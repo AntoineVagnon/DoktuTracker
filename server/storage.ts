@@ -264,6 +264,24 @@ export class PostgresStorage implements IStorage {
     return newSlot;
   }
 
+  async updateTimeSlot(id: string, data: {
+    startTime?: Date;
+    endTime?: Date;
+    isAvailable?: boolean;
+    isLocked?: boolean;
+  }): Promise<TimeSlot> {
+    const [timeSlot] = await db
+      .update(doctorTimeSlots)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(eq(doctorTimeSlots.id, id))
+      .returning();
+    
+    return timeSlot;
+  }
+
   async deleteTimeSlot(id: string): Promise<void> {
     await db.delete(doctorTimeSlots).where(eq(doctorTimeSlots.id, id));
   }
@@ -325,7 +343,7 @@ export class PostgresStorage implements IStorage {
   }
 
   async releaseSlot(timeSlotId: string): Promise<void> {
-    await db.delete(appointmentPending).where(eq(appointmentPending.timeSlotId, slotId));
+    await db.delete(appointmentPending).where(eq(appointmentPending.slotId, slotId));
   }
 
   async releaseAllSlotsForSession(sessionId: string): Promise<void> {
@@ -349,7 +367,7 @@ export class PostgresStorage implements IStorage {
         }
       })
       .from(appointmentPending)
-      .innerJoin(doctorTimeSlots, eq(appointmentPending.timeSlotId, doctorTimeSlots.id))
+      .innerJoin(doctorTimeSlots, eq(appointmentPending.slotId, doctorTimeSlots.id))
       .where(eq(appointmentPending.sessionId, sessionId));
 
     return pending?.slot;
@@ -365,7 +383,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        timeSlotId: appointments.timeSlotId,
+        timeSlotId: appointments.slotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,
@@ -442,7 +460,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        timeSlotId: appointments.timeSlotId,
+        timeSlotId: appointments.slotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,

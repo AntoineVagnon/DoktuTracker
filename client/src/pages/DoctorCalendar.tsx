@@ -1,10 +1,10 @@
-import CalendarAvailabilityManager from "@/components/CalendarAvailabilityManager";
+import InteractiveCalendar from "@/components/InteractiveCalendar";
 import DoctorLayout from "@/components/DoctorLayout";
 
 export default function DoctorCalendar() {
   return (
     <DoctorLayout>
-      <CalendarAvailabilityManager />
+      <InteractiveCalendar />
     </DoctorLayout>
   );
 }
