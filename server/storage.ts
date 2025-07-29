@@ -51,8 +51,8 @@ export interface IStorage {
   unlockExpiredSlots(): Promise<void>;
   
   // Slot holding operations (for booking flow)
-  holdSlot(slotId: string, sessionId: string, durationMinutes: number): Promise<void>;
-  releaseSlot(slotId: string): Promise<void>;
+  holdSlot(timeSlotId: string, sessionId: string, durationMinutes: number): Promise<void>;
+  releaseSlot(timeSlotId: string): Promise<void>;
   releaseAllSlotsForSession(sessionId: string): Promise<void>;
   getHeldSlot(sessionId: string): Promise<TimeSlot | undefined>;
 
@@ -312,19 +312,19 @@ export class PostgresStorage implements IStorage {
       );
   }
 
-  async holdSlot(slotId: string, sessionId: string, durationMinutes: number): Promise<void> {
+  async holdSlot(timeSlotId: string, sessionId: string, durationMinutes: number): Promise<void> {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + durationMinutes);
 
     await db.insert(appointmentPending).values({
       id: nanoid(),
-      slotId: slotId,
+      timeSlotId: slotId,
       sessionId,
       expiresAt
     });
   }
 
-  async releaseSlot(slotId: string): Promise<void> {
+  async releaseSlot(timeSlotId: string): Promise<void> {
     await db.delete(appointmentPending).where(eq(appointmentPending.timeSlotId, slotId));
   }
 
@@ -365,7 +365,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        slotId: appointments.slotId,
+        timeSlotId: appointments.timeSlotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,
@@ -442,7 +442,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        slotId: appointments.slotId,
+        timeSlotId: appointments.timeSlotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,
@@ -526,7 +526,7 @@ export class PostgresStorage implements IStorage {
     await db
       .update(appointments)
       .set({ 
-        slotId: newSlotId, 
+        timeSlotId: newSlotId, 
         rescheduleCount: (appointment.rescheduleCount || 0) + 1,
         updatedAt: new Date() 
       })
@@ -537,8 +537,8 @@ export class PostgresStorage implements IStorage {
       appointmentId: id,
       action: "reschedule",
       reason,
-      before: { slotId: appointment.slotId },
-      after: { slotId: newSlotId },
+      before: { timeSlotId: appointment.slotId },
+      after: { timeSlotId: newSlotId },
     });
   }
 
