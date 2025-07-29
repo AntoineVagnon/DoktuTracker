@@ -1,0 +1,78 @@
+Feature: Unified calendar availability management
+
+  As a doctor
+  I want to manage recurring and non-recurring availabilities directly from the calendar
+  So I can flexibly adjust my schedule without creating duplicates
+
+  Background:
+    Given I am logged in as a doctor
+    And I am on the "Calendar & Disponibilités" page
+
+  # ---- CREATION FLOW ----
+
+  Scenario: Create new availability by selecting timeslots
+    When I select a time range on the calendar (e.g. Tuesday from 09:00 to 12:00)
+    Then a modal should open to confirm availability creation
+    And I should be able to mark it as:
+      | One-time (non-recurring) |
+      | Weekly recurring          |
+     And I should be able to select the end date when it's reccuring 
+
+    And when I confirm, the system should save this availability
+
+  Scenario: Add availability using "Edit calendar" button
+    When I click on the "Edit calendar" button
+    Then I should be able to draw new time slots on the calendar
+    And confirm them as one-time or recurring availabilities
+
+  Scenario: Smart creation with partial overlap
+    Given an availability exists on Monday from 10:00 to 11:00
+    When I select 10:30 to 12:00 on the same day
+    Then the system should only add a new availability from 11:00 to 12:00
+    And the existing 10:00 to 11:00 slot should be preserved
+
+  # ---- DELETION FLOW ----
+
+  Scenario: Delete recurring availability
+    Given I click on a time slot part of a recurring availability
+    Then a modal should ask me:
+      | This week only           |
+      | All future weeks         |
+      | Delete entire recurrence |
+    And if I confirm, only the selected scope is deleted
+    And existing booked appointments are preserved
+
+  Scenario: Delete one-time availability
+    Given I click on a non-recurring availability
+    Then a confirmation modal should appear with two options:
+      | Cancel   |
+      | Delete   |
+    And booked appointments are preserved
+
+  # ---- EDIT FLOW ----
+
+  Scenario: Edit an existing availability
+    When I click on a time slot that represents an availability
+    Then a modal should allow me to:
+      | Change start/end time     |
+      | Toggle between recurring  |
+      | Confirm or cancel changes |
+
+  # ---- EDGE CASES ----
+
+  Scenario: Prevent overlapping availabilities
+    Given there is already an availability from 14:00 to 15:00
+    When I attempt to add a new availability from 13:30 to 15:30
+    Then the system should allow only 13:30 to 14:00 and 15:00 to 15:30
+    And display a visual warning of potential overlaps
+
+  Scenario: Full-day editing with 24h granularity
+    Given I select a slot from 00:00 to 23:59
+    Then the system should allow it
+    And display it spanning the full calendar day
+
+  Scenario: Selecting multiple disconnected ranges
+    When I select two separate blocks (e.g. 08:00–10:00 and 14:00–16:00)
+    Then I should be able to save them together as:
+      | One-time |
+      | Weekly recurring |
