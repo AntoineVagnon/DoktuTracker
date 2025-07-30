@@ -72,13 +72,13 @@ export default function InteractiveCalendar() {
   });
 
   // Fetch doctor's time slots
-  const { data: timeSlots = [], isLoading: slotsLoading } = useQuery({
+  const { data: timeSlots = [], isLoading: slotsLoading } = useQuery<TimeSlot[]>({
     queryKey: ['/api/time-slots', user?.id],
     enabled: !!user?.id
   });
 
   // Fetch appointments
-  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery({
+  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<Appointment[]>({
     queryKey: ['/api/appointments', { doctorId: user?.id }],
     enabled: !!user?.id
   });
@@ -174,21 +174,30 @@ export default function InteractiveCalendar() {
     });
   };
 
-  const hours = Array.from({ length: 11 }, (_, i) => 8 + i); // 8 AM to 6 PM
+  // Generate 30-minute time slots from 8 AM to 6 PM
+  const timeSlots30Min = Array.from({ length: 20 }, (_, i) => {
+    const hour = Math.floor(i / 2) + 8;
+    const minute = (i % 2) * 30;
+    return { hour, minute, display: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}` };
+  });
   const daysOfWeek = getDaysOfWeek(currentWeek);
 
-  const handleCellClick = (dayIndex: number, hourIndex: number) => {
+  const handleCellClick = (dayIndex: number, slotIndex: number) => {
     const day = daysOfWeek[dayIndex];
-    const hour = hours[hourIndex];
+    const timeSlot = timeSlots30Min[slotIndex];
     const dateStr = day.toISOString().split('T')[0];
-    const startTime = `${hour.toString().padStart(2, '0')}:00`;
-    const endTime = `${(hour + 1).toString().padStart(2, '0')}:00`;
+    const startTime = `${timeSlot.hour.toString().padStart(2, '0')}:${timeSlot.minute.toString().padStart(2, '0')}`;
+    const endHour = timeSlot.minute === 30 ? timeSlot.hour + 1 : timeSlot.hour;
+    const endMinute = timeSlot.minute === 30 ? 0 : 30;
+    const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
 
     // Check if there's an existing slot at this time
     const existingSlot = timeSlots.find((slot: TimeSlot) => {
       const slotDate = new Date(slot.startTime).toISOString().split('T')[0];
-      const slotHour = new Date(slot.startTime).getHours();
-      return slotDate === dateStr && slotHour === hour;
+      const slotTime = new Date(slot.startTime);
+      const slotHour = slotTime.getHours();
+      const slotMinute = slotTime.getMinutes();
+      return slotDate === dateStr && slotHour === timeSlot.hour && slotMinute === timeSlot.minute;
     });
 
     if (existingSlot) {
@@ -201,7 +210,7 @@ export default function InteractiveCalendar() {
         endTime: new Date(existingSlot.endTime).toTimeString().slice(0, 5),
         slotId: existingSlot.id,
         dayIndex,
-        hourIndex
+        hourIndex: slotIndex
       });
     } else {
       // Create new slot
@@ -212,21 +221,23 @@ export default function InteractiveCalendar() {
         startTime,
         endTime,
         dayIndex,
-        hourIndex
+        hourIndex: slotIndex
       });
     }
   };
 
-  const getCellContent = (dayIndex: number, hourIndex: number) => {
+  const getCellContent = (dayIndex: number, slotIndex: number) => {
     const day = daysOfWeek[dayIndex];
-    const hour = hours[hourIndex];
+    const timeSlot = timeSlots30Min[slotIndex];
     const dateStr = day.toISOString().split('T')[0];
 
     // Check for booked appointment
     const bookedAppointment = appointments.find((apt: Appointment) => {
       const aptDate = new Date(apt.appointmentDate).toISOString().split('T')[0];
-      const aptHour = new Date(apt.appointmentDate).getHours();
-      return aptDate === dateStr && aptHour === hour && apt.status !== 'cancelled';
+      const aptTime = new Date(apt.appointmentDate);
+      const aptHour = aptTime.getHours();
+      const aptMinute = aptTime.getMinutes();
+      return aptDate === dateStr && aptHour === timeSlot.hour && aptMinute === timeSlot.minute && apt.status !== 'cancelled';
     });
 
     if (bookedAppointment) {
@@ -246,8 +257,10 @@ export default function InteractiveCalendar() {
     // Check for available slot
     const availableSlot = timeSlots.find((slot: TimeSlot) => {
       const slotDate = new Date(slot.startTime).toISOString().split('T')[0];
-      const slotHour = new Date(slot.startTime).getHours();
-      return slotDate === dateStr && slotHour === hour && slot.isAvailable;
+      const slotTime = new Date(slot.startTime);
+      const slotHour = slotTime.getHours();
+      const slotMinute = slotTime.getMinutes();
+      return slotDate === dateStr && slotHour === timeSlot.hour && slotMinute === timeSlot.minute && slot.isAvailable;
     });
 
     if (availableSlot) {
@@ -365,19 +378,19 @@ export default function InteractiveCalendar() {
           </div>
 
           <div className="max-h-96 overflow-y-auto">
-            {hours.map((hour, hourIndex) => (
-              <div key={hour} className="grid grid-cols-8 border-b last:border-b-0">
-                <div className="p-3 text-sm text-gray-600 bg-gray-50 border-r">
-                  {`${hour.toString().padStart(2, '0')}:00`}
+            {timeSlots30Min.map((timeSlot, slotIndex) => (
+              <div key={slotIndex} className="grid grid-cols-8 border-b last:border-b-0">
+                <div className="p-2 text-sm text-gray-600 bg-gray-50 border-r">
+                  {timeSlot.display}
                 </div>
                 {daysOfWeek.map((day, dayIndex) => {
-                  const cellContent = getCellContent(dayIndex, hourIndex);
+                  const cellContent = getCellContent(dayIndex, slotIndex);
                   return (
                     <button
-                      key={`${dayIndex}-${hourIndex}`}
-                      onClick={() => handleCellClick(dayIndex, hourIndex)}
+                      key={`${dayIndex}-${slotIndex}`}
+                      onClick={() => handleCellClick(dayIndex, slotIndex)}
                       className={cn(
-                        "h-16 border-l border-gray-200 p-1 transition-colors hover:bg-gray-50",
+                        "h-12 border-l border-gray-200 p-1 transition-colors hover:bg-gray-50",
                         cellContent.type === 'appointment' && "cursor-default",
                         cellContent.type === 'available' && "hover:bg-green-50",
                         cellContent.type === 'empty' && "hover:bg-blue-50"
