@@ -345,7 +345,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Doctor profile not found" });
       }
 
-      const { randomUUID } = await import('crypto');
+      const { nanoid } = await import('nanoid');
       
       // Parse the date and time components
       const startDateTime = new Date(startTime);
@@ -355,7 +355,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const endTimeStr = endDateTime.toTimeString().slice(0, 5);
       
       const timeSlot = await storage.createTimeSlot({
-        id: randomUUID(),
+        id: nanoid(),
         doctorId: String(doctor.id),
         date: dateStr,
         startTime: startTimeStr,

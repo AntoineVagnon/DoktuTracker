@@ -45,7 +45,7 @@ export const users = pgTable("users", {
 
 // Doctors table
 export const doctors = pgTable("doctors", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: varchar("id").primaryKey(), // Use varchar for compatibility
   userId: varchar("user_id").references(() => users.id).notNull(),
   specialty: varchar("specialty").notNull(),
   bio: text("bio"),
@@ -63,8 +63,8 @@ export const doctors = pgTable("doctors", {
 
 // Doctor time slots for availability
 export const doctorTimeSlots = pgTable("doctor_time_slots", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  doctorId: uuid("doctor_id").references(() => doctors.id, { onDelete: "cascade" }).notNull(),
+  id: varchar("id").primaryKey(), // Use varchar for compatibility
+  doctorId: varchar("doctor_id").references(() => doctors.id, { onDelete: "cascade" }).notNull(),
   date: date("date").notNull(),
   startTime: time("start_time").notNull(),
   endTime: time("end_time").notNull(),

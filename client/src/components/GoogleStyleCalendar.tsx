@@ -117,6 +117,10 @@ export default function GoogleStyleCalendar() {
   const createSlotMutation = useMutation({
     mutationFn: async (data: { startTime: string; endTime: string; isRecurring?: boolean; recurringEndDate?: string }) => {
       const response = await apiRequest('POST', '/api/time-slots', data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create slot');
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -124,8 +128,13 @@ export default function GoogleStyleCalendar() {
       toast({ title: "Availability created successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
     },
-    onError: () => {
-      toast({ title: "Failed to create availability", variant: "destructive" });
+    onError: (error: any) => {
+      console.error('Create slot error:', error);
+      toast({ 
+        title: "Failed to create availability", 
+        description: error.message || "Please try logging in again",
+        variant: "destructive" 
+      });
     }
   });
 
