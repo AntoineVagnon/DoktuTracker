@@ -57,8 +57,24 @@ export default function AuthCallback() {
               description: "Your email has been confirmed successfully!",
             });
             
+            // Check for booking context in sessionStorage
+            const loginRedirect = sessionStorage.getItem('loginRedirect');
+            const pendingBooking = sessionStorage.getItem('pendingBooking');
+            
             setTimeout(() => {
-              setLocation('/dashboard');
+              if (loginRedirect) {
+                // Clear the redirect and navigate to booking flow
+                sessionStorage.removeItem('loginRedirect');
+                setLocation(loginRedirect);
+              } else if (pendingBooking) {
+                // Handle legacy pendingBooking format
+                const booking = JSON.parse(pendingBooking);
+                sessionStorage.removeItem('pendingBooking');
+                setLocation(`/checkout?doctorId=${booking.doctorId}&slot=${encodeURIComponent(booking.slot)}&price=${booking.price}`);
+              } else {
+                // No booking context, go to dashboard
+                setLocation('/dashboard');
+              }
             }, 2000);
           } else {
             throw new Error('Email confirmation failed');
@@ -129,8 +145,21 @@ export default function AuthCallback() {
           description: "Your password has been updated successfully!",
         });
         
+        // Check for booking context after password reset success
+        const loginRedirect = sessionStorage.getItem('loginRedirect');
+        const pendingBooking = sessionStorage.getItem('pendingBooking');
+        
         setTimeout(() => {
-          setLocation('/test-login');
+          if (loginRedirect) {
+            sessionStorage.removeItem('loginRedirect');
+            setLocation(loginRedirect);
+          } else if (pendingBooking) {
+            const booking = JSON.parse(pendingBooking);
+            sessionStorage.removeItem('pendingBooking');
+            setLocation(`/checkout?doctorId=${booking.doctorId}&slot=${encodeURIComponent(booking.slot)}&price=${booking.price}`);
+          } else {
+            setLocation('/test-login');
+          }
         }, 2000);
       } else {
         throw new Error(data.error || 'Password update failed');

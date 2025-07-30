@@ -421,10 +421,34 @@ export default function DoctorProfile() {
                           key={slot.id}
                           variant="outline"
                           className="w-full justify-center"
-                          onClick={() => {
+                          onClick={async () => {
                             // Handle slot booking - include both date and time
                             const fullSlotDateTime = `${slot.date}T${slot.startTime}`;
-                            window.location.href = `/auth-choice?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                            
+                            try {
+                              // Hold the slot for 15 minutes before redirecting to auth
+                              const response = await fetch('/api/slots/hold', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ 
+                                  slotId: slot.id,
+                                  sessionId: undefined // Let server use session ID
+                                })
+                              });
+                              
+                              if (response.ok) {
+                                // Slot successfully held, proceed to auth
+                                window.location.href = `/auth-choice?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                              } else {
+                                // Slot couldn't be held (probably taken by another user)
+                                const error = await response.json();
+                                alert(error.error || 'This slot is no longer available. Please select another time.');
+                                window.location.reload(); // Refresh to show updated availability
+                              }
+                            } catch (error) {
+                              console.error('Failed to hold slot:', error);
+                              alert('Unable to reserve this slot. Please try again.');
+                            }
                           }}
                         >
                           {format(new Date(`2000-01-01T${slot.startTime}`), 'HH:mm')}

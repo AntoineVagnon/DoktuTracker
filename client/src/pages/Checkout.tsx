@@ -1,232 +1,304 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
-import PaymentModal from "@/components/PaymentModal";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, Clock, User, CreditCard } from "lucide-react";
-import { format } from "date-fns";
-import Header from "@/components/Header";
+import { useEffect, useState } from 'react';
+import { useLocation } from 'wouter';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Loader2, Calendar, Clock, Euro, AlertTriangle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import Header from '@/components/Header';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export default function Checkout() {
-  const { user } = useAuth();
   const [, setLocation] = useLocation();
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  
-  // Get booking parameters from URL
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [slotExpired, setSlotExpired] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [doctor, setDoctor] = useState<any>(null);
+  const [bookingData, setBookingData] = useState<any>(null);
+
+  // Extract booking parameters from URL
   const urlParams = new URLSearchParams(window.location.search);
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
 
-  // Redirect if not authenticated
   useEffect(() => {
-    if (!user) {
-      setLocation(`/auth-choice?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`);
+    const initializeCheckout = async () => {
+      if (!doctorId || !slot || !price) {
+        toast({
+          title: "Invalid Booking Request",
+          description: "Missing booking information. Please start the booking process again.",
+          variant: "destructive"
+        });
+        setLocation('/');
+        return;
+      }
+
+      try {
+        // Check if the slot is still held by this session
+        const heldSlotResponse = await fetch('/api/slots/held');
+        const heldSlotData = await heldSlotResponse.json();
+        
+        if (!heldSlotData.heldSlot) {
+          setSlotExpired(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch doctor information
+        const doctorResponse = await fetch(`/api/doctors/${doctorId}`);
+        const doctorData = await doctorResponse.json();
+        setDoctor(doctorData);
+
+        // Set booking data for display
+        const slotDateTime = new Date(slot);
+        setBookingData({
+          doctorId,
+          slot: slotDateTime,
+          price: parseFloat(price),
+          slotId: heldSlotData.heldSlot.id
+        });
+
+        // Calculate time remaining (15 minutes from when slot was held)
+        const expiresAt = new Date(heldSlotData.heldSlot.expiresAt);
+        const now = new Date();
+        const remaining = Math.max(0, expiresAt.getTime() - now.getTime());
+        setTimeRemaining(remaining);
+
+        if (remaining <= 0) {
+          setSlotExpired(true);
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Checkout initialization error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to initialize payment. Please try again.",
+          variant: "destructive"
+        });
+        setLocation('/');
+      }
+    };
+
+    initializeCheckout();
+  }, [doctorId, slot, price, toast, setLocation]);
+
+  // Timer for countdown and expiration check
+  useEffect(() => {
+    if (timeRemaining <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        const newTime = prev - 1000;
+        if (newTime <= 0) {
+          setSlotExpired(true);
+          return 0;
+        }
+        return newTime;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeRemaining]);
+
+  const handlePayment = async () => {
+    if (!bookingData || slotExpired) return;
+
+    setIsLoading(true);
+    try {
+      // Create payment intent
+      const response = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: Math.round(bookingData.price * 100), // Convert to cents
+          currency: 'eur',
+          metadata: {
+            doctorId: bookingData.doctorId,
+            slotId: bookingData.slotId,
+            appointmentDate: bookingData.slot.toISOString()
+          }
+        })
+      });
+
+      const { clientSecret } = await response.json();
+      
+      if (!clientSecret) {
+        throw new Error('Failed to create payment intent');
+      }
+
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error('Stripe failed to load');
+      }
+
+      // Redirect to Stripe Checkout or use Elements
+      const { error } = await stripe.confirmPayment({
+        clientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      toast({
+        title: "Payment Failed",
+        description: error.message || "Unable to process payment. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
-  }, [user, doctorId, slot, price, setLocation]);
-
-  // Fetch doctor details
-  const { data: doctor, isLoading: doctorLoading } = useQuery({
-    queryKey: ["/api/doctors", doctorId],
-    queryFn: async () => {
-      const response = await fetch(`/api/doctors/${doctorId}`);
-      if (!response.ok) throw new Error('Failed to fetch doctor');
-      return response.json();
-    },
-    enabled: !!doctorId,
-  });
-
-  const handlePaymentSuccess = () => {
-    setShowPaymentModal(false);
-    setLocation('/dashboard');
   };
 
-  const handleBackToProfile = () => {
-    setLocation(`/doctor/${doctorId}`);
+  const formatTimeRemaining = (milliseconds: number) => {
+    const minutes = Math.floor(milliseconds / 60000);
+    const seconds = Math.floor((milliseconds % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  if (!user) {
-    return null; // Will redirect via useEffect
-  }
+  const formatSlotDateTime = (slotDateTime: Date) => {
+    return {
+      date: slotDateTime.toLocaleDateString('en-GB', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }),
+      time: slotDateTime.toLocaleTimeString('en-GB', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
+    };
+  };
 
-  if (!doctorId || !slot || !price) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <div className="container mx-auto px-4 py-24">
-          <div className="max-w-md mx-auto text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Booking Request</h1>
-            <p className="text-gray-600 mb-6">Missing booking information. Please start over.</p>
-            <Button onClick={() => setLocation('/')}>Back to Home</Button>
+        <div className="flex items-center justify-center py-12">
+          <Card className="p-8">
+            <div className="flex items-center space-x-4">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              <span className="text-lg">Preparing your appointment...</span>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (slotExpired) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-md mx-auto">
+            <Card className="p-8 text-center">
+              <AlertTriangle className="h-16 w-16 text-orange-500 mx-auto mb-4" />
+              <CardTitle className="text-xl mb-4">Slot Expired</CardTitle>
+              <p className="text-gray-600 mb-6">
+                Your reserved time slot has expired. Please choose a new time.
+              </p>
+              <Button 
+                onClick={() => setLocation(`/doctor/${doctorId}`)}
+                className="w-full"
+              >
+                Choose New Time
+              </Button>
+            </Card>
           </div>
         </div>
       </div>
     );
   }
 
-  if (doctorLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="container mx-auto px-4 py-24">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center">Loading...</div>
-          </div>
-        </div>
-      </div>
-    );
+  if (!bookingData || !doctor) {
+    return null;
   }
 
-  if (!doctor) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="container mx-auto px-4 py-24">
-          <div className="max-w-md mx-auto text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Doctor Not Found</h1>
-            <p className="text-gray-600 mb-6">The requested doctor could not be found.</p>
-            <Button onClick={() => setLocation('/')}>Back to Home</Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Parse appointment details
-  const appointmentDate = slot ? new Date(slot) : new Date();
-  const appointmentDetails = {
-    id: '', // Will be created during payment process
-    doctorId: doctorId, // Pass the actual doctor ID
-    timeSlotId: slot, // Pass the actual time slot datetime
-    doctorName: doctor.user ? `${doctor.user.title || 'Dr.'} ${doctor.user.firstName} ${doctor.user.lastName}` : 'Doctor',
-    specialty: doctor.specialty,
-    date: appointmentDate.toISOString().split('T')[0],
-    time: appointmentDate.toTimeString().slice(0, 5),
-    price: parseFloat(price),
-  };
+  const { date, time } = formatSlotDateTime(bookingData.slot);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <div className="container mx-auto px-4 py-24">
-        <div className="max-w-2xl mx-auto">
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-md mx-auto space-y-6">
           
-          {/* Back Button */}
-          <Button
-            variant="ghost"
-            onClick={handleBackToProfile}
-            className="mb-6 p-0 h-auto font-normal text-blue-600 hover:text-blue-700"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to doctor profile
-          </Button>
+          {/* Time remaining warning */}
+          {timeRemaining > 0 && (
+            <Card className="bg-orange-50 border-orange-200">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-2 text-orange-800">
+                  <Clock className="h-4 w-4" />
+                  <span className="text-sm font-medium">
+                    Time remaining: {formatTimeRemaining(timeRemaining)}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Checkout Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Complete Your Booking</h1>
-            <p className="text-gray-600">Review your appointment details and proceed with payment</p>
-          </div>
-
-          {/* Appointment Summary Card */}
-          <Card className="mb-8">
+          {/* Booking Summary */}
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Calendar className="h-5 w-5 mr-2" />
-                Appointment Summary
-              </CardTitle>
+              <CardTitle>Confirm Your Appointment</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              
-              {/* Doctor Info */}
-              <div className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <User className="h-6 w-6 text-blue-600" />
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-600">
+                  <strong className="text-gray-900 mr-2">Doctor:</strong>
+                  {doctor.firstName} {doctor.lastName}
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">{appointmentDetails.doctorName}</h3>
-                  <p className="text-sm text-gray-600">{appointmentDetails.specialty}</p>
+                <div className="flex items-center text-gray-600">
+                  <Calendar className="h-4 w-4 mr-3" />
+                  <span>{date}</span>
                 </div>
-              </div>
-
-              {/* Date & Time */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center space-x-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-600">Date</p>
-                    <p className="font-medium">
-                      {appointmentDate ? format(appointmentDate, 'EEEE, MMMM d, yyyy') : 'Invalid date'}
-                    </p>
-                  </div>
+                <div className="flex items-center text-gray-600">
+                  <Clock className="h-4 w-4 mr-3" />
+                  <span>{time}</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Clock className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-600">Time</p>
-                    <p className="font-medium">
-                      {appointmentDate ? format(appointmentDate, 'HH:mm') : 'Invalid time'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Duration & Price */}
-              <div className="flex justify-between items-center pt-4 border-t">
-                <div>
-                  <p className="text-sm text-gray-600">Duration</p>
-                  <p className="font-medium">30 minutes</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-blue-600">€{appointmentDetails.price.toFixed(2)}</p>
+                <div className="flex items-center text-gray-600">
+                  <Euro className="h-4 w-4 mr-3" />
+                  <span className="font-semibold">€{bookingData.price}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Payment Section */}
+          {/* Payment Button */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Payment
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-6">
-                Your payment is secured by Stripe. Your appointment will be confirmed immediately after successful payment.
-              </p>
-              
+            <CardContent className="p-6">
               <Button
-                onClick={() => setShowPaymentModal(true)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-medium"
+                onClick={handlePayment}
+                disabled={isLoading || slotExpired}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
               >
-                Pay €{appointmentDetails.price.toFixed(2)} • 30-min consultation
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  `Pay €${bookingData.price} & Confirm`
+                )}
               </Button>
               
               <p className="text-xs text-gray-500 text-center mt-3">
-                Secure payment powered by Stripe. Your card information is never stored.
+                Secure payment powered by Stripe
               </p>
             </CardContent>
           </Card>
-
-          {/* Security Notice */}
-          <div className="mt-6 text-center text-sm text-gray-500">
-            <p>🔒 All payments are processed securely. Your data is protected.</p>
-          </div>
         </div>
       </div>
-
-      {/* Payment Modal */}
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        appointmentDetails={appointmentDetails}
-        onPaymentSuccess={handlePaymentSuccess}
-      />
     </div>
   );
 }

@@ -390,24 +390,28 @@ export class PostgresStorage implements IStorage {
     await db.delete(appointmentPending).where(eq(appointmentPending.sessionId, sessionId));
   }
 
-  async getHeldSlot(sessionId: string): Promise<TimeSlot | undefined> {
-    const [pending] = await db
+  async getHeldSlot(sessionId: string): Promise<(TimeSlot & { expiresAt: Date }) | undefined> {
+    const [result] = await db
       .select({
-        slot: {
-          id: doctorTimeSlots.id,
-          doctorId: doctorTimeSlots.doctorId,
-          date: doctorTimeSlots.date,
-          startTime: doctorTimeSlots.startTime,  
-          endTime: doctorTimeSlots.endTime,
-          isAvailable: doctorTimeSlots.isAvailable,
-          createdAt: doctorTimeSlots.createdAt
-        }
+        id: doctorTimeSlots.id,
+        doctorId: doctorTimeSlots.doctorId,
+        date: doctorTimeSlots.date,
+        startTime: doctorTimeSlots.startTime,  
+        endTime: doctorTimeSlots.endTime,
+        isAvailable: doctorTimeSlots.isAvailable,
+        createdAt: doctorTimeSlots.createdAt,
+        expiresAt: appointmentPending.expiresAt
       })
       .from(appointmentPending)
       .innerJoin(doctorTimeSlots, eq(appointmentPending.timeSlotId, doctorTimeSlots.id))
-      .where(eq(appointmentPending.sessionId, sessionId));
+      .where(
+        and(
+          eq(appointmentPending.sessionId, sessionId),
+          sql`${appointmentPending.expiresAt} > NOW()` // Only return non-expired slots
+        )
+      );
 
-    return pending?.slot;
+    return result;
   }
 
   async getAppointments(patientId?: string, doctorId?: string): Promise<any[]> {

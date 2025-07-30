@@ -74,13 +74,12 @@ export const doctorTimeSlots = pgTable("doctor_time_slots", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Pending appointments (for analytics/audit)
+// Pending appointments (for holding slots during booking)
 export const appointmentPending = pgTable("appointment_pending", {
   id: uuid("id").primaryKey().defaultRandom(),
-  doctorId: uuid("doctor_id").references(() => doctors.id).notNull(),
-  slotId: uuid("slot_id").references(() => doctorTimeSlots.id).notNull(),
+  timeSlotId: uuid("time_slot_id").references(() => doctorTimeSlots.id).notNull(),
   sessionId: varchar("session_id").notNull(),
-  lockedUntil: timestamp("locked_until").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
