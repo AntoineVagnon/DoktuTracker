@@ -43,10 +43,10 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Doctors table
+// Doctors table  
 export const doctors = pgTable("doctors", {
   id: integer("id").primaryKey(), // Integer ID as in actual database
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   specialty: varchar("specialty").notNull(),
   bio: text("bio"),
   education: text("education"),
@@ -89,7 +89,7 @@ export const appointments = pgTable("appointments", {
   id: uuid("id").primaryKey().defaultRandom(),
   patientId: varchar("patient_id").references(() => users.id).notNull(),
   doctorId: uuid("doctor_id").references(() => doctors.id).notNull(),
-  slotId: uuid("slot_id").references(() => doctorTimeSlots.id),
+  timeSlotId: uuid("time_slot_id").references(() => doctorTimeSlots.id),
   appointmentDate: timestamp("appointment_date").notNull(),
   status: varchar("status").notNull().default("pending"), // pending, confirmed, paid, completed, cancelled
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),

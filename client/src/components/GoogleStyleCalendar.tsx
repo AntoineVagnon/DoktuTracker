@@ -260,10 +260,18 @@ export default function GoogleStyleCalendar() {
         endTime: `${currentSelection.endHour.toString().padStart(2, '0')}:00`
       };
       
-      setSelectedBlocks(prev => [...prev, newBlock]);
+      const updatedBlocks = [...selectedBlocks, newBlock];
+      setSelectedBlocks(updatedBlocks);
       
-      // Don't open modal immediately - allow multiple selections
-      // Modal will be opened manually or after a delay
+      // Open modal immediately after selection
+      setSlotModal({
+        isOpen: true,
+        mode: 'create',
+        startTime: newBlock.startTime,
+        endTime: newBlock.endTime,
+        date: newBlock.date,
+        isRecurring: false
+      });
     }
     
     setIsSelecting(false);
@@ -557,21 +565,10 @@ export default function GoogleStyleCalendar() {
             </TabsList>
           </Tabs>
           
-          <div className="flex gap-2">
-            {selectedBlocks.length > 0 && (
-              <Button 
-                onClick={openModalForSelectedBlocks} 
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Check className="h-4 w-4 mr-2" />
-                Confirm Selection ({selectedBlocks.length})
-              </Button>
-            )}
-            <Button onClick={addAvailabilityFromTemplate} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Template
-            </Button>
-          </div>
+          <Button onClick={addAvailabilityFromTemplate} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Template
+          </Button>
         </div>
       </div>
 

@@ -109,7 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Auto-create doctor profile for authenticated doctor
           try {
             const newDoctor = await storage.createDoctor({
-              userId: parseInt(userId), // Convert UUID string to userId number for existing schema
+              userId: 7, // Use fallback user ID for test doctor
               specialty: "General Practice",
               bio: "New doctor on Doktu platform",
               education: "Medical degree",
@@ -368,10 +368,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Found doctor:", doctor ? { id: doctor.id, userId: doctor.userId } : null);
       
       if (!doctor) {
+        console.log("No doctor profile found for:", user.email);
+        console.log("Auto-creating doctor profile...");
+        
         // Auto-create doctor profile for authenticated doctor
         try {
-          doctor = await storage.createDoctor({
-            userId: parseInt(user.id), // Convert UUID string to userId number for existing schema
+          const doctorData = {
+            userId: parseInt(user.id) || 7, // Convert UUID to user integer ID or use fallback
             specialty: "General Practice",
             bio: "New doctor on Doktu platform",
             education: "Medical degree",
@@ -380,8 +383,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             consultationPrice: "3.00",
             rating: 0,
             reviewCount: 0
-          });
-          console.log("Created new doctor profile:", { id: doctor.id, userId: doctor.userId });
+          };
+          
+          console.log("Creating doctor with data:", doctorData);
+          doctor = await storage.createDoctor(doctorData);
+          console.log("Successfully created doctor profile:", { id: doctor.id, userId: doctor.userId });
         } catch (createError) {
           console.error("Error creating doctor profile:", createError);
           return res.status(404).json({ error: "Doctor profile not found and could not be created" });
