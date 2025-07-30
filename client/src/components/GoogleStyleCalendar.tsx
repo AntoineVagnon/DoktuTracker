@@ -263,12 +263,12 @@ export default function GoogleStyleCalendar() {
         });
       }
       
-      const updatedBlocks = [...selectedBlocks, ...newBlocks];
-      setSelectedBlocks(updatedBlocks);
+      // Replace previous selection with new selection (don't accumulate)
+      setSelectedBlocks(newBlocks);
       
       console.log("New blocks created from selection:", newBlocks);
-      console.log("Selected blocks updated:", updatedBlocks);
-      console.log("Total blocks selected:", updatedBlocks.length);
+      console.log("Previous selection cleared, new selection:", newBlocks);
+      console.log("Total blocks selected:", newBlocks.length);
       
       // Use the first new block for modal display, but all blocks will be created
       const firstBlock = newBlocks[0];
@@ -281,7 +281,7 @@ export default function GoogleStyleCalendar() {
         endTime: firstBlock.endTime,
         date: firstBlock.date,
         isRecurring: false,
-        title: `Create Availability (${updatedBlocks.length} slot${updatedBlocks.length > 1 ? 's' : ''})`
+        title: `Create Availability (${newBlocks.length} slot${newBlocks.length > 1 ? 's' : ''})`
       });
     }
     
