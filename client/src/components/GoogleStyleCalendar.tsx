@@ -263,6 +263,9 @@ export default function GoogleStyleCalendar() {
       const updatedBlocks = [...selectedBlocks, newBlock];
       setSelectedBlocks(updatedBlocks);
       
+      console.log("Selected blocks updated:", updatedBlocks);
+      console.log("Total blocks selected:", updatedBlocks.length);
+      
       // Open modal immediately after selection with count information
       setSlotModal({
         isOpen: true,
@@ -422,16 +425,23 @@ export default function GoogleStyleCalendar() {
       }];
 
       try {
-        for (const block of blocksToCreate) {
+        console.log(`Creating ${blocksToCreate.length} blocks:`, blocksToCreate);
+        
+        for (let i = 0; i < blocksToCreate.length; i++) {
+          const block = blocksToCreate[i];
+          console.log(`Creating block ${i + 1}/${blocksToCreate.length}:`, block);
+          
           const startDateTime = new Date(`${block.date}T${block.startTime}:00.000Z`);
           const endDateTime = new Date(`${block.date}T${block.endTime}:00.000Z`);
           
-          await createSlotMutation.mutateAsync({
+          const result = await createSlotMutation.mutateAsync({
             startTime: startDateTime.toISOString(),
             endTime: endDateTime.toISOString(),
             isRecurring: slotModal.isRecurring,
             recurringEndDate: slotModal.recurringEndDate
           });
+          
+          console.log(`Block ${i + 1} created successfully:`, result);
         }
         
         setSelectedBlocks([]);

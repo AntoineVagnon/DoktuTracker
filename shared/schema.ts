@@ -64,7 +64,7 @@ export const doctors = pgTable("doctors", {
 // Doctor time slots for availability
 export const doctorTimeSlots = pgTable("doctor_time_slots", {
   id: uuid("id").primaryKey().defaultRandom(),
-  doctorId: uuid("doctor_id").notNull(), // Remove foreign key reference that's causing type mismatch
+  doctorId: integer("doctor_id").notNull(), // Use integer to match doctors.id
   date: date("date").notNull(),
   startTime: time("start_time").notNull(),
   endTime: time("end_time").notNull(),

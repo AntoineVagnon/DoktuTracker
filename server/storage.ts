@@ -241,9 +241,9 @@ export class PostgresStorage implements IStorage {
   }
 
   async getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]> {
-    // Convert doctorId to string for UUID matching
-    const doctorUuid = String(doctorId);
-    let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorUuid));
+    // Convert doctorId to integer for matching
+    const doctorInt = parseInt(String(doctorId));
+    let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorInt));
     
     if (date) {
       query = query.where(eq(doctorTimeSlots.date, date));
