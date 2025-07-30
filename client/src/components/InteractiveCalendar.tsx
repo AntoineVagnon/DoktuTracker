@@ -9,7 +9,7 @@ import { Calendar, Clock, Plus, Edit3, Trash2, Save, ChevronLeft, ChevronRight }
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
 interface TimeSlot {

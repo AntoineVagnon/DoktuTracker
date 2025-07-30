@@ -231,7 +231,12 @@ export default function GoogleStyleCalendar() {
     }
   });
 
-  const hours = Array.from({ length: 16 }, (_, i) => 8 + i); // 8 AM to 11 PM
+  // Generate 30-minute time slots from 8 AM to 6 PM
+  const timeSlots30Min = Array.from({ length: 20 }, (_, i) => {
+    const hour = Math.floor(i / 2) + 8;
+    const minute = (i % 2) * 30;
+    return { hour, minute, display: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}` };
+  });
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   const getWeekDates = () => {
@@ -247,53 +252,46 @@ export default function GoogleStyleCalendar() {
     }
   };
 
-  const handleCellMouseDown = (date: string, time: string) => {
-    const hour = parseInt(time.split(':')[0]);
-    setCurrentSelection({ date, startHour: hour, endHour: hour + 1 });
+  const handleCellMouseDown30Min = (date: string, time: string) => {
+    const [hour, minute] = time.split(':').map(Number);
+    const slotIndex = timeSlots30Min.findIndex(slot => slot.hour === hour && slot.minute === minute);
+    setCurrentSelection({ date, startHour: hour, endHour: hour, startMinute: minute, endMinute: minute + 30, slotIndex });
     setIsSelecting(true);
   };
 
-  const handleCellMouseEnter = (date: string, time: string) => {
+  const handleCellMouseEnter30Min = (date: string, time: string) => {
     if (isSelecting && currentSelection && currentSelection.date === date) {
-      const hour = parseInt(time.split(':')[0]);
+      const [hour, minute] = time.split(':').map(Number);
+      const endTime = minute + 30 > 30 ? hour + 1 : hour;
+      const endMinute = minute + 30 > 30 ? 0 : minute + 30;
       setCurrentSelection(prev => ({
         ...prev!,
-        endHour: Math.max(prev!.endHour, hour + 1)
+        endHour: Math.max(prev!.endHour, endTime),
+        endMinute: endMinute
       }));
     }
   };
 
-  const handleCellMouseUp = () => {
+  const handleCellMouseUp30Min = () => {
     if (isSelecting && currentSelection) {
-      // Create individual 30-minute blocks for each hour in the selection
-      const newBlocks = [];
-      for (let hour = currentSelection.startHour; hour < currentSelection.endHour; hour++) {
-        newBlocks.push({
-          date: currentSelection.date,
-          startTime: `${hour.toString().padStart(2, '0')}:00`,
-          endTime: `${(hour + 1).toString().padStart(2, '0')}:00`
-        });
-      }
+      // Create 30-minute block
+      const newBlocks = [{
+        date: currentSelection.date,
+        startTime: `${currentSelection.startHour.toString().padStart(2, '0')}:${(currentSelection.startMinute || 0).toString().padStart(2, '0')}`,
+        endTime: `${currentSelection.endHour.toString().padStart(2, '0')}:${(currentSelection.endMinute || 30).toString().padStart(2, '0')}`
+      }];
       
-      // Replace previous selection with new selection (don't accumulate)
       setSelectedBlocks(newBlocks);
       
-      console.log("New blocks created from selection:", newBlocks);
-      console.log("Previous selection cleared, new selection:", newBlocks);
-      console.log("Total blocks selected:", newBlocks.length);
-      
-      // Use the first new block for modal display, but all blocks will be created
       const firstBlock = newBlocks[0];
       
-      // Open modal immediately after selection with count information
       setSlotModal({
         isOpen: true,
         mode: 'create',
         startTime: firstBlock.startTime,
         endTime: firstBlock.endTime,
         date: firstBlock.date,
-        isRecurring: false,
-        title: `Create Availability (${newBlocks.length} slot${newBlocks.length > 1 ? 's' : ''})`
+        isRecurring: false
       });
     }
     
@@ -337,39 +335,45 @@ export default function GoogleStyleCalendar() {
     });
   };
 
-  const isBlockSelected = (date: string, hour: number) => {
-    // Check if this cell is part of a selected block
+  const isBlockSelected30Min = (date: string, hour: number, minute: number) => {
     return selectedBlocks.some(block => {
-      const blockStart = parseInt(block.startTime.split(':')[0]);
-      const blockEnd = parseInt(block.endTime.split(':')[0]);
-      return block.date === date && hour >= blockStart && hour < blockEnd;
+      const [blockStartHour, blockStartMinute] = block.startTime.split(':').map(Number);
+      const [blockEndHour, blockEndMinute] = block.endTime.split(':').map(Number);
+      const blockStartTotal = blockStartHour * 60 + blockStartMinute;
+      const blockEndTotal = blockEndHour * 60 + blockEndMinute;
+      const currentTotal = hour * 60 + minute;
+      return block.date === date && currentTotal >= blockStartTotal && currentTotal < blockEndTotal;
     });
   };
 
-  const isCurrentSelection = (date: string, hour: number) => {
-    // Check if this cell is part of current selection being dragged
+  const isCurrentSelection30Min = (date: string, hour: number, minute: number) => {
     if (!isSelecting || !currentSelection || currentSelection.date !== date) return false;
-    return hour >= currentSelection.startHour && hour < currentSelection.endHour;
+    const startTotal = currentSelection.startHour * 60 + (currentSelection.startMinute || 0);
+    const endTotal = currentSelection.endHour * 60 + (currentSelection.endMinute || 30);
+    const currentTotal = hour * 60 + minute;
+    return currentTotal >= startTotal && currentTotal < endTotal;
   };
 
-  const getCellContent = (date: Date, hour: number) => {
+  const getCellContent30Min = (date: Date, hour: number, minute: number) => {
     const dateStr = format(date, 'yyyy-MM-dd');
-    const timeStr = `${hour.toString().padStart(2, '0')}:00`;
+    const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 
     // Check for booked appointment
     const bookedAppointment = appointments.find((apt: Appointment) => {
       const aptDate = format(new Date(apt.appointmentDate), 'yyyy-MM-dd');
-      const aptHour = new Date(apt.appointmentDate).getHours();
-      return aptDate === dateStr && aptHour === hour && apt.status !== 'cancelled';
+      const aptTime = new Date(apt.appointmentDate);
+      const aptHour = aptTime.getHours();
+      const aptMinute = aptTime.getMinutes();
+      return aptDate === dateStr && aptHour === hour && aptMinute === minute && apt.status !== 'cancelled';
     });
 
     if (bookedAppointment) {
       return {
         type: 'appointment',
         content: (
-          <div className="bg-blue-600 text-white text-xs p-2 rounded h-full flex flex-col justify-center border-l-4 border-blue-800">
+          <div className="bg-blue-600 text-white text-xs p-1 rounded h-full flex flex-col justify-center border-l-4 border-blue-800">
             <div className="font-medium">Booked</div>
-            <div className="truncate">
+            <div className="truncate text-xs">
               {bookedAppointment.patient.firstName || bookedAppointment.patient.email}
             </div>
           </div>
@@ -377,59 +381,48 @@ export default function GoogleStyleCalendar() {
       };
     }
 
-    // Check for available slot 
-    const availableSlot = timeSlots.find((slot: TimeSlot) => {
-      // Assuming slot has separate date and time fields now
-      const slotDate = slot.date || format(new Date(slot.startTime), 'yyyy-MM-dd');
-      const slotStartTime = slot.startTime.includes('T') ? new Date(slot.startTime).getHours() : parseInt(slot.startTime.split(':')[0]);
-      return slotDate === dateStr && slotStartTime === hour;
+    // Check for existing available slot
+    const existingSlot = timeSlots.find((slot: TimeSlot) => {
+      const slotDate = slot.date;
+      const slotTime = slot.startTime;
+      const [slotHour, slotMinute] = slotTime.split(':').map(Number);
+      return slotDate === dateStr && slotHour === hour && slotMinute === minute && slot.isAvailable;
     });
 
-    if (availableSlot) {
+    if (existingSlot) {
       return {
         type: 'available',
         content: (
-          <button
-            onClick={() => handleSlotClick(availableSlot)}
-            className="bg-green-100 border-l-4 border-green-500 text-green-800 text-xs p-2 rounded h-full w-full flex items-center justify-between hover:bg-green-200 transition-colors"
+          <div 
+            className="bg-green-100 text-green-800 text-xs p-1 rounded h-full flex items-center justify-center border-l-4 border-green-500 cursor-pointer hover:bg-green-200"
+            onClick={() => handleSlotClick(existingSlot)}
           >
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              <span>Available</span>
-            </div>
-            {availableSlot.isRecurring && <Repeat className="h-3 w-3" />}
-          </button>
-        ),
-        slot: availableSlot
-      };
-    }
-
-    // Drag preview
-    // Check for draft preview during current selection
-    if (isCurrentSelection(dateStr, hour)) {
-      return {
-        type: 'draft',
-        content: (
-          <div className="bg-blue-100 border-2 border-dashed border-blue-400 text-blue-700 text-xs p-2 rounded h-full flex items-center justify-center">
-            Draft
+            <div className="font-medium">Available</div>
           </div>
         )
       };
     }
 
-    // Check for selected blocks (confirmed selection)
-    if (isBlockSelected(dateStr, hour)) {
+    // Check if this cell is part of current selection
+    const isSelected = isBlockSelected30Min(dateStr, hour, minute);
+    const isCurrent = isCurrentSelection30Min(dateStr, hour, minute);
+
+    if (isSelected || isCurrent) {
       return {
         type: 'selected',
         content: (
-          <div className="bg-green-100 border-2 border-dashed border-green-400 text-green-700 text-xs p-2 rounded h-full flex items-center justify-center">
-            Selected
+          <div className="bg-green-100 border-2 border-dashed border-green-400 rounded h-full flex items-center justify-center">
+            <div className="text-green-700 text-xs font-medium">Selected</div>
           </div>
         )
       };
     }
 
-    return { type: 'empty', content: null };
+    // Empty cell - available for selection
+    return {
+      type: 'empty',
+      content: null
+    };
   };
 
   const handleSaveSlot = async () => {
@@ -684,27 +677,27 @@ export default function GoogleStyleCalendar() {
             </div>
 
             <div className="max-h-96 overflow-y-auto">
-              {hours.map((hour) => (
-                <div key={hour} className="grid grid-cols-8 border-b last:border-b-0">
-                  <div className="p-3 text-sm text-gray-600 bg-gray-50 border-r">
-                    {`${hour.toString().padStart(2, '0')}:00`}
+              {timeSlots30Min.map((timeSlot, slotIndex) => (
+                <div key={slotIndex} className="grid grid-cols-8 border-b last:border-b-0">
+                  <div className="p-2 text-sm text-gray-600 bg-gray-50 border-r">
+                    {timeSlot.display}
                   </div>
                   {getWeekDates().map((date, dayIndex) => {
-                    const cellContent = getCellContent(date, hour);
+                    const cellContent = getCellContent30Min(date, timeSlot.hour, timeSlot.minute);
                     const dateStr = format(date, 'yyyy-MM-dd');
-                    const timeStr = `${hour.toString().padStart(2, '0')}:00`;
+                    const timeStr = timeSlot.display;
                     
                     return (
                       <div
-                        key={`${dayIndex}-${hour}`}
+                        key={`${dayIndex}-${slotIndex}`}
                         className={cn(
-                          "h-16 border-l border-gray-200 p-1 transition-colors",
+                          "h-12 border-l border-gray-200 p-1 transition-colors",
                           cellContent.type === 'empty' && "hover:bg-blue-50 cursor-crosshair",
                           cellContent.type === 'appointment' && "cursor-default"
                         )}
-                        onMouseDown={() => cellContent.type === 'empty' && handleCellMouseDown(dateStr, timeStr)}
-                        onMouseEnter={() => handleCellMouseEnter(dateStr, timeStr)}
-                        onMouseUp={() => handleCellMouseUp()}
+                        onMouseDown={() => cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
+                        onMouseEnter={() => handleCellMouseEnter30Min(dateStr, timeStr)}
+                        onMouseUp={() => handleCellMouseUp30Min()}
                       >
                         {cellContent.content}
                       </div>
