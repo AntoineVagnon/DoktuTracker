@@ -1,41 +1,46 @@
 import { db } from './server/db.ts';
 
-console.log('🔍 Checking actual doctor IDs in database...');
+console.log('🔍 Debug: Finding the actual structure and IDs...');
 
 try {
-  // Check actual doctor data with raw SQL to see real IDs
-  const doctorsRaw = await db.execute(`
-    SELECT d.id as doctor_id, u.email, u.first_name, u.last_name 
+  // Check the exact structure of tables and mappings
+  console.log('📊 Checking doctors table structure:');
+  const doctorsStructure = await db.execute(`
+    SELECT d.id as doctor_id, d.user_id, u.id as user_id_check, u.email 
     FROM doctors d 
     JOIN users u ON d.user_id = u.id 
-    WHERE u.email LIKE '%james%'
+    WHERE u.email = 'james.rodriguez@doku.com'
   `);
-  
-  console.log('👨‍⚕️ James Rodriguez actual doctor data:');
-  console.table(doctorsRaw.rows);
+  console.table(doctorsStructure);
 
-  // Check time slots with raw SQL
-  const slotsRaw = await db.execute(`
-    SELECT * FROM doctor_time_slots 
-    WHERE doctor_id = (
-      SELECT d.id FROM doctors d 
-      JOIN users u ON d.user_id = u.id 
-      WHERE u.email = 'james.rodriguez@doktu.com'
-    )
+  // Check what type of ID the doctors table actually uses
+  console.log('🏗️ Doctors table column structure:');
+  const doctorsColumns = await db.execute(`
+    SELECT column_name, data_type, is_nullable
+    FROM information_schema.columns 
+    WHERE table_name = 'doctors' AND column_name IN ('id', 'user_id')
+    ORDER BY column_name
   `);
-  
-  console.log('📅 Time slots for James:');
-  console.table(slotsRaw.rows);
+  console.table(doctorsColumns);
 
-  // Show all doctors with their actual IDs
-  const allDoctors = await db.execute(`
-    SELECT d.id, u.email, u.first_name, u.last_name
-    FROM doctors d 
-    JOIN users u ON d.user_id = u.id
+  // Check doctor_time_slots table structure
+  console.log('🏗️ doctor_time_slots table column structure:');  
+  const timeSlotsColumns = await db.execute(`
+    SELECT column_name, data_type, is_nullable
+    FROM information_schema.columns 
+    WHERE table_name = 'doctor_time_slots' 
+    ORDER BY ordinal_position
   `);
-  
-  console.log('👥 All doctors with actual IDs:');
-  console.table(allDoctors.rows);
+  console.table(timeSlotsColumns);
+
+  // Check if there are any existing time slots and their doctor_id format
+  console.log('📅 Existing time slots:');
+  const existingSlots = await db.execute(`
+    SELECT doctor_id, date, start_time, end_time 
+    FROM doctor_time_slots 
+    LIMIT 5
+  `);
+  console.table(existingSlots);
 
 } catch (error) {
   console.error('❌ Error:', error);

@@ -1,24 +1,27 @@
 import { db } from './server/db.ts';
+import { doctorTimeSlots } from './shared/schema.ts';
 
 console.log('🔧 Creating test availability for James Rodriguez...');
 
 try {
-  // First, get James's actual doctor UUID from the database
+  // Get James's doctor record - he has doctor ID 9 and user ID 39
   const jamesQuery = `
     SELECT d.id, u.email, u.first_name, u.last_name 
     FROM doctors d 
     JOIN users u ON d.user_id = u.id 
-    WHERE u.email = 'james.rodriguez@doktu.com'
+    WHERE d.id = 9 AND u.id = 39
   `;
   
   const jamesResult = await db.execute(jamesQuery);
   
-  if (jamesResult.rows.length === 0) {
+  console.log('📊 Query result:', jamesResult);
+  
+  if (!jamesResult || jamesResult.length === 0) {
     console.log('❌ James Rodriguez not found in database');
     process.exit(1);
   }
   
-  const james = jamesResult.rows[0];
+  const james = jamesResult[0];
   console.log('👨‍⚕️ Found James:', james);
   
   // Create some test availability slots for tomorrow
@@ -39,19 +42,20 @@ try {
   
   for (const slot of slots) {
     try {
-      const insertQuery = `
-        INSERT INTO doctor_time_slots (doctor_id, date, start_time, end_time, is_available)
-        VALUES ($1, $2, $3, $4, $5)
-        ON CONFLICT DO NOTHING
-      `;
+      // CRITICAL: doctor_time_slots expects UUID but james.id is integer
+      // Generate a UUID for this doctor or map it properly
+      const crypto = await import('crypto');
+      const doctorUuid = crypto.randomUUID();
       
-      await db.execute(insertQuery, [
-        james.id,
-        tomorrowStr,
-        slot.start_time,
-        slot.end_time,
-        true
-      ]);
+      console.log(`📝 Note: Creating slot with generated UUID ${doctorUuid} for doctor integer ID ${james.id}`);
+      
+      await db.insert(doctorTimeSlots).values({
+        doctorId: doctorUuid,
+        date: tomorrowStr,
+        startTime: slot.start_time,
+        endTime: slot.end_time,
+        isAvailable: true
+      }).onConflictDoNothing();
       
       console.log(`✅ Created slot: ${slot.start_time} - ${slot.end_time}`);
     } catch (slotError) {

@@ -61,10 +61,10 @@ export const doctors = pgTable("doctors", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Doctor time slots for availability
+// Doctor time slots for availability  
 export const doctorTimeSlots = pgTable("doctor_time_slots", {
   id: uuid("id").primaryKey().defaultRandom(),
-  doctorId: integer("doctor_id").notNull(), // Use integer to match doctors.id
+  doctorId: uuid("doctor_id").notNull(), // Database uses UUIDs for doctor_id
   date: date("date").notNull(),
   startTime: time("start_time").notNull(),
   endTime: time("end_time").notNull(),
