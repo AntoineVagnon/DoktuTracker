@@ -212,15 +212,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // First, get the doctor record to get the proper UUID
-      const doctorProfile = await storage.getDoctor(parseInt(req.body.doctorId));
-      if (!doctorProfile) {
-        return res.status(404).json({ message: "Doctor not found" });
-      }
-
       const appointmentData = insertAppointmentSchema.parse({
         patientId: userId.toString(), // Ensure string
-        doctorId: doctorProfile.id.toString(), // Use the doctor's UUID from database
+        doctorId: parseInt(req.body.doctorId), // Convert to integer to match schema
         timeSlotId: req.body.timeSlotId,
         appointmentDate: new Date(req.body.appointmentDate), // Convert string to Date
         price: req.body.price.toString(), // Ensure string

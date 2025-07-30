@@ -87,7 +87,7 @@ export const appointmentPending = pgTable("appointment_pending", {
 export const appointments = pgTable("appointments", {
   id: uuid("id").primaryKey().defaultRandom(),
   patientId: varchar("patient_id").references(() => users.id).notNull(),
-  doctorId: uuid("doctor_id").references(() => doctors.id).notNull(),
+  doctorId: integer("doctor_id").references(() => doctors.id).notNull(), // Changed from uuid to integer to match doctors.id
   timeSlotId: uuid("time_slot_id").references(() => doctorTimeSlots.id),
   appointmentDate: timestamp("appointment_date").notNull(),
   status: varchar("status").notNull().default("pending"), // pending, confirmed, paid, completed, cancelled
@@ -120,7 +120,7 @@ export const reviews = pgTable("reviews", {
   id: uuid("id").primaryKey().defaultRandom(),
   appointmentId: uuid("appointment_id").references(() => appointments.id).notNull(),
   patientId: varchar("patient_id").references(() => users.id).notNull(),
-  doctorId: uuid("doctor_id").references(() => doctors.id).notNull(),
+  doctorId: integer("doctor_id").references(() => doctors.id).notNull(), // Changed from uuid to integer to match doctors.id
   rating: integer("rating").notNull(), // 1-5
   comment: text("comment"),
   createdAt: timestamp("created_at").defaultNow(),
