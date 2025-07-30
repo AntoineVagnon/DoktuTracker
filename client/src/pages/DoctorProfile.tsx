@@ -439,8 +439,9 @@ export default function DoctorProfile() {
                               
                               if (response.ok) {
                                 // Slot successfully held - redirect directly to register page
-                                console.log('Slot held successfully, redirecting to register');
-                                window.location.href = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                                const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                                console.log('Slot held successfully, redirecting to register with URL:', registerUrl);
+                                window.location.href = registerUrl;
                               } else {
                                 // Slot couldn't be held (probably taken by another user)
                                 const error = await response.json();
