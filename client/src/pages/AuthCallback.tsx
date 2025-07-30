@@ -40,6 +40,8 @@ export default function AuthCallback() {
           // Email confirmation flow
           setStatus('email_confirmation');
           
+          console.log('Starting email confirmation process with token:', !!accessToken);
+          
           // Handle email confirmation automatically
           const response = await fetch('/api/auth/confirm', {
             method: 'POST',
@@ -47,8 +49,13 @@ export default function AuthCallback() {
             body: JSON.stringify({ 
               access_token: accessToken,
               refresh_token: refreshToken 
-            })
+            }),
+            credentials: 'include' // Important for session cookies
           });
+
+          console.log('Confirmation response status:', response.status);
+          const responseData = await response.json();
+          console.log('Confirmation response data:', responseData);
 
           if (response.ok) {
             setStatus('success');
@@ -61,27 +68,79 @@ export default function AuthCallback() {
             const loginRedirect = sessionStorage.getItem('loginRedirect');
             const pendingBooking = sessionStorage.getItem('pendingBooking');
             
+            console.log('Checking redirect context:', { loginRedirect, pendingBooking });
+            
             setTimeout(() => {
               if (loginRedirect) {
                 // Clear the redirect and navigate to booking flow
                 sessionStorage.removeItem('loginRedirect');
+                console.log('Redirecting to booking flow:', loginRedirect);
                 setLocation(loginRedirect);
               } else if (pendingBooking) {
                 // Handle legacy pendingBooking format
                 const booking = JSON.parse(pendingBooking);
                 sessionStorage.removeItem('pendingBooking');
-                setLocation(`/checkout?doctorId=${booking.doctorId}&slot=${encodeURIComponent(booking.slot)}&price=${booking.price}`);
+                const checkoutUrl = `/checkout?doctorId=${booking.doctorId}&slot=${encodeURIComponent(booking.slot)}&price=${booking.price}`;
+                console.log('Redirecting to checkout:', checkoutUrl);
+                setLocation(checkoutUrl);
               } else {
                 // No booking context, go to dashboard
+                console.log('No booking context, going to dashboard');
                 setLocation('/dashboard');
               }
-            }, 2000);
+            }, 1500); // Reduced delay for better UX
           } else {
-            throw new Error('Email confirmation failed');
+            console.error('Email confirmation failed:', responseData);
+            throw new Error(`Email confirmation failed: ${responseData.error || 'Unknown error'}`);
+          }
+        } else if (accessToken && !type) {
+          // Handle case where we have tokens but no explicit type (common with Supabase)
+          console.log('Found access token without explicit type, treating as signup confirmation');
+          setStatus('email_confirmation');
+          
+          const response = await fetch('/api/auth/confirm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              access_token: accessToken,
+              refresh_token: refreshToken 
+            }),
+            credentials: 'include'
+          });
+
+          console.log('Fallback confirmation response status:', response.status);
+          const responseData = await response.json();
+          console.log('Fallback confirmation response data:', responseData);
+
+          if (response.ok) {
+            setStatus('success');
+            toast({
+              title: "Authentication Successful",
+              description: "You have been signed in successfully!",
+            });
+            
+            const loginRedirect = sessionStorage.getItem('loginRedirect');
+            const pendingBooking = sessionStorage.getItem('pendingBooking');
+            
+            setTimeout(() => {
+              if (loginRedirect) {
+                sessionStorage.removeItem('loginRedirect');
+                setLocation(loginRedirect);
+              } else if (pendingBooking) {
+                const booking = JSON.parse(pendingBooking);
+                sessionStorage.removeItem('pendingBooking');
+                setLocation(`/checkout?doctorId=${booking.doctorId}&slot=${encodeURIComponent(booking.slot)}&price=${booking.price}`);
+              } else {
+                setLocation('/dashboard');
+              }
+            }, 1500);
+          } else {
+            throw new Error(`Authentication failed: ${responseData.error || 'Unknown error'}`);
           }
         } else {
           console.log('No valid auth type found, setting error state');
           console.log('Available hash params:', Array.from(hashParams.entries()));
+          console.log('Type:', type, 'Access token:', !!accessToken);
           throw new Error('Invalid callback parameters');
         }
       } catch (error) {
