@@ -24,25 +24,36 @@ export default function CheckoutForm({ onSuccess, bookingData }: CheckoutFormPro
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/payment-success`,
-      },
-    });
+    try {
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/payment-success`,
+        },
+      });
 
-    if (error) {
-      console.error('Payment error:', error);
+      // Si nous arrivons ici, c'est qu'il y a eu une erreur
+      // (sinon la page aurait été redirigée)
+      if (error) {
+        console.error('Payment error:', error);
+        toast({
+          title: "Payment Failed",
+          description: error.message || "Unable to process payment. Please try again.",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+      }
+      // Note: si le paiement réussit, l'utilisateur sera redirigé vers /payment-success
+      // donc nous n'atteignons jamais cette ligne
+    } catch (err) {
+      console.error('Unexpected payment error:', err);
       toast({
-        title: "Payment Failed",
-        description: error.message || "Unable to process payment. Please try again.",
+        title: "Payment Error",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
-    } else {
-      onSuccess();
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
