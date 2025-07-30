@@ -136,8 +136,8 @@ export default function GoogleStyleCalendar() {
         id: `temp-${Date.now()}`,
         doctorId: 'demo-doctor',
         date: data.startTime.split('T')[0],
-        startTime: new Date(data.startTime).toTimeString().slice(0, 5),
-        endTime: new Date(data.endTime).toTimeString().slice(0, 5),
+        startTime: data.startTime.includes(':') ? data.startTime : new Date(data.startTime).toTimeString().slice(0, 5),
+        endTime: data.endTime.includes(':') ? data.endTime : new Date(data.endTime).toTimeString().slice(0, 5),
         isAvailable: true,
         createdAt: new Date()
       };
@@ -164,6 +164,8 @@ export default function GoogleStyleCalendar() {
     }
   });
 
+
+
   // Update time slot mutation
   const updateSlotMutation = useMutation({
     mutationFn: async (data: { id: string; startTime: string; endTime: string; isRecurring?: boolean; recurringEndDate?: string }) => {
@@ -180,11 +182,14 @@ export default function GoogleStyleCalendar() {
     }
   });
 
-  // Delete time slot mutation
+  // Delete time slot mutation (demo mode with localStorage)
   const deleteSlotMutation = useMutation({
     mutationFn: async (data: { slotId: string; scope?: string }) => {
-      const response = await apiRequest('DELETE', `/api/time-slots/${data.slotId}${data.scope ? `?scope=${data.scope}` : ''}`);
-      return response.json();
+      // For demo mode, remove from localStorage
+      const existingSlots = JSON.parse(localStorage.getItem('demo-time-slots') || '[]');
+      const updatedSlots = existingSlots.filter((slot: any) => slot.id !== data.slotId);
+      localStorage.setItem('demo-time-slots', JSON.stringify(updatedSlots));
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
@@ -262,15 +267,20 @@ export default function GoogleStyleCalendar() {
   };
 
   const handleSlotClick = (slot: TimeSlot) => {
+    // Handle different date formats - slot might have date + time separate or combined
+    const slotDate = slot.date || new Date().toISOString().split('T')[0];
+    const startTime = slot.startTime && slot.startTime.includes(':') ? slot.startTime : '09:00';
+    const endTime = slot.endTime && slot.endTime.includes(':') ? slot.endTime : '10:00';
+    
     setSlotModal({
       isOpen: true,
       mode: 'edit',
-      startTime: new Date(slot.startTime).toTimeString().slice(0, 5),
-      endTime: new Date(slot.endTime).toTimeString().slice(0, 5),
-      date: new Date(slot.startTime).toISOString().split('T')[0],
+      startTime: startTime,
+      endTime: endTime,
+      date: slotDate,
       slotId: slot.id,
       isRecurring: slot.isRecurring || false,
-      recurringEndDate: slot.recurringEndDate
+      recurringEndDate: slot.recurringEndDate || ''
     });
   };
 
