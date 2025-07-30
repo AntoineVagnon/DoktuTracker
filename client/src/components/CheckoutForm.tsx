@@ -47,9 +47,10 @@ export default function CheckoutForm({ onSuccess, bookingData }: CheckoutFormPro
       // donc nous n'atteignons jamais cette ligne
     } catch (err) {
       console.error('Unexpected payment error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
       toast({
         title: "Payment Error",
-        description: "An unexpected error occurred. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
       setIsLoading(false);

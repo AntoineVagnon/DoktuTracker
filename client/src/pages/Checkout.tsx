@@ -77,18 +77,32 @@ export default function Checkout() {
           return;
         }
 
-        // Create payment intent
-        const paymentResponse = await fetch('/api/create-payment-intent', {
+        // First create appointment
+        const appointmentResponse = await fetch('/api/appointments', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: Math.round(parseFloat(price) * 100), // Convert to cents
-            currency: 'eur',
-            metadata: {
-              doctorId,
-              slotId: heldSlotData.heldSlot.id,
-              appointmentDate: slot
-            }
+            doctorId: doctorId.toString(),
+            timeSlotId: heldSlotData.heldSlot.id,
+            appointmentDate: slot, // This is the ISO string from URL params
+            price: price.toString(),
+            status: 'pending_payment'
+          })
+        });
+
+        if (!appointmentResponse.ok) {
+          throw new Error('Failed to create appointment');
+        }
+
+        const appointmentData = await appointmentResponse.json();
+
+        // Create payment intent
+        const paymentResponse = await fetch('/api/payment/create-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            appointmentId: appointmentData.id,
+            amount: parseFloat(price)
           })
         });
 
