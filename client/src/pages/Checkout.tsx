@@ -9,6 +9,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from '@/components/CheckoutForm';
 
+console.log('Stripe Publishable Key:', import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ? 'Available' : 'Missing');
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export default function Checkout() {
@@ -260,20 +261,25 @@ export default function Checkout() {
             </CardHeader>
             <CardContent className="p-6">
               {clientSecret && (
-                <Elements 
-                  stripe={stripePromise} 
-                  options={{
-                    clientSecret,
-                    appearance: {
-                      theme: 'stripe',
-                    },
-                  }}
-                >
-                  <CheckoutForm 
-                    onSuccess={handlePaymentSuccess}
-                    bookingData={bookingData}
-                  />
-                </Elements>
+                <div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Client Secret: {clientSecret ? 'Available' : 'Missing'}
+                  </p>
+                  <Elements 
+                    stripe={stripePromise} 
+                    options={{
+                      clientSecret,
+                      appearance: {
+                        theme: 'stripe',
+                      },
+                    }}
+                  >
+                    <CheckoutForm 
+                      onSuccess={handlePaymentSuccess}
+                      bookingData={bookingData}
+                    />
+                  </Elements>
+                </div>
               )}
               
               {!clientSecret && (

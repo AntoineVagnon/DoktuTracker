@@ -47,7 +47,11 @@ export default function CheckoutForm({ onSuccess, bookingData }: CheckoutFormPro
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <PaymentElement />
+      <div className="border rounded p-4 min-h-[120px]">
+        <PaymentElement options={{
+          layout: 'tabs'
+        }} />
+      </div>
       <Button 
         type="submit" 
         disabled={!stripe || !elements || isLoading}
