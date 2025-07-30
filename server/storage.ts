@@ -240,8 +240,8 @@ export class PostgresStorage implements IStorage {
       .where(eq(doctors.id, doctorId));
   }
 
-  async getDoctorTimeSlots(doctorId: string, date?: string): Promise<TimeSlot[]> {
-    let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorId));
+  async getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]> {
+    let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, String(doctorId)));
     
     if (date) {
       query = query.where(eq(doctorTimeSlots.date, date));
