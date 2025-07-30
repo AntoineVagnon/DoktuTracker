@@ -263,14 +263,15 @@ export default function GoogleStyleCalendar() {
       const updatedBlocks = [...selectedBlocks, newBlock];
       setSelectedBlocks(updatedBlocks);
       
-      // Open modal immediately after selection
+      // Open modal immediately after selection with count information
       setSlotModal({
         isOpen: true,
         mode: 'create',
         startTime: newBlock.startTime,
         endTime: newBlock.endTime,
         date: newBlock.date,
-        isRecurring: false
+        isRecurring: false,
+        title: `Create Availability (${updatedBlocks.length} slot${updatedBlocks.length > 1 ? 's' : ''})`
       });
     }
     
@@ -434,7 +435,10 @@ export default function GoogleStyleCalendar() {
         }
         
         setSelectedBlocks([]);
-        toast({ title: `Created ${blocksToCreate.length} availability block${blocksToCreate.length > 1 ? 's' : ''}!` });
+        toast({ 
+          title: `Success!`, 
+          description: `Created ${blocksToCreate.length} availability block${blocksToCreate.length > 1 ? 's' : ''}!` 
+        });
         setSlotModal(prev => ({ ...prev, isOpen: false }));
       } catch (error) {
         console.error('Error creating blocks:', error);

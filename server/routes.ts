@@ -403,12 +403,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const startTimeStr = startDateTime.toTimeString().slice(0, 5);
       const endTimeStr = endDateTime.toTimeString().slice(0, 5);
       
-      // Create a mapping UUID for the doctor since database expects UUID format
-      const doctorUUID = randomUUID();
-      console.log(`Creating time slot for doctor ${doctor.id} with UUID mapping ${doctorUUID}`);
+      // Use doctor.id directly as the UUID for time slots
+      const doctorUuid = String(doctor.id);
+      console.log(`Creating time slot for doctor ${doctor.id} with UUID ${doctorUuid}`);
       
       const timeSlot = await storage.createTimeSlot({
-        doctorId: doctorUUID, // Use UUID format as expected by database
+        doctorId: doctorUuid, // Use UUID format as expected by database
         date: dateStr,
         startTime: startTimeStr,
         endTime: endTimeStr,
