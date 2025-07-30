@@ -522,6 +522,155 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Appointment routes
+  app.post("/api/appointments", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user?.id) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const { doctorId, timeSlotId, price, status = 'pending_payment' } = req.body;
+      
+      if (!doctorId || !timeSlotId || !price) {
+        return res.status(400).json({ error: "Missing required appointment details" });
+      }
+
+      // Create the appointment
+      const appointment = await storage.createAppointment({
+        patientId: user.id.toString(),
+        doctorId: doctorId.toString(),
+        timeSlotId: timeSlotId,
+        price: price,
+        status: status,
+      });
+
+      res.json(appointment);
+    } catch (error) {
+      console.error("Error creating appointment:", error);
+      res.status(500).json({ error: "Failed to create appointment" });
+    }
+  });
+
+  // Payment routes
+  app.post("/api/payment/create-intent", isAuthenticated, async (req, res) => {
+    try {
+      const { appointmentId, amount } = req.body;
+      
+      if (!appointmentId || !amount) {
+        return res.status(400).json({ error: "Missing appointmentId or amount" });
+      }
+
+      // Get appointment details
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment) {
+        return res.status(404).json({ error: "Appointment not found" });
+      }
+
+      // Create payment intent with Stripe
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(parseFloat(amount) * 100), // Convert to cents
+        currency: 'eur',
+        metadata: {
+          appointmentId,
+          patientId: req.user.id.toString(),
+          doctorId: appointment.doctorId.toString(),
+        },
+      });
+
+      // Update appointment status to pending_payment
+      await storage.updateAppointmentStatus(appointmentId, "pending_payment", paymentIntent.id);
+
+      res.json({
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+      });
+    } catch (error) {
+      console.error("Error creating payment intent:", error);
+      res.status(500).json({ error: "Failed to create payment intent" });
+    }
+  });
+
+  app.post("/api/payment/confirm", isAuthenticated, async (req, res) => {
+    try {
+      const { paymentIntentId } = req.body;
+      
+      if (!paymentIntentId) {
+        return res.status(400).json({ error: "Missing paymentIntentId" });
+      }
+
+      // Retrieve payment intent from Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      if (paymentIntent.status === 'succeeded') {
+        const appointmentId = paymentIntent.metadata.appointmentId;
+        
+        // Update appointment status to paid
+        await storage.updateAppointmentStatus(appointmentId, "paid");
+        
+        // Record the payment
+        await storage.recordPayment({
+          appointmentId,
+          patientId: req.user.id.toString(),
+          stripePaymentIntentId: paymentIntentId,
+          amount: (paymentIntent.amount / 100).toString(),
+          currency: paymentIntent.currency.toUpperCase(),
+          status: "succeeded",
+          paymentMethod: "card",
+        });
+
+        res.json({ success: true, status: paymentIntent.status });
+      } else {
+        res.json({ success: false, status: paymentIntent.status });
+      }
+    } catch (error) {
+      console.error("Error confirming payment:", error);
+      res.status(500).json({ error: "Failed to confirm payment" });
+    }
+  });
+
+  // Stripe webhook for payment events
+  app.post("/api/webhooks/stripe", async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+      // Note: In production, you should use a webhook secret
+      event = stripe.webhooks.constructEvent(req.body, sig as string, process.env.STRIPE_WEBHOOK_SECRET || '');
+    } catch (err) {
+      console.error('Webhook signature verification failed:', err);
+      return res.status(400).send(`Webhook Error: ${err}`);
+    }
+
+    // Handle the event
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object;
+        const appointmentId = paymentIntent.metadata.appointmentId;
+        
+        if (appointmentId) {
+          await storage.updateAppointmentStatus(appointmentId, "paid");
+          console.log(`✅ Payment succeeded for appointment ${appointmentId}`);
+        }
+        break;
+        
+      case 'payment_intent.payment_failed':
+        const failedPayment = event.data.object;
+        const failedAppointmentId = failedPayment.metadata.appointmentId;
+        
+        if (failedAppointmentId) {
+          await storage.updateAppointmentStatus(failedAppointmentId, "payment_failed");
+          console.log(`❌ Payment failed for appointment ${failedAppointmentId}`);
+        }
+        break;
+        
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+
+    res.json({ received: true });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

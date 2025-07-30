@@ -1,0 +1,107 @@
+Feature: Pay-per-visit checkout with Stripe (test mode first)
+
+As a patient
+I want to pay for my appointment securely via Stripe
+So that my booking is confirmed only after successful payment
+And later the platform can also support Monri without breaking the flow
+
+\################################################################
+
+# ACTORS & PRE-CONDITIONS
+
+\################################################################
+Background:
+Given the platform is in **Stripe test mode** (Publishable + Secret keys in `.env`)
+And valid Stripe test cards are documented in a “Payment Info” tooltip
+And an appointment slot has been selected and temporarily locked
+And the appointment has `status = "pending_payment"`
+
+\################################################################
+
+# MAIN HAPPY PATH
+
+\################################################################
+Scenario: Pay and confirm booking (in‑app modal)
+When the patient clicks “Pay €3.00 · 30‑min consultation”
+Then an **in‑app payment modal** opens (Stripe Elements / embedded Checkout)
+And the modal contains secure fields for Card number, Exp, CVC, Name
+And the amount €3.00 and appointment details are shown at the top
+When the patient submits valid test card data (e.g., `4242 4242 4242 4242`)
+Then the payment intent is confirmed without navigating away from Doktu
+And a success state replaces the form: “Payment successful! Redirecting …”
+And the backend receives the `payment_intent.succeeded` event (webhook or client confirm)
+And sets `appointments.status = "paid"`
+And the slot is marked "booked" for all future queries
+And the UI auto‑redirects to the dashboard where the new appointment shows a green “Paid” badge within 2 s
+
+\################################################################
+
+# CANCEL OR ABANDON FLOW
+
+\################################################################
+Scenario: Patient cancels or closes the payment modal
+When the patient clicks “Cancel” or closes the modal
+Then the modal disappears and the page shows a banner: “Payment not completed. Resume payment or release the slot.”
+And the slot remains locked for 15 minutes maximum
+And the appointment keeps `status = "pending_payment"` until the timer expires
+
+\################################################################
+
+# FAILED PAYMENT (webhook)
+
+\################################################################
+Scenario: Payment fails (insufficient funds / test card `4000 0000 0000 9995`)
+Given Stripe sends a `payment_intent.payment_failed` webhook
+Then the backend sets `appointments.status = "payment_failed"`
+And the slot lock is removed immediately
+And the patient receives an email “Payment failed, please try again”
+
+\################################################################
+
+# ADMIN & DOCTOR VISIBILITY
+
+\################################################################
+Scenario: Doctors see only confirmed appointments
+Then in the **doctor dashboard calendar & list**
+Only appointments with `appointments.status = "paid"` are displayed
+And these rows show a single green pill: “Booked”
+And appointments in any other state (pending, awaiting payment, payment failed) are hidden entirely from the doctor view
+And admins see all appointment outcomes, including:
+\| Paid                       |
+\| Cancelled by patient/doctor|
+\| Awaiting payment           |
+\| Abandoned (payment timeout)|
+\| Payment failed             |
+
+\################################################################
+
+# FUTURE EXTENSION: MONRI
+
+\################################################################
+Rule: Payment provider abstraction
+Given a future switch to Monri is required
+Then the checkout initiation is routed through an internal service `POST /api/payment/start`
+And that service can later branch to `providers/stripe.ts` or `providers/monri.ts`
+Without changing frontend flows or URLs
+
+\################################################################
+
+# TEST‑MODE CARD TOOLTIP & REFERENCE
+
+\################################################################
+Scenario: Display Stripe test‑card info in dev and staging
+Given `NODE_ENV != "production"`
+When the payment modal opens
+Then a collapsible note appears titled “Stripe Test Cards”
+And it includes a link “Full list ↗” to [https://docs.stripe.com/testing](https://docs.stripe.com/testing)
+And it shows a short table of common cards:
+\| Card number              | Result                           | Exp. date | CVC |
+\| 4242 4242 4242 4242      | Payment succeeds                 | Any fut.  | Any |
+\| 4000 0000 0000 9995      | Payment fails (insufficient)     | Any fut.  | Any |
+\| 4000 0027 6000 3184      | Requires 3‑D Secure auth (pass)  | Any fut.  | Any |
+\| 4000 0027 6000 3176      | Requires 3‑D Secure auth (fail)  | Any fut.  | Any |#
+\################################################################
+
+```
+  | 4000 0000 0000 9995 | Fails payment   | Any CVC |
+```

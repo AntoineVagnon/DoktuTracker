@@ -1,213 +1,232 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
+import PaymentModal from "@/components/PaymentModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, Clock, Euro, CreditCard } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, User, CreditCard } from "lucide-react";
+import { format } from "date-fns";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { useAuth } from "@/hooks/useAuth";
-
-interface Doctor {
-  id: string;
-  specialty: string;
-  avg_rating: number;
-  review_count: number;
-  avatar_url: string;
-  location: string;
-  consultation_price: string;
-  user: {
-    firstName: string;
-    lastName: string;
-    bio: string;
-  };
-}
 
 export default function Checkout() {
-  const [location] = useLocation();
-  const { user, isAuthenticated, isLoading } = useAuth();
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  
+  // Get booking parameters from URL
+  const urlParams = new URLSearchParams(window.location.search);
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
-  const price = urlParams.get('price') || '3.00';
+  const price = urlParams.get('price');
 
-  const { data: doctor, isLoading: doctorLoading } = useQuery<Doctor>({
-    queryKey: ['/api/public/doctors', doctorId],
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!user) {
+      setLocation(`/auth-choice?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`);
+    }
+  }, [user, doctorId, slot, price, setLocation]);
+
+  // Fetch doctor details
+  const { data: doctor, isLoading: doctorLoading } = useQuery({
+    queryKey: ["/api/doctors", doctorId],
+    queryFn: async () => {
+      const response = await fetch(`/api/doctors/${doctorId}`);
+      if (!response.ok) throw new Error('Failed to fetch doctor');
+      return response.json();
+    },
     enabled: !!doctorId,
   });
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      const currentUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
-      window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
-    }
-  }, [isAuthenticated, isLoading, doctorId, slot, price]);
-
-  const formatSlotTime = (slotString: string) => {
-    try {
-      const date = new Date(slotString);
-      return {
-        date: date.toLocaleDateString('en-GB', { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        }),
-        time: date.toLocaleTimeString('en-GB', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        })
-      };
-    } catch {
-      return { date: 'Invalid date', time: 'Invalid time' };
-    }
+  const handlePaymentSuccess = () => {
+    setShowPaymentModal(false);
+    setLocation('/dashboard');
   };
 
-  const handlePayment = () => {
-    // TODO: Integrate with Stripe Checkout
-    console.log('Processing payment for:', { doctorId, slot, price, patient: user });
-    // After successful payment, redirect to dashboard
-    window.location.href = '/dashboard';
+  const handleBackToProfile = () => {
+    setLocation(`/doctor/${doctorId}`);
   };
 
-  if (isLoading || doctorLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-md mx-auto">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-              <div className="h-64 bg-gray-200 rounded"></div>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
+  if (!user) {
+    return null; // Will redirect via useEffect
   }
 
-  if (!doctorId || !slot || !doctor) {
+  if (!doctorId || !slot || !price) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-4 py-24">
           <div className="max-w-md mx-auto text-center">
-            <Card className="rounded-2xl shadow-lg p-6">
-              <CardContent>
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Checkout Request</h1>
-                <p className="text-gray-600 mb-8">
-                  The payment information is incomplete or invalid.
-                </p>
-                <Button onClick={() => window.location.href = '/'} className="w-full">
-                  Return to Home
-                </Button>
-              </CardContent>
-            </Card>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Booking Request</h1>
+            <p className="text-gray-600 mb-6">Missing booking information. Please start over.</p>
+            <Button onClick={() => setLocation('/')}>Back to Home</Button>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
 
-  const slotTime = formatSlotTime(slot);
+  if (doctorLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-24">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center">Loading...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!doctor) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-24">
+          <div className="max-w-md mx-auto text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Doctor Not Found</h1>
+            <p className="text-gray-600 mb-6">The requested doctor could not be found.</p>
+            <Button onClick={() => setLocation('/')}>Back to Home</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Parse appointment details
+  const appointmentDate = slot ? new Date(slot) : new Date();
+  const appointmentDetails = {
+    id: '', // Will be created during payment process
+    doctorId: doctorId, // Pass the actual doctor ID
+    timeSlotId: slot, // Pass the actual time slot datetime
+    doctorName: doctor.user ? `${doctor.user.title || 'Dr.'} ${doctor.user.firstName} ${doctor.user.lastName}` : 'Doctor',
+    specialty: doctor.specialty,
+    date: appointmentDate.toISOString().split('T')[0],
+    time: appointmentDate.toTimeString().slice(0, 5),
+    price: parseFloat(price),
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto">
-          <Card className="rounded-2xl shadow-lg p-6">
-            <CardHeader className="p-0 mb-6">
-              <button 
-                onClick={() => window.history.back()}
-                className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </button>
-              
-              <CardTitle className="text-2xl font-bold text-gray-900">
-                Payment
-              </CardTitle>
-              <p className="text-gray-600 mt-2">
-                Complete your appointment booking
-              </p>
-            </CardHeader>
+      <div className="container mx-auto px-4 py-24">
+        <div className="max-w-2xl mx-auto">
+          
+          {/* Back Button */}
+          <Button
+            variant="ghost"
+            onClick={handleBackToProfile}
+            className="mb-6 p-0 h-auto font-normal text-blue-600 hover:text-blue-700"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to doctor profile
+          </Button>
 
-            <CardContent className="p-0">
-              {/* Appointment Summary */}
-              <div className="border rounded-lg p-4 mb-6 bg-gray-50">
-                <h3 className="font-semibold text-gray-900 mb-3">Appointment Summary</h3>
-                
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span>Doctor</span>
-                    <span className="font-medium">Dr. {doctor.user.firstName} {doctor.user.lastName}</span>
+          {/* Checkout Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Complete Your Booking</h1>
+            <p className="text-gray-600">Review your appointment details and proceed with payment</p>
+          </div>
+
+          {/* Appointment Summary Card */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Calendar className="h-5 w-5 mr-2" />
+                Appointment Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              
+              {/* Doctor Info */}
+              <div className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <User className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">{appointmentDetails.doctorName}</h3>
+                  <p className="text-sm text-gray-600">{appointmentDetails.specialty}</p>
+                </div>
+              </div>
+
+              {/* Date & Time */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center space-x-3">
+                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-600">Date</p>
+                    <p className="font-medium">
+                      {appointmentDate ? format(appointmentDate, 'EEEE, MMMM d, yyyy') : 'Invalid date'}
+                    </p>
                   </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                      <span>Date</span>
-                    </div>
-                    <span className="font-medium">{slotTime.date}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                      <span>Time</span>
-                    </div>
-                    <span className="font-medium">{slotTime.time}</span>
-                  </div>
-                  
-                  <div className="border-t pt-3 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Euro className="h-4 w-4 text-gray-400 mr-2" />
-                      <span className="font-semibold">Total</span>
-                    </div>
-                    <span className="font-bold text-lg">€{price}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Clock className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-600">Time</p>
+                    <p className="font-medium">
+                      {appointmentDate ? format(appointmentDate, 'HH:mm') : 'Invalid time'}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Payment Info */}
-              <div className="space-y-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-sm text-green-800">
-                    <strong>Secure payment:</strong> Your payment is processed securely via Stripe. 
-                    You'll receive a confirmation email immediately after booking.
-                  </p>
+              {/* Duration & Price */}
+              <div className="flex justify-between items-center pt-4 border-t">
+                <div>
+                  <p className="text-sm text-gray-600">Duration</p>
+                  <p className="font-medium">30 minutes</p>
                 </div>
-
-                <Button
-                  onClick={handlePayment}
-                  className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded-lg flex items-center justify-center"
-                  aria-label="Complete payment and book appointment"
-                >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Pay €{price} & Book Appointment
-                </Button>
-
-                <div className="text-center text-sm text-gray-500">
-                  <p>
-                    Payment secured by{" "}
-                    <a href="https://stripe.com" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                      Stripe
-                    </a>
-                  </p>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">Total</p>
+                  <p className="text-2xl font-bold text-blue-600">€{appointmentDetails.price.toFixed(2)}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          {/* Payment Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <CreditCard className="h-5 w-5 mr-2" />
+                Payment
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-6">
+                Your payment is secured by Stripe. Your appointment will be confirmed immediately after successful payment.
+              </p>
+              
+              <Button
+                onClick={() => setShowPaymentModal(true)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-medium"
+              >
+                Pay €{appointmentDetails.price.toFixed(2)} • 30-min consultation
+              </Button>
+              
+              <p className="text-xs text-gray-500 text-center mt-3">
+                Secure payment powered by Stripe. Your card information is never stored.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Security Notice */}
+          <div className="mt-6 text-center text-sm text-gray-500">
+            <p>🔒 All payments are processed securely. Your data is protected.</p>
+          </div>
         </div>
       </div>
 
-      <Footer />
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        appointmentDetails={appointmentDetails}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 }

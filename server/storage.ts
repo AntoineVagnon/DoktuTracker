@@ -7,6 +7,7 @@ import {
   appointmentPending,
   reviews,
   auditEvents,
+  payments,
   type UpsertUser,
   type User,
   type Doctor,
@@ -61,10 +62,21 @@ export interface IStorage {
   getAppointments(patientId?: string, doctorId?: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User })[]>;
   getAppointment(id: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User }) | undefined>;
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
-  updateAppointmentStatus(id: string, status: string): Promise<void>;
+  updateAppointmentStatus(id: string, status: string, paymentIntentId?: string): Promise<void>;
   updateAppointmentPayment(id: string, paymentIntentId: string): Promise<void>;
   rescheduleAppointment(id: string, newSlotId: string, reason: string): Promise<void>;
   cancelAppointment(id: string, cancelledBy: string, reason: string): Promise<void>;
+  
+  // Payment operations
+  recordPayment(payment: {
+    appointmentId: string;
+    patientId: string;
+    stripePaymentIntentId: string;
+    amount: string;
+    currency: string;
+    status: string;
+    paymentMethod: string;
+  }): Promise<void>;
 
   // Review operations
   createReview(review: InsertReview): Promise<Review>;
@@ -423,10 +435,15 @@ export class PostgresStorage implements IStorage {
     return newAppointment;
   }
 
-  async updateAppointmentStatus(id: string, status: string): Promise<void> {
+  async updateAppointmentStatus(id: string, status: string, paymentIntentId?: string): Promise<void> {
+    const updateData: any = { status, updatedAt: new Date() };
+    if (paymentIntentId) {
+      updateData.paymentIntentId = paymentIntentId;
+    }
+    
     await db
       .update(appointments)
-      .set({ status, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(appointments.id, id));
   }
 
@@ -548,6 +565,26 @@ export class PostgresStorage implements IStorage {
 
   async getAuditEvents(): Promise<any[]> {
     return await db.select().from(auditEvents).orderBy(desc(auditEvents.createdAt)).limit(100);
+  }
+
+  async recordPayment(payment: {
+    appointmentId: string;
+    patientId: string;
+    stripePaymentIntentId: string;
+    amount: string;
+    currency: string;
+    status: string;
+    paymentMethod: string;
+  }): Promise<void> {
+    await db.insert(payments).values({
+      appointmentId: payment.appointmentId,
+      patientId: payment.patientId,
+      stripePaymentIntentId: payment.stripePaymentIntentId,
+      amount: payment.amount,
+      currency: payment.currency,
+      status: payment.status,
+      paymentMethod: payment.paymentMethod,
+    });
   }
 }
 

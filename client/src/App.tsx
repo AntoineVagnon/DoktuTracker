@@ -26,6 +26,7 @@ import DoctorSettings from "@/pages/DoctorSettings";
 import DoctorRecords from "@/pages/DoctorRecords";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Payment from "@/pages/Payment";
+import Checkout from "@/pages/Checkout";
 import DoctorList from "@/pages/DoctorList";
 import BookAppointmentChoice from "@/pages/BookAppointmentChoice";
 import PatientLogin from "@/pages/PatientLogin";
@@ -48,7 +49,7 @@ function Router() {
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/password-reset" component={PasswordReset} />
       <Route path="/test-password-reset" component={TestPasswordReset} />
-      <Route path="/checkout" component={Payment} />
+      <Route path="/checkout" component={Checkout} />
       <Route path="/payment" component={Payment} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       <Route path="/doctors" component={DoctorList} />

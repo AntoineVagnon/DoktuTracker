@@ -84,8 +84,9 @@ export default function RegisterForm() {
     setIsLoading(true);
 
     try {
-      // Redirect directly to authentication with booking parameters
-      window.location.href = `/api/login?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+      // Redirect directly to authentication with booking parameters - will redirect to checkout after auth
+      const redirectUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
+      window.location.href = `/api/login?redirect=${encodeURIComponent(redirectUrl)}`;
 
     } catch (error) {
       console.error('Registration error:', error);

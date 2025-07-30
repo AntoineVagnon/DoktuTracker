@@ -48,7 +48,7 @@ export default function PasswordReset() {
     
     const accessToken = hashParams.get('access_token');
     const type = hashParams.get('type');
-    const hasValidTokens = accessToken && type === 'recovery';
+    const hasValidTokens = !!(accessToken && type === 'recovery');
     
     console.log('Has tokens:', hasValidTokens);
     setHasTokens(hasValidTokens);
