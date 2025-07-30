@@ -23,7 +23,10 @@ export default function Register() {
       // No booking parameters, go to dashboard after auth
       sessionStorage.setItem('loginRedirect', '/dashboard');
     }
-    window.location.href = "/api/login";
+    
+    // Redirect to a signup form instead of OAuth
+    const signupUrl = `/create-account?${doctorId && slot && price ? `doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}` : ''}`;
+    window.location.href = signupUrl;
   };
 
   const openAuthModal = () => {

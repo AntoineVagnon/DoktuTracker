@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,12 +9,20 @@ import Header from "@/components/Header";
 
 export default function CreateAccount() {
   const { toast } = useToast();
+  const [location, setLocation] = useLocation();
+  
+  // Get URL parameters for booking context
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const doctorId = urlParams.get('doctorId');
+  const slot = urlParams.get('slot');
+  const price = urlParams.get('price');
+
   const [formData, setFormData] = useState({
-    email: 'antoine.vagnon@gmail.com',
-    password: 'MyNewPassword123!',
-    confirmPassword: 'MyNewPassword123!',
-    firstName: 'Antoine',
-    lastName: 'Vagnon'
+    email: '',
+    password: '',
+    confirmPassword: '',
+    firstName: '',
+    lastName: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -68,6 +77,26 @@ export default function CreateAccount() {
         title: "Account Created!",
         description: `Account created successfully for ${data.user?.email || formData.email}`,
       });
+
+      // Handle redirect after successful registration
+      if (data.session) {
+        // User is immediately signed in (no email confirmation required)
+        setTimeout(() => {
+          if (doctorId && slot && price) {
+            // Redirect to checkout with booking parameters
+            setLocation(`/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`);
+          } else {
+            // No booking context, go to dashboard
+            setLocation('/dashboard');
+          }
+        }, 2000);
+      } else {
+        // Email confirmation required - show message to user
+        toast({
+          title: "Check Your Email",
+          description: "Please check your email and click the confirmation link to complete your registration.",
+        });
+      }
 
     } catch (error) {
       console.error('Registration error:', error);
