@@ -253,26 +253,33 @@ export default function GoogleStyleCalendar() {
 
   const handleCellMouseUp = () => {
     if (isSelecting && currentSelection) {
-      // Add the current selection to selected blocks
-      const newBlock = {
-        date: currentSelection.date,
-        startTime: `${currentSelection.startHour.toString().padStart(2, '0')}:00`,
-        endTime: `${currentSelection.endHour.toString().padStart(2, '0')}:00`
-      };
+      // Create individual 30-minute blocks for each hour in the selection
+      const newBlocks = [];
+      for (let hour = currentSelection.startHour; hour < currentSelection.endHour; hour++) {
+        newBlocks.push({
+          date: currentSelection.date,
+          startTime: `${hour.toString().padStart(2, '0')}:00`,
+          endTime: `${(hour + 1).toString().padStart(2, '0')}:00`
+        });
+      }
       
-      const updatedBlocks = [...selectedBlocks, newBlock];
+      const updatedBlocks = [...selectedBlocks, ...newBlocks];
       setSelectedBlocks(updatedBlocks);
       
+      console.log("New blocks created from selection:", newBlocks);
       console.log("Selected blocks updated:", updatedBlocks);
       console.log("Total blocks selected:", updatedBlocks.length);
+      
+      // Use the first new block for modal display, but all blocks will be created
+      const firstBlock = newBlocks[0];
       
       // Open modal immediately after selection with count information
       setSlotModal({
         isOpen: true,
         mode: 'create',
-        startTime: newBlock.startTime,
-        endTime: newBlock.endTime,
-        date: newBlock.date,
+        startTime: firstBlock.startTime,
+        endTime: firstBlock.endTime,
+        date: firstBlock.date,
         isRecurring: false,
         title: `Create Availability (${updatedBlocks.length} slot${updatedBlocks.length > 1 ? 's' : ''})`
       });
@@ -425,11 +432,12 @@ export default function GoogleStyleCalendar() {
       }];
 
       try {
-        console.log(`Creating ${blocksToCreate.length} blocks:`, blocksToCreate);
+        console.log(`Creating ${blocksToCreate.length} individual availability blocks:`, blocksToCreate);
         
+        const results = [];
         for (let i = 0; i < blocksToCreate.length; i++) {
           const block = blocksToCreate[i];
-          console.log(`Creating block ${i + 1}/${blocksToCreate.length}:`, block);
+          console.log(`Creating availability ${i + 1}/${blocksToCreate.length}: ${block.date} ${block.startTime}-${block.endTime}`);
           
           const startDateTime = new Date(`${block.date}T${block.startTime}:00.000Z`);
           const endDateTime = new Date(`${block.date}T${block.endTime}:00.000Z`);
@@ -441,8 +449,11 @@ export default function GoogleStyleCalendar() {
             recurringEndDate: slotModal.recurringEndDate
           });
           
-          console.log(`Block ${i + 1} created successfully:`, result);
+          results.push(result);
+          console.log(`✓ Availability ${i + 1} created: ${block.startTime}-${block.endTime}`);
         }
+        
+        console.log(`✅ Successfully created ${results.length} separate availability slots!`);
         
         setSelectedBlocks([]);
         toast({ 
