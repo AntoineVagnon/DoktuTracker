@@ -43,7 +43,7 @@ export interface IStorage {
   updateDoctorOnlineStatus(doctorId: string, isOnline: boolean): Promise<void>;
 
   // Time slot operations
-  getDoctorTimeSlots(doctorId: string, date?: string): Promise<TimeSlot[]>;
+  getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]>;
   createTimeSlot(slot: InsertTimeSlot): Promise<TimeSlot>;
   deleteTimeSlot(id: string): Promise<void>;
   lockTimeSlot(id: string, lockedBy: string, durationMinutes: number): Promise<void>;

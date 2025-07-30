@@ -99,13 +99,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user.role === 'doctor') {
         // For doctors, get doctor record and fetch appointments by doctorId
         const doctors = await storage.getDoctors();
-        const doctor = doctors.find(d => d.userId === parseInt(userId));
+        // Find doctor by email since userId is a UUID string in Supabase
+        const doctor = doctors.find(d => d.user?.email === user.email);
         
         if (!doctor) {
-          return res.status(404).json({ error: "Doctor profile not found" });
+          console.log("Available doctors:", doctors.map(d => ({ id: d.id, userId: d.userId, email: d.user?.email })));
+          console.log("Looking for doctor with email:", user.email);
+          
+          // Auto-create doctor profile for authenticated doctor
+          try {
+            const newDoctor = await storage.createDoctor({
+              userId: parseInt(userId), // Convert UUID string to userId number for existing schema
+              specialty: "General Practice",
+              bio: "New doctor on Doktu platform",
+              education: "Medical degree",
+              experience: "General practice experience",
+              languages: ["English", "French"],
+              consultationPrice: "3.00",
+              rating: 0,
+              reviewCount: 0
+            });
+            appointments = await storage.getAppointments(undefined, newDoctor.id);
+          } catch (createError) {
+            console.error("Error creating doctor profile:", createError);
+            return res.status(404).json({ error: "Doctor profile not found and could not be created" });
+          }
+        } else {
+          appointments = await storage.getAppointments(undefined, doctor.id);
         }
         
-        appointments = await storage.getAppointments(undefined, doctor.id);
       } else {
         // For patients, fetch by patientId
         appointments = await storage.getAppointments(userId);
@@ -346,7 +368,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Found doctor:", doctor ? { id: doctor.id, userId: doctor.userId } : null);
       
       if (!doctor) {
-        return res.status(404).json({ error: "Doctor profile not found" });
+        // Auto-create doctor profile for authenticated doctor
+        try {
+          doctor = await storage.createDoctor({
+            userId: parseInt(user.id), // Convert UUID string to userId number for existing schema
+            specialty: "General Practice",
+            bio: "New doctor on Doktu platform",
+            education: "Medical degree",
+            experience: "General practice experience",
+            languages: ["English", "French"],
+            consultationPrice: "3.00",
+            rating: 0,
+            reviewCount: 0
+          });
+          console.log("Created new doctor profile:", { id: doctor.id, userId: doctor.userId });
+        } catch (createError) {
+          console.error("Error creating doctor profile:", createError);
+          return res.status(404).json({ error: "Doctor profile not found and could not be created" });
+        }
       }
 
       const { randomUUID } = await import('crypto');

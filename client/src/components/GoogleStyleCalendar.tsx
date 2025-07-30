@@ -261,29 +261,31 @@ export default function GoogleStyleCalendar() {
       };
       
       setSelectedBlocks(prev => [...prev, newBlock]);
+      
+      // Don't open modal immediately - allow multiple selections
+      // Modal will be opened manually or after a delay
     }
     
     setIsSelecting(false);
     setCurrentSelection(null);
   };
 
-  const clearSelectedBlocks = () => {
-    setSelectedBlocks([]);
+  const openModalForSelectedBlocks = () => {
+    if (selectedBlocks.length === 0) return;
+    
+    const firstBlock = selectedBlocks[0];
+    setSlotModal({
+      isOpen: true,
+      mode: 'create',
+      startTime: firstBlock.startTime,
+      endTime: firstBlock.endTime,
+      date: firstBlock.date,
+      isRecurring: false
+    });
   };
 
-  const createSelectedBlocks = async () => {
-    for (const block of selectedBlocks) {
-      const startDateTime = new Date(`${block.date}T${block.startTime}:00.000Z`);
-      const endDateTime = new Date(`${block.date}T${block.endTime}:00.000Z`);
-      
-      await createSlotMutation.mutateAsync({
-        startTime: startDateTime.toISOString(),
-        endTime: endDateTime.toISOString()
-      });
-    }
-    
+  const clearSelectedBlocks = () => {
     setSelectedBlocks([]);
-    toast({ title: `Created ${selectedBlocks.length} availability blocks!` });
   };
 
   const handleSlotClick = (slot: TimeSlot) => {
@@ -399,22 +401,47 @@ export default function GoogleStyleCalendar() {
     return { type: 'empty', content: null };
   };
 
-  const handleSaveSlot = () => {
+  const handleSaveSlot = async () => {
     if (!slotModal.date || !slotModal.startTime || !slotModal.endTime) return;
 
-    const startDateTime = new Date(`${slotModal.date}T${slotModal.startTime}:00`);
-    const endDateTime = new Date(`${slotModal.date}T${slotModal.endTime}:00`);
-
-    const data = {
-      startTime: startDateTime.toISOString(),
-      endTime: endDateTime.toISOString(),
-      isRecurring: slotModal.isRecurring,
-      recurringEndDate: slotModal.recurringEndDate
-    };
-
     if (slotModal.mode === 'create') {
-      createSlotMutation.mutate(data);
+      // Create all selected blocks with the modal settings
+      const blocksToCreate = selectedBlocks.length > 0 ? selectedBlocks : [{
+        date: slotModal.date,
+        startTime: slotModal.startTime,
+        endTime: slotModal.endTime
+      }];
+
+      try {
+        for (const block of blocksToCreate) {
+          const startDateTime = new Date(`${block.date}T${block.startTime}:00.000Z`);
+          const endDateTime = new Date(`${block.date}T${block.endTime}:00.000Z`);
+          
+          await createSlotMutation.mutateAsync({
+            startTime: startDateTime.toISOString(),
+            endTime: endDateTime.toISOString(),
+            isRecurring: slotModal.isRecurring,
+            recurringEndDate: slotModal.recurringEndDate
+          });
+        }
+        
+        setSelectedBlocks([]);
+        toast({ title: `Created ${blocksToCreate.length} availability block${blocksToCreate.length > 1 ? 's' : ''}!` });
+        setSlotModal(prev => ({ ...prev, isOpen: false }));
+      } catch (error) {
+        console.error('Error creating blocks:', error);
+      }
     } else if (slotModal.slotId) {
+      const startDateTime = new Date(`${slotModal.date}T${slotModal.startTime}:00`);
+      const endDateTime = new Date(`${slotModal.date}T${slotModal.endTime}:00`);
+
+      const data = {
+        startTime: startDateTime.toISOString(),
+        endTime: endDateTime.toISOString(),
+        isRecurring: slotModal.isRecurring,
+        recurringEndDate: slotModal.recurringEndDate
+      };
+
       updateSlotMutation.mutate({ ...data, id: slotModal.slotId });
     }
   };
@@ -530,27 +557,15 @@ export default function GoogleStyleCalendar() {
             </TabsList>
           </Tabs>
           
-          {/* Multi-block Selection and Template Buttons */}
           <div className="flex gap-2">
             {selectedBlocks.length > 0 && (
-              <>
-                <Button
-                  onClick={createSelectedBlocks}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                  disabled={createSlotMutation.isPending}
-                >
-                  <Check className="h-4 w-4 mr-2" />
-                  Create Availability ({selectedBlocks.length})
-                </Button>
-                <Button
-                  onClick={clearSelectedBlocks}
-                  variant="outline"
-                  className="border-red-200 text-red-700 hover:bg-red-50"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Clear Selection
-                </Button>
-              </>
+              <Button 
+                onClick={openModalForSelectedBlocks} 
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Confirm Selection ({selectedBlocks.length})
+              </Button>
             )}
             <Button onClick={addAvailabilityFromTemplate} className="gap-2">
               <Plus className="h-4 w-4" />
@@ -601,7 +616,7 @@ export default function GoogleStyleCalendar() {
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-green-100 border-2 border-dashed border-green-400 rounded"></div>
-          <span>Selected</span>
+          <span>Selected for creation</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-blue-100 border-2 border-dashed border-blue-400 rounded"></div>
@@ -670,12 +685,13 @@ export default function GoogleStyleCalendar() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {slotModal.mode === 'create' && 'Create Availability'}
+              {slotModal.mode === 'create' && `Create Availability${selectedBlocks.length > 1 ? ` (${selectedBlocks.length} slots)` : ''}`}
               {slotModal.mode === 'edit' && 'Edit Availability'}
               {slotModal.mode === 'delete' && 'Delete Availability'}
             </DialogTitle>
             <DialogDescription>
-              {slotModal.mode === 'create' && 'Set up a new time slot for patient appointments'}
+              {slotModal.mode === 'create' && selectedBlocks.length > 1 && `Configure settings for ${selectedBlocks.length} selected time blocks. Each block will be created as a separate availability slot.`}
+              {slotModal.mode === 'create' && selectedBlocks.length <= 1 && 'Set up a new time slot for patient appointments'}
               {slotModal.mode === 'edit' && 'Modify this availability slot'}
               {slotModal.mode === 'delete' && 'Choose how to delete this availability'}
             </DialogDescription>
