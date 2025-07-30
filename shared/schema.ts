@@ -88,7 +88,7 @@ export const appointments = pgTable("appointments", {
   id: uuid("id").primaryKey().defaultRandom(),
   patientId: varchar("patient_id").references(() => users.id).notNull(),
   doctorId: integer("doctor_id").references(() => doctors.id).notNull(), // Changed from uuid to integer to match doctors.id
-  timeSlotId: uuid("time_slot_id").references(() => doctorTimeSlots.id),
+  timeSlotId: uuid("timeSlotId").references(() => doctorTimeSlots.id), // Changed column name to match actual database
   appointmentDate: timestamp("appointment_date").notNull(),
   status: varchar("status").notNull().default("pending"), // pending, confirmed, paid, completed, cancelled
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
