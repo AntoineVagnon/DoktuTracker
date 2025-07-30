@@ -212,9 +212,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
+      // First, get the doctor record to get the proper UUID
+      const doctorProfile = await storage.getDoctor(parseInt(req.body.doctorId));
+      if (!doctorProfile) {
+        return res.status(404).json({ message: "Doctor not found" });
+      }
+
       const appointmentData = insertAppointmentSchema.parse({
-        ...req.body,
-        patientId: userId,
+        patientId: userId.toString(), // Ensure string
+        doctorId: doctorProfile.id.toString(), // Use the doctor's UUID from database
+        timeSlotId: req.body.timeSlotId,
+        appointmentDate: new Date(req.body.appointmentDate), // Convert string to Date
+        price: req.body.price.toString(), // Ensure string
+        status: req.body.status || 'pending_payment',
+        paymentIntentId: req.body.paymentIntentId || null,
+        notes: req.body.notes || null,
+        prescription: req.body.prescription || null
       });
       const appointment = await storage.createAppointment(appointmentData);
       res.json(appointment);
@@ -632,35 +645,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Appointment routes
-  app.post("/api/appointments", isAuthenticated, async (req, res) => {
-    try {
-      const user = req.user as any;
-      if (!user?.id) {
-        return res.status(401).json({ error: "Not authenticated" });
-      }
-
-      const { doctorId, timeSlotId, price, status = 'pending_payment' } = req.body;
-      
-      if (!doctorId || !timeSlotId || !price) {
-        return res.status(400).json({ error: "Missing required appointment details" });
-      }
-
-      // Create the appointment
-      const appointment = await storage.createAppointment({
-        patientId: user.id.toString(),
-        doctorId: doctorId.toString(),
-        timeSlotId: timeSlotId,
-        price: price,
-        status: status,
-      });
-
-      res.json(appointment);
-    } catch (error) {
-      console.error("Error creating appointment:", error);
-      res.status(500).json({ error: "Failed to create appointment" });
-    }
-  });
+  // Appointment routes (already defined above)
 
   // Payment routes
   app.post("/api/payment/create-intent", isAuthenticated, async (req, res) => {
