@@ -729,7 +729,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
           paymentMethod: "card",
         });
 
-        res.json({ success: true, status: paymentIntent.status });
+        // Get appointment details for response
+        const appointment = await storage.getAppointment(appointmentId);
+        let appointmentDetails = null;
+        
+        if (appointment) {
+          // Get doctor details
+          const doctor = await storage.getDoctor(appointment.doctorId);
+          // Get time slot details  
+          const timeSlot = await storage.getTimeSlot(appointment.timeSlotId);
+          
+          appointmentDetails = {
+            appointmentId: appointment.id,
+            doctorName: doctor ? `${doctor.firstName || ''} ${doctor.lastName || ''}`.trim() : 'Unknown Doctor',
+            specialty: doctor?.specialty || '',
+            slot: timeSlot ? `${timeSlot.date}T${timeSlot.startTime}:00` : '',
+            price: appointment.price,
+            status: appointment.status
+          };
+        }
+
+        res.json({ 
+          success: true, 
+          status: paymentIntent.status,
+          appointmentDetails
+        });
       } else {
         res.json({ success: false, status: paymentIntent.status });
       }

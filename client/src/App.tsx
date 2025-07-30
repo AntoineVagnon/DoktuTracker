@@ -31,6 +31,7 @@ import DoctorList from "@/pages/DoctorList";
 import BookAppointmentChoice from "@/pages/BookAppointmentChoice";
 import PatientLogin from "@/pages/PatientLogin";
 import PatientRegistration from "@/pages/PatientRegistration";
+import PaymentSuccess from "@/pages/PaymentSuccess";
 
 
 function Router() {
@@ -51,6 +52,7 @@ function Router() {
       <Route path="/test-password-reset" component={TestPasswordReset} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/payment" component={Payment} />
+      <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       <Route path="/doctors" component={DoctorList} />
       <Route path="/book-appointment-choice" component={BookAppointmentChoice} />
