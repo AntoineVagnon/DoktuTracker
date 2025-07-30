@@ -3,10 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Clock, Star, Calendar, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Clock, Star, Calendar, MapPin, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import { formatUserFullName, getUserInitials } from "@/lib/nameUtils";
 import { useAvailabilitySync } from "@/hooks/useAvailabilitySync";
-import { format } from "date-fns";
+import { format, addDays, startOfWeek, isSameDay } from "date-fns";
+import { useState } from "react";
+import { Link } from "wouter";
 
 interface Doctor {
   id: string;
@@ -36,6 +40,8 @@ interface TimeSlot {
 export default function DoctorProfile() {
   const params = useParams();
   const doctorId = params.id;
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 })); // Monday start
   
   console.log('DoctorProfile - Raw params:', params);
   console.log('DoctorProfile - Doctor ID:', doctorId);
@@ -127,106 +133,285 @@ export default function DoctorProfile() {
   const doctorName = doctor.user ? formatUserFullName({ ...doctor.user, role: 'doctor' }) : 'Unknown Doctor';
   const initials = doctor.user ? getUserInitials(doctor.user) : 'DR';
 
-  // Filter and sort available slots
+  // Filter and sort available slots for the selected date
   const availableSlots = timeSlots?.filter(slot => slot.isAvailable) || [];
-  const upcomingSlots = availableSlots
-    .filter(slot => new Date(`${slot.date}T${slot.startTime}`) > new Date())
-    .sort((a, b) => new Date(`${a.date}T${a.startTime}`).getTime() - new Date(`${b.date}T${b.startTime}`).getTime())
-    .slice(0, 6); // Show next 6 available slots
+  const selectedDateSlots = availableSlots.filter(slot => 
+    isSameDay(new Date(slot.date), selectedDate)
+  ).sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+  // Generate week days for the week picker
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+
+  // Check which days have availability
+  const daysWithSlots = new Set(
+    availableSlots.map(slot => slot.date)
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Doctor Header */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex items-start space-x-6">
-              <Avatar className="h-24 w-24">
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold text-2xl">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header with back button */}
+      <div className="bg-white border-b border-gray-200 px-4 py-4">
+        <div className="max-w-7xl mx-auto">
+          <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to doctors
+          </Link>
+        </div>
+      </div>
+
+      {/* Gradient Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="flex items-center space-x-6">
+            <Avatar className="h-24 w-24">
+              <AvatarFallback className="bg-white/20 text-white font-bold text-2xl">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-4xl font-bold mb-2">{doctorName}</h1>
+              <p className="text-xl text-blue-100 mb-3">{doctor.specialty}</p>
               
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{doctorName}</h1>
-                <p className="text-lg text-gray-600 mb-3">{doctor.specialty}</p>
-                
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="flex items-center">
-                    <div className="flex text-yellow-400 mr-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${
-                            i < Math.floor(parseFloat(doctor.rating)) ? "fill-current" : ""
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600">
-                      {doctor.rating} ({doctor.reviewCount} reviews)
-                    </span>
-                  </div>
-                  
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    €{doctor.consultationPrice} per consultation
-                  </Badge>
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  <span>Paris, France</span>
                 </div>
                 
-                {doctor.bio && (
-                  <p className="text-gray-700">{doctor.bio}</p>
-                )}
+                <div className="flex items-center">
+                  <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
+                  <span>{doctor.rating} ({doctor.reviewCount} reviews)</span>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+      </div>
 
-        {/* Available Slots - Real-time Sync */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Calendar className="h-5 w-5 mr-2" />
-              Available Appointments
-              {slotsLoading && (
-                <Clock className="h-4 w-4 ml-2 animate-spin text-blue-600" />
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {upcomingSlots.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {upcomingSlots.map((slot) => (
-                  <div
-                    key={slot.id}
-                    className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {format(new Date(`${slot.date}T${slot.startTime}`), 'MMM d, yyyy')}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {format(new Date(`${slot.date}T${slot.startTime}`), 'h:mm a')} - {format(new Date(`${slot.date}T${slot.endTime}`), 'h:mm a')}
-                        </p>
-                      </div>
-                      <Badge variant="outline" className="text-green-600 border-green-600">
-                        Available
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No availability</h3>
-                <p className="text-gray-600">
-                  {slotsLoading ? "Loading availability..." : "This doctor has no available appointment slots at the moment."}
+      {/* Main content */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left column - About (66% on desktop) */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* About section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>About</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700 leading-relaxed">
+                  {doctor.bio || "Specialist focused on providing excellent patient care with years of experience in medical practice. Committed to delivering personalized treatment approaches tailored to each patient's unique needs."}
                 </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+
+            {/* Education and Experience */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Education and Experience</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
+                    <span>Doctor of Medicine - Medical University</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
+                    <span>Specialized certification in {doctor.specialty}</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
+                    <span>Licensed medical practitioner</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
+                    <span>Continuing education in telemedicine</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Areas of expertise */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Areas of Expertise</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">General consultations</Badge>
+                  <Badge variant="secondary">Preventive care</Badge>
+                  <Badge variant="secondary">Chronic conditions</Badge>
+                  <Badge variant="secondary">Telemedicine</Badge>
+                  <Badge variant="secondary">Patient education</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Languages */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Languages Spoken</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-4">
+                  <span className="flex items-center">🇫🇷 French (Native)</span>
+                  <span className="flex items-center">🇬🇧 English (Fluent)</span>
+                  <span className="flex items-center">🇪🇸 Spanish (Intermediate)</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Medical approach */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Medical Approach</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700 leading-relaxed">
+                  I believe in providing compassionate, evidence-based medical care. My approach focuses on listening to patients, understanding their concerns, and working together to develop the best treatment plan for their individual needs.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Doctor ID Card */}
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold">{doctorName}</p>
+                    <p className="text-sm text-gray-600">{doctor.specialty}</p>
+                    <p className="text-sm text-gray-500">Medical ID: DOC-{doctor.id}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* FAQ */}
+            <Card>
+              <CardHeader>
+                <CardTitle>FAQ</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="hours">
+                    <AccordionTrigger>What are Dr. {doctor.user?.firstName || "Doctor"}'s office hours?</AccordionTrigger>
+                    <AccordionContent>
+                      Available consultation times are shown in real-time in the booking calendar. Appointment availability may vary based on schedule and demand.
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="new-patients">
+                    <AccordionTrigger>Does Dr. {doctor.user?.firstName || "Doctor"} accept new patients?</AccordionTrigger>
+                    <AccordionContent>
+                      Yes, new patients are welcome. You can book your consultation directly through our online platform by selecting an available time slot.
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right column - Sticky Available slots card (33% on desktop) */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-center">Available slots</CardTitle>
+                  <div className="text-center">
+                    <Badge variant="outline" className="text-lg font-semibold text-blue-600">
+                      €{parseFloat(doctor.consultationPrice).toFixed(2)} - 30 min consultation
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Week navigation */}
+                  <div className="flex items-center justify-between">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setWeekStart(addDays(weekStart, -7))}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm font-medium">
+                      Week of {format(weekStart, 'MMM d')}
+                    </span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setWeekStart(addDays(weekStart, 7))}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* Day pills */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {weekDays.map((day, index) => {
+                      const isSelected = isSameDay(day, selectedDate);
+                      const hasSlots = daysWithSlots.has(format(day, 'yyyy-MM-dd'));
+                      const dayNum = format(day, 'd');
+                      const dayName = format(day, 'EEE');
+                      
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedDate(day)}
+                          className={`p-2 text-xs rounded-lg transition-colors ${
+                            isSelected 
+                              ? 'bg-blue-600 text-white' 
+                              : hasSlots 
+                                ? 'bg-blue-50 text-blue-700 hover:bg-blue-100' 
+                                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                          }`}
+                          disabled={!hasSlots}
+                        >
+                          <div className="text-center">
+                            <div className="font-medium">{dayName}</div>
+                            <div>{dayNum}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Selected day header */}
+                  <div className="text-center pt-2">
+                    <h3 className="font-medium">Today {format(selectedDate, 'dd MMM')}</h3>
+                    <p className="text-xs text-gray-500">{selectedDateSlots.length} available slots</p>
+                    <p className="text-xs text-gray-400">Times in Central European Time (GMT+1)</p>
+                  </div>
+
+                  {/* Time slots for selected day */}
+                  <div className="space-y-2">
+                    {selectedDateSlots.length > 0 ? (
+                      selectedDateSlots.map((slot) => (
+                        <Button
+                          key={slot.id}
+                          variant="outline"
+                          className="w-full justify-center"
+                          onClick={() => {
+                            // Handle slot booking
+                            window.location.href = `/auth-choice?doctorId=${doctorId}&slot=${slot.startTime}&price=${doctor.consultationPrice}`;
+                          }}
+                        >
+                          {format(new Date(`2000-01-01T${slot.startTime}`), 'HH:mm')}
+                        </Button>
+                      ))
+                    ) : (
+                      <p className="text-center text-gray-500 py-4">No slots available</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

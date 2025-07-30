@@ -1,0 +1,80 @@
+Feature: Doctor public profile layout (English version)
+
+  As a patient
+  I want to see a well-structured doctor profile page with a sticky “Available slots” card
+  So that I can understand the doctor’s details and quickly select a consultation time
+
+  Background:
+    Given I am on the URL pattern `/doctor/:id`
+    And the interface language is English
+
+  ################################################################
+  #  SECTION 1 –  Header                                         #
+  ################################################################
+  Scenario: Gradient header with doctor identity
+    Then I should see a top gradient banner (blue → lighter blue)
+    And it contains:
+      | Circular avatar with initials |
+      | Doctor’s full name (e.g., “Dr. David Martin”) |
+      | Specialty (e.g., “Psychiatry”) |
+      | Location and ⭐ rating line    |
+
+  ################################################################
+  #  SECTION 2 –  Two-column desktop layout                      #
+  ################################################################
+  Scenario: About column and sticky availability card on desktop
+    Then the main container splits into two columns (≥ 1024 px width):
+      | Left (66 %)  | Right (33 %) |
+    And the left column shows sections:
+      | About (bio paragraph)                |
+      | Education and experience list        |
+      | Areas of expertise badges            |
+      | Languages spoken list                |
+      | Medical approach paragraph           |
+      | Doctor ID card (RPPS / license)      |
+      | FAQ accordion                        |
+    And the right column shows a sticky card titled “Available slots”
+
+  Scenario: Sticky behaviour
+    Given I scroll the page
+    Then the “Available slots” card remains visible until the footer enters the viewport
+
+  ################################################################
+  #  SECTION 3 –  “Available slots” card                         #
+  ################################################################
+  Scenario: Slot picker content
+    The card displays:
+      | Price badge (e.g., “€1.00 – 30 min consultation”) |
+      | Week selector with backward / forward arrows      |
+      | A seven-day date pill row showing next 7 days      |
+      | Under the row, a list of time pills for selected day |
+
+  Scenario: Day pill interaction
+    When I click on a day pill (e.g., “Tue 31”)
+    Then the time pill list refreshes to show that day’s unbooked availabilities
+    And times are presented in the doctor’s timezone but annotated (e.g., “Times in GMT+1”)
+
+  Scenario: Empty state
+    Given a day has no free slots
+    Then the time pill list says “No slots available”
+
+  Scenario: Booking action
+    When I click on a time pill
+    Then:
+      | If user is not logged in → redirect to sign-in / sign-up flow (context stored) |
+      | If logged in as patient  → proceed to payment page with selected slot context |
+
+  ################################################################
+  #  SECTION 4 –  Mobile layout                                  #
+  ################################################################
+  Scenario: Responsive mobile stacking
+    Given the viewport width ≤ 767 px
+    Then the “Available slots” card appears below the header and above the About section
+    And it is no longer sticky (scrolls naturally)
+
+  ################################################################
+  #  SECTION 5 –  Data sync                                      #
+  ################################################################
+  Scenario: Reflect live availability changes
+    Given the doctor adds or removes a slot
+    Then the slot list and date pills update within ≤ 5 s
