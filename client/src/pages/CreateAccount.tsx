@@ -57,6 +57,7 @@ export default function CreateAccount() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Important for session cookies
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
@@ -79,19 +80,29 @@ export default function CreateAccount() {
       });
 
       // Handle redirect after successful registration
+      console.log('Registration successful, session data:', data.session);
+      
       if (data.session) {
         // User is immediately signed in (no email confirmation required)
+        toast({
+          title: "Registration Complete!",
+          description: "Redirecting to checkout...",
+        });
+        
         setTimeout(() => {
           if (doctorId && slot && price) {
             // Redirect to checkout with booking parameters
+            console.log('Redirecting to checkout with booking params');
             setLocation(`/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`);
           } else {
             // No booking context, go to dashboard
+            console.log('Redirecting to dashboard');
             setLocation('/dashboard');
           }
-        }, 2000);
+        }, 1500);
       } else {
         // Email confirmation required - show message to user
+        console.log('Email confirmation required');
         toast({
           title: "Check Your Email",
           description: "Please check your email and click the confirmation link to complete your registration.",
