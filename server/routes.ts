@@ -1,5 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+
+// Extend express session type
+declare module 'express-session' {
+  interface SessionData {
+    heldSlots?: Record<string, {
+      slotId: string;
+      expiresAt: Date;
+      heldAt: Date;
+    }>;
+  }
+}
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
@@ -311,7 +322,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Slot holding routes for booking flow
+  // Slot holding routes for booking flow - simplified version without database dependency
   app.post('/api/slots/hold', async (req, res) => {
     try {
       const { slotId, sessionId } = z.object({
@@ -321,7 +332,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const actualSessionId = sessionId || req.session.id;
       
-      await storage.holdSlot(slotId, actualSessionId, 15);
+      // For now, we'll simulate slot holding by just validating the slot exists
+      const timeSlots = await storage.getTimeSlots();
+      const slotExists = timeSlots.find(slot => slot.id === slotId && slot.isAvailable);
+      
+      if (!slotExists) {
+        return res.status(400).json({ error: 'Slot not available' });
+      }
+      
+      // Store the held slot information in session temporarily
+      if (!req.session.heldSlots) {
+        req.session.heldSlots = {};
+      }
+      
+      req.session.heldSlots[actualSessionId] = {
+        slotId,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        heldAt: new Date()
+      };
       
       res.json({ 
         success: true, 
@@ -337,8 +365,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/slots/release', async (req, res) => {
     try {
       const { slotId } = z.object({ slotId: z.string() }).parse(req.body);
+      const sessionId = req.session.id;
       
-      await storage.releaseSlot(slotId);
+      // Remove from session-based held slots
+      const heldSlotsData = req.session.heldSlots || {};
+      if (heldSlotsData[sessionId] && heldSlotsData[sessionId].slotId === slotId) {
+        delete heldSlotsData[sessionId];
+      }
       
       res.json({ success: true, message: 'Slot released' });
     } catch (error: any) {
@@ -350,9 +383,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/slots/held', async (req, res) => {
     try {
       const sessionId = req.session.id;
-      const heldSlot = await storage.getHeldSlot(sessionId);
       
-      res.json({ heldSlot });
+      // Check session-based held slots
+      const heldSlotsData = req.session.heldSlots || {};
+      const heldSlotInfo = heldSlotsData[sessionId];
+      
+      if (!heldSlotInfo) {
+        return res.json({ heldSlot: null });
+      }
+      
+      // Check if the slot has expired
+      const now = new Date();
+      if (new Date(heldSlotInfo.expiresAt) <= now) {
+        // Clean up expired slot
+        delete heldSlotsData[sessionId];
+        return res.json({ heldSlot: null });
+      }
+      
+      // Get the actual slot data
+      const timeSlots = await storage.getTimeSlots();
+      const slotData = timeSlots.find(slot => slot.id === heldSlotInfo.slotId);
+      
+      if (!slotData) {
+        return res.json({ heldSlot: null });
+      }
+      
+      res.json({ 
+        heldSlot: {
+          ...slotData,
+          expiresAt: heldSlotInfo.expiresAt
+        }
+      });
     } catch (error: any) {
       console.error('Get held slot error:', error);
       res.status(500).json({ error: 'Failed to get held slot' });
