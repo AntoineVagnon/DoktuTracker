@@ -15,23 +15,33 @@ export default function Register() {
   const price = urlParams.get('price');
 
   const handleCreateAccount = () => {
+    console.log('Create Account button clicked');
+    console.log('Booking params:', { doctorId, slot, price });
+    
     // If we have booking parameters, create checkout callback URL
     if (doctorId && slot && price) {
       const callbackUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
       sessionStorage.setItem('loginRedirect', callbackUrl);
+      console.log('Stored loginRedirect:', callbackUrl);
     } else {
       // No booking parameters, go to dashboard after auth
       sessionStorage.setItem('loginRedirect', '/dashboard');
+      console.log('Stored loginRedirect: /dashboard');
     }
     
     // Redirect to a signup form instead of OAuth
     const signupUrl = `/create-account?${doctorId && slot && price ? `doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}` : ''}`;
+    console.log('Redirecting to:', signupUrl);
     window.location.href = signupUrl;
   };
 
   const openAuthModal = () => {
+    console.log('Sign in button clicked');
+    console.log('Booking params:', { doctorId, slot, price });
+    
     // Redirect to proper login form with booking parameters
     const loginUrl = `/test-login?${doctorId && slot && price ? `doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}` : ''}`;
+    console.log('Redirecting to login:', loginUrl);
     window.location.href = loginUrl;
   };
 
