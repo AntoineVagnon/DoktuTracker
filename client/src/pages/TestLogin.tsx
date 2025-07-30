@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,9 +11,17 @@ import { CheckCircle } from 'lucide-react';
 
 export default function TestLogin() {
   const { toast } = useToast();
+  const [location, setLocation] = useLocation();
+  
+  // Get URL parameters for booking context
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const doctorId = urlParams.get('doctorId');
+  const slot = urlParams.get('slot');
+  const price = urlParams.get('price');
+
   const [formData, setFormData] = useState({
-    email: 'antoine.vagnon@gmail.com', // Pre-filled for testing
-    password: 'MyNewPassword123!'
+    email: '', 
+    password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [loginResult, setLoginResult] = useState<any>(null);
@@ -65,9 +74,15 @@ export default function TestLogin() {
         description: `Welcome back ${data.user?.email || 'User'}`,
       });
 
-      // Redirect to dashboard after successful login
+      // Handle redirect after successful login
       setTimeout(() => {
-        window.location.href = '/dashboard';
+        if (doctorId && slot && price) {
+          // Redirect to checkout with booking parameters
+          setLocation(`/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`);
+        } else {
+          // No booking context, go to dashboard
+          setLocation('/dashboard');
+        }
       }, 1000);
 
     } catch (error) {

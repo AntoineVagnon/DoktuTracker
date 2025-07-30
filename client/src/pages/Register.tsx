@@ -30,8 +30,9 @@ export default function Register() {
   };
 
   const openAuthModal = () => {
-    // For now, use the login API directly (would trigger header modal in final implementation)
-    window.location.href = '/api/login';
+    // Redirect to proper login form with booking parameters
+    const loginUrl = `/test-login?${doctorId && slot && price ? `doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}` : ''}`;
+    window.location.href = loginUrl;
   };
 
   // Format booking details for display
