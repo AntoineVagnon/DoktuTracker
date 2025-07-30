@@ -30,6 +30,7 @@ export default function CheckoutForm({ onSuccess, bookingData }: CheckoutFormPro
         confirmParams: {
           return_url: `${window.location.origin}/payment-success`,
         },
+        redirect: "if_required",
       });
 
       // Si nous arrivons ici, c'est qu'il y a eu une erreur
