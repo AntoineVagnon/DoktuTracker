@@ -243,31 +243,56 @@ export class PostgresStorage implements IStorage {
 
   async getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]> {
     try {
-      // The issue: API passes integer doctor IDs (1, 8, 9) but database doctors.id is UUID
-      // We need to find the doctor by user_id since that's the integer we're actually getting
+      // From the database screenshots: 
+      // - doctors table has integer IDs (1, 8, 9, etc.) 
+      // - James Rodriguez has doctor.id = 1
+      // - doctor_time_slots.doctor_id should reference doctors.id
       
       const doctorIntId = typeof doctorId === 'string' ? parseInt(doctorId, 10) : doctorId;
+      console.log(`🔍 Looking for time slots for doctor ID: ${doctorIntId}`);
       
-      let query = `
-        SELECT ts.* FROM doctor_time_slots ts
-        JOIN doctors d ON ts.doctor_id = d.id
-        JOIN users u ON d.user_id = u.id
-        WHERE u.id = $1
-      `;
-      const params = [doctorIntId];
-      
-      if (date) {
-        query += ` AND ts.date = $2`;
-        params.push(date);
+      // First check if doctor exists
+      const doctorCheck = await db.execute(`SELECT id FROM doctors WHERE id = $1`, [doctorIntId]);
+      if (doctorCheck.rows.length === 0) {
+        console.log(`❌ No doctor found with ID ${doctorIntId}`);
+        return [];
       }
       
-      query += ` ORDER BY ts.date ASC, ts.start_time ASC`;
+      // Check if doctor_time_slots table exists and has data
+      const tableCheck = await db.execute(`
+        SELECT column_name, data_type 
+        FROM information_schema.columns 
+        WHERE table_name = 'doctor_time_slots'
+      `);
+      console.log('📊 doctor_time_slots columns:', tableCheck.rows);
       
-      console.log(`🔍 Querying time slots for user ID: ${doctorIntId}`);
-      const result = await db.execute(query, params);
-      console.log(`📅 Found ${result.rows.length} time slots`);
+      // Try to get time slots - handle both UUID and integer doctor_id cases
+      let timeSlots;
+      try {
+        // Try integer first (matching doctors.id)
+        timeSlots = await db.execute(`
+          SELECT * FROM doctor_time_slots 
+          WHERE doctor_id = $1::text
+          ORDER BY date ASC, start_time ASC
+        `, [doctorIntId]);
+      } catch (intError) {
+        console.log('Integer lookup failed, trying UUID lookup...');
+        // If that fails, try finding by doctor UUID
+        const doctorUuid = await db.execute(`SELECT id FROM doctors WHERE id = $1`, [doctorIntId]);
+        if (doctorUuid.rows.length > 0) {
+          timeSlots = await db.execute(`
+            SELECT * FROM doctor_time_slots 
+            WHERE doctor_id = $1
+            ORDER BY date ASC, start_time ASC
+          `, [doctorUuid.rows[0].id]);
+        } else {
+          return [];
+        }
+      }
       
-      return result.rows as TimeSlot[];
+      console.log(`📅 Found ${timeSlots.rows.length} time slots for doctor ${doctorIntId}`);
+      return timeSlots.rows as TimeSlot[];
+      
     } catch (error) {
       console.error('Error fetching doctor time slots:', error);
       return [];
