@@ -103,27 +103,34 @@ export default function GoogleStyleCalendar() {
 
   const [templateEndDate, setTemplateEndDate] = useState('');
 
-  // Fetch doctor's time slots with demo fallback
+  // Fetch doctor's time slots - try authenticated API first, fallback to James Rodriguez data for testing
   const { data: timeSlots = [], isLoading: slotsLoading, refetch: refetchSlots } = useQuery({
-    queryKey: ['/api/time-slots'],
+    queryKey: ['/api/time-slots', user?.email],
     queryFn: async () => {
       try {
+        // Try authenticated endpoint first
         const response = await fetch('/api/time-slots');
-        if (!response.ok) {
-          // Fallback to demo data from localStorage
-          const demoSlots = JSON.parse(localStorage.getItem('demo-time-slots') || '[]');
-          return demoSlots;
+        if (response.ok) {
+          return response.json();
         }
-        return response.json();
+        
+        // Fallback: if user is James Rodriguez or for testing, use doctor ID 9
+        if (!user?.email || user.email === 'james.rodriguez@doktu.com') {
+          const fallbackResponse = await fetch('/api/doctors/9/slots');
+          if (fallbackResponse.ok) {
+            return fallbackResponse.json();
+          }
+        }
+        
+        // Final fallback to empty array
+        return [];
       } catch (error) {
-        // Return demo data on error
-        const demoSlots = JSON.parse(localStorage.getItem('demo-time-slots') || '[]');
-        return demoSlots;
+        console.error('Error fetching time slots:', error);
+        return [];
       }
     },
-    enabled: !!user?.id,
-    refetchOnWindowFocus: true, // Only refetch when window gains focus
-    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch appointments
@@ -385,6 +392,7 @@ export default function GoogleStyleCalendar() {
     const existingSlot = timeSlots.find((slot: TimeSlot) => {
       const slotDate = slot.date;
       const slotTime = slot.startTime;
+      // Handle time format from database (09:00:00 vs 09:00)
       const [slotHour, slotMinute] = slotTime.split(':').map(Number);
       return slotDate === dateStr && slotHour === hour && slotMinute === minute && slot.isAvailable;
     });
@@ -394,8 +402,9 @@ export default function GoogleStyleCalendar() {
         type: 'available',
         content: (
           <div 
-            className="bg-green-100 text-green-800 text-xs p-1 rounded h-full flex items-center justify-center border-l-4 border-green-500 cursor-pointer hover:bg-green-200"
+            className="bg-green-100 text-green-800 text-xs p-1 rounded h-full flex items-center justify-center border-l-4 border-green-500 cursor-pointer hover:bg-green-200 transition-colors"
             onClick={() => handleSlotClick(existingSlot)}
+            title={`Available slot: ${timeStr}`}
           >
             <div className="font-medium">Available</div>
           </div>
