@@ -94,7 +94,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const appointments = await storage.getAppointments(userId);
+      let appointments;
+      
+      if (user.role === 'doctor') {
+        // For doctors, get doctor record and fetch appointments by doctorId
+        const doctors = await storage.getDoctors();
+        const doctor = doctors.find(d => d.userId === parseInt(userId));
+        
+        if (!doctor) {
+          return res.status(404).json({ error: "Doctor profile not found" });
+        }
+        
+        appointments = await storage.getAppointments(undefined, doctor.id);
+      } else {
+        // For patients, fetch by patientId
+        appointments = await storage.getAppointments(userId);
+      }
       res.json(appointments);
     } catch (error) {
       console.error("Error fetching appointments:", error);
@@ -283,7 +298,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ error: "Access denied" });
       }
 
-      const timeSlots = await storage.getDoctorTimeSlots(user.id);
+      // Get doctor record to find the correct doctorId
+      const doctors = await storage.getDoctors();
+      const doctor = doctors.find(d => d.userId === parseInt(user.id));
+      
+      if (!doctor) {
+        return res.status(404).json({ error: "Doctor profile not found" });
+      }
+
+      const timeSlots = await storage.getDoctorTimeSlots(doctor.id);
       res.json(timeSlots);
     } catch (error) {
       console.error("Error fetching time slots:", error);
@@ -304,16 +327,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Start time and end time are required" });
       }
 
+      // Get doctor record to find the correct doctorId
+      const doctors = await storage.getDoctors();
+      const doctor = doctors.find(d => d.userId === parseInt(user.id));
+      
+      if (!doctor) {
+        return res.status(404).json({ error: "Doctor profile not found" });
+      }
+
       const { nanoid } = await import('nanoid');
+      
+      // Parse the date and time components
+      const startDateTime = new Date(startTime);
+      const endDateTime = new Date(endTime);
+      const dateStr = startDateTime.toISOString().split('T')[0];
+      const startTimeStr = startDateTime.toTimeString().slice(0, 5);
+      const endTimeStr = endDateTime.toTimeString().slice(0, 5);
+      
       const timeSlot = await storage.createTimeSlot({
         id: nanoid(),
-        doctorId: user.id,
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
+        doctorId: doctor.id,
+        date: dateStr,
+        startTime: startTimeStr,
+        endTime: endTimeStr,
         isAvailable: true,
-        isLocked: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date()
       });
       
       res.status(201).json(timeSlot);
@@ -337,9 +375,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Start time and end time are required" });
       }
 
+      // Parse the date and time components
+      const startDateTime = new Date(startTime);
+      const endDateTime = new Date(endTime);
+      const dateStr = startDateTime.toISOString().split('T')[0];
+      const startTimeStr = startDateTime.toTimeString().slice(0, 5);
+      const endTimeStr = endDateTime.toTimeString().slice(0, 5);
+      
       const timeSlot = await storage.updateTimeSlot(id, {
-        startTime: new Date(startTime),
-        endTime: new Date(endTime)
+        date: dateStr,
+        startTime: startTimeStr,
+        endTime: endTimeStr
       });
       
       res.json(timeSlot);

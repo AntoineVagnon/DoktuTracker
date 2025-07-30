@@ -244,19 +244,10 @@ export class PostgresStorage implements IStorage {
     let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorId));
     
     if (date) {
-      const targetDate = new Date(date);
-      const nextDay = new Date(targetDate);
-      nextDay.setDate(nextDay.getDate() + 1);
-      
-      query = query.where(
-        and(
-          gte(doctorTimeSlots.startTime, targetDate),
-          lte(doctorTimeSlots.startTime, nextDay)
-        )
-      );
+      query = query.where(eq(doctorTimeSlots.date, date));
     }
     
-    return await query.orderBy(asc(doctorTimeSlots.startTime));
+    return await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
   }
 
   async createTimeSlot(slot: InsertTimeSlot): Promise<TimeSlot> {
@@ -265,17 +256,13 @@ export class PostgresStorage implements IStorage {
   }
 
   async updateTimeSlot(id: string, data: {
-    startTime?: Date;
-    endTime?: Date;
-    isAvailable?: boolean;
-    isLocked?: boolean;
+    startTime?: string;
+    endTime?: string;
+    date?: string;
   }): Promise<TimeSlot> {
     const [timeSlot] = await db
       .update(doctorTimeSlots)
-      .set({
-        ...data,
-        updatedAt: new Date()
-      })
+      .set(data)
       .where(eq(doctorTimeSlots.id, id))
       .returning();
     
@@ -383,7 +370,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        timeSlotId: appointments.slotId,
+        slotId: appointments.slotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,
@@ -460,7 +447,7 @@ export class PostgresStorage implements IStorage {
         id: appointments.id,
         doctorId: appointments.doctorId,
         patientId: appointments.patientId,
-        timeSlotId: appointments.slotId,
+        slotId: appointments.slotId,
         status: appointments.status,
         appointmentDate: appointments.appointmentDate,
         price: appointments.price,

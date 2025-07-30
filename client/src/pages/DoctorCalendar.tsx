@@ -1,10 +1,10 @@
-import InteractiveCalendar from "@/components/InteractiveCalendar";
+import GoogleStyleCalendar from "@/components/GoogleStyleCalendar";
 import DoctorLayout from "@/components/DoctorLayout";
 
 export default function DoctorCalendar() {
   return (
     <DoctorLayout>
-      <InteractiveCalendar />
+      <GoogleStyleCalendar />
     </DoctorLayout>
   );
 }

@@ -1,0 +1,127 @@
+Feature: Google-style scheduling for doctor availabilities
+
+As a doctor
+I want to manage my open hours in a way that mimics Google Calendar’s
+“appointment schedule” flow
+So that patients can self-book in any free slot and my calendar stays accurate
+
+################################################################
+
+SECTION 1 –  Creating availability
+
+################################################################
+
+Scenario: Quick one-off or multi‑hour slot via click‑drag
+When I click‑drag from a start time to an end time within the Day or Week view (e.g. 11:00 → 15:00)
+Then a modal opens pre‑filled with that start time, end time and date
+And I can:
+| Adjust start time |
+| Adjust end time   |
+| Change the date   |
+| Pick “One‑time” or “Weekly recurring” |
+| If “Weekly recurring” → choose an end date for the recurrence |
+And pressing “Create Availability” saves the slot
+
+Scenario: Multi-day weekly template with “Add Availability” button
+When I press the “Add Availability” button
+Then a side-panel opens showing the whole week (Mon → Sun)
+And each weekday contains editable start / end fields
+And by default the panel suggests 09:00-17:00 Monday-Friday, closed Saturday-Sunday
+And for each weekday I can:
+| Enable / disable the day            |
+| Add multiple separate blocks        |
+| Delete an individual block          |
+And I can specify an end date for this weekly recurrence (e.g., "repeat until 30 June 2026")
+And saving writes all chosen blocks as weekly recurring availabilities
+
+Scenario: Preview selected time slots before saving
+Given I have selected one or more time blocks (either via direct click‑drag or the weekly template panel)
+Then the pending blocks should appear in the calendar with a translucent or dashed style labelled “Draft”
+And I can adjust or cancel them before pressing “Create Availability” or “Save”
+And once confirmed, the blocks switch to the normal solid availability style
+
+Scenario: “Add Availability” from Day view switches to Week view
+Given I am viewing the calendar in Day view
+When I press the “Add Availability” button
+Then the calendar should automatically switch to Week view
+And the weekly template panel should open as described above
+
+################################################################
+
+SECTION 2 –  Editing & merging
+
+################################################################
+
+Scenario: Edit an existing slot
+Given a slot already exists
+When I click that slot
+Then a modal opens with current start, end, date and recurrence
+And I can modify any of those fields (including end‑date for recurring slots)
+And saving updates the slot without creating duplicates
+And changes must be reflected instantly in:
+| The patient‑facing booking grid |
+| Doctor cards that preview next available slot |
+
+Scenario: Intelligent overlap handling on creation
+Given a slot exists 10:00-11:00
+When I create another slot 10:30-12:00
+Then the system should create only 11:00-12:00
+And the 10:00-11:00 block stays unchanged
+
+################################################################
+
+SECTION 3 –  Deleting
+
+################################################################
+
+Scenario: Delete a non-recurring slot
+Given I click on a one-time availability
+When I press the “Delete” icon
+Then a confirmation modal offers:
+| Cancel | Delete |
+And confirming removes only that slot
+
+Scenario: Delete part or all of a recurring schedule
+Given I click on a slot that belongs to a weekly recurring series
+When I press “Delete”
+Then a modal shows three radio options:
+| This week only                |
+| From this week forward        |
+| Entire series (all weeks)     |
+And confirming applies the chosen scope
+
+################################################################
+
+SECTION 4 –  Booking impact
+
+################################################################
+
+Scenario: Replace availability with booked appointment
+Given a patient books 14:30-15:00 on Tuesday
+Then that availability block disappears from the doctor view
+And a new “Booked” block appears in its place
+And the same change is reflected in the patient-facing booking grid
+
+################################################################
+
+SECTION 5 –  Display rules
+
+################################################################
+
+Scenario: Show all current availabilities in every view
+Given I have created one-time and recurring slots across several weeks
+Then:
+| Day view   → lists 24 h grid (00:00-23:59) with shaded availabilities |
+| Week view  → shows each day column with all slots                    |
+| Month view → each day cell shows a dot if at least one slot exists   |
+
+################################################################
+
+SECTION 6 –  Mobile & accessibility
+
+################################################################
+
+Scenario: Mobile interaction
+When I open the calendar on a phone
+Then all creation, edit and delete flows work with touch gestures
+And modals/panels are fully responsive and accessible
