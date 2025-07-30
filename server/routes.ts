@@ -73,6 +73,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get time slots for authenticated doctor
+  app.get("/api/time-slots", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user;
+      if (!user) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      // Find the doctor record for this user
+      const doctor = await storage.getDoctorByUserId(user.id);
+      if (!doctor) {
+        return res.status(404).json({ error: "Doctor profile not found" });
+      }
+
+      const slots = await storage.getDoctorTimeSlots(doctor.id.toString());
+      res.json(slots);
+    } catch (error) {
+      console.error("Error fetching doctor time slots:", error);
+      res.status(500).json({ message: "Failed to fetch time slots" });
+    }
+  });
+
   // Time slot route with doctorId query param for real-time sync
   app.get("/api/time-slots", async (req, res) => {
     try {
