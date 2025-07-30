@@ -186,42 +186,61 @@ export class PostgresStorage implements IStorage {
   }
 
   async getDoctor(id: string | number): Promise<(Doctor & { user: User }) | undefined> {
-    const [result] = await db
-      .select({
-        // Doctor fields
-        id: doctors.id,
-        userId: doctors.userId,
-        specialty: doctors.specialty,
-        bio: doctors.bio,
-        education: doctors.education,
-        experience: doctors.experience,
-        languages: doctors.languages,
-        rppsNumber: doctors.rppsNumber,
-        consultationPrice: doctors.consultationPrice,
-        rating: doctors.rating,
-        reviewCount: doctors.reviewCount,
-        createdAt: doctors.createdAt,
-        updatedAt: doctors.updatedAt,
-        user: {
-          id: users.id,
-          email: users.email,
-          title: users.title,
-          firstName: users.firstName,
-          lastName: users.lastName,
-          profileImageUrl: users.profileImageUrl,
-          role: users.role,
-          approved: users.approved,
-          stripeCustomerId: users.stripeCustomerId,
-          stripeSubscriptionId: users.stripeSubscriptionId,
-          createdAt: users.createdAt,
-          updatedAt: users.updatedAt
-        }
-      })
-      .from(doctors)
-      .innerJoin(users, eq(doctors.userId, users.id))
-      .where(eq(doctors.id, typeof id === 'string' ? parseInt(id) : id));
+    try {
+      const doctorId = typeof id === 'string' ? parseInt(id) : id;
+      if (isNaN(doctorId)) {
+        console.log(`❌ Invalid doctor ID: ${id}`);
+        return undefined;
+      }
+      
+      console.log(`🔍 Fetching doctor with ID: ${doctorId}`);
+      
+      const [result] = await db
+        .select({
+          // Doctor fields
+          id: doctors.id,
+          userId: doctors.userId,
+          specialty: doctors.specialty,
+          bio: doctors.bio,
+          education: doctors.education,
+          experience: doctors.experience,
+          languages: doctors.languages,
+          rppsNumber: doctors.rppsNumber,
+          consultationPrice: doctors.consultationPrice,
+          rating: doctors.rating,
+          reviewCount: doctors.reviewCount,
+          createdAt: doctors.createdAt,
+          updatedAt: doctors.updatedAt,
+          user: {
+            id: users.id,
+            email: users.email,
+            title: users.title,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            profileImageUrl: users.profileImageUrl,
+            role: users.role,
+            approved: users.approved,
+            stripeCustomerId: users.stripeCustomerId,
+            stripeSubscriptionId: users.stripeSubscriptionId,
+            createdAt: users.createdAt,
+            updatedAt: users.updatedAt
+          }
+        })
+        .from(doctors)
+        .innerJoin(users, eq(doctors.userId, users.id))
+        .where(eq(doctors.id, doctorId));
 
-    return result;
+      if (result) {
+        console.log(`✅ Found doctor: ${result.user.firstName} ${result.user.lastName}`);
+      } else {
+        console.log(`❌ No doctor found with ID: ${doctorId}`);
+      }
+
+      return result;
+    } catch (error) {
+      console.error(`Error fetching doctor ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getDoctorByUserId(userId: string): Promise<Doctor | undefined> {
@@ -253,12 +272,16 @@ export class PostgresStorage implements IStorage {
     console.log(`🔍 Looking for time slots for doctor ID: ${doctorIntId}`);
     
     try {
-      // CRITICAL FIX: doctor_time_slots.doctor_id is UUID but doctors.id is integer
-      // We need to find time slots by mapping through the doctors table or use a different approach
-      // For now, return empty array since this table structure mismatch needs to be fixed at DB level
-      console.log(`⚠️ Schema mismatch: doctor_time_slots.doctor_id (UUID) vs doctors.id (integer ${doctorIntId})`);
-      console.log(`📅 Found 0 time slots for doctor ${doctorIntId} due to schema mismatch`);
-      return [];
+      // Now using integer doctor_id - schema fixed!
+      let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorIntId));
+      
+      if (date) {
+        query = query.where(eq(doctorTimeSlots.date, date)) as any;
+      }
+      
+      const slots = await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
+      console.log(`📅 Found ${slots.length} time slots for doctor ${doctorIntId}`);
+      return slots;
     } catch (error) {
       console.error(`Error fetching time slots for doctor ${doctorIntId}:`, error);
       return [];
