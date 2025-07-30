@@ -424,6 +424,7 @@ export default function DoctorProfile() {
                           onClick={async () => {
                             // Handle slot booking - include both date and time
                             const fullSlotDateTime = `${slot.date}T${slot.startTime}`;
+                            console.log('Slot clicked:', { doctorId, slot: fullSlotDateTime, price: doctor.consultationPrice });
                             
                             try {
                               // Hold the slot for 15 minutes before redirecting to auth
@@ -437,8 +438,9 @@ export default function DoctorProfile() {
                               });
                               
                               if (response.ok) {
-                                // Slot successfully held, proceed to auth
-                                window.location.href = `/auth-choice?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                                // Slot successfully held - redirect directly to register page
+                                console.log('Slot held successfully, redirecting to register');
+                                window.location.href = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
                               } else {
                                 // Slot couldn't be held (probably taken by another user)
                                 const error = await response.json();
