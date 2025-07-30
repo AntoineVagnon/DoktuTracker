@@ -30,13 +30,15 @@ export function useAvailabilitySync() {
     console.log("✅ Availability sync completed");
   };
 
-  // Auto-sync every 30 seconds to catch external changes
+  // Only sync on window focus to catch external changes (not constant polling)
   useEffect(() => {
-    const interval = setInterval(() => {
+    const handleFocus = () => {
+      console.log("🔄 Window focused - checking for availability updates");
       syncAvailability();
-    }, 30000); // 30 seconds
+    };
 
-    return () => clearInterval(interval);
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
   return { syncAvailability };

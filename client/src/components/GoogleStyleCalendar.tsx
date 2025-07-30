@@ -121,7 +121,9 @@ export default function GoogleStyleCalendar() {
         return demoSlots;
       }
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    refetchOnWindowFocus: true, // Only refetch when window gains focus
+    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
   });
 
   // Fetch appointments

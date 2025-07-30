@@ -17,8 +17,8 @@ export function useNextAvailableSlot(doctorId: string) {
         return [];
       }
     },
-    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
-    staleTime: 10000, // Consider data stale after 10 seconds
+    refetchOnWindowFocus: true, // Refetch when window gains focus
+    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
   });
 
   // Calculate next available slot from the fetched time slots

@@ -47,10 +47,11 @@ export default function DoctorProfile() {
       if (!response.ok) throw new Error('Failed to fetch doctor');
       return response.json();
     },
-    refetchInterval: 30000, // Real-time sync every 30 seconds
+    refetchOnWindowFocus: true, // Only refetch when window gains focus
+    staleTime: 10 * 60 * 1000, // Consider data stale after 10 minutes
   });
 
-  // Fetch real-time availability
+  // Fetch availability (only when needed)
   const { data: timeSlots, isLoading: slotsLoading } = useQuery<TimeSlot[]>({
     queryKey: ["/api/time-slots", doctorId],
     queryFn: async () => {
@@ -58,8 +59,8 @@ export default function DoctorProfile() {
       if (!response.ok) return [];
       return response.json();
     },
-    refetchInterval: 30000, // Real-time sync every 30 seconds
-    staleTime: 10000, // Consider data stale after 10 seconds
+    refetchOnWindowFocus: true, // Only refetch when window gains focus
+    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
   });
 
   if (doctorLoading) {
