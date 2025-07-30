@@ -703,7 +703,14 @@ export default function GoogleStyleCalendar() {
       )}
 
       {/* Slot Modal */}
-      <Dialog open={slotModal.isOpen} onOpenChange={(open) => setSlotModal(prev => ({ ...prev, isOpen: open }))}>
+      <Dialog open={slotModal.isOpen} onOpenChange={(open) => {
+        if (!open) {
+          // Clear selection when modal is closed
+          setSelectedBlocks([]);
+          console.log("Modal closed - selection cleared");
+        }
+        setSlotModal(prev => ({ ...prev, isOpen: open }));
+      }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
@@ -810,7 +817,11 @@ export default function GoogleStyleCalendar() {
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
-                onClick={() => setSlotModal(prev => ({ ...prev, isOpen: false }))}
+                onClick={() => {
+                  setSelectedBlocks([]);
+                  setSlotModal(prev => ({ ...prev, isOpen: false }));
+                  console.log("Cancel clicked - selection cleared");
+                }}
               >
                 Cancel
               </Button>
