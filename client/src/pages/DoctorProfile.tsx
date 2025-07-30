@@ -8,6 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Clock, Star, Calendar, MapPin, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import { formatUserFullName, getUserInitials } from "@/lib/nameUtils";
 import { useAvailabilitySync } from "@/hooks/useAvailabilitySync";
+import { useAuth } from "@/hooks/useAuth";
 import { format, addDays, startOfWeek, isSameDay } from "date-fns";
 import { useState } from "react";
 import { Link } from "wouter";
@@ -40,6 +41,7 @@ interface TimeSlot {
 export default function DoctorProfile() {
   const params = useParams();
   const doctorId = params.id;
+  const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 })); // Monday start
   
@@ -50,7 +52,7 @@ export default function DoctorProfile() {
   useAvailabilitySync();
   
   // Ensure doctorId is valid before making API calls
-  const isValidDoctorId = doctorId && !isNaN(Number(doctorId));
+  const isValidDoctorId = Boolean(doctorId && doctorId.trim() && !isNaN(Number(doctorId)));
   
   // Fetch doctor details
   const { data: doctor, isLoading: doctorLoading, error: doctorError } = useQuery<Doctor>({
@@ -132,32 +134,57 @@ export default function DoctorProfile() {
 
   const doctorName = doctor.user ? formatUserFullName({ ...doctor.user, role: 'doctor' }) : 'Unknown Doctor';
   const initials = doctor.user ? getUserInitials(doctor.user) : 'DR';
+  
+  // Get user initials for header avatar
+  const userInitials = user ? getUserInitials(user) : 'U';
 
   // Filter and sort available slots for the selected date
-  const availableSlots = timeSlots?.filter(slot => slot.isAvailable) || [];
-  const selectedDateSlots = availableSlots.filter(slot => 
+  const availableSlots = timeSlots?.filter((slot: TimeSlot) => slot.isAvailable) || [];
+  const selectedDateSlots = availableSlots.filter((slot: TimeSlot) => 
     isSameDay(new Date(slot.date), selectedDate)
-  ).sort((a, b) => a.startTime.localeCompare(b.startTime));
+  ).sort((a: TimeSlot, b: TimeSlot) => a.startTime.localeCompare(b.startTime));
 
   // Generate week days for the week picker
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   // Check which days have availability
   const daysWithSlots = new Set(
-    availableSlots.map(slot => slot.date)
+    availableSlots.map((slot: TimeSlot) => slot.date)
   );
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with back button */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
-        <div className="max-w-7xl mx-auto">
+      {/* Header with Doktu logo and user avatar - exactly like homepage */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <Link href="/" className="flex items-center">
+              <div className="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-full mr-3">
+                <span className="text-white font-bold text-sm">D</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">Doktu</span>
+            </Link>
+
+            {/* User avatar with initials */}
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="bg-blue-600 text-white text-sm font-medium">
+                  {userInitials}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+        </div>
+        
+        {/* Back to doctors link below header */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-3">
           <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to doctors
           </Link>
         </div>
-      </div>
+      </header>
 
       {/* Gradient Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
@@ -390,7 +417,7 @@ export default function DoctorProfile() {
                   {/* Time slots for selected day */}
                   <div className="space-y-2">
                     {selectedDateSlots.length > 0 ? (
-                      selectedDateSlots.map((slot) => (
+                      selectedDateSlots.map((slot: TimeSlot) => (
                         <Button
                           key={slot.id}
                           variant="outline"

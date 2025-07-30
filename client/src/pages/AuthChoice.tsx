@@ -36,8 +36,8 @@ export default function AuthChoice() {
               <div className="inline-block bg-gray-50 border rounded-lg p-4 mb-8">
                 <h2 className="text-sm font-medium text-gray-600 mb-2">Booking Summary</h2>
                 <div className="flex items-center space-x-6 text-sm">
-                  <span><strong>Date:</strong> {format(new Date(slot), 'dd/MM/yyyy')}</span>
-                  <span><strong>Time:</strong> {format(new Date(slot), 'HH:mm')}</span>
+                  <span><strong>Doctor ID:</strong> {doctorId}</span>
+                  <span><strong>Time:</strong> {slot}</span>
                   <span><strong>Price:</strong> €{price}</span>
                 </div>
               </div>
