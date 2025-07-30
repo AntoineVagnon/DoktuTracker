@@ -46,26 +46,27 @@ export default function RegisterForm() {
   }, [doctorId]);
 
   // Prepare booking data with fallbacks - handle null/undefined gracefully
-  // If slot is just a time (like "10:00"), we need to handle it differently
   const getSlotDate = () => {
     if (!slot || slot === 'null' || slot === 'undefined') return null;
     
-    // If slot looks like a time (HH:mm), create a date for today
-    if (/^\d{2}:\d{2}$/.test(slot)) {
+    // Try to parse as full datetime first (YYYY-MM-DDTHH:mm format)
+    try {
+      const date = new Date(slot);
+      if (!isNaN(date.getTime())) return date;
+    } catch {}
+    
+    // If slot looks like just a time (HH:mm or HH:mm:ss), create a date for today as fallback
+    if (/^\d{2}:\d{2}(:\d{2})?$/.test(slot)) {
       const today = new Date();
-      const [hours, minutes] = slot.split(':');
-      today.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      const timeParts = slot.split(':');
+      const hours = parseInt(timeParts[0]);
+      const minutes = parseInt(timeParts[1]);
+      const seconds = timeParts[2] ? parseInt(timeParts[2]) : 0;
+      today.setHours(hours, minutes, seconds, 0);
       return today;
     }
     
-    // Try to parse as full date
-    try {
-      const date = new Date(slot);
-      if (isNaN(date.getTime())) return null;
-      return date;
-    } catch {
-      return null;
-    }
+    return null;
   };
   
   const slotDate = getSlotDate();
@@ -126,7 +127,7 @@ export default function RegisterForm() {
                   <span>
                     {slotDate
                       ? format(slotDate, 'dd/MM/yyyy')
-                      : slot ? 'Today' : '—'}
+                      : '—'}
                   </span>
                 </p>
                 <p className="flex justify-between">

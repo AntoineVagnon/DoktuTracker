@@ -405,8 +405,9 @@ export default function DoctorProfile() {
                           variant="outline"
                           className="w-full justify-center"
                           onClick={() => {
-                            // Handle slot booking
-                            window.location.href = `/auth-choice?doctorId=${doctorId}&slot=${slot.startTime}&price=${doctor.consultationPrice}`;
+                            // Handle slot booking - include both date and time
+                            const fullSlotDateTime = `${slot.date}T${slot.startTime}`;
+                            window.location.href = `/auth-choice?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
                           }}
                         >
                           {format(new Date(`2000-01-01T${slot.startTime}`), 'HH:mm')}
