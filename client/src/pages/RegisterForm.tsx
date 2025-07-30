@@ -33,15 +33,42 @@ export default function RegisterForm() {
   // Fetch doctor information if booking parameters exist
   useEffect(() => {
     if (doctorId) {
-      fetch(`/api/public/doctors/${doctorId}`)
-        .then(res => res.json())
+      fetch(`/api/doctors/${doctorId}`)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          return res.json();
+        })
         .then(data => setDoctor(data))
         .catch(err => console.error('Error fetching doctor:', err));
     }
   }, [doctorId]);
 
   // Prepare booking data with fallbacks - handle null/undefined gracefully
-  const slotDate = slot && slot !== 'null' && slot !== 'undefined' ? new Date(slot) : null;
+  // If slot is just a time (like "10:00"), we need to handle it differently
+  const getSlotDate = () => {
+    if (!slot || slot === 'null' || slot === 'undefined') return null;
+    
+    // If slot looks like a time (HH:mm), create a date for today
+    if (/^\d{2}:\d{2}$/.test(slot)) {
+      const today = new Date();
+      const [hours, minutes] = slot.split(':');
+      today.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      return today;
+    }
+    
+    // Try to parse as full date
+    try {
+      const date = new Date(slot);
+      if (isNaN(date.getTime())) return null;
+      return date;
+    } catch {
+      return null;
+    }
+  };
+  
+  const slotDate = getSlotDate();
   const displayPrice = price && price !== 'null' && price !== 'undefined' ? price : '0';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,7 +126,7 @@ export default function RegisterForm() {
                   <span>
                     {slotDate
                       ? format(slotDate, 'dd/MM/yyyy')
-                      : '—'}
+                      : slot ? 'Today' : '—'}
                   </span>
                 </p>
                 <p className="flex justify-between">
@@ -107,7 +134,7 @@ export default function RegisterForm() {
                   <span>
                     {slotDate
                       ? format(slotDate, 'HH:mm')
-                      : '—'}
+                      : slot || '—'}
                   </span>
                 </p>
                 <p className="flex justify-between">
