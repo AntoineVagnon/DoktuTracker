@@ -9,6 +9,11 @@ declare module 'express-session' {
       expiresAt: Date;
       heldAt: Date;
     }>;
+    supabaseSession?: {
+      access_token: string;
+      refresh_token: string;
+      user: any;
+    };
   }
 }
 import Stripe from "stripe";
@@ -284,6 +289,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching KPIs:", error);
       res.status(500).json({ message: "Failed to fetch KPIs" });
+    }
+  });
+
+  // Email confirmation endpoint for post-signup
+  app.post("/api/auth/confirm", async (req, res) => {
+    try {
+      const { access_token, refresh_token } = req.body;
+
+      if (!access_token) {
+        return res.status(400).json({ error: "Missing access token" });
+      }
+
+      // Verify token with Supabase
+      const { data: { user }, error } = await supabase.auth.getUser(access_token);
+
+      if (error || !user) {
+        console.error("Supabase auth error:", error);
+        return res.status(401).json({ error: "Invalid token" });
+      }
+
+      // Store session in Express session
+      req.session.supabaseSession = {
+        access_token,
+        refresh_token,
+        user: user
+      };
+
+      // Get or create user in database
+      let dbUser = await storage.getUser(user.id);
+      
+      if (!dbUser) {
+        // Create user if doesn't exist (for new signups)
+        dbUser = await storage.upsertUser({
+          id: parseInt(user.id),
+          email: user.email || '',
+          role: 'patient' // Default role for new signups
+        });
+      }
+
+      console.log("Email confirmation successful for user:", user.id);
+      res.json({ success: true, user: dbUser });
+    } catch (error: any) {
+      console.error("Email confirmation error:", error);
+      res.status(500).json({ error: "Confirmation failed" });
     }
   });
 
