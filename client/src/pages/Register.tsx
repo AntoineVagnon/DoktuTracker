@@ -13,6 +13,10 @@ export default function Register() {
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
+  
+  console.log('Register page loaded with location:', location);
+  console.log('URL search params string:', location.split('?')[1] || 'NO_PARAMS');
+  console.log('Parsed booking params:', { doctorId, slot, price });
 
   const handleCreateAccount = () => {
     console.log('Create Account button clicked');
