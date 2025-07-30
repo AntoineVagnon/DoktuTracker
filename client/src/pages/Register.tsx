@@ -7,7 +7,9 @@ import Footer from "@/components/Footer";
 
 export default function Register() {
   const [location] = useLocation();
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  
+  // Use window.location.search directly to get query parameters
+  const urlParams = new URLSearchParams(window.location.search);
   
   // Extract booking parameters directly
   const doctorId = urlParams.get('doctorId');
@@ -15,7 +17,8 @@ export default function Register() {
   const price = urlParams.get('price');
   
   console.log('Register page loaded with location:', location);
-  console.log('URL search params string:', location.split('?')[1] || 'NO_PARAMS');
+  console.log('Window URL search:', window.location.search);
+  console.log('Full window URL:', window.location.href);
   console.log('Parsed booking params:', { doctorId, slot, price });
 
   const handleCreateAccount = () => {
