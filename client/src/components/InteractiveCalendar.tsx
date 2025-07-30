@@ -174,9 +174,9 @@ export default function InteractiveCalendar() {
     });
   };
 
-  // Generate 30-minute time slots from 8 AM to 6 PM
-  const timeSlots30Min = Array.from({ length: 20 }, (_, i) => {
-    const hour = Math.floor(i / 2) + 8;
+  // Generate 30-minute time slots from midnight to midnight (24 hours)
+  const timeSlots30Min = Array.from({ length: 48 }, (_, i) => {
+    const hour = Math.floor(i / 2);
     const minute = (i % 2) * 30;
     return { hour, minute, display: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}` };
   });
