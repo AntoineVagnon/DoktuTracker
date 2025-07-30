@@ -1,373 +1,190 @@
-import { useState, useEffect } from "react";
 import { useParams } from "wouter";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Star, 
-  MapPin, 
-  Award, 
-  Languages, 
-  GraduationCap, 
-  ChevronLeft, 
-  ChevronRight,
-  Clock,
-  Calendar,
-  ArrowLeft,
-  Heart,
-  Shield,
-  Stethoscope,
-  AlertTriangle as Alert
-} from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import SlotSelection from "@/components/booking/SlotSelection";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Clock, Star, Calendar, MapPin } from "lucide-react";
+import { formatUserFullName, getUserInitials } from "@/lib/nameUtils";
+import { useAvailabilitySync } from "@/hooks/useAvailabilitySync";
 import { format } from "date-fns";
 
 interface Doctor {
   id: string;
+  user: {
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+    title: string | null;
+  } | null;
   specialty: string;
-  rating: number;
+  rating: string;
   reviewCount: number;
   consultationPrice: string;
   bio?: string;
   education?: string;
   experience?: string;
-  languages?: string[];
-  rppsNumber?: string;
-  user: {
-    id: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-  };
 }
 
-
+interface TimeSlot {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  isAvailable: boolean;
+}
 
 export default function DoctorProfile() {
-  const { id } = useParams();
-  const { user, isAuthenticated } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-
-  const { data: doctor, isLoading: doctorLoading, error: doctorError } = useQuery<Doctor>({
-    queryKey: [`/api/doctors/${id}`],
-    enabled: !!id,
+  const { doctorId } = useParams();
+  
+  // Initialize availability sync for real-time updates
+  useAvailabilitySync();
+  
+  // Fetch doctor details
+  const { data: doctor, isLoading: doctorLoading } = useQuery<Doctor>({
+    queryKey: ["/api/doctors", doctorId],
+    queryFn: async () => {
+      const response = await fetch(`/api/doctors/${doctorId}`);
+      if (!response.ok) throw new Error('Failed to fetch doctor');
+      return response.json();
+    },
+    refetchInterval: 30000, // Real-time sync every 30 seconds
   });
 
-
-
-  const { data: reviews = [] } = useQuery({
-    queryKey: [`/api/doctors/${id}/reviews`],
-    enabled: !!id,
+  // Fetch real-time availability
+  const { data: timeSlots, isLoading: slotsLoading } = useQuery<TimeSlot[]>({
+    queryKey: ["/api/time-slots", doctorId],
+    queryFn: async () => {
+      const response = await fetch(`/api/doctors/${doctorId}/slots`);
+      if (!response.ok) return [];
+      return response.json();
+    },
+    refetchInterval: 30000, // Real-time sync every 30 seconds
+    staleTime: 10000, // Consider data stale after 10 seconds
   });
 
   if (doctorLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-            <div className="bg-white rounded-xl p-8 space-y-6">
-              <div className="flex items-center space-x-6">
-                <div className="w-24 h-24 bg-gray-200 rounded-full"></div>
-                <div className="space-y-3 flex-1">
-                  <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
   }
 
-  if (doctorError || !doctor) {
+  if (!doctor) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Doctor Not Found</h1>
-              <p className="text-gray-600 mb-6">The doctor profile you're looking for doesn't exist.</p>
-              <Button asChild>
-                <a href="/">Back to Home</a>
-              </Button>
-            </CardContent>
-          </Card>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Doctor not found</h2>
+          <p className="text-gray-600">Please check the URL and try again.</p>
         </div>
       </div>
     );
   }
 
-  const doctorName = `Dr. ${doctor?.user?.firstName || ''} ${doctor?.user?.lastName || ''}`;
-  const initials = `${doctor?.user?.firstName?.[0] || ''}${doctor?.user?.lastName?.[0] || ''}`.toUpperCase();
+  const doctorName = doctor.user ? formatUserFullName({ ...doctor.user, role: 'doctor' }) : 'Unknown Doctor';
+  const initials = doctor.user ? getUserInitials(doctor.user) : 'DR';
 
-
-
-
-
-
-
-  const areas = [
-    { label: "General consultations", icon: Stethoscope },
-    { label: "Chronic care", icon: Heart },
-    { label: "Prevention", icon: Shield },
-    { label: "Telemedicine", icon: Clock },
-    { label: "Minor emergencies", icon: Alert },
-  ];
+  // Filter and sort available slots
+  const availableSlots = timeSlots?.filter(slot => slot.isAvailable) || [];
+  const upcomingSlots = availableSlots
+    .filter(slot => new Date(`${slot.date}T${slot.startTime}`) > new Date())
+    .sort((a, b) => new Date(`${a.date}T${a.startTime}`).getTime() - new Date(`${b.date}T${b.startTime}`).getTime())
+    .slice(0, 6); // Show next 6 available slots
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-
-      <main className="container mx-auto px-4 py-8">
-        {/* Back Button */}
-        <Button variant="ghost" className="mb-6" asChild>
-          <a href="/">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to doctors
-          </a>
-        </Button>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Doctor Header */}
-            <Card className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] text-white">
-              <CardContent className="p-8">
-                <div className="flex items-center space-x-6">
-                  <Avatar className="w-24 h-24 border-4 border-white/20">
-                    <AvatarImage src="" alt={doctorName} />
-                    <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        {/* Doctor Header */}
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-6">
+              <Avatar className="h-24 w-24">
+                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold text-2xl">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{doctorName}</h1>
+                <p className="text-lg text-gray-600 mb-3">{doctor.specialty}</p>
+                
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="flex items-center">
+                    <div className="flex text-yellow-400 mr-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < Math.floor(parseFloat(doctor.rating)) ? "fill-current" : ""
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      {doctor.rating} ({doctor.reviewCount} reviews)
+                    </span>
+                  </div>
                   
-                  <div className="flex-1">
-                    <h1 className="text-3xl font-bold mb-2">{doctorName}</h1>
-                    <p className="text-blue-100 text-lg mb-3">{doctor?.specialty || ''}</p>
-                    
-                    <div className="flex items-center space-x-6">
-                      <div className="flex items-center">
-                        <div className="flex text-yellow-300">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-4 w-4 ${
-                                i < Math.floor(doctor?.rating || 0) ? "fill-current" : ""
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="ml-2 text-blue-100">
-                          {doctor?.rating || 5.0} ({doctor?.reviewCount || 156} reviews)
-                        </span>
+                  <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    €{doctor.consultationPrice} per consultation
+                  </Badge>
+                </div>
+                
+                {doctor.bio && (
+                  <p className="text-gray-700">{doctor.bio}</p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Available Slots - Real-time Sync */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Calendar className="h-5 w-5 mr-2" />
+              Available Appointments
+              {slotsLoading && (
+                <Clock className="h-4 w-4 ml-2 animate-spin text-blue-600" />
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {upcomingSlots.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {upcomingSlots.map((slot) => (
+                  <div
+                    key={slot.id}
+                    className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {format(new Date(`${slot.date}T${slot.startTime}`), 'MMM d, yyyy')}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {format(new Date(`${slot.date}T${slot.startTime}`), 'h:mm a')} - {format(new Date(`${slot.date}T${slot.endTime}`), 'h:mm a')}
+                        </p>
                       </div>
-                      
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        <span className="text-blue-100">Paris, France</span>
-                      </div>
-                      
-                      <Badge className="bg-white/20 text-white border-white/20">
-                        RPPS {doctor?.rppsNumber || 'N/A'}
+                      <Badge variant="outline" className="text-green-600 border-green-600">
+                        Available
                       </Badge>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Content Tabs */}
-            <Tabs defaultValue="about" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="about">About</TabsTrigger>
-                <TabsTrigger value="reviews">Reviews</TabsTrigger>
-                <TabsTrigger value="faq">FAQ</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="about" className="space-y-6">
-                {/* About Section */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>About</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <p className="text-gray-600 leading-relaxed">
-                      {doctor?.bio || "Dr. David Martin is a highly experienced physician specializing in internal medicine. With over 15 years of practice, he provides comprehensive care combining medical expertise with a personalized approach to patient wellness."}
-                    </p>
-
-                    <Separator />
-
-                    {/* Education and Experience */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
-                          <GraduationCap className="h-5 w-5 mr-2" />
-                          Education and experience
-                        </h3>
-                        <ul className="space-y-2 text-sm text-gray-600">
-                          <li>• Doctor of Medicine - Université Paris Descartes</li>
-                          <li>• Specialized Studies Diploma in Psychiatry</li>
-                          <li>• 15+ years of clinical experience</li>
-                          <li>• Continuing education in telemedicine</li>
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
-                          <Award className="h-5 w-5 mr-2" />
-                          Areas of expertise
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {areas.map((area, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {area.label}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Languages */}
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
-                        <Languages className="h-5 w-5 mr-2" />
-                        Languages spoken
-                      </h3>
-                      <div className="flex space-x-4">
-                        <Badge className="bg-blue-100 text-blue-800">🇫🇷 French (Native)</Badge>
-                        <Badge className="bg-blue-100 text-blue-800">🇬🇧 English (Fluent)</Badge>
-                        <Badge className="bg-blue-100 text-blue-800">🇪🇸 Spanish (Intermediate)</Badge>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Medical Approach */}
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-3">Medical approach</h3>
-                      <p className="text-gray-600 leading-relaxed">
-                        I favor human and accessible medicine, taking the time to listen to each patient. My approach combines scientific rigor and kindness to provide personalized care adapted to your specific needs.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="reviews">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Patient Reviews</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {reviews.length === 0 ? (
-                      <div className="text-center py-8">
-                        <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-600">No reviews yet</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-6">
-                        {reviews.map((review: any) => (
-                          <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
-                            <div className="flex items-start space-x-4">
-                              <Avatar className="w-10 h-10">
-                                <AvatarFallback>
-                                  {review.patient.firstName?.[0]}{review.patient.lastName?.[0]}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-3 mb-2">
-                                  <h4 className="font-medium text-gray-900">
-                                    {review.patient.firstName} {review.patient.lastName?.[0]}.
-                                  </h4>
-                                  <div className="flex text-yellow-400">
-                                    {[...Array(5)].map((_, i) => (
-                                      <Star
-                                        key={i}
-                                        className={`h-4 w-4 ${
-                                          i < review.rating ? "fill-current" : ""
-                                        }`}
-                                      />
-                                    ))}
-                                  </div>
-                                  <span className="text-sm text-gray-500">
-                                    {format(new Date(review.createdAt), "MMM d, yyyy")}
-                                  </span>
-                                </div>
-                                <p className="text-gray-600">{review.comment}</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="faq">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Frequently Asked Questions</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">What are Dr. Martin's office hours?</h4>
-                      <p className="text-gray-600">I offer consultations Monday through Friday from 9:00 AM to 6:00 PM, and Saturday mornings from 9:00 AM to 1:00 PM.</p>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Does Dr. Martin accept new patients?</h4>
-                      <p className="text-gray-600">Yes, I welcome new patients and strive to offer appointments within a reasonable timeframe.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          {/* Booking Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
-              <Card>
-                <CardHeader className="text-center">
-                  <CardTitle className="text-2xl text-[hsl(207,100%,52%)]">
-                    €{doctor?.consultationPrice || '3'}
-                  </CardTitle>
-                  <p className="text-sm text-gray-600">30 min consultation</p>
-                </CardHeader>
-              </Card>
-              
-              {/* Slot Selection Component */}
-              <SlotSelection 
-                doctorId={id!}
-                consultationPrice={parseFloat(doctor?.consultationPrice || '3')}
-              />
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <Footer />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No availability</h3>
+                <p className="text-gray-600">
+                  {slotsLoading ? "Loading availability..." : "This doctor has no available appointment slots at the moment."}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

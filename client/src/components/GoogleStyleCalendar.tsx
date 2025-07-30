@@ -18,6 +18,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useAvailabilitySync } from "@/hooks/useAvailabilitySync";
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from "date-fns";
 
 interface TimeSlot {
@@ -72,6 +73,7 @@ export default function GoogleStyleCalendar() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { syncAvailability } = useAvailabilitySync();
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<CalendarView>('week');
@@ -150,6 +152,8 @@ export default function GoogleStyleCalendar() {
       return tempSlot;
     },
     onSuccess: () => {
+      // Immediate sync across all booking surfaces
+      syncAvailability(user?.id);
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
       toast({ title: "Demo availability slot created!" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
@@ -173,6 +177,8 @@ export default function GoogleStyleCalendar() {
       return response.json();
     },
     onSuccess: () => {
+      // Sync availability across all surfaces when updated
+      syncAvailability(user?.id);
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
       toast({ title: "Availability updated successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
@@ -192,6 +198,8 @@ export default function GoogleStyleCalendar() {
       return { success: true };
     },
     onSuccess: () => {
+      // Sync availability across all surfaces when deleted
+      syncAvailability(user?.id);
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
       toast({ title: "Availability deleted successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
@@ -210,6 +218,8 @@ export default function GoogleStyleCalendar() {
       return Promise.all(promises);
     },
     onSuccess: () => {
+      // Sync availability across all surfaces when template applied
+      syncAvailability(user?.id);
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
       toast({ title: "Weekly template applied successfully" });
       setIsTemplateOpen(false);
@@ -454,6 +464,9 @@ export default function GoogleStyleCalendar() {
         }
         
         console.log(`✅ Successfully created ${results.length} separate availability slots!`);
+        
+        // Sync availability across all surfaces immediately
+        syncAvailability(user?.id);
         
         setSelectedBlocks([]);
         toast({ 
