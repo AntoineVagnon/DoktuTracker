@@ -141,16 +141,33 @@ export default function DoctorProfile() {
 
   // Filter and sort available slots for the selected date
   const availableSlots = timeSlots?.filter((slot: TimeSlot) => slot.isAvailable) || [];
-  const selectedDateSlots = availableSlots.filter((slot: TimeSlot) => 
-    isSameDay(new Date(slot.date), selectedDate)
+  
+  // Helper function to filter past slots with 60-minute lead time
+  const filterFutureSlots = (slots: TimeSlot[]) => {
+    const now = new Date();
+    const leadTimeMinutes = 60;
+    
+    return slots.filter((slot: TimeSlot) => {
+      const slotDateTime = new Date(`${slot.date}T${slot.startTime}`);
+      const diffMinutes = (slotDateTime.getTime() - now.getTime()) / (1000 * 60);
+      
+      // Only show slots that are at least 60 minutes in the future
+      return diffMinutes >= leadTimeMinutes;
+    });
+  };
+  
+  const selectedDateSlots = filterFutureSlots(
+    availableSlots.filter((slot: TimeSlot) => 
+      isSameDay(new Date(slot.date), selectedDate)
+    )
   ).sort((a: TimeSlot, b: TimeSlot) => a.startTime.localeCompare(b.startTime));
 
   // Generate week days for the week picker
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
-  // Check which days have availability
+  // Check which days have availability (excluding past/too-soon slots)
   const daysWithSlots = new Set(
-    availableSlots.map((slot: TimeSlot) => slot.date)
+    filterFutureSlots(availableSlots).map((slot: TimeSlot) => slot.date)
   );
 
   return (
