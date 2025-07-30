@@ -44,6 +44,7 @@ export interface IStorage {
 
   // Time slot operations
   getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]>;
+  getTimeSlots(): Promise<TimeSlot[]>;
   createTimeSlot(slot: InsertTimeSlot): Promise<TimeSlot>;
   deleteTimeSlot(id: string): Promise<void>;
   lockTimeSlot(id: string, lockedBy: string, durationMinutes: number): Promise<void>;
@@ -241,15 +242,40 @@ export class PostgresStorage implements IStorage {
   }
 
   async getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]> {
-    // Convert doctorId to integer for matching
-    const doctorInt = parseInt(String(doctorId));
-    let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorInt));
-    
-    if (date) {
-      query = query.where(eq(doctorTimeSlots.date, date));
+    try {
+      // The issue: API passes integer doctor IDs (1, 8, 9) but database doctors.id is UUID
+      // We need to find the doctor by user_id since that's the integer we're actually getting
+      
+      const doctorIntId = typeof doctorId === 'string' ? parseInt(doctorId, 10) : doctorId;
+      
+      let query = `
+        SELECT ts.* FROM doctor_time_slots ts
+        JOIN doctors d ON ts.doctor_id = d.id
+        JOIN users u ON d.user_id = u.id
+        WHERE u.id = $1
+      `;
+      const params = [doctorIntId];
+      
+      if (date) {
+        query += ` AND ts.date = $2`;
+        params.push(date);
+      }
+      
+      query += ` ORDER BY ts.date ASC, ts.start_time ASC`;
+      
+      console.log(`🔍 Querying time slots for user ID: ${doctorIntId}`);
+      const result = await db.execute(query, params);
+      console.log(`📅 Found ${result.rows.length} time slots`);
+      
+      return result.rows as TimeSlot[];
+    } catch (error) {
+      console.error('Error fetching doctor time slots:', error);
+      return [];
     }
-    
-    return await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
+  }
+
+  async getTimeSlots(): Promise<TimeSlot[]> {
+    return await db.select().from(doctorTimeSlots).orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
   }
 
   async createTimeSlot(slot: InsertTimeSlot): Promise<TimeSlot> {

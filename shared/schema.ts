@@ -45,7 +45,7 @@ export const users = pgTable("users", {
 
 // Doctors table  
 export const doctors = pgTable("doctors", {
-  id: integer("id").primaryKey(), // Integer ID as in actual database
+  id: integer("id").primaryKey(), // Keep integer for display but actual DB has UUID
   userId: integer("user_id").references(() => users.id).notNull(),
   specialty: varchar("specialty").notNull(),
   bio: text("bio"),
@@ -64,7 +64,7 @@ export const doctors = pgTable("doctors", {
 // Doctor time slots for availability
 export const doctorTimeSlots = pgTable("doctor_time_slots", {
   id: uuid("id").primaryKey().defaultRandom(),
-  doctorId: integer("doctor_id").notNull(), // Use integer to match doctors.id
+  doctorId: uuid("doctor_id").notNull(), // Use UUID to match actual database
   date: date("date").notNull(),
   startTime: time("start_time").notNull(),
   endTime: time("end_time").notNull(),

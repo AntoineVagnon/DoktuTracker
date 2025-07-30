@@ -63,7 +63,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { doctorId } = req.params;
       const { date } = req.query;
+      console.log(`🔍 Fetching slots for doctor ID: ${doctorId}, date: ${date}`);
       const slots = await storage.getDoctorTimeSlots(doctorId, date as string);
+      console.log(`📅 Found ${slots.length} slots for doctor ${doctorId}`);
       res.json(slots);
     } catch (error) {
       console.error("Error fetching slots:", error);
