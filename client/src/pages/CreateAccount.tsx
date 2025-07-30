@@ -11,11 +11,15 @@ export default function CreateAccount() {
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
   
-  // Get URL parameters for booking context
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Use window.location.search directly to get query parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // Extract booking parameters if present
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
+  
+  console.log('CreateAccount page loaded with booking params:', { doctorId, slot, price });
 
   const [formData, setFormData] = useState({
     email: '',
