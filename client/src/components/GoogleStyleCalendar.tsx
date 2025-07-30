@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { 
   Calendar, Clock, Plus, Edit3, Trash2, Save, ChevronLeft, ChevronRight, 
-  CalendarDays, Eye, MoreHorizontal, Repeat, X 
+  CalendarDays, Eye, MoreHorizontal, Repeat, X, Check
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -75,9 +75,9 @@ export default function GoogleStyleCalendar() {
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<CalendarView>('week');
-  const [dragStart, setDragStart] = useState<{ date: string; time: string } | null>(null);
-  const [dragEnd, setDragEnd] = useState<{ date: string; time: string } | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [selectedBlocks, setSelectedBlocks] = useState<Array<{ date: string; startTime: string; endTime: string }>>([]);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [currentSelection, setCurrentSelection] = useState<{ date: string; startHour: number; endHour: number } | null>(null);
   const [isTemplateOpen, setIsTemplateOpen] = useState(false);
   
   const [slotModal, setSlotModal] = useState<SlotModalData>({
@@ -236,34 +236,54 @@ export default function GoogleStyleCalendar() {
   };
 
   const handleCellMouseDown = (date: string, time: string) => {
-    setDragStart({ date, time });
-    setIsDragging(true);
+    const hour = parseInt(time.split(':')[0]);
+    setCurrentSelection({ date, startHour: hour, endHour: hour + 1 });
+    setIsSelecting(true);
   };
 
   const handleCellMouseEnter = (date: string, time: string) => {
-    if (isDragging && dragStart) {
-      setDragEnd({ date, time });
+    if (isSelecting && currentSelection && currentSelection.date === date) {
+      const hour = parseInt(time.split(':')[0]);
+      setCurrentSelection(prev => ({
+        ...prev!,
+        endHour: Math.max(prev!.endHour, hour + 1)
+      }));
     }
   };
 
-  const handleCellMouseUp = (date: string, time: string) => {
-    if (isDragging && dragStart) {
-      const startHour = parseInt(dragStart.time.split(':')[0]);
-      const endHour = parseInt(time.split(':')[0]) + 1;
+  const handleCellMouseUp = () => {
+    if (isSelecting && currentSelection) {
+      // Add the current selection to selected blocks
+      const newBlock = {
+        date: currentSelection.date,
+        startTime: `${currentSelection.startHour.toString().padStart(2, '0')}:00`,
+        endTime: `${currentSelection.endHour.toString().padStart(2, '0')}:00`
+      };
       
-      setSlotModal({
-        isOpen: true,
-        mode: 'create',
-        startTime: `${startHour.toString().padStart(2, '0')}:00`,
-        endTime: `${endHour.toString().padStart(2, '0')}:00`,
-        date: dragStart.date,
-        isRecurring: false
+      setSelectedBlocks(prev => [...prev, newBlock]);
+    }
+    
+    setIsSelecting(false);
+    setCurrentSelection(null);
+  };
+
+  const clearSelectedBlocks = () => {
+    setSelectedBlocks([]);
+  };
+
+  const createSelectedBlocks = async () => {
+    for (const block of selectedBlocks) {
+      const startDateTime = new Date(`${block.date}T${block.startTime}:00.000Z`);
+      const endDateTime = new Date(`${block.date}T${block.endTime}:00.000Z`);
+      
+      await createSlotMutation.mutateAsync({
+        startTime: startDateTime.toISOString(),
+        endTime: endDateTime.toISOString()
       });
     }
     
-    setIsDragging(false);
-    setDragStart(null);
-    setDragEnd(null);
+    setSelectedBlocks([]);
+    toast({ title: `Created ${selectedBlocks.length} availability blocks!` });
   };
 
   const handleSlotClick = (slot: TimeSlot) => {
@@ -284,19 +304,19 @@ export default function GoogleStyleCalendar() {
     });
   };
 
-  const getDragPreviewSlots = () => {
-    if (!isDragging || !dragStart || !dragEnd) return [];
-    
-    const startHour = Math.min(
-      parseInt(dragStart.time.split(':')[0]),
-      parseInt(dragEnd.time.split(':')[0])
-    );
-    const endHour = Math.max(
-      parseInt(dragStart.time.split(':')[0]),
-      parseInt(dragEnd.time.split(':')[0])
-    ) + 1;
-    
-    return Array.from({ length: endHour - startHour }, (_, i) => startHour + i);
+  const isBlockSelected = (date: string, hour: number) => {
+    // Check if this cell is part of a selected block
+    return selectedBlocks.some(block => {
+      const blockStart = parseInt(block.startTime.split(':')[0]);
+      const blockEnd = parseInt(block.endTime.split(':')[0]);
+      return block.date === date && hour >= blockStart && hour < blockEnd;
+    });
+  };
+
+  const isCurrentSelection = (date: string, hour: number) => {
+    // Check if this cell is part of current selection being dragged
+    if (!isSelecting || !currentSelection || currentSelection.date !== date) return false;
+    return hour >= currentSelection.startHour && hour < currentSelection.endHour;
   };
 
   const getCellContent = (date: Date, hour: number) => {
@@ -352,13 +372,25 @@ export default function GoogleStyleCalendar() {
     }
 
     // Drag preview
-    const dragPreviewHours = getDragPreviewSlots();
-    if (isDragging && dragStart?.date === dateStr && dragPreviewHours.includes(hour)) {
+    // Check for draft preview during current selection
+    if (isCurrentSelection(dateStr, hour)) {
       return {
         type: 'draft',
         content: (
           <div className="bg-blue-100 border-2 border-dashed border-blue-400 text-blue-700 text-xs p-2 rounded h-full flex items-center justify-center">
             Draft
+          </div>
+        )
+      };
+    }
+
+    // Check for selected blocks (confirmed selection)
+    if (isBlockSelected(dateStr, hour)) {
+      return {
+        type: 'selected',
+        content: (
+          <div className="bg-green-100 border-2 border-dashed border-green-400 text-green-700 text-xs p-2 rounded h-full flex items-center justify-center">
+            Selected
           </div>
         )
       };
@@ -498,11 +530,33 @@ export default function GoogleStyleCalendar() {
             </TabsList>
           </Tabs>
           
-          {/* Add Availability Button */}
-          <Button onClick={addAvailabilityFromTemplate} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Add Availability
-          </Button>
+          {/* Multi-block Selection and Template Buttons */}
+          <div className="flex gap-2">
+            {selectedBlocks.length > 0 && (
+              <>
+                <Button
+                  onClick={createSelectedBlocks}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  disabled={createSlotMutation.isPending}
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  Create Availability ({selectedBlocks.length})
+                </Button>
+                <Button
+                  onClick={clearSelectedBlocks}
+                  variant="outline"
+                  className="border-red-200 text-red-700 hover:bg-red-50"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Clear Selection
+                </Button>
+              </>
+            )}
+            <Button onClick={addAvailabilityFromTemplate} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Template
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -540,6 +594,14 @@ export default function GoogleStyleCalendar() {
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-blue-600 border-l-4 border-blue-800 rounded"></div>
           <span>Booked</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-blue-100 border-2 border-dashed border-blue-400 rounded"></div>
+          <span>Draft (click & drag)</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-green-100 border-2 border-dashed border-green-400 rounded"></div>
+          <span>Selected</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-blue-100 border-2 border-dashed border-blue-400 rounded"></div>
@@ -590,7 +652,7 @@ export default function GoogleStyleCalendar() {
                         )}
                         onMouseDown={() => cellContent.type === 'empty' && handleCellMouseDown(dateStr, timeStr)}
                         onMouseEnter={() => handleCellMouseEnter(dateStr, timeStr)}
-                        onMouseUp={() => handleCellMouseUp(dateStr, timeStr)}
+                        onMouseUp={() => handleCellMouseUp()}
                       >
                         {cellContent.content}
                       </div>
