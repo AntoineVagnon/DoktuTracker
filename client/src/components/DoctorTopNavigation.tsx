@@ -142,30 +142,29 @@ export default function DoctorTopNavigation() {
 
             {/* User Avatar - right side like homepage */}
             <div className="flex items-center space-x-4">
-              {isAuthenticated && user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar_url} alt={user.email} />
-                        <AvatarFallback className="bg-blue-600 text-white text-sm">
-                          {getUserInitials(user)}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : null}
+              {/* Always show user menu with logout option */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user?.profileImageUrl} alt={user?.email || "User"} />
+                      <AvatarFallback className="bg-blue-600 text-white text-sm">
+                        {user ? getUserInitials(user) : "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Mobile menu button */}
               <div className="md:hidden">

@@ -6,7 +6,9 @@ export interface User {
   email?: string;
   firstName?: string;
   lastName?: string;
+  title?: string;
   profileImageUrl?: string;
+  avatar_url?: string;
   role?: string;
   approved?: boolean;
 }
