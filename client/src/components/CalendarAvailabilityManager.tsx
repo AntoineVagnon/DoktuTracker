@@ -169,7 +169,7 @@ export default function CalendarAvailabilityManager() {
               <div key={hour} className="contents">
                 <div className="text-sm text-gray-500 py-2">{hour}</div>
                 {[1, 2, 3, 4, 5].map(day => {
-                  const hourNum = parseInt(hour.split(':')[0]);
+                  const hourNum = hour && typeof hour === 'string' ? parseInt(hour.split(':')[0]) : 0;
                   const available = isSlotAvailable(day, hourNum);
                   return (
                     <button

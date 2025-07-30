@@ -62,9 +62,18 @@ export default function Landing() {
       window.history.replaceState({}, '', '/');
     }
 
-    const img = new Image();
-    img.onload = () => setHeroImageLoaded(true);
-    img.src = "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600";
+    try {
+      const img = new Image();
+      img.onload = () => setHeroImageLoaded(true);
+      img.onerror = () => {
+        console.warn('Hero image failed to load, continuing without image');
+        setHeroImageLoaded(true); // Allow the component to render normally
+      };
+      img.src = "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600";
+    } catch (error) {
+      console.warn('Error creating image element:', error);
+      setHeroImageLoaded(true);
+    }
   }, [setLocation, toast]);
 
   // Transform the doctor data to match DoctorCard interface

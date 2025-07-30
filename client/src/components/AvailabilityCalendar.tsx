@@ -124,6 +124,7 @@ export default function AvailabilityCalendar({
 
   const isSlotDisabled = (date: Date, timeStr: string): boolean => {
     const now = new Date();
+    if (!timeStr || typeof timeStr !== 'string') return true;
     const [hours, minutes] = timeStr.split(':').map(Number);
     const slotDateTime = setMinutes(setHours(date, hours), minutes);
     

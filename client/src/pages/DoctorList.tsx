@@ -36,7 +36,7 @@ export default function DoctorList() {
   const filteredDoctors = doctors?.filter(doctor => {
     const matchesSearch = !searchQuery || 
       doctor.user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doctor.specialty?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       doctor.bio?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesSpecialty = !specialtyFilter || specialtyFilter === 'all' || doctor.specialty === specialtyFilter;

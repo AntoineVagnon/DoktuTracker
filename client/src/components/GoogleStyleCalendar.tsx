@@ -146,9 +146,9 @@ export default function GoogleStyleCalendar() {
       const tempSlot = {
         id: `temp-${Date.now()}`,
         doctorId: 'demo-doctor',
-        date: data.startTime.split('T')[0],
-        startTime: data.startTime.includes(':') ? data.startTime : new Date(data.startTime).toTimeString().slice(0, 5),
-        endTime: data.endTime.includes(':') ? data.endTime : new Date(data.endTime).toTimeString().slice(0, 5),
+        date: data.startTime ? data.startTime.split('T')[0] : new Date().toISOString().split('T')[0],
+        startTime: (data.startTime && data.startTime.includes(':')) ? data.startTime : new Date(data.startTime || Date.now()).toTimeString().slice(0, 5),
+        endTime: (data.endTime && data.endTime.includes(':')) ? data.endTime : new Date(data.endTime || Date.now()).toTimeString().slice(0, 5),
         isAvailable: true,
         createdAt: new Date()
       };
@@ -260,6 +260,7 @@ export default function GoogleStyleCalendar() {
   };
 
   const handleCellMouseDown30Min = (date: string, time: string) => {
+    if (!time || typeof time !== 'string') return;
     const [hour, minute] = time.split(':').map(Number);
     const slotIndex = timeSlots30Min.findIndex(slot => slot.hour === hour && slot.minute === minute);
     setCurrentSelection({ date, startHour: hour, endHour: hour, startMinute: minute, endMinute: minute + 30, slotIndex });
@@ -267,7 +268,7 @@ export default function GoogleStyleCalendar() {
   };
 
   const handleCellMouseEnter30Min = (date: string, time: string) => {
-    if (isSelecting && currentSelection && currentSelection.date === date) {
+    if (isSelecting && currentSelection && currentSelection.date === date && time && typeof time === 'string') {
       const [hour, minute] = time.split(':').map(Number);
       const endTime = minute + 30 > 30 ? hour + 1 : hour;
       const endMinute = minute + 30 > 30 ? 0 : minute + 30;

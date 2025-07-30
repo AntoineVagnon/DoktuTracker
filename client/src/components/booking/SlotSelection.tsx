@@ -19,11 +19,13 @@ const CET_OFFSET = 1; // UTC+1
 
 const formatDateCET = (date: Date) => {
   const cetDate = new Date(date.getTime() + CET_OFFSET * 60 * 60 * 1000);
-  return cetDate.toISOString().split('T')[0];
+  const isoString = cetDate.toISOString();
+  return isoString ? isoString.split('T')[0] : '';
 };
 
 const isSlotAvailable = (slotDate: Date, slotTime: string) => {
   const now = new Date();
+  if (!slotTime || typeof slotTime !== 'string') return false;
   const [hours, minutes] = slotTime.split(':').map(Number);
   const slotDateTime = new Date(slotDate);
   slotDateTime.setHours(hours, minutes, 0, 0);
