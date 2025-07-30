@@ -83,22 +83,19 @@ export const appointmentPending = pgTable("appointment_pending", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Appointments
+// Appointments - matching actual Supabase structure exactly
 export const appointments = pgTable("appointments", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  patientId: varchar("patient_id").references(() => users.id).notNull(),
-  doctorId: integer("doctor_id").references(() => doctors.id).notNull(), // Changed from uuid to integer to match doctors.id
-  timeSlotId: uuid("timeSlotId").references(() => doctorTimeSlots.id), // Changed column name to match actual database
+  id: integer("id").primaryKey(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  doctorId: integer("doctor_id").references(() => doctors.id).notNull(),
   appointmentDate: timestamp("appointment_date").notNull(),
-  status: varchar("status").notNull().default("pending"), // pending, confirmed, paid, completed, cancelled
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  status: varchar("status").notNull().default("pending"),
   paymentIntentId: varchar("payment_intent_id"),
-  notes: text("notes"),
-  prescription: text("prescription"),
-  rescheduleCount: integer("reschedule_count").default(0),
-  cancelReason: text("cancel_reason"), // Reason for cancellation
-  cancelledBy: varchar("cancelled_by"), // patient, doctor, admin
-  videoRoomId: varchar("video_room_id"),
+  clientSecret: varchar("client_secret"),
+  zoomMeetingId: varchar("zoom_meeting_id"),
+  zoomJoinUrl: text("zoom_join_url"),
+  zoomStartUrl: text("zoom_start_url"),
+  zoomPassword: varchar("zoom_password"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -212,17 +212,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Temporarily skip timeSlotId until we get the correct column name
-      const appointmentData = {
-        patientId: userId.toString(), // Ensure string
+      const appointmentData = insertAppointmentSchema.parse({
+        patientId: parseInt(userId), // Convert to integer to match schema
         doctorId: parseInt(req.body.doctorId), // Convert to integer to match schema
         appointmentDate: new Date(req.body.appointmentDate), // Convert string to Date
-        price: req.body.price.toString(), // Ensure string
-        status: req.body.status || 'pending_payment',
+        status: req.body.status || 'pending',
         paymentIntentId: req.body.paymentIntentId || null,
-        notes: req.body.notes || null,
-        prescription: req.body.prescription || null
-      };
+        clientSecret: req.body.clientSecret || null,
+        zoomMeetingId: req.body.zoomMeetingId || null,
+        zoomJoinUrl: req.body.zoomJoinUrl || null,
+        zoomStartUrl: req.body.zoomStartUrl || null,
+        zoomPassword: req.body.zoomPassword || null
+      });
       const appointment = await storage.createAppointment(appointmentData);
       res.json(appointment);
     } catch (error) {
