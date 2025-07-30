@@ -341,11 +341,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         (user.email === "james.rodriguez@doktu.com" && d.user?.email === "james.rodriguez@doku.com")
       );
       
+      console.log("Looking for doctor with user email:", user.email);
+      console.log("Available doctors:", doctors.map(d => ({ id: d.id, userId: d.userId, email: d.user?.email })));
+      console.log("Found doctor:", doctor ? { id: doctor.id, userId: doctor.userId } : null);
+      
       if (!doctor) {
         return res.status(404).json({ error: "Doctor profile not found" });
       }
 
-      const { nanoid } = await import('nanoid');
+      const { randomUUID } = await import('crypto');
       
       // Parse the date and time components
       const startDateTime = new Date(startTime);
@@ -355,8 +359,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const endTimeStr = endDateTime.toTimeString().slice(0, 5);
       
       const timeSlot = await storage.createTimeSlot({
-        id: nanoid(),
-        doctorId: String(doctor.id),
+        doctorId: doctor.id,
         date: dateStr,
         startTime: startTimeStr,
         endTime: endTimeStr,
