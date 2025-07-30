@@ -6,6 +6,8 @@ import { Loader2, Calendar, Clock, Euro, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import CheckoutForm from '@/components/CheckoutForm';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -17,6 +19,7 @@ export default function Checkout() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [doctor, setDoctor] = useState<any>(null);
   const [bookingData, setBookingData] = useState<any>(null);
+  const [clientSecret, setClientSecret] = useState<string>('');
 
   // Extract booking parameters from URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -69,6 +72,28 @@ export default function Checkout() {
 
         if (remaining <= 0) {
           setSlotExpired(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Create payment intent
+        const paymentResponse = await fetch('/api/create-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: Math.round(parseFloat(price) * 100), // Convert to cents
+            currency: 'eur',
+            metadata: {
+              doctorId,
+              slotId: heldSlotData.heldSlot.id,
+              appointmentDate: slot
+            }
+          })
+        });
+
+        const paymentData = await paymentResponse.json();
+        if (paymentData.clientSecret) {
+          setClientSecret(paymentData.clientSecret);
         }
 
         setIsLoading(false);
@@ -104,58 +129,12 @@ export default function Checkout() {
     return () => clearInterval(timer);
   }, [timeRemaining]);
 
-  const handlePayment = async () => {
-    if (!bookingData || slotExpired) return;
-
-    setIsLoading(true);
-    try {
-      // Create payment intent
-      const response = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: Math.round(bookingData.price * 100), // Convert to cents
-          currency: 'eur',
-          metadata: {
-            doctorId: bookingData.doctorId,
-            slotId: bookingData.slotId,
-            appointmentDate: bookingData.slot.toISOString()
-          }
-        })
-      });
-
-      const { clientSecret } = await response.json();
-      
-      if (!clientSecret) {
-        throw new Error('Failed to create payment intent');
-      }
-
-      const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error('Stripe failed to load');
-      }
-
-      // Redirect to Stripe Checkout or use Elements
-      const { error } = await stripe.confirmPayment({
-        clientSecret,
-        confirmParams: {
-          return_url: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-        }
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (error: any) {
-      console.error('Payment error:', error);
-      toast({
-        title: "Payment Failed",
-        description: error.message || "Unable to process payment. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const handlePaymentSuccess = () => {
+    toast({
+      title: "Payment Successful!",
+      description: "Your appointment has been confirmed.",
+    });
+    setLocation('/dashboard');
   };
 
   const formatTimeRemaining = (milliseconds: number) => {
