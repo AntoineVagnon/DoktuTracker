@@ -253,25 +253,37 @@ export default function Checkout() {
             </CardContent>
           </Card>
 
-          {/* Payment Button */}
+          {/* Stripe Payment Form */}
           <Card>
+            <CardHeader>
+              <CardTitle>Payment Details</CardTitle>
+            </CardHeader>
             <CardContent className="p-6">
-              <Button
-                onClick={handlePayment}
-                disabled={isLoading || slotExpired}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  `Pay €${bookingData.price} & Confirm`
-                )}
-              </Button>
+              {clientSecret && (
+                <Elements 
+                  stripe={stripePromise} 
+                  options={{
+                    clientSecret,
+                    appearance: {
+                      theme: 'stripe',
+                    },
+                  }}
+                >
+                  <CheckoutForm 
+                    onSuccess={handlePaymentSuccess}
+                    bookingData={bookingData}
+                  />
+                </Elements>
+              )}
               
-              <p className="text-xs text-gray-500 text-center mt-3">
+              {!clientSecret && (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-blue-600 mr-2" />
+                  <span>Preparing payment...</span>
+                </div>
+              )}
+              
+              <p className="text-xs text-gray-500 text-center mt-4">
                 Secure payment powered by Stripe
               </p>
             </CardContent>
