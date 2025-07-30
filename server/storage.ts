@@ -424,10 +424,13 @@ export class PostgresStorage implements IStorage {
     }
   }
 
-  async getAppointment(id: string): Promise<any | undefined> {
+  async getAppointment(id: string): Promise<Appointment | undefined> {
     try {
-      // Return undefined for now to avoid schema conflicts
-      return undefined;
+      const [result] = await db
+        .select()
+        .from(appointments)
+        .where(eq(appointments.id, parseInt(id))); // Convert string to integer
+      return result;
     } catch (error) {
       console.error("Error in getAppointment:", error);
       return undefined;
@@ -448,7 +451,7 @@ export class PostgresStorage implements IStorage {
     await db
       .update(appointments)
       .set(updateData)
-      .where(eq(appointments.id, id));
+      .where(eq(appointments.id, parseInt(id))); // Convert string to integer
   }
 
   async updateAppointmentPayment(id: string, paymentIntentId: string): Promise<void> {
