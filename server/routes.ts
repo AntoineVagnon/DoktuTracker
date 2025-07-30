@@ -212,17 +212,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const appointmentData = insertAppointmentSchema.parse({
+      // Temporarily skip timeSlotId until we get the correct column name
+      const appointmentData = {
         patientId: userId.toString(), // Ensure string
         doctorId: parseInt(req.body.doctorId), // Convert to integer to match schema
-        timeSlotId: req.body.timeSlotId,
         appointmentDate: new Date(req.body.appointmentDate), // Convert string to Date
         price: req.body.price.toString(), // Ensure string
         status: req.body.status || 'pending_payment',
         paymentIntentId: req.body.paymentIntentId || null,
         notes: req.body.notes || null,
         prescription: req.body.prescription || null
-      });
+      };
       const appointment = await storage.createAppointment(appointmentData);
       res.json(appointment);
     } catch (error) {
