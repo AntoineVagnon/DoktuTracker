@@ -34,39 +34,81 @@ interface TimeSlot {
 }
 
 export default function DoctorProfile() {
-  const { doctorId } = useParams();
+  const params = useParams();
+  const doctorId = params.id;
+  
+  console.log('DoctorProfile - Raw params:', params);
+  console.log('DoctorProfile - Doctor ID:', doctorId);
   
   // Initialize availability sync for real-time updates
   useAvailabilitySync();
   
+  // Ensure doctorId is valid before making API calls
+  const isValidDoctorId = doctorId && !isNaN(Number(doctorId));
+  
   // Fetch doctor details
-  const { data: doctor, isLoading: doctorLoading } = useQuery<Doctor>({
+  const { data: doctor, isLoading: doctorLoading, error: doctorError } = useQuery<Doctor>({
     queryKey: ["/api/doctors", doctorId],
     queryFn: async () => {
+      if (!isValidDoctorId) {
+        throw new Error(`Invalid doctor ID: ${doctorId}`);
+      }
       const response = await fetch(`/api/doctors/${doctorId}`);
-      if (!response.ok) throw new Error('Failed to fetch doctor');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch doctor: ${response.status} ${errorText}`);
+      }
       return response.json();
     },
-    refetchOnWindowFocus: true, // Only refetch when window gains focus
-    staleTime: 10 * 60 * 1000, // Consider data stale after 10 minutes
+    enabled: isValidDoctorId, // Only run query if we have a valid doctor ID
+    refetchOnWindowFocus: true,
+    staleTime: 10 * 60 * 1000,
   });
 
   // Fetch availability (only when needed)
   const { data: timeSlots, isLoading: slotsLoading } = useQuery<TimeSlot[]>({
     queryKey: ["/api/time-slots", doctorId],
     queryFn: async () => {
+      if (!isValidDoctorId) return [];
       const response = await fetch(`/api/doctors/${doctorId}/slots`);
       if (!response.ok) return [];
       return response.json();
     },
-    refetchOnWindowFocus: true, // Only refetch when window gains focus
-    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    enabled: isValidDoctorId, // Only run query if we have a valid doctor ID
+    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,
   });
+
+  // Show debug info for invalid doctor ID
+  if (!isValidDoctorId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Invalid Doctor ID</h2>
+          <p className="text-gray-600">Doctor ID: {doctorId || 'undefined'}</p>
+          <p className="text-gray-600">Params: {JSON.stringify(params)}</p>
+          <p className="text-gray-600">Please check the URL and try again.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (doctorLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  if (doctorError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Error Loading Doctor</h2>
+          <p className="text-gray-600">Error: {doctorError.message}</p>
+          <p className="text-gray-600">Doctor ID: {doctorId}</p>
+        </div>
       </div>
     );
   }
