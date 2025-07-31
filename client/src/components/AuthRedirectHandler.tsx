@@ -46,8 +46,21 @@ export default function AuthRedirectHandler() {
   }
 
   if (!isAuthenticated) {
-    // Not authenticated, redirect to home
-    window.location.href = '/';
+    // Only redirect to home if there's no valid user session and no loading state
+    // Avoid aggressive redirects that can interrupt navigation
+    console.log('AuthRedirectHandler: User not authenticated, checking if redirect is needed');
+    
+    // Don't redirect if we're already on an auth-related page
+    const currentPath = window.location.pathname;
+    const authPages = ['/', '/login', '/register', '/auth', '/password-reset'];
+    const isOnAuthPage = authPages.some(page => currentPath.startsWith(page));
+    
+    if (!isOnAuthPage) {
+      console.log('AuthRedirectHandler: Redirecting to home from', currentPath);
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100); // Small delay to prevent interrupting navigation
+    }
     return null;
   }
 

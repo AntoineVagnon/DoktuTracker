@@ -25,7 +25,7 @@ export default function PatientRecords() {
   });
 
   // Get unique patients from appointments
-  const uniquePatients = appointments
+  const uniquePatients = (appointments as any[])
     .filter((apt: any) => apt.patient)
     .reduce((acc: any[], apt: any) => {
       const existingPatient = acc.find(p => p.id === apt.patient.id);
@@ -71,7 +71,7 @@ export default function PatientRecords() {
   // If a specific patient is selected, show patient detail view
   if (selectedPatientId) {
     const selectedPatient = uniquePatients.find((p: any) => p.id.toString() === selectedPatientId);
-    const patientAppointments = appointments.filter((apt: any) => apt.patient?.id.toString() === selectedPatientId);
+    const patientAppointments = (appointments as any[]).filter((apt: any) => apt.patient?.id.toString() === selectedPatientId);
 
     return (
       <DoctorLayout>

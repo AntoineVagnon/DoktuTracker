@@ -63,18 +63,25 @@ export default function Dashboard() {
     }
   }, [user, verificationJustCompleted, toast]);
 
-  // Redirect if not authenticated
+  // More gentle authentication check - avoid aggressive redirects during navigation
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
+      // Only redirect if we're sure the user is actually logged out
+      // Add a delay to prevent interrupting navigation or temporary auth states
+      const redirectTimer = setTimeout(() => {
+        // Double-check auth state before redirecting
+        if (!isAuthenticated) {
+          console.log('Dashboard: User authentication lost, redirecting to login');
+          toast({
+            title: "Session Expired", 
+            description: "Please log in again to continue.",
+            variant: "destructive",
+          });
+          window.location.href = "/api/login";
+        }
+      }, 2000); // 2 second delay to prevent interrupting navigation
+      
+      return () => clearTimeout(redirectTimer);
     }
   }, [isAuthenticated, isLoading, toast]);
 
