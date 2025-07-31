@@ -695,19 +695,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (paymentIntent.status === 'succeeded') {
         const appointmentId = paymentIntent.metadata.appointmentId;
         
-        // Update appointment status to paid
-        await storage.updateAppointmentStatus(appointmentId, "paid");
-        
-        // Record the payment
-        await storage.recordPayment({
-          appointmentId,
-          patientId: req.user.id.toString(),
-          stripePaymentIntentId: paymentIntentId,
-          amount: (paymentIntent.amount / 100).toString(),
-          currency: paymentIntent.currency.toUpperCase(),
-          status: "succeeded",
-          paymentMethod: "card",
-        });
+        // Update appointment status to paid with payment intent ID
+        await storage.updateAppointmentStatus(appointmentId, "paid", paymentIntentId);
 
         // Get appointment details for response
         const appointment = await storage.getAppointment(appointmentId);
@@ -716,14 +705,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (appointment) {
           // Get doctor details
           const doctor = await storage.getDoctor(appointment.doctorId);
-          // Get time slot details  
-          const timeSlot = await storage.getTimeSlot(appointment.timeSlotId);
           
           appointmentDetails = {
             appointmentId: appointment.id,
-            doctorName: doctor ? `${doctor.firstName || ''} ${doctor.lastName || ''}`.trim() : 'Unknown Doctor',
+            doctorName: doctor ? `${doctor.user?.firstName || ''} ${doctor.user?.lastName || ''}`.trim() || doctor.user?.email : 'Unknown Doctor',
             specialty: doctor?.specialty || '',
-            slot: timeSlot ? `${timeSlot.date}T${timeSlot.startTime}:00` : '',
+            slot: appointment.appointmentDate || '',
             price: appointment.price,
             status: appointment.status
           };
