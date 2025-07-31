@@ -662,10 +662,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Find and mark the corresponding time slot as unavailable
           const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
           const appointmentDate = new Date(appointment.appointmentDate);
-          const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format to match slots
+          
+          // Convert to local time for matching with slots that are stored in local time format
+          const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format (local time)
           const appointmentDateString = appointmentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
           
-          console.log(`🔍 Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString}`);
+          console.log(`🔍 Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString} (local time)`);
           console.log(`📅 Available slots:`, timeSlots.map(s => `${s.date} ${s.startTime} (available: ${s.isAvailable})`));
           
           const matchingSlot = timeSlots.find(slot => 
@@ -787,10 +789,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (appointment) {
             const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
             const appointmentDate = new Date(appointment.appointmentDate);
-            const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format to match slots
+            const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format (local time)
             const appointmentDateString = appointmentDate.toISOString().split('T')[0];
             
-            console.log(`🔍 Webhook: Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString}`);
+            console.log(`🔍 Webhook: Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString} (local time)`);
             
             const matchingSlot = timeSlots.find(slot => 
               slot.date === appointmentDateString && 

@@ -66,7 +66,7 @@ export default function Dashboard() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery({
+  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<any[]>({
     queryKey: ["/api/appointments"],
     enabled: isAuthenticated,
   });
