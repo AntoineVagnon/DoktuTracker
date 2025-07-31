@@ -208,6 +208,13 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
 
     const now = new Date();
     const newBanners: BannerProps[] = [];
+    
+    console.log('🔄 Banner System - Processing banners at:', {
+      currentTime: now.toISOString(),
+      currentTimeLocal: now.toLocaleString(),
+      appointmentsCount: appointments.length,
+      userRole: user.role
+    });
 
     // 1. Payment incomplete banners (highest priority)
     const pendingPaymentAppointments = appointments.filter(
@@ -229,31 +236,61 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
     });
 
     // 2. Live/imminent session banners (second priority)
+    // Check for appointments that are close (within 2 hours) to account for timezone issues
     const liveAppointments = appointments.filter(apt => {
       const appointmentTime = new Date(apt.appointmentDate);
-      const fiveMinutesBefore = addMinutes(appointmentTime, -5);
+      const twoHoursBefore = addMinutes(appointmentTime, -120);
       const thirtyMinutesAfter = addMinutes(appointmentTime, 30);
       
+      // Debug logging for timezone issues
+      console.log('🕐 Banner System - Appointment check:', {
+        appointmentId: apt.id,
+        appointmentDate: apt.appointmentDate,
+        appointmentTime: appointmentTime.toISOString(),
+        appointmentTimeLocal: appointmentTime.toLocaleString(),
+        now: now.toISOString(),
+        nowLocal: now.toLocaleString(),
+        twoHoursBefore: twoHoursBefore.toISOString(),
+        thirtyMinutesAfter: thirtyMinutesAfter.toISOString(),
+        isAfterStart: isAfter(now, twoHoursBefore),
+        isBeforeEnd: isBefore(now, thirtyMinutesAfter),
+        status: apt.status,
+        shouldShow: apt.status === 'paid' && isAfter(now, twoHoursBefore) && isBefore(now, thirtyMinutesAfter)
+      });
+      
       return apt.status === 'paid' && 
-             isAfter(now, fiveMinutesBefore) && 
+             isAfter(now, twoHoursBefore) && 
              isBefore(now, thirtyMinutesAfter);
     });
 
     liveAppointments.forEach((apt) => {
       const appointmentTime = new Date(apt.appointmentDate);
       const isLate = isAfter(now, addMinutes(appointmentTime, 15));
+      const isVeryClose = isAfter(now, addMinutes(appointmentTime, -5));
+      
+      // Determine banner message based on proximity
+      let title = `Your consultation with Dr. ${apt.doctor?.firstName || 'Doctor'}`;
+      let buttonLabel = 'Join Video Call';
+      
+      if (isAfter(now, appointmentTime)) {
+        title += ' is ready to join';
+        buttonLabel = 'Join (Late)';
+      } else if (isVeryClose) {
+        title += ' starts soon';
+      } else {
+        title += ` is scheduled (${appointmentTime.toLocaleString()})`;
+        buttonLabel = 'View Details';
+      }
       
       newBanners.push({
         type: 'live',
         priority: 2,
-        title: isLate 
-          ? `Your consultation with Dr. ${apt.doctor?.firstName || 'Doctor'} is ready to join` 
-          : `Your consultation with Dr. ${apt.doctor?.firstName || 'Doctor'} starts soon`,
+        title,
         countdown: appointmentTime,
         primaryAction: {
-          label: isLate ? 'Join (Late)' : 'Join Video Call',
+          label: buttonLabel,
           onClick: () => {
-            if (apt.zoomJoinUrl) {
+            if (apt.zoomJoinUrl && (isLate || isVeryClose)) {
               window.open(apt.zoomJoinUrl, '_blank');
             } else {
               // Fallback to appointment details

@@ -85,6 +85,19 @@ export interface IStorage {
   createReview(review: InsertReview): Promise<Review>;
   getDoctorReviews(doctorId: string): Promise<(Review & { patient: User })[]>;
 
+  // Health Profile operations
+  getHealthProfile(patientId: number): Promise<any | undefined>;
+  createHealthProfile(profile: any): Promise<any>;
+  updateHealthProfile(id: string, updates: any): Promise<any>;
+
+  // Document operations
+  getDocuments(appointmentId: number): Promise<any[]>;
+  deleteDocument(id: string): Promise<void>;
+
+  // Banner dismissal operations
+  createBannerDismissal(dismissal: any): Promise<any>;
+  getBannerDismissals(userId: number): Promise<any[]>;
+
   // Admin operations
   getKPIs(): Promise<{
     totalAppointments: number;
@@ -810,6 +823,83 @@ export class PostgresStorage implements IStorage {
       status: payment.status,
       paymentMethod: payment.paymentMethod,
     });
+  }
+
+  // Health Profile operations
+  async getHealthProfile(patientId: number): Promise<any | undefined> {
+    // For now, return a mock health profile structure
+    // This would normally query a health_profiles table
+    return {
+      id: `health_${patientId}`,
+      patientId,
+      profileStatus: 'incomplete',
+      completionScore: 40, // 40% complete (5 of 5 fields missing as shown in banner)
+      medicalHistory: null,
+      medications: null,
+      allergies: null,
+      emergencyContact: null,
+      insuranceInfo: null,
+      lastUpdated: new Date()
+    };
+  }
+
+  async createHealthProfile(profile: any): Promise<any> {
+    // For now, simulate profile creation
+    // This would normally insert into health_profiles table
+    const newProfile = {
+      ...profile,
+      id: `health_${profile.patientId}_${Date.now()}`,
+      profileStatus: 'complete',
+      completionScore: 100,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    console.log('Health profile created:', newProfile);
+    return newProfile;
+  }
+
+  async updateHealthProfile(id: string, updates: any): Promise<any> {
+    // For now, simulate profile update
+    const updatedProfile = {
+      id,
+      ...updates,
+      updatedAt: new Date()
+    };
+    
+    console.log('Health profile updated:', updatedProfile);
+    return updatedProfile;
+  }
+
+  // Document operations
+  async getDocuments(appointmentId: number): Promise<any[]> {
+    // For now, return empty array
+    // This would normally query a documents table
+    return [];
+  }
+
+  async deleteDocument(id: string): Promise<void> {
+    // For now, just log
+    console.log('Document deleted:', id);
+  }
+
+  // Banner dismissal operations
+  async createBannerDismissal(dismissal: any): Promise<any> {
+    // For now, simulate dismissal creation
+    const newDismissal = {
+      ...dismissal,
+      id: `dismissal_${Date.now()}`,
+      createdAt: new Date()
+    };
+    
+    console.log('Banner dismissal created:', newDismissal);
+    return newDismissal;
+  }
+
+  async getBannerDismissals(userId: number): Promise<any[]> {
+    // For now, return empty array
+    // This would normally query a banner_dismissals table
+    return [];
   }
 }
 
