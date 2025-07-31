@@ -436,45 +436,26 @@ export class PostgresStorage implements IStorage {
           videoRoomId: appointments.videoRoomId,
           createdAt: appointments.createdAt,
           updatedAt: appointments.updatedAt,
-          // Doctor with user info
-          doctor: {
-            id: doctors.id,
-            userId: doctors.userId,
-            specialty: doctors.specialty,
-            bio: doctors.bio,
-            education: doctors.education,
-            experience: doctors.experience,
-            languages: doctors.languages,
-            rppsNumber: doctors.rppsNumber,
-            consultationPrice: doctors.consultationPrice,
-            rating: doctors.rating,
-            reviewCount: doctors.reviewCount,
-            createdAt: doctors.createdAt,
-            updatedAt: doctors.updatedAt,
-            user: {
-              id: doctorUsers.id,
-              email: doctorUsers.email,
-              title: doctorUsers.title,
-              firstName: doctorUsers.firstName,
-              lastName: doctorUsers.lastName,
-              role: doctorUsers.role,
-              approved: doctorUsers.approved,
-              createdAt: doctorUsers.createdAt,
-              updatedAt: doctorUsers.updatedAt
-            }
-          },
+          // Doctor info (flattened)
+          doctorSpecialty: doctors.specialty,
+          doctorBio: doctors.bio,
+          doctorEducation: doctors.education,
+          doctorExperience: doctors.experience,
+          doctorLanguages: doctors.languages,
+          doctorRppsNumber: doctors.rppsNumber,
+          doctorConsultationPrice: doctors.consultationPrice,
+          doctorRating: doctors.rating,
+          doctorReviewCount: doctors.reviewCount,
+          // Doctor user info
+          doctorEmail: doctorUsers.email,
+          doctorTitle: doctorUsers.title,
+          doctorFirstName: doctorUsers.firstName,
+          doctorLastName: doctorUsers.lastName,
           // Patient info
-          patient: {
-            id: patientUsers.id,
-            email: patientUsers.email,
-            title: patientUsers.title,
-            firstName: patientUsers.firstName,
-            lastName: patientUsers.lastName,
-            role: patientUsers.role,
-            approved: patientUsers.approved,
-            createdAt: patientUsers.createdAt,
-            updatedAt: patientUsers.updatedAt
-          }
+          patientEmail: patientUsers.email,
+          patientTitle: patientUsers.title,
+          patientFirstName: patientUsers.firstName,
+          patientLastName: patientUsers.lastName
         })
         .from(appointments)
         .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
@@ -489,7 +470,47 @@ export class PostgresStorage implements IStorage {
       }
       
       const results = await query.orderBy(desc(appointments.appointmentDate));
-      return results;
+      
+      // Transform the flattened results back to nested structure for compatibility
+      return results.map(row => ({
+        id: row.id,
+        doctorId: row.doctorId,
+        patientId: row.patientId,
+        timeSlotId: row.timeSlotId,
+        status: row.status,
+        appointmentDate: row.appointmentDate,
+        price: row.price,
+        paymentIntentId: row.paymentIntentId,
+        notes: row.notes,
+        cancelReason: row.cancelReason,
+        cancelledBy: row.cancelledBy,
+        videoRoomId: row.videoRoomId,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+        doctor: {
+          specialty: row.doctorSpecialty,
+          bio: row.doctorBio,
+          education: row.doctorEducation,
+          experience: row.doctorExperience,
+          languages: row.doctorLanguages,
+          rppsNumber: row.doctorRppsNumber,
+          consultationPrice: row.doctorConsultationPrice,
+          rating: row.doctorRating,
+          reviewCount: row.doctorReviewCount,
+          user: {
+            email: row.doctorEmail,
+            title: row.doctorTitle,
+            firstName: row.doctorFirstName,
+            lastName: row.doctorLastName
+          }
+        },
+        patient: {
+          email: row.patientEmail,
+          title: row.patientTitle,
+          firstName: row.patientFirstName,
+          lastName: row.patientLastName
+        }
+      }));
     } catch (error) {
       console.error("Error in getAppointments:", error);
       return [];
