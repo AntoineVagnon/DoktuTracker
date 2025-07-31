@@ -401,10 +401,112 @@ export default function Dashboard() {
               <TabsContent value="profile">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Health Profile</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center">
+                        <Heart className="h-5 w-5 mr-2" />
+                        Health Profile
+                      </CardTitle>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setHealthProfileOpen(true)}
+                      >
+                        Edit Profile
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600">Manage your health information and medical history.</p>
+                    {/* Health Profile Query */}
+                    {(() => {
+                      const { data: healthProfile, isLoading: healthProfileLoading } = useQuery({
+                        queryKey: ["/api/health-profile", user?.id],
+                        enabled: !!user?.id,
+                      });
+
+                      if (healthProfileLoading) {
+                        return <div className="animate-pulse space-y-4">
+                          <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                        </div>;
+                      }
+
+                      if (!healthProfile || healthProfile.profileStatus === 'incomplete') {
+                        return (
+                          <div className="text-center py-8">
+                            <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">Complete Your Health Profile</h3>
+                            <p className="text-gray-600 mb-4">Add your health information to enable appointment bookings</p>
+                            <Button onClick={() => setHealthProfileOpen(true)}>
+                              <Heart className="h-4 w-4 mr-2" />
+                              Complete Profile
+                            </Button>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="space-y-6">
+                          {/* Profile Status */}
+                          <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                              <span className="text-green-800 font-medium">Profile Complete</span>
+                            </div>
+                            <Badge variant="secondary" className="bg-green-100 text-green-800">
+                              {healthProfile.completionScore}% Complete
+                            </Badge>
+                          </div>
+
+                          {/* Personal Information */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-sm font-medium text-gray-700">Date of Birth</label>
+                              <p className="text-gray-900">{healthProfile.dateOfBirth || 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-700">Gender</label>
+                              <p className="text-gray-900 capitalize">{healthProfile.gender || 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-700">Height</label>
+                              <p className="text-gray-900">{healthProfile.height ? `${healthProfile.height} cm` : 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-700">Weight</label>
+                              <p className="text-gray-900">{healthProfile.weight ? `${healthProfile.weight} kg` : 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-700">Blood Type</label>
+                              <p className="text-gray-900">{healthProfile.bloodType || 'Not provided'}</p>
+                            </div>
+                          </div>
+
+                          {/* Emergency Contact */}
+                          {(healthProfile.emergencyContactName || healthProfile.emergencyContactPhone) && (
+                            <div>
+                              <h3 className="text-lg font-medium text-gray-900 mb-3">Emergency Contact</h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-sm font-medium text-gray-700">Name</label>
+                                  <p className="text-gray-900">{healthProfile.emergencyContactName || 'Not provided'}</p>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium text-gray-700">Phone</label>
+                                  <p className="text-gray-900">{healthProfile.emergencyContactPhone || 'Not provided'}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Last Updated */}
+                          <div className="text-sm text-gray-500 pt-4 border-t">
+                            Last updated: {healthProfile.lastReviewedAt ? 
+                              new Date(healthProfile.lastReviewedAt).toLocaleDateString() : 
+                              'Never'
+                            }
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </CardContent>
                 </Card>
               </TabsContent>

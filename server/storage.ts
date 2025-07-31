@@ -839,7 +839,7 @@ export class PostgresStorage implements IStorage {
       return cachedProfile;
     }
     
-    console.log('❌ No cached profile found, returning incomplete for patient:', patientId);
+    console.log('❌ No cached profile found for patient:', patientId, '- returning incomplete');
     // Otherwise return incomplete profile to trigger completion flow
     return {
       id: `health_${patientId}`,
