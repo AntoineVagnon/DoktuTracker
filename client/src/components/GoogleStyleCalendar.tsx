@@ -151,7 +151,7 @@ export default function GoogleStyleCalendar() {
     enabled: !!user?.id
   });
 
-  // Create individual 30-minute time slots
+  // Batch create multiple 30-minute time slots - dramatically faster!
   const createSlotMutation = useMutation({
     mutationFn: async (data: { startTime: string; endTime: string; isRecurring?: boolean; recurringEndDate?: string }) => {
       // Parse the start and end times to create individual 30-minute slots
@@ -161,40 +161,45 @@ export default function GoogleStyleCalendar() {
       const slots = [];
       let currentTime = new Date(startDateTime);
       
-      // Create individual 30-minute slots between start and end time
+      // Prepare all slots data for batch creation (no API calls yet)
       while (currentTime < endDateTime) {
         const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
         
-        const slotData = {
+        slots.push({
           startTime: currentTime.toISOString(),
           endTime: slotEnd.toISOString(),
           isRecurring: data.isRecurring,
           recurringEndDate: data.recurringEndDate
-        };
-        
-        const response = await apiRequest('POST', '/api/time-slots', slotData);
-        const slot = await response.json();
-        slots.push(slot);
+        });
         
         currentTime = new Date(slotEnd);
       }
       
-      return slots;
+      // Single batch API call instead of sequential calls - HUGE performance boost!
+      console.log(`🚀 Batch creating ${slots.length} slots with single API call`);
+      const response = await apiRequest('POST', '/api/time-slots/batch', { slots });
+      const createdSlots = await response.json();
+      
+      return createdSlots;
     },
     onSuccess: (slots) => {
-      // Immediate sync across all booking surfaces
-      syncAvailability(user?.id);
+      // More targeted cache invalidation - only invalidate time slots
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+      
+      // Sync availability across all booking surfaces
+      syncAvailability(user?.id);
+      
       toast({ 
-        title: "Availability created successfully!",
-        description: `Created ${slots.length} individual 30-minute slots`
+        title: "Success!",
+        description: `Created ${slots.length} slots instantly`
       });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
     },
     onError: (error: any) => {
-      console.error('Create slot error:', error);
+      console.error('Batch slot creation failed:', error);
       toast({ 
         title: "Failed to create availability", 
+        description: "Please try again",
         variant: "destructive" 
       });
     }
@@ -472,40 +477,49 @@ export default function GoogleStyleCalendar() {
       }];
 
       try {
-        console.log(`Creating ${blocksToCreate.length} individual availability blocks:`, blocksToCreate);
+        console.log(`🚀 Batch creating ${blocksToCreate.length} availability blocks:`, blocksToCreate);
         
-        const results = [];
-        for (let i = 0; i < blocksToCreate.length; i++) {
-          const block = blocksToCreate[i];
-          console.log(`Creating availability ${i + 1}/${blocksToCreate.length}: ${block.date} ${block.startTime}-${block.endTime}`);
-          
+        // If we have multiple blocks, create them as separate time range mutations 
+        // Each block will be processed by the batch mutation internally
+        if (blocksToCreate.length === 1) {
+          const block = blocksToCreate[0];
           const startDateTime = new Date(`${block.date}T${block.startTime}:00.000Z`);
           const endDateTime = new Date(`${block.date}T${block.endTime}:00.000Z`);
           
-          const result = await createSlotMutation.mutateAsync({
+          await createSlotMutation.mutateAsync({
             startTime: startDateTime.toISOString(),
             endTime: endDateTime.toISOString(),
             isRecurring: slotModal.isRecurring,
             recurringEndDate: slotModal.recurringEndDate
           });
+        } else {
+          // For multiple blocks, create them all as individual calls but the mutation handles batching internally
+          const promises = blocksToCreate.map(block => {
+            const startDateTime = new Date(`${block.date}T${block.startTime}:00.000Z`);
+            const endDateTime = new Date(`${block.date}T${block.endTime}:00.000Z`);
+            
+            return createSlotMutation.mutateAsync({
+              startTime: startDateTime.toISOString(),
+              endTime: endDateTime.toISOString(),
+              isRecurring: slotModal.isRecurring,
+              recurringEndDate: slotModal.recurringEndDate
+            });
+          });
           
-          results.push(result);
-          console.log(`✓ Availability ${i + 1} created: ${block.startTime}-${block.endTime}`);
+          await Promise.all(promises);
         }
         
-        console.log(`✅ Successfully created ${results.length} separate availability slots!`);
-        
-        // Sync availability across all surfaces immediately
-        syncAvailability(user?.id);
+        console.log(`✅ Successfully created ${blocksToCreate.length} availability blocks with batch optimization!`);
         
         setSelectedBlocks([]);
-        toast({ 
-          title: `Success!`, 
-          description: `Created ${blocksToCreate.length} availability block${blocksToCreate.length > 1 ? 's' : ''}!` 
-        });
         setSlotModal(prev => ({ ...prev, isOpen: false }));
       } catch (error) {
         console.error('Error creating blocks:', error);
+        toast({
+          title: "Error creating availability",
+          description: "Please try again",
+          variant: "destructive"
+        });
       }
     } else if (slotModal.slotId) {
       const startDateTime = new Date(`${slotModal.date}T${slotModal.startTime}:00`);

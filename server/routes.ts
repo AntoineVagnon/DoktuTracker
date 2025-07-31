@@ -495,6 +495,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Batch create multiple time slots - much faster than individual calls
+  app.post("/api/time-slots/batch", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user?.id || user.role !== 'doctor') {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const { slots } = req.body;
+      
+      if (!Array.isArray(slots) || slots.length === 0) {
+        return res.status(400).json({ error: "Slots array is required and cannot be empty" });
+      }
+
+      // Get doctor record to find the correct doctorId
+      const doctors = await storage.getDoctors();
+      let doctor = doctors.find(d => d.user?.email === user.email);
+      
+      if (!doctor) {
+        console.log(`❌ No doctor profile found for: ${user.email}`);
+        return res.status(404).json({ error: "Doctor profile not found" });
+      }
+
+      console.log(`🚀 Batch creating ${slots.length} time slots for doctor ${doctor.id}`);
+      
+      // Process all slots and add doctor ID
+      const slotsData = slots.map(slot => {
+        const startDateTime = new Date(slot.startTime);
+        const endDateTime = new Date(slot.endTime);
+        const dateStr = startDateTime.toISOString().split('T')[0];
+        const startTimeStr = startDateTime.toTimeString().slice(0, 5);
+        const endTimeStr = endDateTime.toTimeString().slice(0, 5);
+
+        return {
+          doctorId: doctor.id,
+          date: dateStr,
+          startTime: startTimeStr,
+          endTime: endTimeStr,
+          isAvailable: true,
+          isRecurring: slot.isRecurring || false,
+          recurringEndDate: slot.recurringEndDate || null,
+          createdAt: new Date()
+        };
+      });
+      
+      const createdSlots = await storage.createTimeSlotsBatch(slotsData);
+      console.log(`✅ Successfully batch created ${createdSlots.length} slots`);
+      
+      res.status(201).json(createdSlots);
+    } catch (error) {
+      console.error("Error batch creating time slots:", error);
+      res.status(500).json({ message: "Failed to batch create time slots" });
+    }
+  });
+
   app.post("/api/time-slots", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;

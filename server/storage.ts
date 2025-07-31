@@ -478,6 +478,15 @@ export class PostgresStorage implements IStorage {
     return newSlot;
   }
 
+  async createTimeSlotsBatch(slots: InsertTimeSlot[]): Promise<TimeSlot[]> {
+    if (slots.length === 0) return [];
+    
+    console.log(`🚀 Batch creating ${slots.length} time slots`);
+    const newSlots = await db.insert(doctorTimeSlots).values(slots).returning();
+    console.log(`✅ Successfully batch created ${newSlots.length} time slots`);
+    return newSlots;
+  }
+
   async updateTimeSlot(id: string, data: {
     startTime?: string;
     endTime?: string;
