@@ -208,9 +208,9 @@ export default function Dashboard() {
           }}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-4xl mx-auto">
           {/* Main Content */}
-          <div className="lg:col-span-2">
+          <div>
             <Tabs defaultValue="appointments" className="space-y-6">
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="appointments">Appointments</TabsTrigger>
@@ -248,9 +248,8 @@ export default function Dashboard() {
                     ) : upcomingAppointments.length === 0 ? (
                       <div className="text-center py-8">
                         <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments scheduled</h3>
-                        <p className="text-gray-600 mb-4">Book an appointment with our specialist</p>
-                        <Button onClick={handleBookAppointment}>
+                        <p className="text-gray-600 mb-4">No upcoming appointments</p>
+                        <Button onClick={handleBookAppointment} className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
                           <Plus className="h-4 w-4 mr-2" />
                           Book an appointment
                         </Button>
@@ -344,178 +343,218 @@ export default function Dashboard() {
 
               </TabsContent>
 
-              <TabsContent value="book">
+              <TabsContent value="calendar">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Book New Appointment</CardTitle>
+                    <CardTitle className="flex items-center">
+                      <Calendar className="h-5 w-5 mr-2" />
+                      Calendar View
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600">Browse our available doctors and schedule your consultation.</p>
-                    <Button onClick={handleBookAppointment} className="mt-4">Browse Doctors</Button>
+                    <div className="text-center py-8">
+                      <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">Calendar view coming soon</p>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              <TabsContent value="profile">
+              <TabsContent value="doctors">
                 <Card>
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center">
-                        <Heart className="h-5 w-5 mr-2" />
-                        Health Profile
-                      </CardTitle>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setHealthProfileOpen(true)}
-                      >
-                        Edit Profile
-                      </Button>
-                    </div>
+                    <CardTitle className="flex items-center">
+                      <User className="h-5 w-5 mr-2" />
+                      My Doctors
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {healthProfileLoading ? (
-                      <div className="animate-pulse space-y-4">
-                        <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                      </div>
-                    ) : !healthProfile || healthProfile.profileStatus === 'incomplete' ? (
-                      <div className="text-center py-8">
-                        <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">Complete Your Health Profile</h3>
-                        <p className="text-gray-600 mb-4">Add your health information to enable appointment bookings</p>
-                        <Button onClick={() => setHealthProfileOpen(true)}>
-                          <Heart className="h-4 w-4 mr-2" />
-                          Complete Profile
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-6">
-                        {/* Profile Status */}
-                        <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                            <span className="text-green-800 font-medium">Profile Complete</span>
-                          </div>
-                          <Badge variant="secondary" className="bg-green-100 text-green-800">
-                            {healthProfile.completionScore}% Complete
-                          </Badge>
-                        </div>
+                    <div className="text-center py-8">
+                      <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">Your doctor history coming soon</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-                        {/* Personal Information */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-sm font-medium text-gray-700">Date of Birth</label>
-                            <p className="text-gray-900">{healthProfile.dateOfBirth || 'Not provided'}</p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-gray-700">Gender</label>
-                            <p className="text-gray-900 capitalize">{healthProfile.gender || 'Not provided'}</p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-gray-700">Height</label>
-                            <p className="text-gray-900">{healthProfile.height ? `${healthProfile.height} cm` : 'Not provided'}</p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-gray-700">Weight</label>
-                            <p className="text-gray-900">{healthProfile.weight ? `${healthProfile.weight} kg` : 'Not provided'}</p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-gray-700">Blood Type</label>
-                            <p className="text-gray-900">{healthProfile.bloodType || 'Not provided'}</p>
+              <TabsContent value="settings">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Settings className="h-5 w-5 mr-2" />
+                      Settings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Tabs defaultValue="profile" className="space-y-6">
+                      <TabsList className="grid w-full grid-cols-5">
+                        <TabsTrigger value="profile">My Profile</TabsTrigger>
+                        <TabsTrigger value="health">Health Profile</TabsTrigger>
+                        <TabsTrigger value="billing">Billing</TabsTrigger>
+                        <TabsTrigger value="payment">Payment Methods</TabsTrigger>
+                        <TabsTrigger value="security">Security</TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="profile">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-medium">Personal Information</h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Title
+                              </label>
+                              <p className="text-gray-900">{user?.title || 'Not specified'}</p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                First Name
+                              </label>
+                              <p className="text-gray-900">{user?.firstName || 'Not specified'}</p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Last Name
+                              </label>
+                              <p className="text-gray-900">{user?.lastName || 'Not specified'}</p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Email
+                              </label>
+                              <p className="text-gray-900">{user?.email}</p>
+                            </div>
                           </div>
                         </div>
+                      </TabsContent>
 
-                        {/* Emergency Contact */}
-                        {(healthProfile.emergencyContactName || healthProfile.emergencyContactPhone) && (
-                          <div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-3">Emergency Contact</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <label className="text-sm font-medium text-gray-700">Name</label>
-                                <p className="text-gray-900">{healthProfile.emergencyContactName || 'Not provided'}</p>
+                      <TabsContent value="health">
+                        {healthProfileLoading ? (
+                          <div className="animate-pulse space-y-4">
+                            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                          </div>
+                        ) : !healthProfile || healthProfile.profileStatus === 'incomplete' ? (
+                          <div className="text-center py-8">
+                            <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">Complete Your Health Profile</h3>
+                            <p className="text-gray-600 mb-4">Add your health information to enable appointment bookings</p>
+                            <Button onClick={() => setHealthProfileOpen(true)}>
+                              <Heart className="h-4 w-4 mr-2" />
+                              Complete Profile
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="space-y-6">
+                            {/* Profile Status */}
+                            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                              <div className="flex items-center space-x-2">
+                                <Heart className="h-5 w-5 text-green-600" />
+                                <span className="font-medium text-green-900">Health Profile Complete</span>
                               </div>
-                              <div>
-                                <label className="text-sm font-medium text-gray-700">Phone</label>
-                                <p className="text-gray-900">{healthProfile.emergencyContactPhone || 'Not provided'}</p>
+                              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                {healthProfile.completionScore}% Complete
+                              </Badge>
+                            </div>
+
+                            {/* Key Information */}
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-medium">Key Information</h3>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Date of Birth
+                                  </label>
+                                  <p className="text-gray-900">
+                                    {healthProfile.dateOfBirth ? 
+                                      new Date(healthProfile.dateOfBirth).toLocaleDateString() : 
+                                      'Not specified'
+                                    }
+                                  </p>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Gender
+                                  </label>
+                                  <p className="text-gray-900">{healthProfile.gender || 'Not specified'}</p>
+                                </div>
                               </div>
+
+                              <div>
+                                <Button 
+                                  variant="outline" 
+                                  onClick={() => setHealthProfileOpen(true)}
+                                >
+                                  Edit Health Profile
+                                </Button>
+                              </div>
+                            </div>
+
+                            {/* Last Updated */}
+                            <div className="text-sm text-gray-500 pt-4 border-t">
+                              Last updated: {healthProfile.lastReviewedAt ? 
+                                new Date(healthProfile.lastReviewedAt).toLocaleDateString() : 
+                                'Never'
+                              }
                             </div>
                           </div>
                         )}
+                      </TabsContent>
 
-                        {/* Last Updated */}
-                        <div className="text-sm text-gray-500 pt-4 border-t">
-                          Last updated: {healthProfile.lastReviewedAt ? 
-                            new Date(healthProfile.lastReviewedAt).toLocaleDateString() : 
-                            'Never'
-                          }
+                      <TabsContent value="billing">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-medium">Billing & Payments</h3>
+                          <p className="text-gray-600">View your payment history and manage billing information.</p>
                         </div>
-                      </div>
-                    )}
+                      </TabsContent>
+
+                      <TabsContent value="payment">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-medium">Payment Methods</h3>
+                          <p className="text-gray-600">Manage your saved payment methods.</p>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="security">
+                        <div className="space-y-6">
+                          <h3 className="text-lg font-medium">Security Settings</h3>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Primary Email
+                              </label>
+                              <div className="flex items-center justify-between p-3 border rounded-lg">
+                                <span className="text-gray-900">{user?.email}</span>
+                                <Button variant="outline" size="sm">
+                                  Change Email
+                                </Button>
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Password
+                              </label>
+                              <div className="flex items-center justify-between p-3 border rounded-lg">
+                                <span className="text-gray-500">••••••••••••</span>
+                                <Button variant="outline" size="sm">
+                                  Change Password
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              <TabsContent value="billing">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Billing & Payments</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">View your payment history and manage billing information.</p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+
             </Tabs>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button 
-                  onClick={handleBookAppointment}
-                  className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Book Appointment
-                </Button>
 
-                <Button variant="outline" className="w-full">
-                  <CalendarCheck className="h-4 w-4 mr-2" />
-                  My Calendar
-                </Button>
-
-                <Button variant="outline" className="w-full">
-                  <User className="h-4 w-4 mr-2" />
-                  My Doctors
-                </Button>
-
-                <Button variant="outline" className="w-full">
-                  <Settings className="h-4 w-4 mr-2" />
-                  My Profile
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Health Tips */}
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-              <CardHeader>
-                <CardTitle className="flex items-center text-green-800">
-                  <AlertCircle className="h-5 w-5 mr-2" />
-                  Health Tips
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-green-700">
-                  Don't forget to take your medications according to prescriptions and maintain regular follow-up with your doctors.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </main>
 
