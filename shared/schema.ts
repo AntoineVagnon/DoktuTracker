@@ -29,7 +29,7 @@ export const sessions = pgTable(
 
 // User storage table - normalized with structured name fields only
 export const users = pgTable("users", {
-  id: integer("id").primaryKey(), // Use integer to match actual database
+  id: serial("id").primaryKey(), // Use serial for auto-increment
   email: varchar("email").unique(),
   title: varchar("title"), // Dr., M., Mme., etc.
   firstName: varchar("first_name"), // Structured first name
@@ -45,7 +45,7 @@ export const users = pgTable("users", {
 
 // Doctors table  
 export const doctors = pgTable("doctors", {
-  id: integer("id").primaryKey(), // Keep integer for display but actual DB has UUID
+  id: serial("id").primaryKey(), // Use serial for auto-increment
   userId: integer("user_id").references(() => users.id).notNull(),
   specialty: varchar("specialty").notNull(),
   bio: text("bio"),
@@ -85,7 +85,7 @@ export const appointmentPending = pgTable("appointment_pending", {
 
 // Appointments - matching actual Supabase structure exactly
 export const appointments = pgTable("appointments", {
-  id: integer("id").primaryKey(),
+  id: serial("id").primaryKey(),
   patientId: integer("patient_id").references(() => users.id).notNull(),
   doctorId: integer("doctor_id").references(() => doctors.id).notNull(),
   appointmentDate: timestamp("appointment_date").notNull(),

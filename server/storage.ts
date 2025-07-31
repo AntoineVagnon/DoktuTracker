@@ -132,7 +132,14 @@ export class PostgresStorage implements IStorage {
       throw new Error('Email is required');
     }
     
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userData.email)) {
+      throw new Error('Invalid email format');
+    }
+    
     const cleanUserData = {
+      // Explicitly exclude id to let database auto-generate it
       email: userData.email,
       title: userData.title || null,
       firstName: userData.firstName || null,
@@ -146,7 +153,15 @@ export class PostgresStorage implements IStorage {
       updatedAt: new Date()
     };
 
-    const [newUser] = await db.insert(users).values(cleanUserData).returning();
+    try {
+      const [newUser] = await db.insert(users).values(cleanUserData).returning();
+      return newUser;
+    } catch (error: any) {
+      if (error.code === '23505' && error.constraint_name === 'users_pkey') {
+        throw new Error('User creation failed: ID conflict. Please try again.');
+      }
+      throw error;
+    }
     return newUser;
   }
 
@@ -161,7 +176,14 @@ export class PostgresStorage implements IStorage {
       throw new Error('Email is required');
     }
     
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userData.email)) {
+      throw new Error('Invalid email format');
+    }
+    
     const cleanUserData = {
+      // Explicitly exclude id to let database auto-generate it
       email: userData.email,
       title: userData.title || null,
       firstName: userData.firstName || null,
@@ -175,8 +197,15 @@ export class PostgresStorage implements IStorage {
       updatedAt: new Date()
     };
 
-    const [user] = await db.insert(users).values(cleanUserData).returning();
-    return user;
+    try {
+      const [user] = await db.insert(users).values(cleanUserData).returning();
+      return user;
+    } catch (error: any) {
+      if (error.code === '23505' && error.constraint_name === 'users_pkey') {
+        throw new Error('User creation failed: ID conflict. Please try again.');
+      }
+      throw error;
+    }
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User> {

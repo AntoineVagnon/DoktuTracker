@@ -44,6 +44,18 @@ export default function CreateAccount() {
     setIsLoading(true);
     setResult(null);
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address (e.g., user@example.com)",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast({
         title: "Password Mismatch",
