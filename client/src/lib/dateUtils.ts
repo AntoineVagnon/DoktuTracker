@@ -49,13 +49,37 @@ export function formatSlotTime(timeString: string): string {
 
 // Convert UTC time slot to local time for display
 export function convertSlotTimeToLocal(date: string, timeString: string): string {
-  // Create a UTC date from the slot date and time
-  const [hours, minutes] = timeString.split(':').map(Number);
-  const utcDate = new Date(`${date}T${timeString}:00.000Z`);
-  
-  // Convert to local time and format
-  const localHours = String(utcDate.getHours()).padStart(2, '0');
-  const localMinutes = String(utcDate.getMinutes()).padStart(2, '0');
-  
-  return `${localHours}:${localMinutes}`;
+  try {
+    // Ensure timeString is properly formatted (HH:MM:SS or HH:MM)
+    const timeParts = timeString.split(':');
+    if (timeParts.length < 2) {
+      return timeString; // Return as-is if format is invalid
+    }
+    
+    const hours = parseInt(timeParts[0], 10);
+    const minutes = parseInt(timeParts[1], 10);
+    
+    // Validate hour and minute values
+    if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+      return timeString; // Return as-is if values are invalid
+    }
+    
+    // Create a proper UTC date string
+    const fullTimeString = timeParts.length === 3 ? timeString : `${timeString}:00`;
+    const utcDate = new Date(`${date}T${fullTimeString}.000Z`);
+    
+    // Check if the date is valid
+    if (isNaN(utcDate.getTime())) {
+      return timeString; // Return as-is if date creation failed
+    }
+    
+    // Convert to local time and format
+    const localHours = String(utcDate.getHours()).padStart(2, '0');
+    const localMinutes = String(utcDate.getMinutes()).padStart(2, '0');
+    
+    return `${localHours}:${localMinutes}`;
+  } catch (error) {
+    // Fallback to original timeString if any error occurs
+    return timeString;
+  }
 }
