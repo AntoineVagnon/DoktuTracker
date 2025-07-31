@@ -336,9 +336,27 @@ export class PostgresStorage implements IStorage {
         query = query.where(eq(doctorTimeSlots.date, date)) as any;
       }
       
-      const slots = await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
-      console.log(`📅 Found ${slots.length} time slots for doctor ${doctorIntId}`);
-      return slots;
+      const rawSlots = await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
+      console.log(`📅 Found ${rawSlots.length} raw time slots for doctor ${doctorIntId}`);
+      
+      // Remove duplicates by date+startTime, keeping the most restrictive availability
+      const uniqueSlots = rawSlots.reduce((acc: TimeSlot[], current: TimeSlot) => {
+        const key = `${current.date}_${current.startTime}`;
+        const existingIndex = acc.findIndex(slot => `${slot.date}_${slot.startTime}` === key);
+        
+        if (existingIndex === -1) {
+          acc.push(current);
+        } else {
+          // Keep the slot that is NOT available (more restrictive) if one exists
+          if (!current.isAvailable && acc[existingIndex].isAvailable) {
+            acc[existingIndex] = current;
+          }
+        }
+        return acc;
+      }, []);
+      
+      console.log(`📅 After deduplication: ${uniqueSlots.length} unique slots for doctor ${doctorIntId}`);
+      return uniqueSlots;
     } catch (error) {
       console.error(`Error fetching time slots for doctor ${doctorIntId}:`, error);
       return [];

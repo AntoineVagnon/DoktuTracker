@@ -180,10 +180,7 @@ export default function AvailabilityCalendar({
       return acc;
     }, []);
     
-    console.log(`🔍 Calendar Debug - Selected date: ${dateStr}`);
-    console.log(`🔍 Calendar Debug - Raw filtered slots: ${filtered.length}`);
-    console.log(`🔍 Calendar Debug - Unique slots: ${uniqueSlots.length}`);
-    console.log(`🔍 Calendar Debug - Unique slots data:`, uniqueSlots.map(s => `${s.startTime}: ${s.isAvailable ? 'available' : 'unavailable'}`));
+
     
     return uniqueSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
   }, [selectedDay, doctorSlots]);

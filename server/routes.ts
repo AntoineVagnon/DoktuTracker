@@ -90,6 +90,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
 
+
+
   // Get time slots for authenticated doctor
   app.get("/api/time-slots", isAuthenticated, async (req, res) => {
     try {
