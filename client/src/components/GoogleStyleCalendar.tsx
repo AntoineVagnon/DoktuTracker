@@ -615,44 +615,55 @@ export default function GoogleStyleCalendar() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Calendar & Availability</h2>
-          <p className="text-gray-600">Click and drag to create availability slots</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Calendar & Availability</h2>
+          <p className="text-sm sm:text-base text-gray-600">
+            <span className="hidden sm:inline">Click and drag to create availability slots</span>
+            <span className="sm:hidden">Tap to create slots</span>
+          </p>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           {/* View Tabs */}
           <Tabs value={view} onValueChange={(v) => setView(v as CalendarView)}>
-            <TabsList>
-              <TabsTrigger value="day">Day</TabsTrigger>
-              <TabsTrigger value="week">Week</TabsTrigger>
-              <TabsTrigger value="month">Month</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 sm:w-auto">
+              <TabsTrigger value="day" className="text-xs sm:text-sm">Day</TabsTrigger>
+              <TabsTrigger value="week" className="text-xs sm:text-sm">Week</TabsTrigger>
+              <TabsTrigger value="month" className="text-xs sm:text-sm">Month</TabsTrigger>
             </TabsList>
           </Tabs>
           
-          <Button onClick={addAvailabilityFromTemplate} className="gap-2">
+          <Button onClick={addAvailabilityFromTemplate} className="gap-2 h-9 sm:h-10">
             <Plus className="h-4 w-4" />
-            Add Template
+            <span className="hidden sm:inline">Add Template</span>
+            <span className="sm:hidden">Template</span>
           </Button>
         </div>
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigateDate('prev')}>
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3 sm:gap-0">
+        <div className="flex items-center justify-center sm:justify-start gap-2">
+          <Button variant="outline" size="sm" onClick={() => navigateDate('prev')} className="h-9 px-3">
             <ChevronLeft className="h-4 w-4" />
+            <span className="sr-only">Previous</span>
           </Button>
-          <span className="text-lg font-medium px-4">
+          <span className="text-base sm:text-lg font-medium px-2 sm:px-4 text-center sm:text-left min-w-0 flex-1 sm:flex-none">
             {view === 'week' && format(currentDate, 'MMMM yyyy')}
-            {view === 'day' && format(currentDate, 'EEEE, MMMM d, yyyy')}
+            {view === 'day' && (
+              <>
+                <span className="hidden sm:inline">{format(currentDate, 'EEEE, MMMM d, yyyy')}</span>
+                <span className="sm:hidden">{format(currentDate, 'EEE, MMM d')}</span>
+              </>
+            )}
             {view === 'month' && format(currentDate, 'MMMM yyyy')}
           </span>
-          <Button variant="outline" size="sm" onClick={() => navigateDate('next')}>
+          <Button variant="outline" size="sm" onClick={() => navigateDate('next')} className="h-9 px-3">
             <ChevronRight className="h-4 w-4" />
+            <span className="sr-only">Next</span>
           </Button>
         </div>
         
@@ -660,6 +671,7 @@ export default function GoogleStyleCalendar() {
           variant="outline" 
           size="sm" 
           onClick={() => setCurrentDate(new Date())}
+          className="h-9 w-full sm:w-auto"
         >
           Today
         </Button>
@@ -669,27 +681,32 @@ export default function GoogleStyleCalendar() {
 
       {/* Calendar Grid */}
       {view === 'week' && (
-        <Card>
+        <Card className="overflow-hidden">
           <CardContent className="p-0">
-            <div className="grid grid-cols-8 border-b bg-gray-50">
-              <div className="p-3 text-sm font-medium text-gray-600">Time</div>
+            <div className="grid grid-cols-8 border-b bg-gray-50 sticky top-0 z-10">
+              <div className="p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">
+                <span className="hidden sm:inline">Time</span>
+                <span className="sm:hidden">T</span>
+              </div>
               {getWeekDates().map((date, index) => (
-                <div key={index} className="p-3 text-center border-l">
+                <div key={index} className="p-2 sm:p-3 text-center border-l">
                   <div className="text-xs text-gray-600 uppercase">
-                    {format(date, 'EEE')}
+                    <span className="hidden sm:inline">{format(date, 'EEE')}</span>
+                    <span className="sm:hidden">{format(date, 'E')[0]}</span>
                   </div>
-                  <div className="text-sm font-medium mt-1">
+                  <div className="text-xs sm:text-sm font-medium mt-1">
                     {format(date, 'd')}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="max-h-96 overflow-y-auto" ref={calendarScrollRef}>
+            <div className="max-h-80 sm:max-h-96 overflow-y-auto" ref={calendarScrollRef}>
               {timeSlots30Min.map((timeSlot, slotIndex) => (
                 <div key={slotIndex} className="grid grid-cols-8 border-b last:border-b-0">
-                  <div className="p-2 text-sm text-gray-600 bg-gray-50 border-r">
-                    {timeSlot.display}
+                  <div className="p-1 sm:p-2 text-xs sm:text-sm text-gray-600 bg-gray-50 border-r">
+                    <span className="hidden sm:inline">{timeSlot.display}</span>
+                    <span className="sm:hidden">{timeSlot.hour.toString().padStart(2, '0')}</span>
                   </div>
                   {getWeekDates().map((date, dayIndex) => {
                     const cellContent = getCellContent30Min(date, timeSlot.hour, timeSlot.minute);
@@ -700,13 +717,15 @@ export default function GoogleStyleCalendar() {
                       <div
                         key={`${dayIndex}-${slotIndex}`}
                         className={cn(
-                          "h-8 border-l border-gray-200 p-1 transition-colors",
-                          cellContent.type === 'empty' && "hover:bg-blue-50 cursor-crosshair",
+                          "h-6 sm:h-8 border-l border-gray-200 p-0.5 sm:p-1 transition-colors text-xs",
+                          cellContent.type === 'empty' && "hover:bg-blue-50 cursor-pointer touch-manipulation",
                           cellContent.type === 'appointment' && "cursor-default"
                         )}
                         onMouseDown={() => cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
                         onMouseEnter={() => handleCellMouseEnter30Min(dateStr, timeStr)}
                         onMouseUp={() => handleCellMouseUp30Min()}
+                        onTouchStart={() => cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
+                        onTouchEnd={() => handleCellMouseUp30Min()}
                       >
                         {cellContent.content}
                       </div>
@@ -728,49 +747,87 @@ export default function GoogleStyleCalendar() {
         }
         setSlotModal(prev => ({ ...prev, isOpen: open }));
       }}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md mx-4 sm:mx-auto">
           <DialogHeader>
-            <DialogTitle>
-              {slotModal.mode === 'create' && `Create Availability${selectedBlocks.length > 1 ? ` (${selectedBlocks.length} slots)` : ''}`}
-              {slotModal.mode === 'edit' && 'Edit Availability'}
-              {slotModal.mode === 'delete' && 'Delete Availability'}
+            <DialogTitle className="text-lg sm:text-xl">
+              {slotModal.mode === 'create' && (
+                <>
+                  <span className="hidden sm:inline">{`Create Availability${selectedBlocks.length > 1 ? ` (${selectedBlocks.length} slots)` : ''}`}</span>
+                  <span className="sm:hidden">Create Slot</span>
+                </>
+              )}
+              {slotModal.mode === 'edit' && (
+                <>
+                  <span className="hidden sm:inline">Edit Availability</span>
+                  <span className="sm:hidden">Edit Slot</span>
+                </>
+              )}
+              {slotModal.mode === 'delete' && (
+                <>
+                  <span className="hidden sm:inline">Delete Availability</span>
+                  <span className="sm:hidden">Delete Slot</span>
+                </>
+              )}
             </DialogTitle>
-            <DialogDescription>
-              {slotModal.mode === 'create' && selectedBlocks.length > 1 && `Configure settings for ${selectedBlocks.length} selected time blocks. Each block will be created as a separate availability slot.`}
-              {slotModal.mode === 'create' && selectedBlocks.length <= 1 && 'Set up a new time slot for patient appointments'}
-              {slotModal.mode === 'edit' && 'Modify this availability slot'}
-              {slotModal.mode === 'delete' && 'Choose how to delete this availability'}
+            <DialogDescription className="text-sm">
+              {slotModal.mode === 'create' && selectedBlocks.length > 1 && (
+                <>
+                  <span className="hidden sm:inline">{`Configure settings for ${selectedBlocks.length} selected time blocks. Each block will be created as a separate availability slot.`}</span>
+                  <span className="sm:hidden">{`${selectedBlocks.length} blocks selected`}</span>
+                </>
+              )}
+              {slotModal.mode === 'create' && selectedBlocks.length <= 1 && (
+                <>
+                  <span className="hidden sm:inline">Set up a new time slot for patient appointments</span>
+                  <span className="sm:hidden">Set up time slot</span>
+                </>
+              )}
+              {slotModal.mode === 'edit' && (
+                <>
+                  <span className="hidden sm:inline">Modify this availability slot</span>
+                  <span className="sm:hidden">Modify slot</span>
+                </>
+              )}
+              {slotModal.mode === 'delete' && (
+                <>
+                  <span className="hidden sm:inline">Choose how to delete this availability</span>
+                  <span className="sm:hidden">Choose delete scope</span>
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
           
           {slotModal.mode !== 'delete' ? (
             <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="date">Date</Label>
+                  <Label htmlFor="date" className="text-sm">Date</Label>
                   <Input
                     id="date"
                     type="date"
                     value={slotModal.date}
                     onChange={(e) => setSlotModal(prev => ({ ...prev, date: e.target.value }))}
+                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="startTime">Start Time</Label>
+                  <Label htmlFor="startTime" className="text-sm">Start Time</Label>
                   <Input
                     id="startTime"
                     type="time"
                     value={slotModal.startTime}
                     onChange={(e) => setSlotModal(prev => ({ ...prev, startTime: e.target.value }))}
+                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="endTime">End Time</Label>
+                  <Label htmlFor="endTime" className="text-sm">End Time</Label>
                   <Input
                     id="endTime"
                     type="time"
                     value={slotModal.endTime}
                     onChange={(e) => setSlotModal(prev => ({ ...prev, endTime: e.target.value }))}
+                    className="h-10"
                   />
                 </div>
               </div>
@@ -818,20 +875,21 @@ export default function GoogleStyleCalendar() {
             </div>
           )}
 
-          <DialogFooter className="flex justify-between">
-            <div>
+          <DialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0">
+            <div className="order-2 sm:order-1">
               {slotModal.mode === 'edit' && (
                 <Button 
                   variant="destructive" 
                   onClick={handleDeleteSlot}
                   disabled={deleteSlotMutation.isPending}
+                  className="w-full sm:w-auto h-10"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
                 </Button>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 order-1 sm:order-2">
               <Button 
                 variant="outline" 
                 onClick={() => {
@@ -839,6 +897,7 @@ export default function GoogleStyleCalendar() {
                   setSlotModal(prev => ({ ...prev, isOpen: false }));
                   console.log("Cancel clicked - selection cleared");
                 }}
+                className="w-full sm:w-auto h-10"
               >
                 Cancel
               </Button>
@@ -846,6 +905,7 @@ export default function GoogleStyleCalendar() {
                 <Button 
                   onClick={handleSaveSlot}
                   disabled={createSlotMutation.isPending || updateSlotMutation.isPending}
+                  className="w-full sm:w-auto h-10"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   {slotModal.mode === 'create' ? 'Create' : 'Update'}
@@ -855,6 +915,7 @@ export default function GoogleStyleCalendar() {
                   variant="destructive"
                   onClick={handleDeleteSlot}
                   disabled={deleteSlotMutation.isPending || !slotModal.deleteScope}
+                  className="w-full sm:w-auto h-10"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Confirm Delete
@@ -867,10 +928,10 @@ export default function GoogleStyleCalendar() {
 
       {/* Weekly Template Sheet */}
       <Sheet open={isTemplateOpen} onOpenChange={setIsTemplateOpen}>
-        <SheetContent side="right" className="w-[600px] sm:w-[700px]">
+        <SheetContent side="right" className="w-full sm:w-[600px] lg:w-[700px]">
           <SheetHeader>
-            <SheetTitle>Add Weekly Availability</SheetTitle>
-            <SheetDescription>
+            <SheetTitle className="text-lg sm:text-xl">Add Weekly Availability</SheetTitle>
+            <SheetDescription className="text-sm sm:text-base">
               Set up your weekly schedule. This will create recurring availability slots.
             </SheetDescription>
           </SheetHeader>
