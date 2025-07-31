@@ -47,7 +47,7 @@ export function formatSlotTime(timeString: string): string {
   return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
 }
 
-// Convert UTC time slot to local time for display
+// Convert time slot to local time for display (times are already stored in local time)
 export function convertSlotTimeToLocal(date: string, timeString: string): string {
   try {
     // Ensure timeString is properly formatted (HH:MM:SS or HH:MM)
@@ -64,20 +64,9 @@ export function convertSlotTimeToLocal(date: string, timeString: string): string
       return timeString; // Return as-is if values are invalid
     }
     
-    // Create a proper UTC date string
-    const fullTimeString = timeParts.length === 3 ? timeString : `${timeString}:00`;
-    const utcDate = new Date(`${date}T${fullTimeString}.000Z`);
-    
-    // Check if the date is valid
-    if (isNaN(utcDate.getTime())) {
-      return timeString; // Return as-is if date creation failed
-    }
-    
-    // Convert to local time and format
-    const localHours = String(utcDate.getHours()).padStart(2, '0');
-    const localMinutes = String(utcDate.getMinutes()).padStart(2, '0');
-    
-    return `${localHours}:${localMinutes}`;
+    // Since times are already stored in local time, just format them properly
+    // No timezone conversion needed
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   } catch (error) {
     // Fallback to original timeString if any error occurs
     return timeString;
