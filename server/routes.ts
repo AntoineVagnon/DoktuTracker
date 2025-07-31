@@ -845,10 +845,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/health-profile", isAuthenticated, async (req, res) => {
     try {
-      const healthProfile = await storage.createHealthProfile({
+      // Get the authenticated user from req.user (set by isAuthenticated middleware)
+      const user = req.user as any;
+      
+      const profileData = {
         ...req.body,
-        patientId: req.session.user?.id,
-      });
+        patientId: user.id, // Use user.id from the authentication middleware
+        completionScore: 100, // Mark as complete
+        profileStatus: 'complete',
+        lastReviewedAt: new Date(),
+        needsReviewAfter: new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000), // 6 months from now
+      };
+
+      console.log('Creating health profile with patientId:', user.id);
+      const healthProfile = await storage.createHealthProfile(profileData);
       res.json(healthProfile);
     } catch (error) {
       console.error("Error creating health profile:", error);

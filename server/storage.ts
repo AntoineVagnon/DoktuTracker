@@ -827,8 +827,14 @@ export class PostgresStorage implements IStorage {
 
   // Health Profile operations
   async getHealthProfile(patientId: number): Promise<any | undefined> {
-    // For now, return a mock health profile structure
-    // This would normally query a health_profiles table
+    // Check if we have a cached profile first (for this session)
+    if (this.healthProfileCache && this.healthProfileCache.has(patientId)) {
+      const cachedProfile = this.healthProfileCache.get(patientId);
+      console.log('Returning cached health profile for patient:', patientId);
+      return cachedProfile;
+    }
+    
+    // Otherwise return incomplete profile to trigger completion flow
     return {
       id: `health_${patientId}`,
       patientId,
@@ -844,7 +850,7 @@ export class PostgresStorage implements IStorage {
   }
 
   async createHealthProfile(profile: any): Promise<any> {
-    // For now, simulate profile creation
+    // For now, simulate profile creation with proper persistence simulation
     // This would normally insert into health_profiles table
     const newProfile = {
       ...profile,
@@ -855,9 +861,16 @@ export class PostgresStorage implements IStorage {
       updatedAt: new Date()
     };
     
+    // Simulate saving to a memory store for this session
+    // In a real implementation, this would be saved to the database
+    this.healthProfileCache = this.healthProfileCache || new Map();
+    this.healthProfileCache.set(profile.patientId, newProfile);
+    
     console.log('Health profile created:', newProfile);
     return newProfile;
   }
+
+  private healthProfileCache = new Map();
 
   async updateHealthProfile(id: string, updates: any): Promise<any> {
     // For now, simulate profile update

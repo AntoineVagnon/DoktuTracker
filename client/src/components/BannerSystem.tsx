@@ -209,12 +209,8 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
     const now = new Date();
     const newBanners: BannerProps[] = [];
     
-    console.log('🔄 Banner System - Processing banners at:', {
-      currentTime: now.toISOString(),
-      currentTimeLocal: now.toLocaleString(),
-      appointmentsCount: appointments.length,
-      userRole: user.role
-    });
+    // Debug: Remove in production
+    // console.log('🔄 Banner System - Processing banners at:', { appointmentsCount: appointments.length });
 
     // 1. Payment incomplete banners (highest priority)
     const pendingPaymentAppointments = appointments.filter(
@@ -242,21 +238,8 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
       const twoHoursBefore = addMinutes(appointmentTime, -120);
       const thirtyMinutesAfter = addMinutes(appointmentTime, 30);
       
-      // Debug logging for timezone issues
-      console.log('🕐 Banner System - Appointment check:', {
-        appointmentId: apt.id,
-        appointmentDate: apt.appointmentDate,
-        appointmentTime: appointmentTime.toISOString(),
-        appointmentTimeLocal: appointmentTime.toLocaleString(),
-        now: now.toISOString(),
-        nowLocal: now.toLocaleString(),
-        twoHoursBefore: twoHoursBefore.toISOString(),
-        thirtyMinutesAfter: thirtyMinutesAfter.toISOString(),
-        isAfterStart: isAfter(now, twoHoursBefore),
-        isBeforeEnd: isBefore(now, thirtyMinutesAfter),
-        status: apt.status,
-        shouldShow: apt.status === 'paid' && isAfter(now, twoHoursBefore) && isBefore(now, thirtyMinutesAfter)
-      });
+      // Debug: Remove in production
+      // console.log('🕐 Appointment check:', { id: apt.id, shouldShow: apt.status === 'paid' && isAfter(now, twoHoursBefore) && isBefore(now, thirtyMinutesAfter) });
       
       return apt.status === 'paid' && 
              isAfter(now, twoHoursBefore) && 
@@ -278,7 +261,9 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
       } else if (isVeryClose) {
         title += ' starts soon';
       } else {
-        title += ` is scheduled (${appointmentTime.toLocaleString()})`;
+        // Show time in a more user-friendly format
+        const localTime = new Date(appointmentTime.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours for UTC+2 timezone
+        title += ` is scheduled (${localTime.toLocaleTimeString()} - ${new Date(localTime.getTime() + 30 * 60 * 1000).toLocaleTimeString()})`;
         buttonLabel = 'View Details';
       }
       
@@ -352,16 +337,17 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
   if (banners.length === 0) return null;
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("relative", className)}>
       {banners.map((banner, index) => (
         <div 
           key={index}
           className={cn(
-            "relative",
-            index > 0 && "mt-[-8px] pt-2" // Stack effect - peek lower priority banners
+            "relative transition-all duration-300",
+            index > 0 && "mt-[-12px]" // Overlap effect - show lower priority banners peeking behind
           )}
           style={{
             zIndex: banners.length - index,
+            transform: index > 0 ? `translateY(-${index * 4}px)` : 'none',
           }}
         >
           <Banner {...banner} />
