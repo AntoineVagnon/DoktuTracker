@@ -26,10 +26,13 @@ export default function DoctorDashboard() {
     );
   }
 
-  // Get upcoming appointments (all)
-  const upcomingAppointments = appointments
+  // Get upcoming appointments (limit to 3 for dashboard preview)
+  const allUpcomingAppointments = appointments
     .filter(apt => apt.status === 'confirmed' || apt.status === 'paid')
     .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime());
+  
+  const upcomingAppointments = allUpcomingAppointments.slice(0, 3);
+  const hasMoreAppointments = allUpcomingAppointments.length > 3;
 
   const firstName = user?.firstName || user?.email?.split('@')[0] || '';
 
@@ -87,6 +90,15 @@ export default function DoctorDashboard() {
                     </div>
                   </div>
                 ))}
+                {hasMoreAppointments && (
+                  <div className="pt-4 border-t">
+                    <Link href="/doctor-calendar">
+                      <Button variant="outline" className="w-full">
+                        See all appointments ({allUpcomingAppointments.length})
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-center py-8">

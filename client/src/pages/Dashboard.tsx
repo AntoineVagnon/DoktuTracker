@@ -110,9 +110,13 @@ export default function Dashboard() {
     );
   }
 
-  const upcomingAppointments = appointments.filter((apt: any) => 
+  const allUpcomingAppointments = appointments.filter((apt: any) => 
     apt.status !== "cancelled" && apt.status !== "completed" && new Date(apt.appointmentDate) > new Date()
   );
+  
+  // Limit to 3 appointments for dashboard preview
+  const upcomingAppointments = allUpcomingAppointments.slice(0, 3);
+  const hasMoreAppointments = allUpcomingAppointments.length > 3;
 
   const pastAppointments = appointments.filter((apt: any) => 
     apt.status === "completed" || new Date(apt.appointmentDate) <= new Date()
@@ -199,7 +203,11 @@ export default function Dashboard() {
                         <Calendar className="h-5 w-5 mr-2" />
                         Upcoming Appointments
                       </CardTitle>
-                      <Button variant="ghost" size="sm">See All</Button>
+                      {hasMoreAppointments && (
+                        <Button variant="ghost" size="sm" onClick={() => setLocation('/doctors')}>
+                          See All ({allUpcomingAppointments.length})
+                        </Button>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -277,6 +285,17 @@ export default function Dashboard() {
                             </div>
                           </div>
                         ))}
+                        {hasMoreAppointments && (
+                          <div className="pt-4 border-t">
+                            <Button 
+                              variant="outline" 
+                              className="w-full"
+                              onClick={() => setLocation('/doctors')}
+                            >
+                              Book more appointments ({allUpcomingAppointments.length})
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </CardContent>
