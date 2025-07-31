@@ -48,8 +48,8 @@ export default function CheckoutForm({ onSuccess, bookingData }: CheckoutFormPro
           title: "Payment Successful",
           description: "Your appointment has been confirmed!",
         });
-        // Redirect to success page
-        window.location.href = '/payment-success';
+        // Redirect to success page with payment intent ID
+        window.location.href = `/payment-success?payment_intent=${paymentIntent.id}&payment_intent_client_secret=${paymentIntent.client_secret}`;
       } else {
         // Handle other payment statuses
         console.log('Payment status:', paymentIntent?.status);
