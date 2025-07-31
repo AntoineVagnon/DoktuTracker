@@ -157,12 +157,16 @@ export class PostgresStorage implements IStorage {
       const [newUser] = await db.insert(users).values(cleanUserData).returning();
       return newUser;
     } catch (error: any) {
-      if (error.code === '23505' && error.constraint_name === 'users_pkey') {
-        throw new Error('User creation failed: ID conflict. Please try again.');
+      console.error('Database insert error:', error);
+      if (error.code === '23505') {
+        if (error.constraint_name === 'users_pkey') {
+          throw new Error('Database configuration error: Auto-increment not set up properly. Please contact support.');
+        } else if (error.constraint_name === 'users_email_unique') {
+          throw new Error('An account with this email already exists.');
+        }
       }
       throw error;
     }
-    return newUser;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
