@@ -204,6 +204,10 @@ Changelog:
 - July 30, 2025: Added advanced global error handling preventing Vite runtime error overlays from displaying
 - July 30, 2025: Enhanced all string parsing operations with null/undefined safety checks across codebase
 - July 30, 2025: Application now fully functional with complete payment integration ready for production use
+- July 31, 2025: CRITICAL FIX: Resolved user registration bug where firstName/lastName fields weren't being saved to database
+- July 31, 2025: Updated upsertUser method to handle existing users with missing structured name data
+- July 31, 2025: Created SQL migration script (update_user_names_from_email.sql) to fix existing users with missing name fields
+- July 31, 2025: All registration forms now properly save structured name data (firstName, lastName, title) to Supabase database
 ```
 
 ## User Preferences
