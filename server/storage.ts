@@ -416,8 +416,17 @@ export class PostgresStorage implements IStorage {
 
   async getAppointments(patientId?: string, doctorId?: string): Promise<any[]> {
     try {
-      // Return empty array for now to avoid schema conflicts
-      return [];
+      let query = db.select().from(appointments);
+      
+      if (patientId) {
+        query = query.where(eq(appointments.patientId, parseInt(patientId)));
+      }
+      if (doctorId) {
+        query = query.where(eq(appointments.doctorId, parseInt(doctorId)));
+      }
+      
+      const results = await query.orderBy(desc(appointments.appointmentDate));
+      return results;
     } catch (error) {
       console.error("Error in getAppointments:", error);
       return [];
@@ -452,6 +461,18 @@ export class PostgresStorage implements IStorage {
       .update(appointments)
       .set(updateData)
       .where(eq(appointments.id, parseInt(id))); // Convert string to integer
+    
+    // After updating appointment status to "paid", remove the slot from availability
+    if (status === "paid") {
+      const appointment = await this.getAppointment(id);
+      if (appointment) {
+        // Mark the time slot as unavailable
+        await db
+          .update(doctorTimeSlots)
+          .set({ isAvailable: false, updatedAt: new Date() })
+          .where(eq(doctorTimeSlots.id, appointment.timeSlotId));
+      }
+    }
   }
 
   async updateAppointmentPayment(id: string, paymentIntentId: string): Promise<void> {

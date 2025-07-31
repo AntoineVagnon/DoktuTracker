@@ -1,0 +1,54 @@
+# Bug Fix: Appointment not propagating after successful payment
+
+Feature: Sync confirmed appointment to all views once payment succeeds
+
+  Summary:
+    After Stripe marks an appointment “paid”, the record is stored in the DB
+    but never appears in any UI (patient dashboard, doctor dashboard, calendars,
+    public profile, doctor cards).  
+    The booking must propagate in real-time (≤ 5 s) to every surface.
+
+  Background:
+    Given a patient has selected a slot and completed payment
+    And the Stripe webhook `checkout.session.completed` has set
+        `appointments.status = "paid"`
+    And the slot row has been removed from `availabilities`
+
+  ################################################################
+  # 1.  Patient dashboard                                         #
+  ################################################################
+  Scenario: Show new paid appointment to patient
+    When the patient is redirected back to `/dashboard`
+    Then the “Upcoming Appointments” list shows the new booking
+    And its status pill reads “Paid”
+
+  ################################################################
+  # 2.  Doctor dashboard & calendar                               #
+  ################################################################
+  Scenario: Show new appointment to doctor
+    When the doctor views `/doctor-dashboard` or `/doctor-dashboard/calendar`
+    Then the appointment appears in the list and calendar grid
+    And the slot is marked as “Booked” (green border)
+
+  ################################################################
+  # 3.  Remove slot from public booking grid                      #
+  ################################################################
+  Scenario: Hide booked slot on doctor public profile
+    Given another patient opens `/doctor/:id`
+    Then the previously booked time pill is no longer displayed
+    And the date pill reflects the reduced slot count (if any left)
+
+  ################################################################
+  # 4.  Update “Next slot” on doctor card                         #
+  ################################################################
+  Scenario: Recalculate doctor card badge
+    Given the booked slot was the “next available” shown on the doctor card
+    Then the card now displays the next chronological free slot
+    Or hides the badge if no future availability exists
+
+  ################################################################
+  # 5.  Real-time propagation                                     #
+  ################################################################
+  Scenario: Data sync latency
+    When the webhook fires
+    Then all affected UIs (patient, doctor,
