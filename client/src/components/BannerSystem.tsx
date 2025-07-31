@@ -318,7 +318,7 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
           priority: 3,
           title: healthProfile?.profileStatus === 'needs_review' 
             ? 'Please review your health profile (last update > 6 months)'
-            : `Complete your health profile to book consultations (${missingFields} of 5 fields missing)`,
+            : 'Complete your health profile to book consultations',
           primaryAction: {
             label: 'Complete Profile',
             onClick: () => onOpenHealthProfile?.(),

@@ -903,6 +903,20 @@ export class PostgresStorage implements IStorage {
       updatedAt: new Date()
     };
     
+    // CRITICAL: Save to cache so it persists during this session
+    if (!this.healthProfileCache) {
+      this.healthProfileCache = new Map();
+    }
+    
+    // Extract patientId from the updates or id
+    const patientId = updates.patientId || parseInt(id.replace('health_', ''));
+    this.healthProfileCache.set(patientId, updatedProfile);
+    console.log('💾 Health profile UPDATE cached for patient:', patientId, {
+      profileStatus: updatedProfile.profileStatus,
+      completionScore: updatedProfile.completionScore
+    });
+    console.log('💾 Cache now contains keys after UPDATE:', Array.from(this.healthProfileCache.keys()));
+    
     console.log('Health profile updated:', updatedProfile);
     return updatedProfile;
   }

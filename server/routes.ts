@@ -886,7 +886,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/health-profile/:id", isAuthenticated, async (req, res) => {
     try {
-      const healthProfile = await storage.updateHealthProfile(req.params.id, req.body);
+      const user = req.user as any;
+      const profileData = {
+        ...req.body,
+        patientId: user.id, // Ensure we have patientId for cache
+        profileStatus: 'complete',
+        completionScore: 100,
+        lastReviewedAt: new Date(),
+        needsReviewAfter: new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000), // 6 months from now
+      };
+      
+      console.log('Updating health profile for user ID:', user.id);
+      const healthProfile = await storage.updateHealthProfile(req.params.id, profileData);
       res.json(healthProfile);
     } catch (error) {
       console.error("Error updating health profile:", error);
