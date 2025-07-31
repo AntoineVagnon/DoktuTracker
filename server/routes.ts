@@ -163,34 +163,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (user.role === 'doctor') {
         // For doctors, get doctor record and fetch appointments by doctorId
+        console.log(`🩺 Looking for doctor with email: ${user.email}`);
         const doctors = await storage.getDoctors();
-        // Find doctor by email since userId is a UUID string in Supabase
-        const doctor = doctors.find(d => d.user?.email === user.email);
+        console.log("Available doctors:", doctors.map(d => ({ id: d.id, userId: d.userId, email: d.user?.email })));
+        
+        // Find doctor by email - handle james.rodriguez mapping
+        let doctor = doctors.find(d => d.user?.email === user.email);
+        
+        // Special mapping for test doctor james.rodriguez@doktu.com -> james.rodriguez@doku.com
+        if (!doctor && user.email === "james.rodriguez@doktu.com") {
+          doctor = doctors.find(d => d.user?.email === "james.rodriguez@doku.com");
+          console.log(`🔄 Mapped james.rodriguez@doktu.com to doctorId: ${doctor?.id}`);
+        }
         
         if (!doctor) {
-          console.log("Available doctors:", doctors.map(d => ({ id: d.id, userId: d.userId, email: d.user?.email })));
-          console.log("Looking for doctor with email:", user.email);
-          
-          // Auto-create doctor profile for authenticated doctor
-          try {
-            const newDoctor = await storage.createDoctor({
-              userId: 7, // Use fallback user ID for test doctor
-              specialty: "General Practice",
-              bio: "New doctor on Doktu platform",
-              education: "Medical degree",
-              experience: "General practice experience",
-              languages: ["English", "French"],
-              consultationPrice: "3.00",
-              rating: 0,
-              reviewCount: 0
-            });
-            appointments = await storage.getAppointments(undefined, newDoctor.id);
-          } catch (createError) {
-            console.error("Error creating doctor profile:", createError);
-            return res.status(404).json({ error: "Doctor profile not found and could not be created" });
-          }
+          console.log(`❌ No doctor profile found for: ${user.email}`);
+          return res.status(404).json({ error: "Doctor profile not found" });
         } else {
-          appointments = await storage.getAppointments(undefined, doctor.id);
+          console.log(`✅ Found doctor: doctorId=${doctor.id}, specialty=${doctor.specialty}`);
+          appointments = await storage.getAppointments(undefined, doctor.id.toString());
         }
         
       } else {
@@ -490,10 +481,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get doctor record to find the correct doctorId
       const doctors = await storage.getDoctors();
       
-      // For testing purposes, if this is the test doctor email, use the first doctor
+      // Find doctor by email - handle james.rodriguez mapping
       let doctor = doctors.find(d => d.user?.email === user.email);
+      
+      // Special mapping for test doctor james.rodriguez@doktu.com -> james.rodriguez@doku.com
       if (!doctor && user.email === "james.rodriguez@doktu.com") {
         doctor = doctors.find(d => d.user?.email === "james.rodriguez@doku.com");
+        console.log(`🔄 Time slots mapped james.rodriguez@doktu.com to doctorId: ${doctor?.id}`);
       }
       
       if (!doctor) {
@@ -524,41 +518,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get doctor record to find the correct doctorId
       const doctors = await storage.getDoctors();
       
-      // For testing purposes, match both email variations 
-      let doctor = doctors.find(d => 
-        d.user?.email === user.email || 
-        (user.email === "james.rodriguez@doktu.com" && d.user?.email === "james.rodriguez@doku.com")
-      );
+      // Find doctor by email - handle james.rodriguez mapping
+      let doctor = doctors.find(d => d.user?.email === user.email);
+      
+      // Special mapping for test doctor james.rodriguez@doktu.com -> james.rodriguez@doku.com
+      if (!doctor && user.email === "james.rodriguez@doktu.com") {
+        doctor = doctors.find(d => d.user?.email === "james.rodriguez@doku.com");
+        console.log(`🔄 Creating slots for mapped james.rodriguez@doktu.com to doctorId: ${doctor?.id}`);
+      }
       
       console.log("Looking for doctor with user email:", user.email);
       console.log("Available doctors:", doctors.map(d => ({ id: d.id, userId: d.userId, email: d.user?.email })));
       console.log("Found doctor:", doctor ? { id: doctor.id, userId: doctor.userId } : null);
       
       if (!doctor) {
-        console.log("No doctor profile found for:", user.email);
-        console.log("Auto-creating doctor profile...");
-        
-        // Auto-create doctor profile for authenticated doctor
-        try {
-          const doctorData = {
-            userId: parseInt(user.id) || 7, // Convert UUID to user integer ID or use fallback
-            specialty: "General Practice",
-            bio: "New doctor on Doktu platform",
-            education: "Medical degree",
-            experience: "General practice experience",
-            languages: ["English", "French"],
-            consultationPrice: "3.00",
-            rating: 0,
-            reviewCount: 0
-          };
-          
-          console.log("Creating doctor with data:", doctorData);
-          doctor = await storage.createDoctor(doctorData);
-          console.log("Successfully created doctor profile:", { id: doctor.id, userId: doctor.userId });
-        } catch (createError) {
-          console.error("Error creating doctor profile:", createError);
-          return res.status(404).json({ error: "Doctor profile not found and could not be created" });
-        }
+        console.log(`❌ No doctor profile found for: ${user.email}`);
+        return res.status(404).json({ error: "Doctor profile not found" });
       }
 
       const { randomUUID } = await import('crypto');
@@ -698,8 +673,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Update appointment status to paid with payment intent ID
         await storage.updateAppointmentStatus(appointmentId, "paid", paymentIntentId);
 
-        // Get appointment details for response
+        // Get appointment details to mark the corresponding slot as unavailable
         const appointment = await storage.getAppointment(appointmentId);
+        
+        if (appointment) {
+          // Find and mark the corresponding time slot as unavailable
+          const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
+          const appointmentDate = new Date(appointment.appointmentDate);
+          const appointmentTimeString = appointmentDate.toTimeString().slice(0, 5); // HH:MM format
+          const appointmentDateString = appointmentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+          
+          const matchingSlot = timeSlots.find(slot => 
+            slot.date === appointmentDateString && 
+            slot.startTime === appointmentTimeString &&
+            slot.isAvailable
+          );
+          
+          if (matchingSlot) {
+            await storage.updateTimeSlot(matchingSlot.id, { isAvailable: false });
+            console.log(`🔒 Marked slot ${matchingSlot.id} as unavailable after successful payment`);
+          } else {
+            console.log(`⚠️ Could not find matching slot for appointment date: ${appointmentDateString} ${appointmentTimeString}`);
+          }
+        }
         let appointmentDetails = null;
         
         if (appointment) {
@@ -751,6 +747,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (appointmentId) {
           await storage.updateAppointmentStatus(appointmentId, "paid");
+          
+          // Mark corresponding slot as unavailable
+          const appointment = await storage.getAppointment(appointmentId);
+          if (appointment) {
+            const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
+            const appointmentDate = new Date(appointment.appointmentDate);
+            const appointmentTimeString = appointmentDate.toTimeString().slice(0, 5);
+            const appointmentDateString = appointmentDate.toISOString().split('T')[0];
+            
+            const matchingSlot = timeSlots.find(slot => 
+              slot.date === appointmentDateString && 
+              slot.startTime === appointmentTimeString &&
+              slot.isAvailable
+            );
+            
+            if (matchingSlot) {
+              await storage.updateTimeSlot(matchingSlot.id, { isAvailable: false });
+              console.log(`🔒 Webhook: Marked slot ${matchingSlot.id} as unavailable`);
+            }
+          }
+          
           console.log(`✅ Payment succeeded for appointment ${appointmentId}`);
         }
         break;
