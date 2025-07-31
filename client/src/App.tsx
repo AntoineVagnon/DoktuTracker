@@ -23,7 +23,7 @@ import TestPasswordReset from "@/pages/TestPasswordReset";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import DoctorCalendar from "@/pages/DoctorCalendar";
 import DoctorSettings from "@/pages/DoctorSettings";
-import DoctorRecords from "@/pages/DoctorRecords";
+import PatientRecords from "@/pages/PatientRecords";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Payment from "@/pages/Payment";
 import Checkout from "@/pages/Checkout";
@@ -64,7 +64,7 @@ function Router() {
       <Route path="/doctor-dashboard" component={DoctorDashboard} />
       <Route path="/doctor-calendar" component={DoctorCalendar} />
       <Route path="/doctor-settings" component={DoctorSettings} />
-      <Route path="/doctor-records" component={DoctorRecords} />
+      <Route path="/doctor-records" component={PatientRecords} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>

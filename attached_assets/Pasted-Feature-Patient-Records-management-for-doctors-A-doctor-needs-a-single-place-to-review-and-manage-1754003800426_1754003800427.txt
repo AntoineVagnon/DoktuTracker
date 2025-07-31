@@ -1,0 +1,79 @@
+Feature: Patient Records management for doctors
+  A doctor needs a single place to review and manage every patient’s history, documents, notes and past appointments.
+
+################################################################################
+# SECTION 1 – Core entities                                                    #
+################################################################################
+  * **Patient record** – one per patient/doctor pair; contains:
+      - patient_id (FK users)
+      - doctor_id (FK users)
+      - created_at, updated_at
+  * **Consult note** – free‑text markdown note linked to an appointment (optional):
+      - note_id, appointment_id (FK appointments), doctor_id, content_md, created_at
+  * **Patient file** – any PDF/image the patient uploads (or doctor adds):
+      - file_id, patient_id, doctor_id (nullable), appointment_id (nullable), filename, mime, size, storage_url, uploaded_by_role, uploaded_at
+
+################################################################################
+# SECTION 2 – Doctor UI                                                        #
+################################################################################
+  Top‑level route: `/doctor-records`
+   • Search bar (name, email, appointment id).
+   • Table or empty‑state → “No patient records yet”.
+
+  ### Drill‑in
+  Route: `/doctor-records/:patientId`
+    | TAB         | Content                                                            |
+    | Overview    | Patient info + next appointment + quick actions (message, video)   |
+    | Documents   | List & upload drop‑zone (drag‑and‑drop multiple)                   |
+    | Notes       | Chronological sticky‑notes editor (markdown, autosave)             |
+    | History     | Past appointments table (date, reason, link to note)              |
+
+  #### Upload rules
+    • Max 10 MB / file, 20 files per patient.
+    • Accept pdf, png, jpg.
+    • Drag‑select multi‑upload; show progress.
+
+################################################################################
+# SECTION 3 – Gherkin scenarios                                                #
+################################################################################
+  Background:
+    Given Dr. Smith is logged in
+
+  Scenario: Create record at first paid appointment
+    Given a patient pays for the first time with Dr. Smith
+    Then `patient_records` row is inserted automatically
+
+  Scenario: Search patient by e‑mail
+    When I type “alice@example.com” in the search bar and hit Enter
+    Then I see Alice Doe record in the result list
+
+  Scenario: Upload new document
+    When I drop `blood_test.pdf` onto the Documents tab
+    Then an S3/Supabase storage upload is initiated
+    And the file row appears with status “Uploaded”
+
+  Scenario: Add a consultation note
+    Given I am on the Notes tab for appointment #123
+    When I type “Patient responded well to treatment” and click Save
+    Then a note version is stored and timestamped
+    And the note appears in chronological order
+
+  Scenario: Privacy – doctor cannot see another doctor’s notes
+    Given Dr. Brown opens patient record that belongs to Dr. Smith
+    Then the Notes tab shows “No notes available”
+
+################################################################################
+# SECTION 4 – Edge cases                                                       #
+################################################################################
+  • Duplicate file name → auto‑append (1).pdf
+  • File delete: doctor can delete their own uploads; patient can delete their uploads until appointment end.
+  • Storage cleanup cron deletes orphan files (>30 d with no record link).
+
+################################################################################
+# SECTION 5 – Acceptance criteria                                             #
+################################################################################
+  * Full‑text search across patient name/email + appointment id ≤ 200 ms.
+  * File uploads validated client‑side and server‑side.
+  * Markdown notes support basic formatting (bold, italic, bullet list).
+  * RBAC: only assigned doctor & patient can access a record.
+  * Playwright E2E covers upload, note add, search.

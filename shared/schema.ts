@@ -123,6 +123,43 @@ export const reviews = pgTable("reviews", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Patient records - one per patient/doctor pair
+export const patientRecords = pgTable("patient_records", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  doctorId: integer("doctor_id").references(() => doctors.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  // Ensure unique patient-doctor pairs
+  index("idx_patient_doctor_unique").on(table.patientId, table.doctorId)
+]);
+
+// Consultation notes - linked to appointments
+export const consultationNotes = pgTable("consultation_notes", {
+  id: serial("id").primaryKey(),
+  appointmentId: integer("appointment_id").references(() => appointments.id).notNull(),
+  doctorId: integer("doctor_id").references(() => doctors.id).notNull(),
+  contentMd: text("content_md").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Patient files - documents uploaded by patients or doctors
+export const patientFiles = pgTable("patient_files", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  doctorId: integer("doctor_id").references(() => doctors.id), // nullable - can be uploaded by patient
+  appointmentId: integer("appointment_id").references(() => appointments.id), // nullable - general files
+  filename: varchar("filename").notNull(),
+  originalFilename: varchar("original_filename").notNull(),
+  mimeType: varchar("mime_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  storageUrl: text("storage_url").notNull(),
+  uploadedByRole: varchar("uploaded_by_role").notNull(), // 'patient' or 'doctor'
+  uploadedAt: timestamp("uploaded_at").defaultNow(),
+});
+
 // Patient Health Profiles
 export const healthProfiles = pgTable("health_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -189,6 +226,30 @@ export const insertBannerDismissalSchema = createInsertSchema(bannerDismissals).
 });
 export type InsertBannerDismissal = z.infer<typeof insertBannerDismissalSchema>;
 export type BannerDismissal = typeof bannerDismissals.$inferSelect;
+
+// Zod schemas for patient records tables
+export const insertPatientRecordSchema = createInsertSchema(patientRecords).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertConsultationNoteSchema = createInsertSchema(consultationNotes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertPatientFileSchema = createInsertSchema(patientFiles).omit({
+  id: true,
+  uploadedAt: true,
+});
+
+export type InsertPatientRecord = z.infer<typeof insertPatientRecordSchema>;
+export type InsertConsultationNote = z.infer<typeof insertConsultationNoteSchema>;
+export type InsertPatientFile = z.infer<typeof insertPatientFileSchema>;
+
+export type PatientRecord = typeof patientRecords.$inferSelect;
+export type ConsultationNote = typeof consultationNotes.$inferSelect;
+export type PatientFile = typeof patientFiles.$inferSelect;
 
 // Video test results
 export const videoTests = pgTable("video_tests", {

@@ -1,0 +1,445 @@
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, FileText, User, Calendar, Plus, Upload, MessageCircle, Video } from "lucide-react";
+import { useLocation } from "wouter";
+import DoctorLayout from "@/components/DoctorLayout";
+import { formatUserFullName } from "@/lib/nameUtils";
+import { formatAppointmentDateTimeUS } from "@/lib/dateUtils";
+
+export default function PatientRecords() {
+  const { user } = useAuth();
+  const [location, setLocation] = useLocation();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+
+  // Fetch doctor's patient records (from appointments)
+  const { data: appointments = [], isLoading } = useQuery({
+    queryKey: ["/api/appointments"],
+    enabled: !!user,
+  });
+
+  // Get unique patients from appointments
+  const uniquePatients = appointments
+    .filter((apt: any) => apt.patient)
+    .reduce((acc: any[], apt: any) => {
+      const existingPatient = acc.find(p => p.id === apt.patient.id);
+      if (!existingPatient) {
+        acc.push({
+          ...apt.patient,
+          appointmentCount: 1,
+          lastAppointment: apt.appointmentDate,
+          status: apt.status
+        });
+      } else {
+        existingPatient.appointmentCount += 1;
+        if (new Date(apt.appointmentDate) > new Date(existingPatient.lastAppointment)) {
+          existingPatient.lastAppointment = apt.appointmentDate;
+          existingPatient.status = apt.status;
+        }
+      }
+      return acc;
+    }, [])
+    .sort((a: any, b: any) => new Date(b.lastAppointment).getTime() - new Date(a.lastAppointment).getTime());
+
+  // Filter patients based on search
+  const filteredPatients = uniquePatients.filter((patient: any) =>
+    formatUserFullName(patient).toLowerCase().includes(searchTerm.toLowerCase()) ||
+    patient.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Search is already filtered in real-time
+  };
+
+  if (isLoading) {
+    return (
+      <DoctorLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      </DoctorLayout>
+    );
+  }
+
+  // If a specific patient is selected, show patient detail view
+  if (selectedPatientId) {
+    const selectedPatient = uniquePatients.find((p: any) => p.id.toString() === selectedPatientId);
+    const patientAppointments = appointments.filter((apt: any) => apt.patient?.id.toString() === selectedPatientId);
+
+    return (
+      <DoctorLayout>
+        <div className="space-y-6">
+          {/* Header with back button */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                onClick={() => setSelectedPatientId(null)}
+                className="h-10"
+              >
+                ← Back to Records
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {selectedPatient ? formatUserFullName(selectedPatient) : 'Patient Record'}
+                </h1>
+                <p className="text-gray-600">{selectedPatient?.email}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Message
+              </Button>
+              <Button variant="outline" size="sm">
+                <Video className="h-4 w-4 mr-2" />
+                Video Call
+              </Button>
+            </div>
+          </div>
+
+          {/* Patient Detail Tabs */}
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="documents">Documents</TabsTrigger>
+              <TabsTrigger value="notes">Notes</TabsTrigger>
+              <TabsTrigger value="history">History</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Patient Info */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      Patient Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Full Name</label>
+                      <p className="text-base">{selectedPatient ? formatUserFullName(selectedPatient) : 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Email</label>
+                      <p className="text-base">{selectedPatient?.email || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Total Appointments</label>
+                      <p className="text-base">{selectedPatient?.appointmentCount || 0}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Last Appointment</label>
+                      <p className="text-base">
+                        {selectedPatient?.lastAppointment ? 
+                          formatAppointmentDateTimeUS(selectedPatient.lastAppointment) : 'N/A'
+                        }
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Next Appointment */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5" />
+                      Next Appointment
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Find next upcoming appointment */}
+                    {(() => {
+                      const upcomingAppointment = patientAppointments.find((apt: any) => 
+                        new Date(apt.appointmentDate) > new Date() && apt.status !== 'cancelled'
+                      );
+                      
+                      if (upcomingAppointment) {
+                        return (
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Date & Time</label>
+                              <p className="text-base">{formatAppointmentDateTimeUS(upcomingAppointment.appointmentDate)}</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Status</label>
+                              <div className="mt-1">
+                                <Badge variant={upcomingAppointment.status === 'paid' ? 'default' : 'secondary'}>
+                                  {upcomingAppointment.status}
+                                </Badge>
+                              </div>
+                            </div>
+                            <Button size="sm" className="w-full mt-4">
+                              <Video className="h-4 w-4 mr-2" />
+                              Join Video Call
+                            </Button>
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <div className="text-center py-8 text-gray-500">
+                            <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                            <p>No upcoming appointments</p>
+                            <Button size="sm" className="mt-3" onClick={() => setLocation('/doctor-calendar')}>
+                              <Plus className="h-4 w-4 mr-2" />
+                              Schedule Appointment
+                            </Button>
+                          </div>
+                        );
+                      }
+                    })()}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="documents">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5" />
+                      Patient Documents
+                    </div>
+                    <Button size="sm">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload Document
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {/* Document upload area */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                    <p className="text-gray-600 mb-2">Drag and drop files here, or click to browse</p>
+                    <p className="text-xs text-gray-500">Supports PDF, PNG, JPG up to 10MB per file</p>
+                    <Button variant="outline" className="mt-4">
+                      Choose Files
+                    </Button>
+                  </div>
+                  
+                  {/* Document list placeholder */}
+                  <div className="mt-6">
+                    <h4 className="font-medium text-gray-900 mb-3">Recent Documents</h4>
+                    <div className="text-center py-8 text-gray-500">
+                      <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                      <p>No documents uploaded yet</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="notes">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Consultation Notes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Notes list for each appointment */}
+                    {patientAppointments.length > 0 ? (
+                      patientAppointments
+                        .sort((a: any, b: any) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime())
+                        .map((appointment: any) => (
+                          <div key={appointment.id} className="border rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div>
+                                <h4 className="font-medium">
+                                  Appointment #{appointment.id}
+                                </h4>
+                                <p className="text-sm text-gray-600">
+                                  {formatAppointmentDateTimeUS(appointment.appointmentDate)}
+                                </p>
+                              </div>
+                              <Badge variant={appointment.status === 'paid' ? 'default' : 'secondary'}>
+                                {appointment.status}
+                              </Badge>
+                            </div>
+                            
+                            {/* Note content area */}
+                            <div className="border rounded-md p-3 bg-gray-50 min-h-[100px]">
+                              <p className="text-sm text-gray-500 italic">
+                                No consultation notes yet. Click to add notes for this appointment.
+                              </p>
+                            </div>
+                            
+                            <Button variant="outline" size="sm" className="mt-3">
+                              Add Note
+                            </Button>
+                          </div>
+                        ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                        <p>No appointments found for notes</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="history">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Appointment History
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {patientAppointments.length > 0 ? (
+                      patientAppointments
+                        .sort((a: any, b: any) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime())
+                        .map((appointment: any) => (
+                          <div key={appointment.id} className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3">
+                                <div>
+                                  <p className="font-medium">Appointment #{appointment.id}</p>
+                                  <p className="text-sm text-gray-600">
+                                    {formatAppointmentDateTimeUS(appointment.appointmentDate)}
+                                  </p>
+                                </div>
+                                <Badge variant={appointment.status === 'paid' ? 'default' : 'secondary'}>
+                                  {appointment.status}
+                                </Badge>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium">€{appointment.price || '35'}</span>
+                              <Button variant="outline" size="sm">
+                                View Notes
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                        <p>No appointment history found</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </DoctorLayout>
+    );
+  }
+
+  // Main patient records list view
+  return (
+    <DoctorLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Patient Records</h1>
+            <p className="text-gray-600 text-sm sm:text-base">
+              Manage your patients' medical records and consultation history
+            </p>
+          </div>
+          <Button className="h-11">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Patient
+          </Button>
+        </div>
+
+        {/* Search Bar */}
+        <Card>
+          <CardContent className="p-4">
+            <form onSubmit={handleSearchSubmit} className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search patients by name, email, or appointment ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button type="submit">Search</Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Recent Patients */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Recent Patients
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {filteredPatients.length === 0 ? (
+              <div className="text-center py-12">
+                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No patient records yet</h3>
+                <p className="text-gray-600 mb-4">
+                  Patient records will appear here after consultations
+                </p>
+                <Button variant="outline" onClick={() => setLocation('/doctor-dashboard')}>
+                  View All Appointments
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredPatients.map((patient: any) => (
+                  <div
+                    key={patient.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => setSelectedPatientId(patient.id.toString())}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <span className="text-white font-bold text-sm">
+                          {patient.firstName?.[0]}{patient.lastName?.[0]}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          {formatUserFullName(patient)}
+                        </h3>
+                        <p className="text-sm text-gray-600">{patient.email}</p>
+                        <p className="text-xs text-gray-500">
+                          {patient.appointmentCount} appointment{patient.appointmentCount !== 1 ? 's' : ''} • 
+                          Last: {formatAppointmentDateTimeUS(patient.lastAppointment)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Badge variant={patient.status === 'paid' ? 'default' : 'secondary'}>
+                        {patient.status}
+                      </Badge>
+                      <Button variant="outline" size="sm">
+                        View Record
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </DoctorLayout>
+  );
+}
