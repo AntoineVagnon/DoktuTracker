@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import { format } from "date-fns";
+import { formatAppointmentDateTimeUS } from "@/lib/dateUtils";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -246,7 +246,7 @@ export default function Dashboard() {
                             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                               <div className="flex items-center">
                                 <Clock className="h-4 w-4 mr-1" />
-                                {format(new Date(appointment.appointmentDate), "MMM d, yyyy 'at' h:mm a")}
+{formatAppointmentDateTimeUS(appointment.appointmentDate)}
                               </div>
                               <div className="flex items-center">
                                 <CreditCard className="h-4 w-4 mr-1" />

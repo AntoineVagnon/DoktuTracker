@@ -6,7 +6,7 @@ import { Calendar, Eye } from "lucide-react";
 import { Link } from "wouter";
 import DoctorLayout from "@/components/DoctorLayout";
 import { formatUserFullName } from "@/lib/nameUtils";
-import { format } from "date-fns";
+import { formatAppointmentDateTime } from "@/lib/dateUtils";
 
 export default function DoctorDashboard() {
   const { user, isLoading } = useAuth();
@@ -75,7 +75,7 @@ export default function DoctorDashboard() {
                         }
                       </div>
                       <div className="text-sm text-gray-600">
-                        {format(new Date(appointment.appointmentDate), 'dd/MM/yyyy à HH:mm')}
+                        {formatAppointmentDateTime(appointment.appointmentDate)}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
