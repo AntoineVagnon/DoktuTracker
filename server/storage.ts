@@ -106,6 +106,24 @@ export class PostgresStorage implements IStorage {
     // Check if user already exists
     const existingUser = await this.getUserByEmail(userData.email);
     if (existingUser) {
+      // Update existing user with structured name fields if they're missing
+      const needsUpdate = !existingUser.firstName || !existingUser.lastName;
+      if (needsUpdate && (userData.firstName || userData.lastName)) {
+        const updateData = {
+          firstName: userData.firstName || existingUser.firstName,
+          lastName: userData.lastName || existingUser.lastName,
+          title: userData.title || existingUser.title,
+          updatedAt: new Date()
+        };
+        
+        const [updatedUser] = await db
+          .update(users)
+          .set(updateData)
+          .where(eq(users.id, existingUser.id))
+          .returning();
+        
+        return updatedUser;
+      }
       return existingUser;
     }
 

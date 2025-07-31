@@ -114,13 +114,22 @@ export async function setupSupabaseAuth(app: Express) {
       }
 
       if (data.user) {
-        // Create user profile in our database - only use fields that exist
-        const user = await storage.upsertUser({
-          id: data.user.id, // This will be ignored in favor of auto-increment
-          email: data.user.email!,
-          role,
-          username: email.split('@')[0] // Add username field that's required
+        // Create user profile in our database with structured name fields
+        console.log('Creating/updating user with data:', {
+          email: data.user.email,
+          firstName,
+          lastName,
+          role
         });
+        
+        const user = await storage.upsertUser({
+          email: data.user.email!,
+          firstName,
+          lastName,
+          role
+        });
+        
+        console.log('User created/updated:', user);
 
         // Store session if user is confirmed
         if (data.session) {
@@ -456,8 +465,10 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
       }
 
       // Update session
-      req.session.supabaseSession = data.session;
-      req.user = { id: data.user.id, email: data.user.email };
+      (req.session as any).supabaseSession = data.session;
+      if (data.user) {
+        (req as any).user = { id: data.user.id, email: data.user.email };
+      }
     }
 
     // Get user data to attach to request
