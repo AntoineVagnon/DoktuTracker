@@ -833,6 +833,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Health Profile Routes
+  // Get health profile for authenticated user
+  app.get("/api/health-profile", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      console.log('🔍 GET /api/health-profile - fetching for user ID:', user.id);
+      const healthProfile = await storage.getHealthProfile(user.id);
+      console.log('📋 Returning health profile:', {
+        hasProfile: !!healthProfile,
+        profileStatus: healthProfile?.profileStatus,
+        completionScore: healthProfile?.completionScore
+      });
+      res.json(healthProfile);
+    } catch (error) {
+      console.error("Error fetching health profile:", error);
+      res.status(500).json({ message: "Failed to fetch health profile" });
+    }
+  });
+
   app.get("/api/health-profile/:userId", isAuthenticated, async (req, res) => {
     try {
       const healthProfile = await storage.getHealthProfile(parseInt(req.params.userId));

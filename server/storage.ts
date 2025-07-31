@@ -832,10 +832,16 @@ export class PostgresStorage implements IStorage {
       this.healthProfileCache = new Map();
     }
     
+    console.log('🔍 Looking for health profile cache for patient:', patientId);
+    console.log('🔍 Cache keys available:', Array.from(this.healthProfileCache.keys()));
+    
     // Check if we have a cached profile first (for this session)
     if (this.healthProfileCache.has(patientId)) {
       const cachedProfile = this.healthProfileCache.get(patientId);
-      console.log('✅ Returning COMPLETE cached health profile for patient:', patientId, cachedProfile.profileStatus);
+      console.log('✅ Returning COMPLETE cached health profile for patient:', patientId, {
+        profileStatus: cachedProfile.profileStatus,
+        completionScore: cachedProfile.completionScore
+      });
       return cachedProfile;
     }
     
@@ -872,7 +878,11 @@ export class PostgresStorage implements IStorage {
       this.healthProfileCache = new Map();
     }
     this.healthProfileCache.set(profile.patientId, newProfile);
-    console.log('💾 Health profile cached for patient:', profile.patientId);
+    console.log('💾 Health profile cached for patient:', profile.patientId, {
+      profileStatus: newProfile.profileStatus,
+      completionScore: newProfile.completionScore
+    });
+    console.log('💾 Cache now contains keys:', Array.from(this.healthProfileCache.keys()));
     
     console.log('Health profile created:', newProfile);
     return newProfile;

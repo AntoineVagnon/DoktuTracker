@@ -301,7 +301,9 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
         hasHealthProfile: !!healthProfile,
         profileStatus: healthProfile?.profileStatus,
         completionScore: healthProfile?.completionScore,
-        needsCompletion: !healthProfile || (healthProfile.profileStatus !== 'complete')
+        needsCompletion: !healthProfile || (healthProfile.profileStatus !== 'complete'),
+        userId: user?.id,
+        queryKey: ["/api/health-profile", user?.id]
       });
       
       const needsProfileCompletion = !healthProfile || 
