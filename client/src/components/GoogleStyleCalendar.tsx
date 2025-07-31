@@ -31,6 +31,8 @@ interface TimeSlot {
   lockedBy?: string;
   lockedUntil?: string;
   createdAt: string;
+  isRecurring?: boolean;
+  recurringEndDate?: string;
 }
 
 interface Appointment {
@@ -79,7 +81,7 @@ export default function GoogleStyleCalendar() {
   const [view, setView] = useState<CalendarView>('week');
   const [selectedBlocks, setSelectedBlocks] = useState<Array<{ date: string; startTime: string; endTime: string }>>([]);
   const [isSelecting, setIsSelecting] = useState(false);
-  const [currentSelection, setCurrentSelection] = useState<{ date: string; startHour: number; endHour: number } | null>(null);
+  const [currentSelection, setCurrentSelection] = useState<{ date: string; startHour: number; endHour: number; startMinute?: number; endMinute?: number } | null>(null);
   const [isTemplateOpen, setIsTemplateOpen] = useState(false);
   
   const [slotModal, setSlotModal] = useState<SlotModalData>({
@@ -102,6 +104,16 @@ export default function GoogleStyleCalendar() {
   });
 
   const [templateEndDate, setTemplateEndDate] = useState('');
+  const calendarScrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to 8 AM position when calendar loads
+  useEffect(() => {
+    if (calendarScrollRef.current) {
+      // Each row is h-8 (32px), and 8 AM is slot index 16 (8 * 2)
+      const targetScrollPosition = 16 * 32; // 8 AM position
+      calendarScrollRef.current.scrollTop = targetScrollPosition;
+    }
+  }, [view]);
 
   // Fetch doctor's time slots - try authenticated API first, fallback to James Rodriguez data for testing
   const { data: timeSlots = [], isLoading: slotsLoading, refetch: refetchSlots } = useQuery({
@@ -134,7 +146,7 @@ export default function GoogleStyleCalendar() {
   });
 
   // Fetch appointments
-  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery({
+  const { data: appointments = [] as Appointment[], isLoading: appointmentsLoading } = useQuery({
     queryKey: ['/api/appointments'],
     enabled: !!user?.id
   });
@@ -415,9 +427,12 @@ export default function GoogleStyleCalendar() {
           <div 
             className="bg-green-100 text-green-800 text-xs p-1 rounded h-full flex items-center justify-center border-l-4 border-green-500 cursor-pointer hover:bg-green-200 transition-colors"
             onClick={() => handleSlotClick(existingSlot)}
-            title={`Available slot: ${timeStr}`}
+            title={`Available slot: ${timeStr}${existingSlot.isRecurring ? ' (Recurring)' : ''}`}
           >
-            <div className="font-medium">Available</div>
+            <div className="font-medium flex items-center gap-1">
+              Available
+              {existingSlot.isRecurring && <Repeat className="h-3 w-3" />}
+            </div>
           </div>
         )
       };
@@ -650,33 +665,7 @@ export default function GoogleStyleCalendar() {
         </Button>
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-100 border-l-4 border-green-500 rounded"></div>
-          <span>Available</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-600 border-l-4 border-blue-800 rounded"></div>
-          <span>Booked</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-100 border-2 border-dashed border-blue-400 rounded"></div>
-          <span>Draft (click & drag)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-100 border-2 border-dashed border-green-400 rounded"></div>
-          <span>Selected for creation</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-100 border-2 border-dashed border-blue-400 rounded"></div>
-          <span>Draft (click & drag)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Repeat className="h-4 w-4" />
-          <span>Recurring</span>
-        </div>
-      </div>
+
 
       {/* Calendar Grid */}
       {view === 'week' && (
@@ -696,7 +685,7 @@ export default function GoogleStyleCalendar() {
               ))}
             </div>
 
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-96 overflow-y-auto" ref={calendarScrollRef}>
               {timeSlots30Min.map((timeSlot, slotIndex) => (
                 <div key={slotIndex} className="grid grid-cols-8 border-b last:border-b-0">
                   <div className="p-2 text-sm text-gray-600 bg-gray-50 border-r">
@@ -711,7 +700,7 @@ export default function GoogleStyleCalendar() {
                       <div
                         key={`${dayIndex}-${slotIndex}`}
                         className={cn(
-                          "h-12 border-l border-gray-200 p-1 transition-colors",
+                          "h-8 border-l border-gray-200 p-1 transition-colors",
                           cellContent.type === 'empty' && "hover:bg-blue-50 cursor-crosshair",
                           cellContent.type === 'appointment' && "cursor-default"
                         )}

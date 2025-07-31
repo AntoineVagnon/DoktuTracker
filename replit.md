@@ -216,6 +216,11 @@ Changelog:
 - July 31, 2025: Removed 3-appointment limit in doctor dashboard - now displays all upcoming appointments
 - July 31, 2025: Applied consistent timezone correction (-2 hours) to all date/time display functions and calendar matching logic
 - July 31, 2025: All appointment times now display correctly: patient dashboard, doctor dashboard, and calendar all show intended booking times
+- July 31, 2025: DESIGN IMPROVEMENTS: Enhanced doctor calendar with cleaner, more compact design
+- July 31, 2025: Removed calendar legend - information now shows directly on blocks (Available/Booked) with recurring icon on hover
+- July 31, 2025: Reduced calendar row height from 48px to 32px for better visibility without scrolling
+- July 31, 2025: Auto-scroll to 8 AM position when calendar loads instead of starting at midnight
+- July 31, 2025: Added "See more" buttons to dashboards after 3 appointments with proper navigation to full views
 ```
 
 ## User Preferences
