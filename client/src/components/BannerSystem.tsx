@@ -98,18 +98,16 @@ function Banner({
         <div className="flex items-start space-x-3 flex-1">
           {getIcon()}
           <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h3 className="font-medium">{title}</h3>
-              {countdown && (
-                <span className="text-sm font-mono bg-white/50 px-2 py-1 rounded">
-                  {timeLeft}
-                </span>
-              )}
-            </div>
-            {description && (
-              <p className="text-sm mt-1 opacity-80">{description}</p>
-            )}
-            <div className="flex items-center gap-3 mt-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <h3 className="font-medium">{title}</h3>
+                {countdown && (
+                  <span className="text-sm font-mono bg-white/50 px-2 py-1 rounded">
+                    {timeLeft}
+                  </span>
+                )}
+              </div>
+              {/* Primary action button inline */}
               {primaryAction && (
                 <Button
                   onClick={primaryAction.onClick}
@@ -125,18 +123,26 @@ function Banner({
                   {primaryAction.label}
                 </Button>
               )}
-              {secondaryActions?.map((action, index) => (
-                <Button
-                  key={index}
-                  onClick={action.onClick}
-                  variant="outline"
-                  size="sm"
-                >
-                  {action.icon && <action.icon className="h-4 w-4 mr-2" />}
-                  {action.label}
-                </Button>
-              ))}
             </div>
+            {description && (
+              <p className="text-sm mt-1 opacity-80">{description}</p>
+            )}
+            {/* Secondary actions below if any */}
+            {secondaryActions && secondaryActions.length > 0 && (
+              <div className="flex items-center gap-3 mt-3">
+                {secondaryActions.map((action, index) => (
+                  <Button
+                    key={index}
+                    onClick={action.onClick}
+                    variant="outline"
+                    size="sm"
+                  >
+                    {action.icon && <action.icon className="h-4 w-4 mr-2" />}
+                    {action.label}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         {dismissible && (
@@ -156,9 +162,11 @@ function Banner({
 
 interface BannerSystemProps {
   className?: string;
+  onOpenHealthProfile?: () => void;
+  onOpenDocumentUpload?: (appointmentId: number) => void;
 }
 
-export function BannerSystem({ className }: BannerSystemProps) {
+export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpload }: BannerSystemProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -257,13 +265,8 @@ export function BannerSystem({ className }: BannerSystemProps) {
         secondaryActions: [
           {
             label: 'Upload Docs',
-            onClick: () => {/* Open document upload sidebar */},
+            onClick: () => onOpenDocumentUpload?.(apt.id),
             icon: Upload,
-          },
-          {
-            label: 'Review Profile',
-            onClick: () => {/* Open profile sidebar */},
-            icon: User,
           }
         ]
       });
@@ -272,8 +275,7 @@ export function BannerSystem({ className }: BannerSystemProps) {
     // 3. Health profile completion banner (third priority) - patients only
     if (user.role === 'patient') {
       const needsProfileCompletion = !healthProfile || 
-                                   healthProfile.profileStatus === 'incomplete' ||
-                                   healthProfile.profileStatus === 'needs_review';
+                                   (healthProfile.profileStatus !== 'complete');
       
       if (needsProfileCompletion) {
         const completionScore = healthProfile?.completionScore || 0;
@@ -287,7 +289,7 @@ export function BannerSystem({ className }: BannerSystemProps) {
             : `Complete your health profile to book consultations (${missingFields} of 5 fields missing)`,
           primaryAction: {
             label: 'Complete Profile',
-            onClick: () => {/* Open health profile sidebar */},
+            onClick: () => onOpenHealthProfile?.(),
             icon: Heart,
           },
           dismissible: healthProfile?.profileStatus === 'needs_review',
@@ -302,8 +304,13 @@ export function BannerSystem({ className }: BannerSystemProps) {
     }
 
     // Sort banners by priority and update state
-    setBanners(newBanners.sort((a, b) => a.priority - b.priority));
-  }, [user, appointments, healthProfile, documents]);
+    const sortedBanners = newBanners.sort((a, b) => a.priority - b.priority);
+    
+    // Only update if banners actually changed to prevent infinite loops
+    if (JSON.stringify(sortedBanners) !== JSON.stringify(banners)) {
+      setBanners(sortedBanners);
+    }
+  }, [user?.id, user?.role, appointments?.length, healthProfile?.profileStatus, healthProfile?.completionScore]);
 
   if (banners.length === 0) return null;
 

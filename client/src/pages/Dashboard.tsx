@@ -131,17 +131,17 @@ export default function Dashboard() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      pending: { variant: "secondary" as const, label: "Pending" },
-      confirmed: { variant: "default" as const, label: "Confirmed" },
-      paid: { variant: "default" as const, label: "Paid" },
+      pending: { variant: "secondary" as const, label: "Pending", className: undefined },
+      confirmed: { variant: "default" as const, label: "Confirmed", className: undefined },
+      paid: { variant: "default" as const, label: "Paid", className: undefined },
       completed: { variant: "default" as const, label: "Completed", className: "bg-green-500" },
-      cancelled: { variant: "destructive" as const, label: "Cancelled" },
+      cancelled: { variant: "destructive" as const, label: "Cancelled", className: undefined },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
 
     return (
-      <Badge variant={config.variant} {...(config.className && { className: config.className })}>
+      <Badge variant={config.variant} className={config.className || ""}>
         {config.label}
       </Badge>
     );
@@ -191,7 +191,14 @@ export default function Dashboard() {
         </div>
 
         {/* Banner System */}
-        <BannerSystem className="mb-6" />
+        <BannerSystem 
+          className="mb-6" 
+          onOpenHealthProfile={() => setHealthProfileOpen(true)}
+          onOpenDocumentUpload={(appointmentId) => {
+            setSelectedAppointmentId(appointmentId);
+            setDocumentUploadOpen(true);
+          }}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -293,14 +300,7 @@ export default function Dashboard() {
                                 Upload Docs
                               </Button>
 
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => setHealthProfileOpen(true)}
-                              >
-                                <Heart className="h-4 w-4 mr-2" />
-                                Review Profile
-                              </Button>
+
 
                               <Button variant="outline" size="sm">
                                 Reschedule
