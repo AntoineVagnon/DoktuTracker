@@ -123,16 +123,18 @@ export default function Dashboard() {
     );
   }
 
+  // Upcoming appointments: not cancelled and time is in the future
   const allUpcomingAppointments = appointments.filter((apt: any) => 
-    apt.status !== "cancelled" && apt.status !== "completed" && new Date(apt.appointmentDate) > new Date()
+    apt.status !== "cancelled" && new Date(apt.appointmentDate) > new Date()
   );
   
   // Limit to 3 appointments for dashboard preview
   const upcomingAppointments = allUpcomingAppointments.slice(0, 3);
   const hasMoreAppointments = allUpcomingAppointments.length > 3;
 
+  // Past appointments: completed OR time has passed (but not cancelled)
   const pastAppointments = appointments.filter((apt: any) => 
-    apt.status === "completed" || new Date(apt.appointmentDate) <= new Date()
+    apt.status !== "cancelled" && (apt.status === "completed" || new Date(apt.appointmentDate) <= new Date())
   );
 
   const getStatusBadge = (status: string) => {
