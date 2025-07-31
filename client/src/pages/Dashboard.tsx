@@ -214,9 +214,9 @@ export default function Dashboard() {
             <Tabs defaultValue="appointments" className="space-y-6">
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="appointments">Appointments</TabsTrigger>
-                <TabsTrigger value="book">Book New</TabsTrigger>
-                <TabsTrigger value="profile">Health Profile</TabsTrigger>
-                <TabsTrigger value="billing">Billing</TabsTrigger>
+                <TabsTrigger value="calendar">Calendar</TabsTrigger>
+                <TabsTrigger value="doctors">My Doctors</TabsTrigger>
+                <TabsTrigger value="settings">Settings</TabsTrigger>
               </TabsList>
 
               <TabsContent value="appointments" className="space-y-6">
@@ -341,57 +341,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Consultation History */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <CalendarCheck className="h-5 w-5 mr-2" />
-                      Consultation History
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {pastAppointments.length === 0 ? (
-                      <div className="text-center py-8">
-                        <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-600">No consultation history</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {pastAppointments.slice(0, 5).map((appointment: any) => (
-                          <div key={appointment.id} className="border rounded-lg p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-                                  <span className="text-gray-600 font-medium text-sm">
-                                    {appointment.doctor?.user?.firstName?.[0]}{appointment.doctor?.user?.lastName?.[0]}
-                                  </span>
-                                </div>
-                                <div>
-                                  <h3 className="font-medium text-gray-900">
-                                    Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
-                                  </h3>
-                                  <p className="text-sm text-gray-600">{appointment.doctor?.specialty}</p>
-                                </div>
-                              </div>
-                              {getStatusBadge(appointment.status)}
-                            </div>
 
-                            <p className="text-sm text-gray-600 mb-2">
-                              {format(new Date(appointment.appointmentDate), "MMM d, yyyy 'at' h:mm a")}
-                            </p>
-
-                            {appointment.status === "completed" && (
-                              <Button variant="ghost" size="sm">
-                                <Star className="h-4 w-4 mr-2" />
-                                Leave Review
-                              </Button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
               </TabsContent>
 
               <TabsContent value="book">
