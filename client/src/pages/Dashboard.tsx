@@ -11,10 +11,13 @@ import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload, Edit2, Save, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { formatAppointmentDateTimeUS } from "@/lib/dateUtils";
-import { format } from "date-fns";
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns";
 import { BannerSystem } from "@/components/BannerSystem";
 import { HealthProfileSidebar } from "@/components/HealthProfileSidebar";
 import { DocumentUploadSidebar } from "@/components/DocumentUploadSidebar";
@@ -29,6 +32,8 @@ export default function Dashboard() {
   const [healthProfileOpen, setHealthProfileOpen] = useState(false);
   const [documentUploadOpen, setDocumentUploadOpen] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<number | null>(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
 
   useEffect(() => {
     // Check if user just completed verification or booking
@@ -77,6 +82,26 @@ export default function Dashboard() {
     queryKey: ["/api/appointments"],
     enabled: isAuthenticated,
   });
+
+  // All appointments (past, present, future) 
+  const allAppointments = appointments || [];
+
+  // Get unique doctors from appointments
+  const uniqueDoctors = allAppointments.reduce((doctors: any[], appointment: any) => {
+    const doctor = appointment.doctor;
+    if (!doctor) return doctors;
+    
+    const existingDoctor = doctors.find(d => d.id === doctor.id);
+    if (existingDoctor) {
+      existingDoctor.appointmentCount += 1;
+    } else {
+      doctors.push({
+        ...doctor,
+        appointmentCount: 1
+      });
+    }
+    return doctors;
+  }, []);
 
   // Fetch health profile for banner system and profile tab
   const { data: healthProfile, isLoading: healthProfileLoading } = useQuery({
@@ -175,6 +200,256 @@ export default function Dashboard() {
 
   const handleBookAppointment = () => {
     setLocation('/doctors');
+  };
+
+  // Editable Profile Form Component
+  const EditableProfileForm = ({ user }: { user: any }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [formData, setFormData] = useState({
+      title: user?.title || '',
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || ''
+    });
+
+    const updateProfileMutation = useMutation({
+      mutationFn: async (data: any) => {
+        const response = await apiRequest("PATCH", "/api/auth/user", data);
+        return response.json();
+      },
+      onSuccess: () => {
+        toast({
+          title: "Profile Updated",
+          description: "Your profile has been successfully updated.",
+        });
+        setIsEditing(false);
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: "Update Failed",
+          description: error.message || "Failed to update profile.",
+          variant: "destructive",
+        });
+      },
+    });
+
+    const handleSave = () => {
+      updateProfileMutation.mutate(formData);
+    };
+
+    const handleCancel = () => {
+      setFormData({
+        title: user?.title || '',
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+        email: user?.email || ''
+      });
+      setIsEditing(false);
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium">Personal Information</h3>
+          {!isEditing ? (
+            <Button variant="outline" onClick={() => setIsEditing(true)}>
+              <Edit2 className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleCancel}
+                disabled={updateProfileMutation.isPending}
+              >
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={handleSave}
+                disabled={updateProfileMutation.isPending}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Save
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="title">Title</Label>
+            {isEditing ? (
+              <Select 
+                value={formData.title} 
+                onValueChange={(value) => setFormData({...formData, title: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select title" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Mr">Mr</SelectItem>
+                  <SelectItem value="Ms">Ms</SelectItem>
+                  <SelectItem value="Mrs">Mrs</SelectItem>
+                  <SelectItem value="Dr">Dr</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <p className="text-gray-900 p-2">{user?.title || 'Not specified'}</p>
+            )}
+          </div>
+          
+          <div>
+            <Label htmlFor="firstName">First Name</Label>
+            {isEditing ? (
+              <Input
+                value={formData.firstName}
+                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                placeholder="Enter first name"
+              />
+            ) : (
+              <p className="text-gray-900 p-2">{user?.firstName || 'Not specified'}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="lastName">Last Name</Label>
+            {isEditing ? (
+              <Input
+                value={formData.lastName}
+                onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                placeholder="Enter last name"
+              />
+            ) : (
+              <p className="text-gray-900 p-2">{user?.lastName || 'Not specified'}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <p className="text-gray-500 p-2">{user?.email}</p>
+            <p className="text-xs text-gray-400">Email changes require verification</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Calendar Component
+  const AppointmentCalendar = () => {
+    const monthStart = startOfMonth(currentDate);
+    const monthEnd = endOfMonth(monthStart);
+    const startDate = startOfWeek(monthStart);
+    const endDate = endOfWeek(monthEnd);
+
+    const days = [];
+    let day = startDate;
+
+    while (day <= endDate) {
+      days.push(day);
+      day = addDays(day, 1);
+    }
+
+    const getAppointmentForDay = (date: Date) => {
+      return allAppointments?.find((apt: any) => 
+        isSameDay(new Date(apt.appointmentDate), date)
+      );
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium">
+            {format(currentDate, 'MMMM yyyy')}
+          </h3>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentDate(subMonths(currentDate, 1))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentDate(new Date())}
+            >
+              Today
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentDate(addMonths(currentDate, 1))}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+            <div key={day} className="p-2 text-center font-medium text-gray-500">
+              {day}
+            </div>
+          ))}
+          
+          {days.map((day, index) => {
+            const appointment = getAppointmentForDay(day);
+            const isCurrentMonth = isSameMonth(day, currentDate);
+            const isToday = isSameDay(day, new Date());
+
+            return (
+              <div
+                key={index}
+                className={`
+                  p-2 h-20 border rounded cursor-pointer transition-colors
+                  ${!isCurrentMonth ? 'text-gray-300 bg-gray-50' : ''}
+                  ${isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'}
+                  ${appointment ? 'bg-green-50 border-green-200 hover:bg-green-100' : 'hover:bg-gray-50'}
+                `}
+                onClick={() => appointment && setSelectedAppointment(appointment)}
+              >
+                <div className="text-sm font-medium">
+                  {format(day, 'd')}
+                </div>
+                {appointment && (
+                  <div className="text-xs text-green-700 mt-1 truncate">
+                    {format(new Date(appointment.appointmentDate), 'HH:mm')}
+                    <br />
+                    Dr. {appointment.doctor?.user?.lastName}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {selectedAppointment && (
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                Appointment Details
+                <Button variant="ghost" size="sm" onClick={() => setSelectedAppointment(null)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <p><strong>Doctor:</strong> Dr. {selectedAppointment.doctor?.user?.firstName} {selectedAppointment.doctor?.user?.lastName}</p>
+              <p><strong>Specialty:</strong> {selectedAppointment.doctor?.specialty}</p>
+              <p><strong>Date & Time:</strong> {formatAppointmentDateTimeUS(selectedAppointment.appointmentDate)}</p>
+              <p><strong>Status:</strong> {getStatusBadge(selectedAppointment.status)}</p>
+              <p><strong>Price:</strong> €{selectedAppointment.price || '35'}</p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -352,10 +627,7 @@ export default function Dashboard() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8">
-                      <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Calendar view coming soon</p>
-                    </div>
+                    <AppointmentCalendar />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -369,10 +641,57 @@ export default function Dashboard() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8">
-                      <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Your doctor history coming soon</p>
-                    </div>
+                    {appointmentsLoading ? (
+                      <div className="space-y-4">
+                        {[...Array(3)].map((_, i) => (
+                          <div key={i} className="animate-pulse">
+                            <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {uniqueDoctors.length === 0 ? (
+                          <div className="text-center py-8">
+                            <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600">No doctor consultations yet</p>
+                            <Button onClick={handleBookAppointment} className="mt-4">
+                              <Plus className="h-4 w-4 mr-2" />
+                              Book your first appointment
+                            </Button>
+                          </div>
+                        ) : (
+                          uniqueDoctors.map((doctor: any) => (
+                            <Card key={doctor.id} className="border rounded-lg p-4">
+                              <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                  <span className="text-white font-bold">
+                                    {doctor.user?.firstName?.[0]}{doctor.user?.lastName?.[0]}
+                                  </span>
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className="font-medium text-gray-900">
+                                    Dr. {doctor.user?.firstName} {doctor.user?.lastName}
+                                  </h3>
+                                  <p className="text-sm text-gray-600">{doctor.specialty}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {doctor.appointmentCount} appointment{doctor.appointmentCount !== 1 ? 's' : ''}
+                                  </p>
+                                </div>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => setLocation(`/doctors/${doctor.id}`)}
+                                >
+                                  View Profile
+                                </Button>
+                              </div>
+                            </Card>
+                          ))
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -387,44 +706,15 @@ export default function Dashboard() {
                   </CardHeader>
                   <CardContent>
                     <Tabs defaultValue="profile" className="space-y-6">
-                      <TabsList className="grid w-full grid-cols-5">
+                      <TabsList className="grid w-full grid-cols-4">
                         <TabsTrigger value="profile">My Profile</TabsTrigger>
                         <TabsTrigger value="health">Health Profile</TabsTrigger>
-                        <TabsTrigger value="billing">Billing</TabsTrigger>
                         <TabsTrigger value="payment">Payment Methods</TabsTrigger>
                         <TabsTrigger value="security">Security</TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="profile">
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-medium">Personal Information</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Title
-                              </label>
-                              <p className="text-gray-900">{user?.title || 'Not specified'}</p>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                First Name
-                              </label>
-                              <p className="text-gray-900">{user?.firstName || 'Not specified'}</p>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Last Name
-                              </label>
-                              <p className="text-gray-900">{user?.lastName || 'Not specified'}</p>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Email
-                              </label>
-                              <p className="text-gray-900">{user?.email}</p>
-                            </div>
-                          </div>
-                        </div>
+                        <EditableProfileForm user={user} />
                       </TabsContent>
 
                       <TabsContent value="health">
@@ -500,17 +790,23 @@ export default function Dashboard() {
                         )}
                       </TabsContent>
 
-                      <TabsContent value="billing">
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-medium">Billing & Payments</h3>
-                          <p className="text-gray-600">View your payment history and manage billing information.</p>
-                        </div>
-                      </TabsContent>
+
 
                       <TabsContent value="payment">
                         <div className="space-y-4">
                           <h3 className="text-lg font-medium">Payment Methods</h3>
-                          <p className="text-gray-600">Manage your saved payment methods.</p>
+                          <p className="text-gray-600 mb-4">Manage your saved payment methods for faster checkout.</p>
+                          
+                          <div className="border rounded-lg p-4">
+                            <div className="text-center py-8">
+                              <CreditCard className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                              <p className="text-gray-600 mb-4">No payment methods saved</p>
+                              <Button variant="outline">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Payment Method
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                       </TabsContent>
 

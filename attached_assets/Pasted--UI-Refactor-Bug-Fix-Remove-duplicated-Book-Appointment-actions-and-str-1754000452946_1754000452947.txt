@@ -1,0 +1,90 @@
+# UI‑Refactor Bug Fix: Remove duplicated “Book Appointment” actions
+#                       and streamline the Patient Dashboard navigation
+
+Feature: Simplified Patient Dashboard layout
+
+  Goal:
+    • Keep **two** Book Appointment entry points:
+      1. A always‑visible primary button in the page header
+      2. The inline “Book an appointment” button inside the *Upcoming Appointments* empty‑state card
+    • Remove obsolete “Book New” tab and Quick Actions panel.
+    • Provide a **single horizontal tab bar** that surfaces the core patient pages:
+      | Appointments | Calendar | My Doctors | Settings |
+    • Move **Health Profile** and **Billing** into sub‑tabs inside the Settings page.
+
+#############################################################
+# SECTION 1 – Remove redundant elements                     #
+#############################################################
+  Scenario: Hide “Book New” tab
+    Given I am on /dashboard as a patient
+    Then the horizontal tab bar shows exactly:
+      | Appointments | Calendar | My Doctors | Settings |
+    And the “Book New” tab is no longer rendered.
+
+  Scenario: Remove right‑hand Quick Actions card
+    Given the dashboard previously contained the Quick Actions column
+    Then that column is removed on desktop and mobile breakpoints
+    And its buttons are no longer present in the DOM.
+
+  Scenario: Keep exactly two Book Appointment CTAs
+    Then two and only two buttons are visible:
+      | # | Placement                               |
+      | 1 | Top‑right of the page header (blue)     |
+      | 2 | Inside the Upcoming Appointments empty‑state card |
+    And no additional “Book Appointment” buttons exist elsewhere.
+
+#############################################################
+# SECTION 2 – Tab bar behaviour                             #
+#############################################################
+  Scenario: Tab switching
+    When I click **Settings**
+    Then the Settings page loads with its own sub‑tab bar (see Section 3)
+    And the blue header button switches label to “Back to Appointments”.
+
+  Scenario: Banner “Complete profile” link
+    Given the yellow Health‑profile banner is visible
+    When I click “Complete profile”
+    Then the dashboard switches to **Settings » Health Profile** sub‑tab
+    And scrolls the form into view so the patient can edit directly
+
+  Scenario: Responsive rules
+    Given viewport < 768 px
+    Then the top tab bar becomes a swipeable pill list
+    And the primary CTA remains in the top bar (shrinks to icon “+”).
+
+#############################################################
+# SECTION 3 – Settings interface (doctor & patient)          #
+#############################################################
+  Goal: consolidate all account‑related information into one **Settings** page with its own internal sub‑tabs.
+
+  Sub‑tabs inside Settings (horizontal pills):
+    | My Profile | Health Profile | Billing | Payment Methods | Security |
+
+  ### Security sub‑tab – basic credential management
+    * Displays readonly **primary email** with a “Change email” flow (re‑verification required).
+    * Provides a **Change password** form (current password + new password + confirm, ≥ 12 chars, strength meter).
+    * No 2FA toggles, device list or login history are shown in this simplified scope.
+
+  Scenario: Switch to Security
+    When I click “Security” in the sub‑tab bar
+    Then the credential form loads in‑place
+    And the URL updates to `/settings#security`
+
+  Scenario: Update password successfully
+    Given I am on the Security sub‑tab
+    When I enter my current password and a valid strong new password
+    And I click “Save changes”
+    Then a success toast appears “Password updated”
+    And I receive a confirmation email via SendGrid
+
+  Responsive rules:
+    * On devices < 768 px, the sub‑tab list becomes horizontally scrollable.
+
+#############################################################
+# SECTION 4 – Accessibility & QA                            #
+#############################################################
+  * Top and sub‑tab bars use `<button role="tab">` semantics with `aria‑selected="true"`.
+  * Lighthouse ≥ 90 for Accessibility after refactor.
+  * Playwright checks:
+      1. Two Book Appointment buttons (header + empty‑state).
+      2. Settings sub‑tabs render and deep‑link work (`/settings#billing`, `/settings#health`).

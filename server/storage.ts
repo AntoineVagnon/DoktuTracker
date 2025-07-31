@@ -8,6 +8,7 @@ import {
   reviews,
   auditEvents,
   payments,
+  healthProfiles,
   type UpsertUser,
   type User,
   type Doctor,
@@ -20,6 +21,8 @@ import {
   type InsertAppointment,
   type InsertAppointmentPending,
   type InsertReview,
+  type HealthProfile,
+  type InsertHealthProfile,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, gte, lte, isNull, or, count, avg, sql } from "drizzle-orm";
@@ -86,9 +89,9 @@ export interface IStorage {
   getDoctorReviews(doctorId: string): Promise<(Review & { patient: User })[]>;
 
   // Health Profile operations
-  getHealthProfile(patientId: number): Promise<any | undefined>;
-  createHealthProfile(profile: any): Promise<any>;
-  updateHealthProfile(id: string, updates: any): Promise<any>;
+  getHealthProfile(patientId: number): Promise<HealthProfile | undefined>;
+  createHealthProfile(profile: InsertHealthProfile): Promise<HealthProfile>;
+  updateHealthProfile(id: string, updates: Partial<HealthProfile>): Promise<HealthProfile>;
 
   // Document operations
   getDocuments(appointmentId: number): Promise<any[]>;
@@ -826,99 +829,115 @@ export class PostgresStorage implements IStorage {
   }
 
   // Health Profile operations
-  async getHealthProfile(patientId: number): Promise<any | undefined> {
-    // Initialize cache if not exists
-    if (!this.healthProfileCache) {
-      this.healthProfileCache = new Map();
+  async getHealthProfile(patientId: number): Promise<HealthProfile | undefined> {
+    try {
+      console.log('🔍 Fetching health profile from DATABASE for patient:', patientId);
+      
+      // Query the actual database first
+      const [dbProfile] = await db
+        .select()
+        .from(healthProfiles)
+        .where(eq(healthProfiles.patientId, patientId))
+        .limit(1);
+
+      if (dbProfile) {
+        console.log('✅ Found EXISTING health profile in database for patient:', patientId, {
+          profileStatus: dbProfile.profileStatus,
+          completionScore: dbProfile.completionScore
+        });
+        return dbProfile;
+      }
+
+      console.log('❌ No health profile found in database for patient:', patientId, '- returning incomplete');
+      // Return incomplete profile to trigger completion flow
+      return {
+        id: crypto.randomUUID(),
+        patientId,
+        profileStatus: 'incomplete',
+        completionScore: 0,
+        dateOfBirth: null,
+        gender: null,
+        height: null,
+        weight: null,
+        bloodType: null,
+        allergies: null,
+        medications: null,
+        medicalHistory: null,
+        emergencyContactName: null,
+        emergencyContactPhone: null,
+        lastReviewedAt: null,
+        needsReviewAfter: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+    } catch (error) {
+      console.error('Error fetching health profile from database:', error);
+      throw error;
     }
-    
-    console.log('🔍 Looking for health profile cache for patient:', patientId);
-    console.log('🔍 Cache keys available:', Array.from(this.healthProfileCache.keys()));
-    
-    // Check if we have a cached profile first (for this session)
-    if (this.healthProfileCache.has(patientId)) {
-      const cachedProfile = this.healthProfileCache.get(patientId);
-      console.log('✅ Returning COMPLETE cached health profile for patient:', patientId, {
-        profileStatus: cachedProfile.profileStatus,
-        completionScore: cachedProfile.completionScore
+  }
+
+  async createHealthProfile(profile: InsertHealthProfile): Promise<HealthProfile> {
+    try {
+      console.log('💾 Creating health profile in DATABASE for patient:', profile.patientId);
+      
+      const [newProfile] = await db
+        .insert(healthProfiles)
+        .values({
+          ...profile,
+          profileStatus: 'complete',
+          completionScore: 100,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .returning();
+      
+      console.log('✅ Health profile successfully created in database:', {
+        id: newProfile.id,
+        patientId: newProfile.patientId,
+        profileStatus: newProfile.profileStatus,
+        completionScore: newProfile.completionScore
       });
-      return cachedProfile;
+      
+      return newProfile;
+    } catch (error) {
+      console.error('Error creating health profile in database:', error);
+      throw error;
     }
-    
-    console.log('❌ No cached profile found for patient:', patientId, '- returning incomplete');
-    // Otherwise return incomplete profile to trigger completion flow
-    return {
-      id: `health_${patientId}`,
-      patientId,
-      profileStatus: 'incomplete',
-      completionScore: 40, // 40% complete (5 of 5 fields missing as shown in banner)
-      medicalHistory: null,
-      medications: null,
-      allergies: null,
-      emergencyContact: null,
-      insuranceInfo: null,
-      lastUpdated: new Date()
-    };
   }
 
-  async createHealthProfile(profile: any): Promise<any> {
-    // For now, simulate profile creation with proper persistence simulation
-    // This would normally insert into health_profiles table
-    const newProfile = {
-      ...profile,
-      id: `health_${profile.patientId}_${Date.now()}`,
-      profileStatus: 'complete',
-      completionScore: 100,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    // Save to cache for immediate persistence during this session
-    if (!this.healthProfileCache) {
-      this.healthProfileCache = new Map();
+
+
+  async updateHealthProfile(id: string, updates: Partial<HealthProfile>): Promise<HealthProfile> {
+    try {
+      console.log('💾 Updating health profile in DATABASE with ID:', id);
+      
+      const [updatedProfile] = await db
+        .update(healthProfiles)
+        .set({
+          ...updates,
+          profileStatus: 'complete',
+          completionScore: 100,
+          updatedAt: new Date()
+        })
+        .where(eq(healthProfiles.id, id))
+        .returning();
+      
+      if (!updatedProfile) {
+        throw new Error(`Health profile with ID ${id} not found`);
+      }
+      
+      console.log('✅ Health profile successfully updated in database:', {
+        id: updatedProfile.id,
+        patientId: updatedProfile.patientId,
+        profileStatus: updatedProfile.profileStatus,
+        completionScore: updatedProfile.completionScore
+      });
+      
+      return updatedProfile;
+    } catch (error) {
+      console.error('Error updating health profile in database:', error);
+      throw error;
     }
-    this.healthProfileCache.set(profile.patientId, newProfile);
-    console.log('💾 Health profile cached for patient:', profile.patientId, {
-      profileStatus: newProfile.profileStatus,
-      completionScore: newProfile.completionScore
-    });
-    console.log('💾 Cache now contains keys:', Array.from(this.healthProfileCache.keys()));
-    
-    console.log('Health profile created:', newProfile);
-    return newProfile;
-  }
-
-  private healthProfileCache = new Map();
-
-  constructor() {
-    // Initialize the health profile cache
-    this.healthProfileCache = new Map();
-  }
-
-  async updateHealthProfile(id: string, updates: any): Promise<any> {
-    // For now, simulate profile update
-    const updatedProfile = {
-      id,
-      ...updates,
-      updatedAt: new Date()
-    };
-    
-    // CRITICAL: Save to cache so it persists during this session
-    if (!this.healthProfileCache) {
-      this.healthProfileCache = new Map();
-    }
-    
-    // Extract patientId from the updates or id
-    const patientId = updates.patientId || parseInt(id.replace('health_', ''));
-    this.healthProfileCache.set(patientId, updatedProfile);
-    console.log('💾 Health profile UPDATE cached for patient:', patientId, {
-      profileStatus: updatedProfile.profileStatus,
-      completionScore: updatedProfile.completionScore
-    });
-    console.log('💾 Cache now contains keys after UPDATE:', Array.from(this.healthProfileCache.keys()));
-    
-    console.log('Health profile updated:', updatedProfile);
-    return updatedProfile;
   }
 
   // Document operations
