@@ -14,9 +14,9 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload, Edit2, Save, X } from "lucide-react";
+import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload, Edit2, Save, X, Activity } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import { formatAppointmentDateTimeUS } from "@/lib/dateUtils";
+import { formatAppointmentDateTimeUS, categorizeAppointmentsByTiming, getTimeUntilAppointment } from "@/lib/dateUtils";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns";
 import { BannerSystem } from "@/components/BannerSystem";
 import { HealthProfileSidebar } from "@/components/HealthProfileSidebar";
@@ -148,19 +148,15 @@ export default function Dashboard() {
     );
   }
 
-  // Upcoming appointments: not cancelled and time is in the future
-  const allUpcomingAppointments = appointments.filter((apt: any) => 
-    apt.status !== "cancelled" && new Date(apt.appointmentDate) > new Date()
-  );
+  // Categorize appointments by timing
+  const { upcoming, live, completed } = categorizeAppointmentsByTiming(appointments);
   
   // Limit to 3 appointments for dashboard preview
-  const upcomingAppointments = allUpcomingAppointments.slice(0, 3);
-  const hasMoreAppointments = allUpcomingAppointments.length > 3;
+  const upcomingAppointments = upcoming.slice(0, 3);
+  const hasMoreAppointments = upcoming.length > 3;
 
-  // Past appointments: completed OR time has passed (but not cancelled)
-  const pastAppointments = appointments.filter((apt: any) => 
-    apt.status !== "cancelled" && (apt.status === "completed" || new Date(apt.appointmentDate) <= new Date())
-  );
+  // Past appointments: completed appointments
+  const pastAppointments = completed;
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -480,6 +476,45 @@ export default function Dashboard() {
           </Button>
         </div>
 
+        {/* Live Appointments Banner */}
+        {live.length > 0 && (
+          <Card className="mb-6 bg-green-50 border-green-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-green-800 text-lg">
+                <Activity className="h-5 w-5" />
+                Live Appointments
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {live.map((appointment: any) => (
+                  <div key={appointment.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-white border border-green-200 rounded-lg space-y-3 sm:space-y-0">
+                    <div className="flex-1">
+                      <div className="font-medium text-base text-green-800">
+                        Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
+                      </div>
+                      <div className="text-sm text-green-600 mt-1 flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        {formatAppointmentDateTimeUS(appointment.appointmentDate)} • {getTimeUntilAppointment(appointment.appointmentDate)}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-2">
+                      <span className="text-sm sm:text-base text-green-600 font-medium">
+                        €{appointment.price}
+                      </span>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 h-9 px-3">
+                        <Video className="h-4 w-4 mr-2 sm:mr-0" />
+                        <span className="sm:hidden">Join</span>
+                        <span className="hidden sm:inline">Join Call</span>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Banner System */}
         <BannerSystem 
           className="mb-6" 
@@ -518,7 +553,7 @@ export default function Dashboard() {
                       </CardTitle>
                       {hasMoreAppointments && (
                         <Button variant="ghost" size="sm" onClick={() => setLocation('/doctors')}>
-                          See All ({allUpcomingAppointments.length})
+                          See All ({upcoming.length})
                         </Button>
                       )}
                     </div>
@@ -621,7 +656,7 @@ export default function Dashboard() {
                               className="w-full"
                               onClick={() => setLocation('/doctors')}
                             >
-                              Book more appointments ({allUpcomingAppointments.length})
+                              Book more appointments ({upcoming.length})
                             </Button>
                           </div>
                         )}
