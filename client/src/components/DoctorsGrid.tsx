@@ -27,7 +27,7 @@ const fetcher = async (url: string) => {
 
 export function DoctorsGrid() {
   const { data: doctors, error, isLoading } = useSWR<Doctor[]>(
-    "/api/public/doctors-grid", 
+    "/api/doctors", 
     fetcher,
     {
       refreshInterval: 30000,

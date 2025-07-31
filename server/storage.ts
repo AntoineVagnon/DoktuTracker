@@ -31,6 +31,8 @@ export interface IStorage {
   // User operations (required for Supabase Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  updateUser(id: string, updates: Partial<User>): Promise<User>;
+  deleteUser(id: string): Promise<void>;
 
   // Custom auth operations for booking flow
   getUserByEmail(email: string): Promise<User | undefined>;
@@ -42,6 +44,7 @@ export interface IStorage {
   getDoctorByUserId(userId: string): Promise<Doctor | undefined>;
   createDoctor(doctor: InsertDoctor): Promise<Doctor>;
   updateDoctorOnlineStatus(doctorId: string, isOnline: boolean): Promise<void>;
+  deleteDoctor(id: string): Promise<void>;
 
   // Time slot operations
   getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]>;
@@ -158,6 +161,39 @@ export class PostgresStorage implements IStorage {
     return user;
   }
 
+  async updateUser(id: string, updates: Partial<User>): Promise<User> {
+    const userId = parseInt(id);
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
+    const updateData = {
+      ...updates,
+      updatedAt: new Date()
+    };
+
+    const [updatedUser] = await db
+      .update(users)
+      .set(updateData)
+      .where(eq(users.id, userId))
+      .returning();
+
+    if (!updatedUser) {
+      throw new Error('User not found');
+    }
+
+    return updatedUser;
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    const userId = parseInt(id);
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
+    await db.delete(users).where(eq(users.id, userId));
+  }
+
   async getDoctors(): Promise<(Doctor & { user: User })[]> {
     const result = await db
       .select({
@@ -272,6 +308,15 @@ export class PostgresStorage implements IStorage {
       .where(eq(doctors.id, doctorId));
   }
 
+  async deleteDoctor(id: string): Promise<void> {
+    const doctorId = parseInt(id);
+    if (isNaN(doctorId)) {
+      throw new Error('Invalid doctor ID');
+    }
+
+    await db.delete(doctors).where(eq(doctors.id, doctorId));
+  }
+
   async getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]> {
     const doctorIntId = typeof doctorId === 'string' ? parseInt(doctorId, 10) : doctorId;
     
@@ -313,10 +358,16 @@ export class PostgresStorage implements IStorage {
     startTime?: string;
     endTime?: string;
     date?: string;
+    isAvailable?: boolean;
   }): Promise<TimeSlot> {
+    const updateData = {
+      ...data,
+      updatedAt: new Date()
+    };
+
     const [timeSlot] = await db
       .update(doctorTimeSlots)
-      .set(data)
+      .set(updateData)
       .where(eq(doctorTimeSlots.id, id))
       .returning();
     

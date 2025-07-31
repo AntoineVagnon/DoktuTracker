@@ -167,14 +167,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const doctors = await storage.getDoctors();
         console.log("Available doctors:", doctors.map(d => ({ id: d.id, userId: d.userId, email: d.user?.email })));
         
-        // Find doctor by email - handle james.rodriguez mapping
+        // Find doctor by email
         let doctor = doctors.find(d => d.user?.email === user.email);
-        
-        // Special mapping for test doctor james.rodriguez@doktu.com -> james.rodriguez@doku.com
-        if (!doctor && user.email === "james.rodriguez@doktu.com") {
-          doctor = doctors.find(d => d.user?.email === "james.rodriguez@doku.com");
-          console.log(`🔄 Mapped james.rodriguez@doktu.com to doctorId: ${doctor?.id}`);
-        }
         
         if (!doctor) {
           console.log(`❌ No doctor profile found for: ${user.email}`);
@@ -481,14 +475,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get doctor record to find the correct doctorId
       const doctors = await storage.getDoctors();
       
-      // Find doctor by email - handle james.rodriguez mapping
+      // Find doctor by email
       let doctor = doctors.find(d => d.user?.email === user.email);
-      
-      // Special mapping for test doctor james.rodriguez@doktu.com -> james.rodriguez@doku.com
-      if (!doctor && user.email === "james.rodriguez@doktu.com") {
-        doctor = doctors.find(d => d.user?.email === "james.rodriguez@doku.com");
-        console.log(`🔄 Time slots mapped james.rodriguez@doktu.com to doctorId: ${doctor?.id}`);
-      }
       
       if (!doctor) {
         return res.status(404).json({ error: "Doctor profile not found" });
@@ -518,14 +506,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get doctor record to find the correct doctorId
       const doctors = await storage.getDoctors();
       
-      // Find doctor by email - handle james.rodriguez mapping
+      // Find doctor by email
       let doctor = doctors.find(d => d.user?.email === user.email);
-      
-      // Special mapping for test doctor james.rodriguez@doktu.com -> james.rodriguez@doku.com
-      if (!doctor && user.email === "james.rodriguez@doktu.com") {
-        doctor = doctors.find(d => d.user?.email === "james.rodriguez@doku.com");
-        console.log(`🔄 Creating slots for mapped james.rodriguez@doktu.com to doctorId: ${doctor?.id}`);
-      }
       
       console.log("Looking for doctor with user email:", user.email);
       console.log("Available doctors:", doctors.map(d => ({ id: d.id, userId: d.userId, email: d.user?.email })));
@@ -725,6 +707,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to confirm payment" });
     }
   });
+
 
   // Stripe webhook for payment events
   app.post("/api/webhooks/stripe", async (req, res) => {
