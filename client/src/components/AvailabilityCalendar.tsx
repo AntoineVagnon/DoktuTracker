@@ -16,6 +16,7 @@ import {
   isBefore,
   isSameDay
 } from "date-fns";
+import { convertSlotTimeToLocal } from "@/lib/dateUtils";
 
 interface TimeSlot {
   id: string;
@@ -265,7 +266,7 @@ export default function AvailabilityCalendar({
             {getDayTitle(selectedDay)}
           </h3>
           <p className="text-sm text-gray-600">
-            Times in German time (GMT+1) • Dr. David Martin practices from Germany
+            Times in local time (CET) • Available slots shown in your timezone
           </p>
         </div>
 
@@ -275,6 +276,11 @@ export default function AvailabilityCalendar({
             const slot = getSlotForDateTime(selectedDay, timeStr);
             const isDisabled = isSlotDisabled(selectedDay, timeStr);
             const isAvailable = slot && slot.isAvailable && !isDisabled;
+            
+            // Convert UTC slot time to local time for display
+            const localTimeDisplay = slot 
+              ? convertSlotTimeToLocal(slot.date, slot.startTime)
+              : timeStr;
             
             return (
               <button
@@ -288,10 +294,10 @@ export default function AvailabilityCalendar({
                     : "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed"
                   }
                 `}
-                aria-label={`${isAvailable ? 'Book appointment' : 'Unavailable'} at ${timeStr} on ${format(selectedDay, "EEEE, MMMM d")}`}
+                aria-label={`${isAvailable ? 'Book appointment' : 'Unavailable'} at ${localTimeDisplay} on ${format(selectedDay, "EEEE, MMMM d")}`}
                 data-testid={`time-slot-${timeStr}`}
               >
-                {timeStr}
+                {localTimeDisplay}
               </button>
             );
           })}

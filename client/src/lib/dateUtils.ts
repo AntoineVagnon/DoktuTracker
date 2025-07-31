@@ -46,3 +46,16 @@ export function formatSlotTime(timeString: string): string {
   const [hours, minutes] = timeString.split(':');
   return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
 }
+
+// Convert UTC time slot to local time for display
+export function convertSlotTimeToLocal(date: string, timeString: string): string {
+  // Create a UTC date from the slot date and time
+  const [hours, minutes] = timeString.split(':').map(Number);
+  const utcDate = new Date(`${date}T${timeString}:00.000Z`);
+  
+  // Convert to local time and format
+  const localHours = String(utcDate.getHours()).padStart(2, '0');
+  const localMinutes = String(utcDate.getMinutes()).padStart(2, '0');
+  
+  return `${localHours}:${localMinutes}`;
+}
