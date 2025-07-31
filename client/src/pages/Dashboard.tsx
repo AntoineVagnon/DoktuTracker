@@ -253,15 +253,15 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium">Personal Information</h3>
           {!isEditing ? (
-            <Button variant="outline" onClick={() => setIsEditing(true)}>
+            <Button variant="outline" onClick={() => setIsEditing(true)} className="h-10">
               <Edit2 className="h-4 w-4 mr-2" />
               Edit
             </Button>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <Button 
                 variant="outline" 
-                size="sm" 
+                className="h-10"
                 onClick={handleCancel}
                 disabled={updateProfileMutation.isPending}
               >
@@ -269,7 +269,7 @@ export default function Dashboard() {
                 Cancel
               </Button>
               <Button 
-                size="sm" 
+                className="h-10"
                 onClick={handleSave}
                 disabled={updateProfileMutation.isPending}
               >
@@ -280,15 +280,15 @@ export default function Dashboard() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="title">Title</Label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-1">
+            <Label htmlFor="title" className="text-sm font-medium">Title</Label>
             {isEditing ? (
               <Select 
                 value={formData.title} 
                 onValueChange={(value) => setFormData({...formData, title: value})}
               >
-                <SelectTrigger>
+                <SelectTrigger className="mt-1 h-11">
                   <SelectValue placeholder="Select title" />
                 </SelectTrigger>
                 <SelectContent>
@@ -299,40 +299,42 @@ export default function Dashboard() {
                 </SelectContent>
               </Select>
             ) : (
-              <p className="text-gray-900 p-2">{user?.title || 'Not specified'}</p>
+              <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.title || 'Not specified'}</p>
             )}
           </div>
           
-          <div>
-            <Label htmlFor="firstName">First Name</Label>
+          <div className="sm:col-span-1">
+            <Label htmlFor="firstName" className="text-sm font-medium">First Name</Label>
             {isEditing ? (
               <Input
                 value={formData.firstName}
                 onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                 placeholder="Enter first name"
+                className="mt-1 h-11"
               />
             ) : (
-              <p className="text-gray-900 p-2">{user?.firstName || 'Not specified'}</p>
+              <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.firstName || 'Not specified'}</p>
             )}
           </div>
 
-          <div>
-            <Label htmlFor="lastName">Last Name</Label>
+          <div className="sm:col-span-1">
+            <Label htmlFor="lastName" className="text-sm font-medium">Last Name</Label>
             {isEditing ? (
               <Input
                 value={formData.lastName}
                 onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                 placeholder="Enter last name"
+                className="mt-1 h-11"
               />
             ) : (
-              <p className="text-gray-900 p-2">{user?.lastName || 'Not specified'}</p>
+              <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.lastName || 'Not specified'}</p>
             )}
           </div>
 
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <p className="text-gray-500 p-2">{user?.email}</p>
-            <p className="text-xs text-gray-400">Email changes require verification</p>
+          <div className="sm:col-span-2">
+            <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+            <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.email}</p>
+            <p className="text-xs text-gray-500 mt-1">Email changes require verification</p>
           </div>
         </div>
       </div>
@@ -362,22 +364,25 @@ export default function Dashboard() {
 
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+          <h3 className="text-lg font-medium text-center sm:text-left">
             {format(currentDate, 'MMMM yyyy')}
           </h3>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCurrentDate(subMonths(currentDate, 1))}
+              className="h-9 px-3"
             >
-              Previous
+              <span className="hidden sm:inline">Previous</span>
+              <span className="sm:hidden">Prev</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCurrentDate(new Date())}
+              className="h-9 px-3"
             >
               Today
             </Button>
@@ -385,6 +390,7 @@ export default function Dashboard() {
               variant="outline"
               size="sm"
               onClick={() => setCurrentDate(addMonths(currentDate, 1))}
+              className="h-9 px-3"
             >
               Next
             </Button>
@@ -393,8 +399,9 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-7 gap-1">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="p-2 text-center font-medium text-gray-500">
-              {day}
+            <div key={day} className="p-1 sm:p-2 text-center font-medium text-gray-500 text-xs sm:text-sm">
+              <span className="hidden sm:inline">{day}</span>
+              <span className="sm:hidden">{day.slice(0, 1)}</span>
             </div>
           ))}
           
@@ -407,21 +414,20 @@ export default function Dashboard() {
               <div
                 key={index}
                 className={`
-                  p-2 h-20 border rounded cursor-pointer transition-colors
+                  p-1 sm:p-2 h-16 sm:h-20 border rounded cursor-pointer transition-colors
                   ${!isCurrentMonth ? 'text-gray-300 bg-gray-50' : ''}
                   ${isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'}
                   ${appointment ? 'bg-green-50 border-green-200 hover:bg-green-100' : 'hover:bg-gray-50'}
                 `}
                 onClick={() => appointment && setSelectedAppointment(appointment)}
               >
-                <div className="text-sm font-medium">
+                <div className="text-xs sm:text-sm font-medium">
                   {format(day, 'd')}
                 </div>
                 {appointment && (
                   <div className="text-xs text-green-700 mt-1 truncate">
-                    {format(new Date(appointment.appointmentDate), 'HH:mm')}
-                    <br />
-                    Dr. {appointment.doctor?.user?.lastName}
+                    <div className="font-medium">{format(new Date(appointment.appointmentDate), 'HH:mm')}</div>
+                    <div className="hidden sm:block truncate">Dr. {appointment.doctor?.user?.lastName}</div>
                   </div>
                 )}
               </div>
@@ -456,20 +462,21 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Patient Dashboard</h1>
-            <p className="text-gray-600">Welcome back, {user?.firstName || "Patient"}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Patient Dashboard</h1>
+            <p className="text-gray-600 text-sm sm:text-base">Welcome back, {user?.firstName || "Patient"}</p>
           </div>
 
           <Button 
             onClick={handleBookAppointment}
-            className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]"
+            className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] h-11 w-full sm:w-auto"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Book New Appointment
+            <span className="hidden sm:inline">Book New Appointment</span>
+            <span className="sm:hidden">Book Appointment</span>
           </Button>
         </div>
 
@@ -483,15 +490,21 @@ export default function Dashboard() {
           }}
         />
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto px-0 sm:px-4">
           {/* Main Content */}
           <div>
             <Tabs defaultValue="appointments" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="appointments">Appointments</TabsTrigger>
-                <TabsTrigger value="calendar">Calendar</TabsTrigger>
-                <TabsTrigger value="doctors">My Doctors</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1 h-auto p-1">
+                <TabsTrigger value="appointments" className="text-xs sm:text-sm py-2 px-2 sm:px-4">
+                  <span className="hidden sm:inline">Appointments</span>
+                  <span className="sm:hidden">Appts</span>
+                </TabsTrigger>
+                <TabsTrigger value="calendar" className="text-xs sm:text-sm py-2 px-2 sm:px-4">Calendar</TabsTrigger>
+                <TabsTrigger value="doctors" className="text-xs sm:text-sm py-2 px-2 sm:px-4">
+                  <span className="hidden sm:inline">My Doctors</span>
+                  <span className="sm:hidden">Doctors</span>
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="text-xs sm:text-sm py-2 px-2 sm:px-4">Settings</TabsTrigger>
               </TabsList>
 
               <TabsContent value="appointments" className="space-y-6">
@@ -561,11 +574,12 @@ export default function Dashboard() {
                               </div>
                             </div>
 
-                            <div className="flex items-center space-x-2">
+                            <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                               {canJoinVideo(appointment) && (
-                                <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700 h-9 flex-1 sm:flex-none">
                                   <Video className="h-4 w-4 mr-2" />
-                                  Join Video Call
+                                  <span className="hidden sm:inline">Join Video Call</span>
+                                  <span className="sm:hidden">Join Call</span>
                                 </Button>
                               )}
 
@@ -577,14 +591,14 @@ export default function Dashboard() {
                                   setSelectedAppointmentId(appointment.id);
                                   setDocumentUploadOpen(true);
                                 }}
+                                className="h-9 flex-1 sm:flex-none"
                               >
                                 <Upload className="h-4 w-4 mr-2" />
-                                Upload Docs
+                                <span className="hidden sm:inline">Upload Docs</span>
+                                <span className="sm:hidden">Upload</span>
                               </Button>
 
-
-
-                              <Button variant="outline" size="sm">
+                              <Button variant="outline" size="sm" className="h-9 flex-1 sm:flex-none">
                                 Reschedule
                               </Button>
 
@@ -593,6 +607,7 @@ export default function Dashboard() {
                                 size="sm" 
                                 onClick={() => handleCancelAppointment(appointment.id)}
                                 disabled={cancelAppointmentMutation.isPending}
+                                className="h-9 flex-1 sm:flex-none"
                               >
                                 Cancel
                               </Button>
@@ -656,9 +671,10 @@ export default function Dashboard() {
                           <div className="text-center py-8">
                             <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                             <p className="text-gray-600">No doctor consultations yet</p>
-                            <Button onClick={handleBookAppointment} className="mt-4">
+                            <Button onClick={handleBookAppointment} className="mt-4 h-10 w-full sm:w-auto">
                               <Plus className="h-4 w-4 mr-2" />
-                              Book your first appointment
+                              <span className="hidden sm:inline">Book your first appointment</span>
+                              <span className="sm:hidden">Book Appointment</span>
                             </Button>
                           </div>
                         ) : (
@@ -683,8 +699,10 @@ export default function Dashboard() {
                                   variant="outline" 
                                   size="sm"
                                   onClick={() => setLocation(`/doctors/${doctor.id}`)}
+                                  className="h-9 px-3"
                                 >
-                                  View Profile
+                                  <span className="hidden sm:inline">View Profile</span>
+                                  <span className="sm:hidden">View</span>
                                 </Button>
                               </div>
                             </Card>
@@ -706,11 +724,20 @@ export default function Dashboard() {
                   </CardHeader>
                   <CardContent>
                     <Tabs defaultValue="profile" className="space-y-6">
-                      <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="profile">My Profile</TabsTrigger>
-                        <TabsTrigger value="health">Health Profile</TabsTrigger>
-                        <TabsTrigger value="payment">Payment Methods</TabsTrigger>
-                        <TabsTrigger value="security">Security</TabsTrigger>
+                      <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-1 h-auto p-1">
+                        <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-1 sm:px-3">
+                          <span className="hidden sm:inline">My Profile</span>
+                          <span className="sm:hidden">Profile</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="health" className="text-xs sm:text-sm py-2 px-1 sm:px-3">
+                          <span className="hidden sm:inline">Health Profile</span>
+                          <span className="sm:hidden">Health</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="payment" className="text-xs sm:text-sm py-2 px-1 sm:px-3">
+                          <span className="hidden sm:inline">Payment Methods</span>
+                          <span className="sm:hidden">Payment</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="security" className="text-xs sm:text-sm py-2 px-1 sm:px-3">Security</TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="profile">
