@@ -889,19 +889,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = req.user as any;
       const profileData = {
         ...req.body,
-        patientId: user.id, // Ensure we have patientId for cache
+        patientId: user.id,
         profileStatus: 'complete',
         completionScore: 100,
         lastReviewedAt: new Date(),
         needsReviewAfter: new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000), // 6 months from now
       };
       
-      console.log('Updating health profile for user ID:', user.id);
-      const healthProfile = await storage.updateHealthProfile(req.params.id, profileData);
-      res.json(healthProfile);
+      console.log('Updating health profile for user ID:', user.id, 'with ID:', req.params.id);
+      
+      try {
+        // Try to update first
+        const healthProfile = await storage.updateHealthProfile(req.params.id, profileData);
+        res.json(healthProfile);
+      } catch (updateError: any) {
+        // If update fails because profile doesn't exist, create a new one
+        if (updateError.message.includes('not found')) {
+          console.log('Profile not found, creating new health profile for user:', user.id);
+          const newHealthProfile = await storage.createHealthProfile(profileData);
+          res.json(newHealthProfile);
+        } else {
+          throw updateError;
+        }
+      }
     } catch (error) {
-      console.error("Error updating health profile:", error);
-      res.status(500).json({ message: "Failed to update health profile" });
+      console.error("Error with health profile operation:", error);
+      res.status(500).json({ message: "Failed to save health profile" });
     }
   });
 
