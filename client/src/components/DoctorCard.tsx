@@ -36,10 +36,8 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
   const doctorName = doctor.user ? formatUserFullName({ ...doctor.user, role: 'doctor' }) : 'Unknown Doctor';
   const initials = doctor.user ? getUserInitials(doctor.user) : 'DR';
   
-  // Disable individual API calls for performance - show static availability
-  const nextSlot = null;
-  const isLoading = false;
-  const hasAvailability = false;
+  // Get real-time next available slot
+  const { nextSlot, hasAvailability, isLoading } = useNextAvailableSlot(doctor.id);
   
   const gradientColors = [
     "from-blue-500 to-blue-600",
@@ -103,10 +101,21 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
 
           {/* Real-time Availability Badge */}
           <div className="flex items-center justify-center mb-3">
-            <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-200">
-              <Clock className="h-3 w-3 mr-1" />
-              Available now
-            </Badge>
+            {!isLoading && hasAvailability && nextSlot ? (
+              <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-200">
+                <Clock className="h-3 w-3 mr-1" />
+                Next: {format(new Date(`${nextSlot.date}T00:00:00`), 'MMM d')}, {convertSlotTimeToLocal(nextSlot.date, nextSlot.startTime)}
+              </Badge>
+            ) : !isLoading ? (
+              <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+                No availability
+              </Badge>
+            ) : (
+              <Badge variant="secondary" className="bg-blue-100 text-blue-600">
+                <Clock className="h-3 w-3 mr-1 animate-spin" />
+                Loading...
+              </Badge>
+            )}
           </div>
 
           {/* Price */}

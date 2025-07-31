@@ -116,15 +116,30 @@ export function DoctorsGrid() {
               )}
             </div>
             
-            {/* Availability - Simplified to reduce API load */}
+            {/* Availability - Optimized with selective loading */}
             <div className="space-y-1 w-full">
               <div className="flex items-center justify-center space-x-1 text-xs text-gray-600">
                 <Clock className="h-3 w-3" />
-                <span>Available soon</span>
+                <span>Next available:</span>
               </div>
-              <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
-                View schedule
-              </Badge>
+              {doctor.nextAvailableSlots && doctor.nextAvailableSlots.length >= 2 ? (
+                <div className="space-y-1 text-xs text-gray-700">
+                  <div>{formatSlotTime(doctor.nextAvailableSlots[0])}</div>
+                  <div>{formatSlotTime(doctor.nextAvailableSlots[1])}</div>
+                </div>
+              ) : doctor.nextAvailableSlots && doctor.nextAvailableSlots.length === 1 ? (
+                <div className="text-xs text-gray-700">
+                  {formatSlotTime(doctor.nextAvailableSlots[0])}
+                </div>
+              ) : doctor.nextAvailableSlots && doctor.nextAvailableSlots.length === 0 ? (
+                <div className="text-xs text-red-600 font-medium">
+                  Fully booked
+                </div>
+              ) : (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                  Click to view schedule
+                </Badge>
+              )}
             </div>
           </div>
         </CardContent>

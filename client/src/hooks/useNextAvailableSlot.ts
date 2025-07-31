@@ -20,6 +20,7 @@ export function useNextAvailableSlot(doctorId: string) {
     refetchOnWindowFocus: false, // Disable auto-refetch
     staleTime: 15 * 60 * 1000, // Consider data stale after 15 minutes
     gcTime: 20 * 60 * 1000, // Keep in cache longer
+    enabled: false, // Disable automatic fetching - only fetch when explicitly needed
   });
 
   // Calculate next available slot from the fetched time slots
