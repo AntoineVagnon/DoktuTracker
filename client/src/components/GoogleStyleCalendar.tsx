@@ -139,39 +139,50 @@ export default function GoogleStyleCalendar() {
     enabled: !!user?.id
   });
 
-  // Create time slot mutation with local storage fallback
+  // Create individual 30-minute time slots
   const createSlotMutation = useMutation({
     mutationFn: async (data: { startTime: string; endTime: string; isRecurring?: boolean; recurringEndDate?: string }) => {
-      // For demonstration purposes, create a local slot until database is fixed
-      const tempSlot = {
-        id: `temp-${Date.now()}`,
-        doctorId: 'demo-doctor',
-        date: data.startTime ? data.startTime.split('T')[0] : new Date().toISOString().split('T')[0],
-        startTime: (data.startTime && data.startTime.includes(':')) ? data.startTime : new Date(data.startTime || Date.now()).toTimeString().slice(0, 5),
-        endTime: (data.endTime && data.endTime.includes(':')) ? data.endTime : new Date(data.endTime || Date.now()).toTimeString().slice(0, 5),
-        isAvailable: true,
-        createdAt: new Date()
-      };
+      // Parse the start and end times to create individual 30-minute slots
+      const startDateTime = new Date(data.startTime);
+      const endDateTime = new Date(data.endTime);
       
-      // Store in localStorage for demonstration
-      const existingSlots = JSON.parse(localStorage.getItem('demo-time-slots') || '[]');
-      existingSlots.push(tempSlot);
-      localStorage.setItem('demo-time-slots', JSON.stringify(existingSlots));
+      const slots = [];
+      let currentTime = new Date(startDateTime);
       
-      return tempSlot;
+      // Create individual 30-minute slots between start and end time
+      while (currentTime < endDateTime) {
+        const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
+        
+        const slotData = {
+          startTime: currentTime.toISOString(),
+          endTime: slotEnd.toISOString(),
+          isRecurring: data.isRecurring,
+          recurringEndDate: data.recurringEndDate
+        };
+        
+        const response = await apiRequest('POST', '/api/time-slots', slotData);
+        const slot = await response.json();
+        slots.push(slot);
+        
+        currentTime = new Date(slotEnd);
+      }
+      
+      return slots;
     },
-    onSuccess: () => {
+    onSuccess: (slots) => {
       // Immediate sync across all booking surfaces
       syncAvailability(user?.id);
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
-      toast({ title: "Demo availability slot created!" });
+      toast({ 
+        title: "Availability created successfully!",
+        description: `Created ${slots.length} individual 30-minute slots`
+      });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
     },
     onError: (error: any) => {
       console.error('Create slot error:', error);
       toast({ 
         title: "Failed to create availability", 
-        description: "Database schema issue - using demo mode",
         variant: "destructive" 
       });
     }
@@ -197,14 +208,11 @@ export default function GoogleStyleCalendar() {
     }
   });
 
-  // Delete time slot mutation (demo mode with localStorage)
+  // Delete time slot mutation
   const deleteSlotMutation = useMutation({
     mutationFn: async (data: { slotId: string; scope?: string }) => {
-      // For demo mode, remove from localStorage
-      const existingSlots = JSON.parse(localStorage.getItem('demo-time-slots') || '[]');
-      const updatedSlots = existingSlots.filter((slot: any) => slot.id !== data.slotId);
-      localStorage.setItem('demo-time-slots', JSON.stringify(updatedSlots));
-      return { success: true };
+      const response = await apiRequest('DELETE', `/api/time-slots/${data.slotId}`, { scope: data.scope });
+      return response.json();
     },
     onSuccess: () => {
       // Sync availability across all surfaces when deleted
