@@ -416,7 +416,70 @@ export class PostgresStorage implements IStorage {
 
   async getAppointments(patientId?: string, doctorId?: string): Promise<any[]> {
     try {
-      let query = db.select().from(appointments);
+      const patientUsers = alias(users, 'patient_users');
+      const doctorUsers = alias(users, 'doctor_users');
+      
+      let query = db
+        .select({
+          // Appointment fields
+          id: appointments.id,
+          doctorId: appointments.doctorId,
+          patientId: appointments.patientId,
+          timeSlotId: appointments.timeSlotId,
+          status: appointments.status,
+          appointmentDate: appointments.appointmentDate,
+          price: appointments.price,
+          paymentIntentId: appointments.paymentIntentId,
+          notes: appointments.notes,
+          cancelReason: appointments.cancelReason,
+          cancelledBy: appointments.cancelledBy,
+          videoRoomId: appointments.videoRoomId,
+          createdAt: appointments.createdAt,
+          updatedAt: appointments.updatedAt,
+          // Doctor with user info
+          doctor: {
+            id: doctors.id,
+            userId: doctors.userId,
+            specialty: doctors.specialty,
+            bio: doctors.bio,
+            education: doctors.education,
+            experience: doctors.experience,
+            languages: doctors.languages,
+            rppsNumber: doctors.rppsNumber,
+            consultationPrice: doctors.consultationPrice,
+            rating: doctors.rating,
+            reviewCount: doctors.reviewCount,
+            createdAt: doctors.createdAt,
+            updatedAt: doctors.updatedAt,
+            user: {
+              id: doctorUsers.id,
+              email: doctorUsers.email,
+              title: doctorUsers.title,
+              firstName: doctorUsers.firstName,
+              lastName: doctorUsers.lastName,
+              role: doctorUsers.role,
+              approved: doctorUsers.approved,
+              createdAt: doctorUsers.createdAt,
+              updatedAt: doctorUsers.updatedAt
+            }
+          },
+          // Patient info
+          patient: {
+            id: patientUsers.id,
+            email: patientUsers.email,
+            title: patientUsers.title,
+            firstName: patientUsers.firstName,
+            lastName: patientUsers.lastName,
+            role: patientUsers.role,
+            approved: patientUsers.approved,
+            createdAt: patientUsers.createdAt,
+            updatedAt: patientUsers.updatedAt
+          }
+        })
+        .from(appointments)
+        .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
+        .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
+        .innerJoin(patientUsers, eq(appointments.patientId, patientUsers.id));
       
       if (patientId) {
         query = query.where(eq(appointments.patientId, parseInt(patientId)));
@@ -465,12 +528,17 @@ export class PostgresStorage implements IStorage {
     // After updating appointment status to "paid", remove the slot from availability
     if (status === "paid") {
       const appointment = await this.getAppointment(id);
-      if (appointment) {
+      console.log(`📋 Marking slot as unavailable for appointment ${id}:`, appointment);
+      if (appointment && appointment.timeSlotId) {
+        console.log(`🔒 Marking slot ${appointment.timeSlotId} as unavailable`);
         // Mark the time slot as unavailable
-        await db
+        const updateResult = await db
           .update(doctorTimeSlots)
           .set({ isAvailable: false, updatedAt: new Date() })
           .where(eq(doctorTimeSlots.id, appointment.timeSlotId));
+        console.log(`✅ Slot update result:`, updateResult);
+      } else {
+        console.log(`❌ No timeSlotId found for appointment ${id}`);
       }
     }
   }
