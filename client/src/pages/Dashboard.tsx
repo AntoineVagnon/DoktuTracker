@@ -123,35 +123,19 @@ export default function Dashboard() {
     );
   }
 
-  // Debug: Check current time vs appointment times
-  const now = new Date();
-  console.log('🕐 Current time:', now);
-  appointments.forEach((apt: any) => {
-    const aptTime = new Date(apt.appointmentDate);
-    console.log(`📅 Appointment ${apt.id}: ${aptTime} (${apt.status}) - ${aptTime > now ? 'FUTURE' : 'PAST'}`);
-  });
-
   // Upcoming appointments: not cancelled and time is in the future
-  const allUpcomingAppointments = appointments.filter((apt: any) => {
-    const aptTime = new Date(apt.appointmentDate);
-    const isFuture = aptTime > now;
-    const isNotCancelled = apt.status !== "cancelled";
-    console.log(`🔍 Appointment ${apt.id}: future=${isFuture}, notCancelled=${isNotCancelled}`);
-    return isNotCancelled && isFuture;
-  });
+  const allUpcomingAppointments = appointments.filter((apt: any) => 
+    apt.status !== "cancelled" && new Date(apt.appointmentDate) > new Date()
+  );
   
   // Limit to 3 appointments for dashboard preview
   const upcomingAppointments = allUpcomingAppointments.slice(0, 3);
   const hasMoreAppointments = allUpcomingAppointments.length > 3;
 
   // Past appointments: completed OR time has passed (but not cancelled)
-  const pastAppointments = appointments.filter((apt: any) => {
-    const aptTime = new Date(apt.appointmentDate);
-    const isPast = aptTime <= now;
-    const isCompleted = apt.status === "completed";
-    const isNotCancelled = apt.status !== "cancelled";
-    return isNotCancelled && (isCompleted || isPast);
-  });
+  const pastAppointments = appointments.filter((apt: any) => 
+    apt.status !== "cancelled" && (apt.status === "completed" || new Date(apt.appointmentDate) <= new Date())
+  );
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
