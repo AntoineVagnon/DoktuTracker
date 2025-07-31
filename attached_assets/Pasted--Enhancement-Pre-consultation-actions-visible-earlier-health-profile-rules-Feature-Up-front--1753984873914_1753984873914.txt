@@ -1,0 +1,93 @@
+# Enhancement: Pre-consultation actions visible earlier + health-profile rules
+
+Feature: Up-front reminders for profile review, document upload, and doctor preview
+— plus clear completion rules for the patient health profile.
+
+\################################################################
+
+# SECTION 1 – Early pre-consultation actions
+
+\################################################################ Background: Given I am on the dashboard (patient or doctor) And appointments are grouped in the “Upcoming Appointments” list
+
+Scenario: Show action links while appointment is still “upcoming” Given an appointment is more than 5 minutes away (status = upcoming) Then each appointment card displays contextual links:
+
+```
+| Actor    | Link text / badge                    |
+| Patient  | “Upload documents” + file-count chip |
+| Doctor   | “Review patient profile”             |
+```
+
+And clicking opens a side-panel (not full redirect) And the link duplicates itself in the live-banner once the banner appears.
+
+\################################################################
+
+# SECTION 2 – Health profile completion rules
+
+\################################################################ Rule: Mandatory profile reminder banner (no modal) When a newly registered patient lands on the **patient dashboard** Then a yellow banner appears at the top of the content area: "Complete your health profile to book consultations (4 of 5 fields missing)" And a primary button “Complete profile” opens the profile form in a side‑panel And the dashboard remains fully usable beneath the banner.
+
+Banner priority stack:
+
+1. **Payment incomplete banner** (red – highest priority)
+2. **Live / join‑now banner** (green)
+3. **Health‑profile banner** (yellow)
+4. Any informational banners (blue)
+
+If multiple banners are present, only the highest‑priority banner is fully visible; lower banners peek out 8 px underneath so the user knows more messages are queued.
+
+Scenario: Prompt profile review on dashboard revisit Given the profile is flagged “Needs review” by staleness rules When I open the dashboard Then the same yellow banner appears at priority level 3 And it persists until profile status becomes “up\_to\_date” Given the profile is flagged “Needs review” When I open the dashboard Then a modal/banner appears: “Please review your health profile (last update > 6 months).” And the dashboard remains usable but shows a persistent yellow banner until profile updated.
+
+\################################################################
+
+# SECTION 3 – Appointment state & live‑session banner
+
+### 3.1 Filter finished appointments
+
+*Rule*: if `current_time ≥ appointment.end_time`, remove the row from **Upcoming Appointments** and move it to **Consultation History**.
+
+### 3.2 Payment‑incomplete banner logic
+
+*Trigger*: appointment is locked (`status = pending_payment`) **and** payment not received.
+
+\| Banner colour | Red |
+\| Left text     | “Payment required to confirm your consultation (15 min left)” |
+\| Primary CTA   | **Resume Payment** button |
+
+**Countdown**: displays remaining lock timer (mm\:ss).
+
+**Auto‑dismiss**: when `current_time ≥ slot.lockedUntil` the appointment draft is removed, banner fades out, and slot becomes available again.
+
+### 3.3 Promote live or imminent sessions (≤ 5 min) to banner
+
+*Trigger* `current_time ≥ (start_time ‑ 5 min)` **AND** `current_time < end_time` **AND** appointment is `status = paid`.
+
+\| Banner colour | Green |
+\| Left text     | “Your consultation with Dr. {{doctor}} starts in {{countdown}}” |
+\| Primary CTA   | **Join Video Call** (Zoom link) |
+\| Extra links   | Upload docs / Review profile |
+
+Appointment row disappears from Upcoming while this banner is active.
+
+**Auto‑dismiss**: banner fades out 5 min after `end_time` and appointment moves to history.
+
+### 3.3 (removed) Equipment readiness – handled by Zoom pre‑test
+
+*Note*: Video/mic check is managed inside Zoom’s green‑room; no in‑app alert required.
+
+### 3.4 Edge‑case rules
+
+* Overlapping banners: stack in order **Payment** (red) → **Live** (green) → **Health** (yellow) → Info (blue).
+* Late join (≥ 15 min after start): CTA changes to “Join (late)” and banner turns amber.
+* Cancelled while banner visible: banner fades out and toast “Appointment cancelled”.
+* Cancelled while banner visible: banner fades out and toast “Appointment cancelled”.
+
+---
+
+# SECTION 4 – Acceptance criteria
+
+\################################################################
+
+* Action links appear in Upcoming cards **and** in live banner.
+* Dashboard forces profile completion for first‑time users (blocking modal).
+* Yellow banner reappears if `profile_status = "needs_review"`.
+* `profile_status` computed server‑side; UI gets realtime or poll updates.
+* Staleness cron marks profiles nightly.

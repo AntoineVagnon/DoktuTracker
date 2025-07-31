@@ -11,9 +11,13 @@ import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle } from "lucide-react";
+import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { formatAppointmentDateTimeUS } from "@/lib/dateUtils";
+import { format } from "date-fns";
+import { BannerSystem } from "@/components/BannerSystem";
+import { HealthProfileSidebar } from "@/components/HealthProfileSidebar";
+import { DocumentUploadSidebar } from "@/components/DocumentUploadSidebar";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -22,6 +26,9 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [showVerificationBanner, setShowVerificationBanner] = useState(false);
   const [verificationJustCompleted, setVerificationJustCompleted] = useState(false);
+  const [healthProfileOpen, setHealthProfileOpen] = useState(false);
+  const [documentUploadOpen, setDocumentUploadOpen] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<number | null>(null);
 
   useEffect(() => {
     // Check if user just completed verification or booking
@@ -183,6 +190,9 @@ export default function Dashboard() {
           </Button>
         </div>
 
+        {/* Banner System */}
+        <BannerSystem className="mb-6" />
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
@@ -269,6 +279,28 @@ export default function Dashboard() {
                                   Join Video Call
                                 </Button>
                               )}
+
+                              {/* Pre-consultation actions */}
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedAppointmentId(appointment.id);
+                                  setDocumentUploadOpen(true);
+                                }}
+                              >
+                                <Upload className="h-4 w-4 mr-2" />
+                                Upload Docs
+                              </Button>
+
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setHealthProfileOpen(true)}
+                              >
+                                <Heart className="h-4 w-4 mr-2" />
+                                Review Profile
+                              </Button>
 
                               <Button variant="outline" size="sm">
                                 Reschedule
@@ -440,6 +472,24 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* Health Profile Sidebar */}
+      <HealthProfileSidebar
+        isOpen={healthProfileOpen}
+        onClose={() => setHealthProfileOpen(false)}
+      />
+
+      {/* Document Upload Sidebar */}
+      {selectedAppointmentId && (
+        <DocumentUploadSidebar
+          isOpen={documentUploadOpen}
+          onClose={() => {
+            setDocumentUploadOpen(false);
+            setSelectedAppointmentId(null);
+          }}
+          appointmentId={selectedAppointmentId}
+        />
+      )}
     </div>
   );
 }

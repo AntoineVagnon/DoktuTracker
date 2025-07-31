@@ -123,6 +123,73 @@ export const reviews = pgTable("reviews", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Patient Health Profiles
+export const healthProfiles = pgTable("health_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  patientId: integer("patient_id").references(() => users.id).notNull().unique(),
+  dateOfBirth: date("date_of_birth"),
+  gender: varchar("gender"),
+  height: varchar("height"),
+  weight: varchar("weight"),
+  bloodType: varchar("blood_type"),
+  allergies: text("allergies").array(),
+  medications: text("medications").array(),
+  medicalHistory: text("medical_history").array(),
+  emergencyContactName: varchar("emergency_contact_name"),
+  emergencyContactPhone: varchar("emergency_contact_phone"),
+  profileStatus: varchar("profile_status").notNull().default("incomplete"), // incomplete, complete, needs_review
+  completionScore: integer("completion_score").default(0), // 0-100
+  lastReviewedAt: timestamp("last_reviewed_at"),
+  needsReviewAfter: timestamp("needs_review_after"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Document Uploads
+export const documentUploads = pgTable("document_uploads", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  appointmentId: integer("appointment_id").references(() => appointments.id).notNull(),
+  uploadedBy: integer("uploaded_by").references(() => users.id).notNull(),
+  fileName: varchar("file_name").notNull(),
+  fileSize: integer("file_size").notNull(),
+  fileType: varchar("file_type").notNull(),
+  uploadUrl: text("upload_url").notNull(),
+  documentType: varchar("document_type"), // medical_report, prescription, insurance, other
+  uploadedAt: timestamp("uploaded_at").defaultNow(),
+});
+
+// Banner Dismissals (to track when users dismiss banners)
+export const bannerDismissals = pgTable("banner_dismissals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  bannerType: varchar("banner_type").notNull(), // health_profile, document_reminder, etc.
+  dismissedAt: timestamp("dismissed_at").defaultNow(),
+  expiresAt: timestamp("expires_at"), // When the dismissal expires and banner can show again
+});
+
+// Schema Types
+export const insertHealthProfileSchema = createInsertSchema(healthProfiles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertHealthProfile = z.infer<typeof insertHealthProfileSchema>;
+export type HealthProfile = typeof healthProfiles.$inferSelect;
+
+export const insertDocumentUploadSchema = createInsertSchema(documentUploads).omit({
+  id: true,
+  uploadedAt: true,
+});
+export type InsertDocumentUpload = z.infer<typeof insertDocumentUploadSchema>;
+export type DocumentUpload = typeof documentUploads.$inferSelect;
+
+export const insertBannerDismissalSchema = createInsertSchema(bannerDismissals).omit({
+  id: true,
+  dismissedAt: true,
+});
+export type InsertBannerDismissal = z.infer<typeof insertBannerDismissalSchema>;
+export type BannerDismissal = typeof bannerDismissals.$inferSelect;
+
 // Video test results
 export const videoTests = pgTable("video_tests", {
   id: uuid("id").primaryKey().defaultRandom(),

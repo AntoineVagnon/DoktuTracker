@@ -832,6 +832,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ received: true });
   });
 
+  // Health Profile Routes
+  app.get("/api/health-profile/:userId", isAuthenticated, async (req, res) => {
+    try {
+      const healthProfile = await storage.getHealthProfile(parseInt(req.params.userId));
+      res.json(healthProfile);
+    } catch (error) {
+      console.error("Error fetching health profile:", error);
+      res.status(500).json({ message: "Failed to fetch health profile" });
+    }
+  });
+
+  app.post("/api/health-profile", isAuthenticated, async (req, res) => {
+    try {
+      const healthProfile = await storage.createHealthProfile({
+        ...req.body,
+        patientId: req.session.user?.id,
+      });
+      res.json(healthProfile);
+    } catch (error) {
+      console.error("Error creating health profile:", error);
+      res.status(500).json({ message: "Failed to create health profile" });
+    }
+  });
+
+  app.put("/api/health-profile/:id", isAuthenticated, async (req, res) => {
+    try {
+      const healthProfile = await storage.updateHealthProfile(req.params.id, req.body);
+      res.json(healthProfile);
+    } catch (error) {
+      console.error("Error updating health profile:", error);
+      res.status(500).json({ message: "Failed to update health profile" });
+    }
+  });
+
+  // Document Upload Routes (placeholder implementation)
+  app.get("/api/documents/:appointmentId", isAuthenticated, async (req, res) => {
+    try {
+      // Return empty array for now - would fetch from database in full implementation
+      res.json([]);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
+  app.post("/api/documents/upload", isAuthenticated, async (req, res) => {
+    try {
+      // Placeholder response - actual implementation would handle file uploads
+      const document = {
+        id: Date.now().toString(),
+        appointmentId: req.body.appointmentId,
+        uploadedBy: req.session.user?.id,
+        fileName: 'uploaded-document.pdf',
+        fileSize: 1024,
+        fileType: 'application/pdf',
+        uploadUrl: '/uploads/placeholder.pdf',
+        documentType: req.body.documentType || 'other',
+        uploadedAt: new Date().toISOString(),
+      };
+      res.json(document);
+    } catch (error) {
+      console.error("Error uploading document:", error);
+      res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  // Banner Dismissal Routes (placeholder implementation)
+  app.post("/api/banner-dismissals", isAuthenticated, async (req, res) => {
+    try {
+      const dismissal = {
+        id: Date.now().toString(),
+        userId: req.session.user?.id,
+        bannerType: req.body.bannerType,
+        dismissedAt: new Date().toISOString(),
+        expiresAt: req.body.expiresAt,
+      };
+      res.json(dismissal);
+    } catch (error) {
+      console.error("Error creating banner dismissal:", error);
+      res.status(500).json({ message: "Failed to create banner dismissal" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
