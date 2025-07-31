@@ -89,59 +89,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Temporary route to restore missing slots for July 31
-  app.post("/api/doctors/:doctorId/restore-july-31", async (req, res) => {
-    try {
-      const { doctorId } = req.params;
-      const doctorIntId = parseInt(doctorId);
-      
-      if (doctorIntId !== 9) {
-        return res.status(400).json({ message: "This endpoint is only for Dr James Rodriguez (ID 9)" });
-      }
-
-      const date = '2025-07-31';
-      const slotsToCreate = [
-        { startTime: '09:00:00', endTime: '09:30:00', isAvailable: true },
-        { startTime: '09:30:00', endTime: '10:00:00', isAvailable: true },
-        { startTime: '10:00:00', endTime: '10:30:00', isAvailable: true },
-        { startTime: '10:30:00', endTime: '11:00:00', isAvailable: true },
-        { startTime: '11:00:00', endTime: '11:30:00', isAvailable: true },
-        { startTime: '11:30:00', endTime: '12:00:00', isAvailable: true },
-        { startTime: '15:00:00', endTime: '15:30:00', isAvailable: true },
-        { startTime: '15:30:00', endTime: '16:00:00', isAvailable: true },
-        { startTime: '16:00:00', endTime: '16:30:00', isAvailable: true },
-      ];
-
-      let createdCount = 0;
-      for (const slot of slotsToCreate) {
-        try {
-          await storage.createTimeSlot({
-            doctorId: doctorIntId,
-            date,
-            startTime: slot.startTime,
-            endTime: slot.endTime,
-            isAvailable: slot.isAvailable
-          });
-          createdCount++;
-          console.log(`✅ Created slot: ${slot.startTime}`);
-        } catch (error: any) {
-          if (error.message?.includes('duplicate') || error.code === '23505') {
-            console.log(`⏭️  Slot already exists: ${slot.startTime}`);
-          } else {
-            console.error(`❌ Error creating slot ${slot.startTime}:`, error);
-          }
-        }
-      }
-
-      res.json({ 
-        message: `Successfully restored ${createdCount} missing slots for ${date}`,
-        createdCount 
-      });
-    } catch (error) {
-      console.error("Error restoring slots:", error);
-      res.status(500).json({ message: "Failed to restore slots" });
-    }
-  });
 
   // Get time slots for authenticated doctor
   app.get("/api/time-slots", isAuthenticated, async (req, res) => {

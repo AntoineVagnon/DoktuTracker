@@ -166,14 +166,24 @@ export default function AvailabilityCalendar({
     const dateStr = format(selectedDay, "yyyy-MM-dd");
     const filtered = doctorSlots.filter((slot: TimeSlot) => slot.date === dateStr);
     
-    // Remove duplicate slots by startTime (keep the first occurrence)
+    // Remove duplicate slots by startTime (keep the one with the most restrictive availability)
     const uniqueSlots = filtered.reduce((acc: TimeSlot[], current: TimeSlot) => {
-      const exists = acc.find(slot => slot.startTime === current.startTime);
-      if (!exists) {
+      const existingIndex = acc.findIndex(slot => slot.startTime === current.startTime);
+      if (existingIndex === -1) {
         acc.push(current);
+      } else {
+        // Keep the slot that is NOT available (more restrictive) if one exists
+        if (!current.isAvailable && acc[existingIndex].isAvailable) {
+          acc[existingIndex] = current;
+        }
       }
       return acc;
     }, []);
+    
+    console.log(`🔍 Calendar Debug - Selected date: ${dateStr}`);
+    console.log(`🔍 Calendar Debug - Raw filtered slots: ${filtered.length}`);
+    console.log(`🔍 Calendar Debug - Unique slots: ${uniqueSlots.length}`);
+    console.log(`🔍 Calendar Debug - Unique slots data:`, uniqueSlots.map(s => `${s.startTime}: ${s.isAvailable ? 'available' : 'unavailable'}`));
     
     return uniqueSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
   }, [selectedDay, doctorSlots]);

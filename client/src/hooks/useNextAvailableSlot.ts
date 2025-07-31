@@ -26,7 +26,24 @@ export function useNextAvailableSlot(doctorId: string) {
     if (!timeSlots || !Array.isArray(timeSlots)) return null;
 
     const now = new Date();
-    const availableSlots = timeSlots
+    
+    // Remove duplicate slots by date+startTime, keeping the most restrictive availability
+    const uniqueSlots = timeSlots.reduce((acc: any[], current: any) => {
+      const key = `${current.date}_${current.startTime}`;
+      const existingIndex = acc.findIndex(slot => `${slot.date}_${slot.startTime}` === key);
+      
+      if (existingIndex === -1) {
+        acc.push(current);
+      } else {
+        // Keep the slot that is NOT available (more restrictive) if one exists
+        if (!current.isAvailable && acc[existingIndex].isAvailable) {
+          acc[existingIndex] = current;
+        }
+      }
+      return acc;
+    }, []);
+
+    const availableSlots = uniqueSlots
       .filter((slot: any) => slot.isAvailable && new Date(`${slot.date}T${slot.startTime}`) > now)
       .sort((a: any, b: any) => new Date(`${a.date}T${a.startTime}`).getTime() - new Date(`${b.date}T${b.startTime}`).getTime());
 
