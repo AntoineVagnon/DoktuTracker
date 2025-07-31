@@ -91,60 +91,41 @@ function Banner({
 
   return (
     <div className={cn(
-      "border rounded-lg p-4 mb-2 transition-all duration-300",
+      "border rounded-lg p-3 mb-2 transition-all duration-300", // Reduced padding for single line
       getBannerStyles()
     )}>
-      <div className="flex items-start justify-between">
-        <div className="flex items-start space-x-3 flex-1">
+      <div className="flex items-center justify-between"> 
+        <div className="flex items-center space-x-3 flex-1">
           {getIcon()}
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <h3 className="font-medium">{title}</h3>
-                {countdown && (
-                  <span className="text-sm font-mono bg-white/50 px-2 py-1 rounded">
-                    {timeLeft}
-                  </span>
-                )}
-              </div>
-              {/* Primary action button inline */}
-              {primaryAction && (
-                <Button
-                  onClick={primaryAction.onClick}
-                  size="sm"
-                  className={cn(
-                    type === 'payment' && "bg-red-600 hover:bg-red-700",
-                    type === 'live' && "bg-green-600 hover:bg-green-700",
-                    type === 'health_profile' && "bg-yellow-600 hover:bg-yellow-700",
-                    type === 'info' && "bg-blue-600 hover:bg-blue-700"
-                  )}
-                >
-                  {primaryAction.icon && <primaryAction.icon className="h-4 w-4 mr-2" />}
-                  {primaryAction.label}
-                </Button>
-              )}
-            </div>
-            {description && (
-              <p className="text-sm mt-1 opacity-80">{description}</p>
-            )}
-            {/* Secondary actions below if any */}
-            {secondaryActions && secondaryActions.length > 0 && (
-              <div className="flex items-center gap-3 mt-3">
-                {secondaryActions.map((action, index) => (
-                  <Button
-                    key={index}
-                    onClick={action.onClick}
-                    variant="outline"
-                    size="sm"
-                  >
-                    {action.icon && <action.icon className="h-4 w-4 mr-2" />}
-                    {action.label}
-                  </Button>
-                ))}
-              </div>
+          <div className="flex items-center gap-3 flex-1">
+            <h3 className="font-medium whitespace-nowrap">{title}</h3>
+            {countdown && (
+              <span className="text-sm font-mono bg-white/50 px-2 py-1 rounded">
+                {timeLeft}
+              </span>
             )}
           </div>
         </div>
+        
+        {/* Primary action button */}
+        {primaryAction && (
+          <Button
+            onClick={primaryAction.onClick}
+            size="sm"
+            className={cn(
+              "ml-3",
+              type === 'payment' && "bg-red-600 hover:bg-red-700",
+              type === 'live' && "bg-green-600 hover:bg-green-700",
+              type === 'health_profile' && "bg-yellow-600 hover:bg-yellow-700",
+              type === 'info' && "bg-blue-600 hover:bg-blue-700"
+            )}
+          >
+            {primaryAction.icon && <primaryAction.icon className="h-4 w-4 mr-2" />}
+            {primaryAction.label}
+          </Button>
+        )}
+        
+        {/* Dismiss button */}
         {dismissible && (
           <Button
             variant="ghost"
@@ -232,15 +213,15 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
     });
 
     // 2. Live/imminent session banners (second priority)
-    // Only show appointments that are truly active (5 minutes before to 30 minutes after)
+    // Only show during actual appointment window (5 minutes before to 15 minutes after)
     const liveAppointments = appointments.filter(apt => {
       const appointmentTime = new Date(apt.appointmentDate);
       const fiveMinutesBefore = addMinutes(appointmentTime, -5);
-      const thirtyMinutesAfter = addMinutes(appointmentTime, 30);
+      const fifteenMinutesAfter = addMinutes(appointmentTime, 15); // Reduced from 30 to 15 minutes
       
       const shouldShow = apt.status === 'paid' && 
                         isAfter(now, fiveMinutesBefore) && 
-                        isBefore(now, thirtyMinutesAfter);
+                        isBefore(now, fifteenMinutesAfter);
       
       // console.log('🕐 Live appointment check:', { id: apt.id, shouldShow });
       
@@ -252,20 +233,18 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
       const isLate = isAfter(now, addMinutes(appointmentTime, 15));
       const isVeryClose = isAfter(now, addMinutes(appointmentTime, -5));
       
-      // Determine banner message based on proximity
-      let title = `Your consultation with Dr. ${apt.doctor?.firstName || 'Doctor'}`;
+      // Determine banner message based on proximity - keep it concise for single line
+      let title = `Dr. ${apt.doctor?.firstName || 'Doctor'} consultation`;
       let buttonLabel = 'Join Video Call';
       
       if (isAfter(now, appointmentTime)) {
-        title += ' is ready to join';
-        buttonLabel = 'Join (Late)';
+        title += ' - join now';
+        buttonLabel = 'Join Now';
       } else if (isVeryClose) {
-        title += ' starts soon';
+        title += ' - starting soon';
       } else {
-        // Show time in a more user-friendly format
-        const localTime = new Date(appointmentTime.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours for UTC+2 timezone
-        title += ` is scheduled (${localTime.toLocaleTimeString()} - ${new Date(localTime.getTime() + 30 * 60 * 1000).toLocaleTimeString()})`;
-        buttonLabel = 'View Details';
+        title += ' - ready to join';
+        buttonLabel = 'Join Video';
       }
       
       newBanners.push({
@@ -353,12 +332,12 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
           key={index}
           className={cn(
             "relative transition-all duration-300",
-            index > 0 && "mt-[-24px]" // More overlap for pack of cards effect
+            index > 0 && "mt-[-32px]" // Increased overlap - only show thin border of cards below
           )}
           style={{
             zIndex: banners.length - index,
-            transform: index > 0 ? `translateY(-${index * 8}px) scale(${1 - index * 0.02})` : 'none',
-            opacity: index > 0 ? 0.9 : 1,
+            transform: index > 0 ? `translateY(-${index * 4}px) scale(${1 - index * 0.01})` : 'none',
+            opacity: index > 0 ? 0.85 : 1,
           }}
         >
           <Banner {...banner} />
