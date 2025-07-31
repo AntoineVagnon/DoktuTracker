@@ -232,18 +232,19 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
     });
 
     // 2. Live/imminent session banners (second priority)
-    // Check for appointments that are close (within 2 hours) to account for timezone issues
+    // Only show appointments that are truly active (5 minutes before to 30 minutes after)
     const liveAppointments = appointments.filter(apt => {
       const appointmentTime = new Date(apt.appointmentDate);
-      const twoHoursBefore = addMinutes(appointmentTime, -120);
+      const fiveMinutesBefore = addMinutes(appointmentTime, -5);
       const thirtyMinutesAfter = addMinutes(appointmentTime, 30);
       
-      // Debug: Remove in production
-      // console.log('🕐 Appointment check:', { id: apt.id, shouldShow: apt.status === 'paid' && isAfter(now, twoHoursBefore) && isBefore(now, thirtyMinutesAfter) });
+      const shouldShow = apt.status === 'paid' && 
+                        isAfter(now, fiveMinutesBefore) && 
+                        isBefore(now, thirtyMinutesAfter);
       
-      return apt.status === 'paid' && 
-             isAfter(now, twoHoursBefore) && 
-             isBefore(now, thirtyMinutesAfter);
+      // console.log('🕐 Live appointment check:', { id: apt.id, shouldShow });
+      
+      return shouldShow;
     });
 
     liveAppointments.forEach((apt) => {
@@ -343,11 +344,12 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
           key={index}
           className={cn(
             "relative transition-all duration-300",
-            index > 0 && "mt-[-12px]" // Overlap effect - show lower priority banners peeking behind
+            index > 0 && "mt-[-24px]" // More overlap for pack of cards effect
           )}
           style={{
             zIndex: banners.length - index,
-            transform: index > 0 ? `translateY(-${index * 4}px)` : 'none',
+            transform: index > 0 ? `translateY(-${index * 8}px) scale(${1 - index * 0.02})` : 'none',
+            opacity: index > 0 ? 0.9 : 1,
           }}
         >
           <Banner {...banner} />

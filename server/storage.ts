@@ -827,13 +827,19 @@ export class PostgresStorage implements IStorage {
 
   // Health Profile operations
   async getHealthProfile(patientId: number): Promise<any | undefined> {
+    // Initialize cache if not exists
+    if (!this.healthProfileCache) {
+      this.healthProfileCache = new Map();
+    }
+    
     // Check if we have a cached profile first (for this session)
-    if (this.healthProfileCache && this.healthProfileCache.has(patientId)) {
+    if (this.healthProfileCache.has(patientId)) {
       const cachedProfile = this.healthProfileCache.get(patientId);
-      console.log('Returning cached health profile for patient:', patientId);
+      console.log('✅ Returning COMPLETE cached health profile for patient:', patientId, cachedProfile.profileStatus);
       return cachedProfile;
     }
     
+    console.log('❌ No cached profile found, returning incomplete for patient:', patientId);
     // Otherwise return incomplete profile to trigger completion flow
     return {
       id: `health_${patientId}`,
@@ -861,16 +867,23 @@ export class PostgresStorage implements IStorage {
       updatedAt: new Date()
     };
     
-    // Simulate saving to a memory store for this session
-    // In a real implementation, this would be saved to the database
-    this.healthProfileCache = this.healthProfileCache || new Map();
+    // Save to cache for immediate persistence during this session
+    if (!this.healthProfileCache) {
+      this.healthProfileCache = new Map();
+    }
     this.healthProfileCache.set(profile.patientId, newProfile);
+    console.log('💾 Health profile cached for patient:', profile.patientId);
     
     console.log('Health profile created:', newProfile);
     return newProfile;
   }
 
   private healthProfileCache = new Map();
+
+  constructor() {
+    // Initialize the health profile cache
+    this.healthProfileCache = new Map();
+  }
 
   async updateHealthProfile(id: string, updates: any): Promise<any> {
     // For now, simulate profile update
