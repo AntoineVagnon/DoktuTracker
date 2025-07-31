@@ -164,7 +164,18 @@ export default function AvailabilityCalendar({
   // Get all slots for the selected day (both available and unavailable)
   const selectedDaySlots = useMemo(() => {
     const dateStr = format(selectedDay, "yyyy-MM-dd");
-    return doctorSlots.filter((slot: TimeSlot) => slot.date === dateStr);
+    const filtered = doctorSlots.filter((slot: TimeSlot) => slot.date === dateStr);
+    
+    // Remove duplicate slots by startTime (keep the first occurrence)
+    const uniqueSlots = filtered.reduce((acc: TimeSlot[], current: TimeSlot) => {
+      const exists = acc.find(slot => slot.startTime === current.startTime);
+      if (!exists) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
+    
+    return uniqueSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
   }, [selectedDay, doctorSlots]);
 
   if (!doctorSlots || doctorSlots.length === 0) {
