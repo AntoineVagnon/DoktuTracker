@@ -118,9 +118,12 @@ export default function AvailabilityCalendar({
 
   const getSlotForDateTime = (date: Date, timeStr: string): TimeSlot | undefined => {
     const dateStr = format(date, "yyyy-MM-dd");
-    return doctorSlots.find((slot: TimeSlot) => 
-      slot.date === dateStr && slot.startTime === timeStr
-    );
+    // Find slot by checking if the local time display matches the target time
+    return doctorSlots.find((slot: TimeSlot) => {
+      if (slot.date !== dateStr) return false;
+      const localTimeDisplay = convertSlotTimeToLocal(slot.date, slot.startTime);
+      return localTimeDisplay === timeStr;
+    });
   };
 
   const isSlotDisabled = (date: Date, timeStr: string): boolean => {
@@ -158,9 +161,10 @@ export default function AvailabilityCalendar({
     setSelectedDay(day);
   };
 
-  // Get slots for the selected day
+  // Get all slots for the selected day (both available and unavailable)
   const selectedDaySlots = useMemo(() => {
-    return getAvailableSlotsForDate(selectedDay);
+    const dateStr = format(selectedDay, "yyyy-MM-dd");
+    return doctorSlots.filter((slot: TimeSlot) => slot.date === dateStr);
   }, [selectedDay, doctorSlots]);
 
   if (!doctorSlots || doctorSlots.length === 0) {
@@ -272,20 +276,20 @@ export default function AvailabilityCalendar({
 
         {/* Time slots grid for selected day */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" data-testid="time-slots-grid">
-          {timeSlots.map((timeStr) => {
-            const slot = getSlotForDateTime(selectedDay, timeStr);
-            const isDisabled = isSlotDisabled(selectedDay, timeStr);
-            const isAvailable = slot && slot.isAvailable && !isDisabled;
-            
+          {selectedDaySlots.map((slot) => {
             // Convert UTC slot time to local time for display
-            const localTimeDisplay = slot 
-              ? convertSlotTimeToLocal(slot.date, slot.startTime)
-              : timeStr;
+            const localTimeDisplay = convertSlotTimeToLocal(slot.date, slot.startTime);
+            const isDisabled = isSlotDisabled(selectedDay, localTimeDisplay);
+            const isAvailable = slot.isAvailable && !isDisabled;
             
             return (
               <button
-                key={timeStr}
-                onClick={() => handleSlotClick(selectedDay, timeStr)}
+                key={slot.id}
+                onClick={() => {
+                  if (isAvailable && onSlotSelect) {
+                    onSlotSelect(slot);
+                  }
+                }}
                 disabled={!isAvailable}
                 className={`
                   px-4 py-2 border rounded-lg text-center transition-colors
@@ -295,7 +299,7 @@ export default function AvailabilityCalendar({
                   }
                 `}
                 aria-label={`${isAvailable ? 'Book appointment' : 'Unavailable'} at ${localTimeDisplay} on ${format(selectedDay, "EEEE, MMMM d")}`}
-                data-testid={`time-slot-${timeStr}`}
+                data-testid={`time-slot-${localTimeDisplay}`}
               >
                 {localTimeDisplay}
               </button>
