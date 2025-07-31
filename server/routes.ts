@@ -662,8 +662,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Find and mark the corresponding time slot as unavailable
           const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
           const appointmentDate = new Date(appointment.appointmentDate);
-          const appointmentTimeString = appointmentDate.toTimeString().slice(0, 5); // HH:MM format
+          const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format to match slots
           const appointmentDateString = appointmentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+          
+          console.log(`🔍 Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString}`);
+          console.log(`📅 Available slots:`, timeSlots.map(s => `${s.date} ${s.startTime} (available: ${s.isAvailable})`));
           
           const matchingSlot = timeSlots.find(slot => 
             slot.date === appointmentDateString && 
@@ -709,6 +712,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
 
+  // ADMIN: Sync existing paid appointments with slot availability
+  app.post("/api/admin/sync-appointments-slots", async (req, res) => {
+    try {
+      console.log('🔄 Starting appointment-slot synchronization...');
+      
+      // Get all paid appointments for doctorId=9
+      const appointments = await storage.getAppointments(undefined, "9");
+      const paidAppointments = appointments.filter(apt => apt.status === 'paid');
+      
+      console.log(`Found ${paidAppointments.length} paid appointments to sync`);
+      
+      let syncCount = 0;
+      
+      for (const appointment of paidAppointments) {
+        const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
+        const appointmentDate = new Date(appointment.appointmentDate);
+        const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format
+        const appointmentDateString = appointmentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+        
+        console.log(`🔍 Syncing appointment ${appointment.id}: ${appointmentDateString} ${appointmentTimeString}`);
+        
+        const matchingSlot = timeSlots.find(slot => 
+          slot.date === appointmentDateString && 
+          slot.startTime === appointmentTimeString &&
+          slot.isAvailable === true
+        );
+        
+        if (matchingSlot) {
+          await storage.updateTimeSlot(matchingSlot.id, { isAvailable: false });
+          console.log(`✅ Marked slot ${matchingSlot.id} as unavailable for appointment ${appointment.id}`);
+          syncCount++;
+        } else {
+          console.log(`⚠️ No available slot found for appointment ${appointment.id}`);
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Synchronized ${syncCount} appointments with slots`,
+        totalAppointments: paidAppointments.length,
+        syncedSlots: syncCount
+      });
+    } catch (error) {
+      console.error('❌ Sync error:', error);
+      res.status(500).json({ error: 'Failed to sync appointments' });
+    }
+  });
+
   // Stripe webhook for payment events
   app.post("/api/webhooks/stripe", async (req, res) => {
     const sig = req.headers['stripe-signature'];
@@ -736,8 +787,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (appointment) {
             const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
             const appointmentDate = new Date(appointment.appointmentDate);
-            const appointmentTimeString = appointmentDate.toTimeString().slice(0, 5);
+            const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format to match slots
             const appointmentDateString = appointmentDate.toISOString().split('T')[0];
+            
+            console.log(`🔍 Webhook: Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString}`);
             
             const matchingSlot = timeSlots.find(slot => 
               slot.date === appointmentDateString && 
