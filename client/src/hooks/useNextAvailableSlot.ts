@@ -17,8 +17,9 @@ export function useNextAvailableSlot(doctorId: string) {
         return [];
       }
     },
-    refetchOnWindowFocus: true, // Refetch when window gains focus
-    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    refetchOnWindowFocus: false, // Disable auto-refetch
+    staleTime: 15 * 60 * 1000, // Consider data stale after 15 minutes
+    gcTime: 20 * 60 * 1000, // Keep in cache longer
   });
 
   // Calculate next available slot from the fetched time slots

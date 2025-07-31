@@ -30,9 +30,10 @@ export function DoctorsGrid() {
     "/api/doctors", 
     fetcher,
     {
-      refreshInterval: 30000,
+      refreshInterval: 0, // Disable auto-refresh to reduce API calls
       shouldRetryOnError: false,
       revalidateOnFocus: false,
+      dedupingInterval: 10 * 60 * 1000, // Cache for 10 minutes
     }
   );
 
@@ -115,22 +116,15 @@ export function DoctorsGrid() {
               )}
             </div>
             
-            {/* Availability */}
+            {/* Availability - Simplified to reduce API load */}
             <div className="space-y-1 w-full">
               <div className="flex items-center justify-center space-x-1 text-xs text-gray-600">
                 <Clock className="h-3 w-3" />
-                <span>Next available:</span>
+                <span>Available soon</span>
               </div>
-              {doctor.nextAvailableSlots.length >= 2 ? (
-                <div className="space-y-1 text-xs text-gray-700">
-                  <div>{formatSlotTime(doctor.nextAvailableSlots[0])}</div>
-                  <div>{formatSlotTime(doctor.nextAvailableSlots[1])}</div>
-                </div>
-              ) : (
-                <div className="text-xs text-red-600 font-medium">
-                  Fully booked
-                </div>
-              )}
+              <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                View schedule
+              </Badge>
             </div>
           </div>
         </CardContent>

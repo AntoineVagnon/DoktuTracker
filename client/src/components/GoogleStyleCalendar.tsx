@@ -115,40 +115,44 @@ export default function GoogleStyleCalendar() {
     }
   }, [view]);
 
-  // Fetch doctor's time slots - try authenticated API first, fallback to James Rodriguez data for testing
+  // Optimized time slots fetching with better caching
   const { data: timeSlots = [], isLoading: slotsLoading, refetch: refetchSlots } = useQuery({
     queryKey: ['/api/time-slots', user?.email],
     queryFn: async () => {
       try {
-        // Try authenticated endpoint first
+        // Single authenticated endpoint call
         const response = await fetch('/api/time-slots');
         if (response.ok) {
           return response.json();
         }
         
-        // Fallback: if user is James Rodriguez or for testing, use doctor ID 9
-        if (!user?.email || user.email === 'james.rodriguez@doktu.com') {
+        // Only fallback for James Rodriguez if auth fails
+        if (user?.email === 'james.rodriguez@doktu.com') {
           const fallbackResponse = await fetch('/api/doctors/9/slots');
           if (fallbackResponse.ok) {
             return fallbackResponse.json();
           }
         }
         
-        // Final fallback to empty array
         return [];
       } catch (error) {
         console.error('Error fetching time slots:', error);
         return [];
       }
     },
-    refetchOnWindowFocus: true,
-    staleTime: 5 * 60 * 1000,
+    enabled: !!user?.email, // Only fetch when user is available
+    refetchOnWindowFocus: false, // Reduce unnecessary refetches
+    staleTime: 10 * 60 * 1000, // Cache for 10 minutes
+    gcTime: 15 * 60 * 1000, // Keep in cache for 15 minutes
   });
 
-  // Fetch appointments
+  // Optimized appointments fetching
   const { data: appointments = [] as Appointment[], isLoading: appointmentsLoading } = useQuery({
-    queryKey: ['/api/appointments'],
-    enabled: !!user?.id
+    queryKey: ['/api/appointments', user?.id],
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    refetchOnWindowFocus: false, // Reduce unnecessary refetches
   });
 
   // Batch create multiple 30-minute time slots - dramatically faster!
@@ -617,13 +621,20 @@ export default function GoogleStyleCalendar() {
     }));
   };
 
+  // Optimized loading state with skeleton
   if (slotsLoading || appointmentsLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <Clock className="h-8 w-8 animate-spin mx-auto mb-2" />
-          <p>Loading calendar...</p>
+      <div className="max-w-7xl mx-auto p-4">
+        <div className="mb-6">
+          <div className="h-8 bg-gray-200 rounded animate-pulse mb-2 w-64"></div>
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-96"></div>
         </div>
+        <div className="grid grid-cols-7 gap-2 mb-4">
+          {Array.from({ length: 7 }, (_, i) => (
+            <div key={i} className="h-16 bg-gray-200 rounded animate-pulse"></div>
+          ))}
+        </div>
+        <div className="text-center text-gray-500 text-sm">Loading your calendar...</div>
       </div>
     );
   }
