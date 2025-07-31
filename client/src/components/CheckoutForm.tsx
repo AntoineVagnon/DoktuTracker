@@ -25,7 +25,7 @@ export default function CheckoutForm({ onSuccess, bookingData }: CheckoutFormPro
     setIsLoading(true);
 
     try {
-      const { error } = await stripe.confirmPayment({
+      const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/payment-success`,
@@ -33,8 +33,6 @@ export default function CheckoutForm({ onSuccess, bookingData }: CheckoutFormPro
         redirect: "if_required",
       });
 
-      // Si nous arrivons ici, c'est qu'il y a eu une erreur
-      // (sinon la page aurait été redirigée)
       if (error) {
         console.error('Payment error:', error);
         toast({
@@ -43,9 +41,20 @@ export default function CheckoutForm({ onSuccess, bookingData }: CheckoutFormPro
           variant: "destructive"
         });
         setIsLoading(false);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Payment succeeded without redirect
+        console.log('Payment succeeded:', paymentIntent);
+        toast({
+          title: "Payment Successful",
+          description: "Your appointment has been confirmed!",
+        });
+        // Redirect to success page
+        window.location.href = '/payment-success';
+      } else {
+        // Handle other payment statuses
+        console.log('Payment status:', paymentIntent?.status);
+        setIsLoading(false);
       }
-      // Note: si le paiement réussit, l'utilisateur sera redirigé vers /payment-success
-      // donc nous n'atteignons jamais cette ligne
     } catch (err) {
       console.error('Unexpected payment error:', err);
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
