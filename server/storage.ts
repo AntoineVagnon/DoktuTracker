@@ -416,101 +416,50 @@ export class PostgresStorage implements IStorage {
 
   async getAppointments(patientId?: string, doctorId?: string): Promise<any[]> {
     try {
-      const patientUsers = alias(users, 'patient_users');
-      const doctorUsers = alias(users, 'doctor_users');
-      
-      let query = db
-        .select({
-          // Appointment fields
-          id: appointments.id,
-          doctorId: appointments.doctorId,
-          patientId: appointments.patientId,
-          timeSlotId: appointments.timeSlotId,
-          status: appointments.status,
-          appointmentDate: appointments.appointmentDate,
-          price: appointments.price,
-          paymentIntentId: appointments.paymentIntentId,
-          notes: appointments.notes,
-          cancelReason: appointments.cancelReason,
-          cancelledBy: appointments.cancelledBy,
-          videoRoomId: appointments.videoRoomId,
-          createdAt: appointments.createdAt,
-          updatedAt: appointments.updatedAt,
-          // Doctor info (flattened)
-          doctorSpecialty: doctors.specialty,
-          doctorBio: doctors.bio,
-          doctorEducation: doctors.education,
-          doctorExperience: doctors.experience,
-          doctorLanguages: doctors.languages,
-          doctorRppsNumber: doctors.rppsNumber,
-          doctorConsultationPrice: doctors.consultationPrice,
-          doctorRating: doctors.rating,
-          doctorReviewCount: doctors.reviewCount,
-          // Doctor user info
-          doctorEmail: doctorUsers.email,
-          doctorTitle: doctorUsers.title,
-          doctorFirstName: doctorUsers.firstName,
-          doctorLastName: doctorUsers.lastName,
-          // Patient info
-          patientEmail: patientUsers.email,
-          patientTitle: patientUsers.title,
-          patientFirstName: patientUsers.firstName,
-          patientLastName: patientUsers.lastName
-        })
-        .from(appointments)
-        .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
-        .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
-        .innerJoin(patientUsers, eq(appointments.patientId, patientUsers.id));
+      // First get appointments
+      let appointmentQuery = db.select().from(appointments);
       
       if (patientId) {
-        query = query.where(eq(appointments.patientId, parseInt(patientId)));
+        appointmentQuery = appointmentQuery.where(eq(appointments.patientId, parseInt(patientId)));
       }
       if (doctorId) {
-        query = query.where(eq(appointments.doctorId, parseInt(doctorId)));
+        appointmentQuery = appointmentQuery.where(eq(appointments.doctorId, parseInt(doctorId)));
       }
       
-      const results = await query.orderBy(desc(appointments.appointmentDate));
+      const appointmentResults = await appointmentQuery.orderBy(desc(appointments.appointmentDate));
+      console.log(`📋 Found ${appointmentResults.length} appointments`, appointmentResults);
       
-      // Transform the flattened results back to nested structure for compatibility
-      return results.map(row => ({
-        id: row.id,
-        doctorId: row.doctorId,
-        patientId: row.patientId,
-        timeSlotId: row.timeSlotId,
-        status: row.status,
-        appointmentDate: row.appointmentDate,
-        price: row.price,
-        paymentIntentId: row.paymentIntentId,
-        notes: row.notes,
-        cancelReason: row.cancelReason,
-        cancelledBy: row.cancelledBy,
-        videoRoomId: row.videoRoomId,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-        doctor: {
-          specialty: row.doctorSpecialty,
-          bio: row.doctorBio,
-          education: row.doctorEducation,
-          experience: row.doctorExperience,
-          languages: row.doctorLanguages,
-          rppsNumber: row.doctorRppsNumber,
-          consultationPrice: row.doctorConsultationPrice,
-          rating: row.doctorRating,
-          reviewCount: row.doctorReviewCount,
-          user: {
-            email: row.doctorEmail,
-            title: row.doctorTitle,
-            firstName: row.doctorFirstName,
-            lastName: row.doctorLastName
+      // For each appointment, fetch doctor and patient details separately
+      const enhancedAppointments = await Promise.all(
+        appointmentResults.map(async (appointment) => {
+          try {
+            // Get doctor details
+            const doctor = await this.getDoctor(appointment.doctorId);
+            
+            // Get patient details
+            const [patientResult] = await db
+              .select()
+              .from(users)
+              .where(eq(users.id, appointment.patientId));
+              
+            return {
+              ...appointment,
+              doctor: doctor || { specialty: "Unknown", user: { firstName: "Unknown", lastName: "Doctor" } },
+              patient: patientResult || { firstName: "Unknown", lastName: "Patient" }
+            };
+          } catch (innerError) {
+            console.error(`Error enhancing appointment ${appointment.id}:`, innerError);
+            return {
+              ...appointment,
+              doctor: { specialty: "Unknown", user: { firstName: "Unknown", lastName: "Doctor" } },
+              patient: { firstName: "Unknown", lastName: "Patient" }
+            };
           }
-        },
-        patient: {
-          email: row.patientEmail,
-          title: row.patientTitle,
-          firstName: row.patientFirstName,
-          lastName: row.patientLastName
-        }
-      }));
+        })
+      );
+      
+      console.log(`✅ Enhanced ${enhancedAppointments.length} appointments with doctor/patient details`);
+      return enhancedAppointments;
     } catch (error) {
       console.error("Error in getAppointments:", error);
       return [];
