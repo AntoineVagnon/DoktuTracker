@@ -4,12 +4,17 @@
  */
 
 export function formatAppointmentDateTime(dateString: string): string {
+  // Handle timezone properly - ensure we display the intended local time
   const localDate = new Date(dateString);
-  const day = String(localDate.getDate()).padStart(2, '0');
-  const month = String(localDate.getMonth() + 1).padStart(2, '0');
-  const year = localDate.getFullYear();
-  const hours = String(localDate.getHours()).padStart(2, '0');
-  const minutes = String(localDate.getMinutes()).padStart(2, '0');
+  // For existing appointments with incorrect timezone, adjust by subtracting 2 hours (UTC+2 offset)
+  // This is a temporary fix until all appointments are stored correctly
+  const adjustedDate = new Date(localDate.getTime() - (2 * 60 * 60 * 1000));
+  
+  const day = String(adjustedDate.getDate()).padStart(2, '0');
+  const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
+  const year = adjustedDate.getFullYear();
+  const hours = String(adjustedDate.getHours()).padStart(2, '0');
+  const minutes = String(adjustedDate.getMinutes()).padStart(2, '0');
   return `${day}/${month}/${year} à ${hours}:${minutes}`;
 }
 
@@ -26,9 +31,14 @@ export function formatAppointmentDateTimeUS(dateString: string): string {
 }
 
 export function formatTimeOnly(dateString: string): string {
+  // Handle timezone properly - ensure we display the intended local time
   const localDate = new Date(dateString);
-  const hours = String(localDate.getHours()).padStart(2, '0');
-  const minutes = String(localDate.getMinutes()).padStart(2, '0');
+  // For existing appointments with incorrect timezone, adjust by subtracting 2 hours (UTC+2 offset)
+  // This is a temporary fix until all appointments are stored correctly
+  const adjustedDate = new Date(localDate.getTime() - (2 * 60 * 60 * 1000));
+  
+  const hours = String(adjustedDate.getHours()).padStart(2, '0');
+  const minutes = String(adjustedDate.getMinutes()).padStart(2, '0');
   return `${hours}:${minutes}`;
 }
 

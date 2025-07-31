@@ -78,13 +78,19 @@ export default function Checkout() {
         }
 
         // First create appointment
+        // Fix timezone issue: ensure the slot time is treated as local time, not UTC
+        const localSlotDate = new Date(slot);
+        // Adjust for timezone offset to store as local time
+        const timezoneOffset = localSlotDate.getTimezoneOffset() * 60000;
+        const localAppointmentDate = new Date(localSlotDate.getTime() + timezoneOffset);
+        
         const appointmentResponse = await fetch('/api/appointments', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             doctorId: doctorId.toString(),
             timeSlotId: heldSlotData.heldSlot.id,
-            appointmentDate: slot, // This is the ISO string from URL params
+            appointmentDate: localAppointmentDate.toISOString(), // Store as local time
             price: price.toString(),
             status: 'pending_payment'
           })

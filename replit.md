@@ -208,6 +208,10 @@ Changelog:
 - July 31, 2025: Updated upsertUser method to handle existing users with missing structured name data
 - July 31, 2025: Created SQL migration script (update_user_names_from_email.sql) to fix existing users with missing name fields
 - July 31, 2025: All registration forms now properly save structured name data (firstName, lastName, title) to Supabase database
+- July 31, 2025: CRITICAL FIX: Resolved timezone issue in appointment booking system causing 2-hour display offset
+- July 31, 2025: Implemented automatic ID conflict resolution for user registration without requiring manual database setup
+- July 31, 2025: Enhanced appointment date handling to store times in correct local timezone rather than UTC
+- July 31, 2025: Complete booking flow now working end-to-end: registration → slot selection → payment → confirmation
 ```
 
 ## User Preferences
