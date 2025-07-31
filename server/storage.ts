@@ -160,7 +160,24 @@ export class PostgresStorage implements IStorage {
       console.error('Database insert error:', error);
       if (error.code === '23505') {
         if (error.constraint_name === 'users_pkey') {
-          throw new Error('Database configuration error: Auto-increment not set up properly. Please contact support.');
+          // Workaround: Find next available ID and retry
+          console.log('ID conflict detected, finding next available ID...');
+          const result = await db.select({ maxId: sql<number>`COALESCE(MAX(id), 0)` }).from(users);
+          const nextId = Number(result[0]?.maxId || 0) + 1;
+          
+          const userDataWithId = {
+            ...cleanUserData,
+            id: nextId
+          };
+          
+          try {
+            const [newUser] = await db.insert(users).values(userDataWithId).returning();
+            console.log(`Successfully created user with ID ${nextId}`);
+            return newUser;
+          } catch (retryError: any) {
+            console.error('Retry failed:', retryError);
+            throw new Error('User creation failed after retry. Please try again.');
+          }
         } else if (error.constraint_name === 'users_email_unique') {
           throw new Error('An account with this email already exists.');
         }
@@ -205,8 +222,30 @@ export class PostgresStorage implements IStorage {
       const [user] = await db.insert(users).values(cleanUserData).returning();
       return user;
     } catch (error: any) {
-      if (error.code === '23505' && error.constraint_name === 'users_pkey') {
-        throw new Error('User creation failed: ID conflict. Please try again.');
+      console.error('Database insert error:', error);
+      if (error.code === '23505') {
+        if (error.constraint_name === 'users_pkey') {
+          // Workaround: Find next available ID and retry
+          console.log('ID conflict detected, finding next available ID...');
+          const result = await db.select({ maxId: sql<number>`COALESCE(MAX(id), 0)` }).from(users);
+          const nextId = Number(result[0]?.maxId || 0) + 1;
+          
+          const userDataWithId = {
+            ...cleanUserData,
+            id: nextId
+          };
+          
+          try {
+            const [user] = await db.insert(users).values(userDataWithId).returning();
+            console.log(`Successfully created user with ID ${nextId}`);
+            return user;
+          } catch (retryError: any) {
+            console.error('Retry failed:', retryError);
+            throw new Error('User creation failed after retry. Please try again.');
+          }
+        } else if (error.constraint_name === 'users_email_unique') {
+          throw new Error('An account with this email already exists.');
+        }
       }
       throw error;
     }
