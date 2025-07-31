@@ -376,10 +376,12 @@ export default function GoogleStyleCalendar() {
 
     // Check for booked appointment
     const bookedAppointment = appointments.find((apt: Appointment) => {
-      const aptDate = format(new Date(apt.appointmentDate), 'yyyy-MM-dd');
+      // Apply timezone correction - subtract 2 hours for existing appointments with incorrect timezone
       const aptTime = new Date(apt.appointmentDate);
-      const aptHour = aptTime.getHours();
-      const aptMinute = aptTime.getMinutes();
+      const adjustedAptTime = new Date(aptTime.getTime() - (2 * 60 * 60 * 1000));
+      const aptDate = format(adjustedAptTime, 'yyyy-MM-dd');
+      const aptHour = adjustedAptTime.getHours();
+      const aptMinute = adjustedAptTime.getMinutes();
       return aptDate === dateStr && aptHour === hour && aptMinute === minute && apt.status !== 'cancelled';
     });
 

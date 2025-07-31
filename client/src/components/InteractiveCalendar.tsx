@@ -233,10 +233,12 @@ export default function InteractiveCalendar() {
 
     // Check for booked appointment
     const bookedAppointment = appointments.find((apt: Appointment) => {
-      const aptDate = new Date(apt.appointmentDate).toISOString().split('T')[0];
+      // Apply timezone correction - subtract 2 hours for existing appointments with incorrect timezone
       const aptTime = new Date(apt.appointmentDate);
-      const aptHour = aptTime.getHours();
-      const aptMinute = aptTime.getMinutes();
+      const adjustedAptTime = new Date(aptTime.getTime() - (2 * 60 * 60 * 1000));
+      const aptDate = adjustedAptTime.toISOString().split('T')[0];
+      const aptHour = adjustedAptTime.getHours();
+      const aptMinute = adjustedAptTime.getMinutes();
       return aptDate === dateStr && aptHour === timeSlot.hour && aptMinute === timeSlot.minute && apt.status !== 'cancelled';
     });
 

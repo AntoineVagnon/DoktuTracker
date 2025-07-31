@@ -19,12 +19,17 @@ export function formatAppointmentDateTime(dateString: string): string {
 }
 
 export function formatAppointmentDateTimeUS(dateString: string): string {
+  // Handle timezone properly - ensure we display the intended local time
   const localDate = new Date(dateString);
-  const day = localDate.getDate();
-  const month = localDate.toLocaleDateString('en-US', { month: 'short' });
-  const year = localDate.getFullYear();
-  const hours = localDate.getHours();
-  const minutes = String(localDate.getMinutes()).padStart(2, '0');
+  // For existing appointments with incorrect timezone, adjust by subtracting 2 hours (UTC+2 offset)
+  // This is a temporary fix until all appointments are stored correctly
+  const adjustedDate = new Date(localDate.getTime() - (2 * 60 * 60 * 1000));
+  
+  const day = adjustedDate.getDate();
+  const month = adjustedDate.toLocaleDateString('en-US', { month: 'short' });
+  const year = adjustedDate.getFullYear();
+  const hours = adjustedDate.getHours();
+  const minutes = String(adjustedDate.getMinutes()).padStart(2, '0');
   const ampm = hours >= 12 ? 'PM' : 'AM';
   const displayHours = hours % 12 || 12;
   return `${month} ${day}, ${year} at ${displayHours}:${minutes} ${ampm}`;

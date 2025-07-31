@@ -26,11 +26,10 @@ export default function DoctorDashboard() {
     );
   }
 
-  // Get upcoming appointments (next 3)
+  // Get upcoming appointments (all)
   const upcomingAppointments = appointments
     .filter(apt => apt.status === 'confirmed' || apt.status === 'paid')
-    .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime())
-    .slice(0, 3);
+    .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime());
 
   const firstName = user?.firstName || user?.email?.split('@')[0] || '';
 

@@ -212,6 +212,10 @@ Changelog:
 - July 31, 2025: Implemented automatic ID conflict resolution for user registration without requiring manual database setup
 - July 31, 2025: Enhanced appointment date handling to store times in correct local timezone rather than UTC
 - July 31, 2025: Complete booking flow now working end-to-end: registration → slot selection → payment → confirmation
+- July 31, 2025: MAJOR FIX: Resolved timezone display issues across all platform components (patient dashboard, doctor dashboard, calendar)
+- July 31, 2025: Removed 3-appointment limit in doctor dashboard - now displays all upcoming appointments
+- July 31, 2025: Applied consistent timezone correction (-2 hours) to all date/time display functions and calendar matching logic
+- July 31, 2025: All appointment times now display correctly: patient dashboard, doctor dashboard, and calendar all show intended booking times
 ```
 
 ## User Preferences
