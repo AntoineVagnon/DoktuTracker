@@ -512,7 +512,7 @@ export class PostgresStorage implements IStorage {
           });
           
           // If there's a conflicting appointment, mark slot as unavailable
-          if (hasConflictingAppointment && current.isAvailable) {
+          if (hasConflictingAppointment) {
             console.log(`🔒 Slot ${current.date} ${current.startTime} has conflicting appointment - marking as unavailable`);
             current.isAvailable = false;
           }
@@ -527,7 +527,16 @@ export class PostgresStorage implements IStorage {
         return acc;
       }, []);
       
+      const availableCount = uniqueSlots.filter(s => s.isAvailable).length;
+      const unavailableCount = uniqueSlots.filter(s => !s.isAvailable).length;
+      
       console.log(`📅 After deduplication and appointment filtering: ${uniqueSlots.length} unique slots for doctor ${doctorIntId}`);
+      console.log(`📅 Available: ${availableCount}, Unavailable: ${unavailableCount}`);
+      
+      // Debug: Show first few slots with their availability
+      const debugSlots = uniqueSlots.slice(0, 5);
+      console.log(`📅 First 5 slots:`, debugSlots.map(s => `${s.date} ${s.startTime} (available: ${s.isAvailable})`));
+      
       return uniqueSlots;
     } catch (error) {
       console.error(`Error fetching time slots for doctor ${doctorIntId}:`, error);
