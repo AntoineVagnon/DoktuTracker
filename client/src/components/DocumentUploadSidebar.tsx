@@ -71,12 +71,15 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
       setUploadProgress(0);
     },
     onError: (error: any) => {
-      console.error('Upload mutation error:', error);
-      toast({
-        title: "Upload Failed",
-        description: error.message || "Failed to upload document",
-        variant: "destructive",
-      });
+      console.log('Upload mutation error:', error);
+      // Only show toast if error has meaningful content
+      if (error && (error.message || error.toString() !== '[object Object]')) {
+        toast({
+          title: "Upload Failed",
+          description: error.message || error.toString() || "Failed to upload document",
+          variant: "destructive",
+        });
+      }
       setUploadProgress(0);
     }
   });
@@ -102,7 +105,7 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
     }
   });
 
-  const handleFileUpload = useCallback((files: FileList, documentType: string = 'other') => {
+  const handleFileUpload = useCallback(async (files: FileList, documentType: string = 'other') => {
     if (!files.length) return;
 
     const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'text/plain'];
@@ -120,43 +123,81 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
       });
     }, 300);
 
-    for (const file of Array.from(files)) {
-      if (!validTypes.includes(file.type)) {
-        clearInterval(progressInterval);
-        setUploadProgress(0);
-        toast({
-          title: "Invalid File Type",
-          description: "Please upload PDF, image, or text files only.",
-          variant: "destructive",
-        });
-        continue;
-      }
-
-      if (file.size > maxSize) {
-        clearInterval(progressInterval);
-        setUploadProgress(0);
-        toast({
-          title: "File Too Large",
-          description: "Please upload files smaller than 10MB.",
-          variant: "destructive",
-        });
-        continue;
-      }
-
-      // Use mutate instead of mutateAsync to avoid promise handling issues
-      uploadDocumentMutation.mutate({ file, documentType }, {
-        onSuccess: () => {
-          clearInterval(progressInterval);
-          setUploadProgress(100);
-          setTimeout(() => setUploadProgress(0), 1000);
-        },
-        onError: () => {
+    try {
+      for (const file of Array.from(files)) {
+        if (!validTypes.includes(file.type)) {
           clearInterval(progressInterval);
           setUploadProgress(0);
+          toast({
+            title: "Invalid File Type",
+            description: "Please upload PDF, image, or text files only.",
+            variant: "destructive",
+          });
+          continue;
         }
-      });
+
+        if (file.size > maxSize) {
+          clearInterval(progressInterval);
+          setUploadProgress(0);
+          toast({
+            title: "File Too Large",
+            description: "Please upload files smaller than 10MB.",
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        // Direct fetch approach to avoid React Query mutation issues
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('appointmentId', appointmentId.toString());
+        formData.append('documentType', documentType);
+
+        try {
+          const response = await fetch('/api/documents/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error(`Upload failed: ${response.status}`);
+          }
+
+          const result = await response.json();
+          console.log('Upload successful:', result);
+          
+          // Clear progress and show success
+          clearInterval(progressInterval);
+          setUploadProgress(100);
+          
+          // Refresh documents list
+          queryClient.invalidateQueries({ queryKey: ["/api/documents", appointmentId] });
+          
+          toast({
+            title: "Document Uploaded",
+            description: "Your document has been uploaded successfully.",
+          });
+          
+          setTimeout(() => setUploadProgress(0), 1000);
+          
+        } catch (uploadError) {
+          console.log('Direct upload error:', uploadError);
+          clearInterval(progressInterval);
+          setUploadProgress(0);
+          
+          toast({
+            title: "Upload Failed",
+            description: uploadError instanceof Error ? uploadError.message : "Failed to upload document",
+            variant: "destructive",
+          });
+        }
+      }
+    } catch (error) {
+      console.log('File processing error:', error);
+      clearInterval(progressInterval);
+      setUploadProgress(0);
     }
-  }, [uploadDocumentMutation, toast]);
+  }, [appointmentId, queryClient, toast]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
