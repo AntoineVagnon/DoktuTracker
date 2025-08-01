@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, FileText, User, Heart, Plus, Upload } from "lucide-react";
+import { Search, FileText, User, Heart, Plus, Upload, Calendar } from "lucide-react";
 import { useLocation } from "wouter";
 import DoctorLayout from "@/components/DoctorLayout";
 import { formatUserFullName } from "@/lib/nameUtils";
@@ -158,33 +158,33 @@ export default function PatientRecords() {
                       <div className="flex items-center justify-center py-8">
                         <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
                       </div>
-                    ) : healthProfile ? (
+                    ) : healthProfile && typeof healthProfile === 'object' && Object.keys(healthProfile).length > 0 ? (
                       <div className="space-y-4">
                         <div>
                           <label className="text-sm font-medium text-gray-500">Date of Birth</label>
-                          <p className="text-base">{healthProfile.dateOfBirth ? new Date(healthProfile.dateOfBirth).toLocaleDateString() : 'Not provided'}</p>
+                          <p className="text-base">{(healthProfile as any)?.dateOfBirth ? new Date((healthProfile as any).dateOfBirth).toLocaleDateString() : 'Not provided'}</p>
                         </div>
                         <div>
                           <label className="text-sm font-medium text-gray-500">Gender</label>
-                          <p className="text-base">{healthProfile.gender || 'Not provided'}</p>
+                          <p className="text-base">{(healthProfile as any)?.gender || 'Not provided'}</p>
                         </div>
                         <div>
                           <label className="text-sm font-medium text-gray-500">Blood Type</label>
-                          <p className="text-base">{healthProfile.bloodType || 'Not provided'}</p>
+                          <p className="text-base">{(healthProfile as any)?.bloodType || 'Not provided'}</p>
                         </div>
                         <div>
                           <label className="text-sm font-medium text-gray-500">Height</label>
-                          <p className="text-base">{healthProfile.height ? `${healthProfile.height} cm` : 'Not provided'}</p>
+                          <p className="text-base">{(healthProfile as any)?.height ? `${(healthProfile as any).height} cm` : 'Not provided'}</p>
                         </div>
                         <div>
                           <label className="text-sm font-medium text-gray-500">Weight</label>
-                          <p className="text-base">{healthProfile.weight ? `${healthProfile.weight} kg` : 'Not provided'}</p>
+                          <p className="text-base">{(healthProfile as any)?.weight ? `${(healthProfile as any).weight} kg` : 'Not provided'}</p>
                         </div>
-                        {healthProfile.allergies && healthProfile.allergies.length > 0 && (
+                        {(healthProfile as any)?.allergies && (healthProfile as any).allergies.length > 0 && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">Allergies</label>
                             <div className="flex flex-wrap gap-1 mt-1">
-                              {healthProfile.allergies.map((allergy: string, index: number) => (
+                              {(healthProfile as any).allergies.map((allergy: string, index: number) => (
                                 <Badge key={index} variant="destructive" className="text-xs">
                                   {allergy}
                                 </Badge>
@@ -192,11 +192,11 @@ export default function PatientRecords() {
                             </div>
                           </div>
                         )}
-                        {healthProfile.medications && healthProfile.medications.length > 0 && (
+                        {(healthProfile as any)?.medications && (healthProfile as any).medications.length > 0 && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">Current Medications</label>
                             <div className="flex flex-wrap gap-1 mt-1">
-                              {healthProfile.medications.map((medication: string, index: number) => (
+                              {(healthProfile as any).medications.map((medication: string, index: number) => (
                                 <Badge key={index} variant="secondary" className="text-xs">
                                   {medication}
                                 </Badge>
@@ -210,10 +210,10 @@ export default function PatientRecords() {
                             <div className="flex-1 bg-gray-200 rounded-full h-2">
                               <div 
                                 className="bg-primary h-2 rounded-full transition-all duration-300" 
-                                style={{ width: `${healthProfile.completionScore || 0}%` }}
+                                style={{ width: `${(healthProfile as any)?.completionScore || 0}%` }}
                               />
                             </div>
-                            <span className="text-sm font-medium">{healthProfile.completionScore || 0}%</span>
+                            <span className="text-sm font-medium">{(healthProfile as any)?.completionScore || 0}%</span>
                           </div>
                         </div>
                       </div>
