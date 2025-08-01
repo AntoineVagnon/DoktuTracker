@@ -4,46 +4,46 @@
  */
 
 export function formatAppointmentDateTime(dateString: string): string {
-  // Handle timezone properly - ensure we display the intended local time
-  const localDate = new Date(dateString);
-  // For existing appointments with incorrect timezone, adjust by subtracting 2 hours (UTC+2 offset)
-  // This is a temporary fix until all appointments are stored correctly
-  const adjustedDate = new Date(localDate.getTime() - (2 * 60 * 60 * 1000));
+  // Convert UTC appointment time to local time for display
+  const utcDate = new Date(dateString);
   
-  const day = String(adjustedDate.getDate()).padStart(2, '0');
-  const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
-  const year = adjustedDate.getFullYear();
-  const hours = String(adjustedDate.getHours()).padStart(2, '0');
-  const minutes = String(adjustedDate.getMinutes()).padStart(2, '0');
+  // Use the browser's local timezone to automatically convert from UTC
+  const localDate = new Date(utcDate.toLocaleString());
+  
+  const day = String(localDate.getDate()).padStart(2, '0');
+  const month = String(localDate.getMonth() + 1).padStart(2, '0');
+  const year = localDate.getFullYear();
+  const hours = String(localDate.getHours()).padStart(2, '0');
+  const minutes = String(localDate.getMinutes()).padStart(2, '0');
   return `${day}/${month}/${year} à ${hours}:${minutes}`;
 }
 
 export function formatAppointmentDateTimeUS(dateString: string): string {
-  // Handle timezone properly - ensure we display the intended local time
-  const localDate = new Date(dateString);
-  // For existing appointments with incorrect timezone, adjust by subtracting 2 hours (UTC+2 offset)
-  // This is a temporary fix until all appointments are stored correctly
-  const adjustedDate = new Date(localDate.getTime() - (2 * 60 * 60 * 1000));
+  // Convert UTC appointment time to local time for display
+  const utcDate = new Date(dateString);
   
-  const day = adjustedDate.getDate();
-  const month = adjustedDate.toLocaleDateString('en-US', { month: 'short' });
-  const year = adjustedDate.getFullYear();
-  const hours = adjustedDate.getHours();
-  const minutes = String(adjustedDate.getMinutes()).padStart(2, '0');
+  // Use proper timezone conversion
+  const localDate = new Date(utcDate.toLocaleString());
+  
+  const day = localDate.getDate();
+  const month = localDate.toLocaleDateString('en-US', { month: 'short' });
+  const year = localDate.getFullYear();
+  const hours = localDate.getHours();
+  const minutes = String(localDate.getMinutes()).padStart(2, '0');
   const ampm = hours >= 12 ? 'PM' : 'AM';
   const displayHours = hours % 12 || 12;
   return `${month} ${day}, ${year} at ${displayHours}:${minutes} ${ampm}`;
 }
 
 export function formatTimeOnly(dateString: string): string {
-  // Handle timezone properly - ensure we display the intended local time
-  const localDate = new Date(dateString);
-  // For existing appointments with incorrect timezone, adjust by subtracting 2 hours (UTC+2 offset)
-  // This is a temporary fix until all appointments are stored correctly
-  const adjustedDate = new Date(localDate.getTime() - (2 * 60 * 60 * 1000));
+  // Convert UTC appointment time to local time for display
+  const utcDate = new Date(dateString);
   
-  const hours = String(adjustedDate.getHours()).padStart(2, '0');
-  const minutes = String(adjustedDate.getMinutes()).padStart(2, '0');
+  // Use proper timezone conversion
+  const localDate = new Date(utcDate.toLocaleString());
+  
+  const hours = String(localDate.getHours()).padStart(2, '0');
+  const minutes = String(localDate.getMinutes()).padStart(2, '0');
   return `${hours}:${minutes}`;
 }
 
@@ -110,16 +110,16 @@ export interface AppointmentWithTiming {
 export function getAppointmentTimingStatus(appointmentDate: string): AppointmentTimingStatus {
   const now = new Date();
   
-  // Handle timezone adjustment for existing appointments
-  const appointmentTime = new Date(appointmentDate);
-  const adjustedAppointmentTime = new Date(appointmentTime.getTime() - (2 * 60 * 60 * 1000));
+  // Convert UTC appointment time to local time
+  const utcAppointmentTime = new Date(appointmentDate);
+  const localAppointmentTime = new Date(utcAppointmentTime.toLocaleString());
   
   // Calculate time differences in minutes
-  const timeDifference = (adjustedAppointmentTime.getTime() - now.getTime()) / (1000 * 60);
+  const timeDifference = (localAppointmentTime.getTime() - now.getTime()) / (1000 * 60);
   
   // Assume 30-minute appointment duration
   const appointmentDurationMinutes = 30;
-  const appointmentEndTime = adjustedAppointmentTime.getTime() + (appointmentDurationMinutes * 60 * 1000);
+  const appointmentEndTime = localAppointmentTime.getTime() + (appointmentDurationMinutes * 60 * 1000);
   const timeUntilEnd = (appointmentEndTime - now.getTime()) / (1000 * 60);
   
   // Logic for timing status
@@ -175,10 +175,12 @@ export function categorizeAppointmentsByTiming(appointments: AppointmentWithTimi
  */
 export function getTimeUntilAppointment(appointmentDate: string): string {
   const now = new Date();
-  const appointmentTime = new Date(appointmentDate);
-  const adjustedAppointmentTime = new Date(appointmentTime.getTime() - (2 * 60 * 60 * 1000));
   
-  const timeDifference = adjustedAppointmentTime.getTime() - now.getTime();
+  // Convert UTC appointment time to local time
+  const utcAppointmentTime = new Date(appointmentDate);
+  const localAppointmentTime = new Date(utcAppointmentTime.toLocaleString());
+  
+  const timeDifference = localAppointmentTime.getTime() - now.getTime();
   const minutes = Math.floor(timeDifference / (1000 * 60));
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
