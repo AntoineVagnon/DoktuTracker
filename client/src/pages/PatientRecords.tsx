@@ -56,7 +56,8 @@ export default function PatientRecords() {
       
     } catch (error) {
       console.error('❌ Error downloading document:', error);
-      alert(`Failed to download document: ${error.message}`);
+      // Show a more user-friendly error message
+      alert(`Unable to download document: The file content is not available on the server. Only document metadata is currently stored.`);
     }
   };
 

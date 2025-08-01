@@ -1072,35 +1072,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const fileBuffer = await response.buffer();
         res.send(fileBuffer);
       } else if (document.uploadUrl.startsWith('/uploads/') || document.uploadUrl.startsWith('uploads/')) {
-        // Handle local file paths
-        console.log('📁 Serving local file:', document.uploadUrl);
-        const fs = await import('fs/promises');
-        const path = await import('path');
+        // Handle local file paths - but first check if files are actually stored
+        console.log('📁 Attempting to serve local file:', document.uploadUrl);
+        console.log('⚠️  Note: Current upload system stores metadata only, not actual files');
         
-        // Construct the full file path
-        const filePath = path.join(process.cwd(), document.uploadUrl);
-        console.log('📂 Full file path:', filePath);
+        // Since files aren't actually stored, provide a helpful error message
+        const errorContent = `Document Information:
         
-        try {
-          // Check if file exists and read it
-          const fileBuffer = await fs.readFile(filePath);
-          console.log('📄 File read successfully, size:', fileBuffer.length);
-          res.send(fileBuffer);
-        } catch (fileError) {
-          console.error('❌ Error reading file:', fileError);
-          // Fallback: try without leading slash
-          const altFilePath = path.join(process.cwd(), document.uploadUrl.replace(/^\//, ''));
-          console.log('🔄 Trying alternative path:', altFilePath);
-          
-          try {
-            const fileBuffer = await fs.readFile(altFilePath);
-            console.log('📄 File read successfully from alt path, size:', fileBuffer.length);
-            res.send(fileBuffer);
-          } catch (altError) {
-            console.error('❌ Error reading file from alt path:', altError);
-            throw new Error(`File not found: ${document.uploadUrl}`);
-          }
-        }
+File Name: ${document.fileName}
+File Type: ${document.fileType}
+Upload Date: ${new Date(document.uploadedAt).toLocaleDateString()}
+Original Size: ${document.fileSize} bytes
+
+⚠️ File Content Not Available:
+This document was uploaded but the file content is not stored on the server.
+The current system only stores document metadata for demonstration purposes.
+
+To enable actual file downloads, the upload system needs to be configured 
+to save files to disk or cloud storage.`;
+
+        res.setHeader('Content-Type', 'text/plain');
+        res.send(Buffer.from(errorContent, 'utf8'));
       } else {
         // For other formats, create a simple text file with the URL
         console.log('📝 Creating text file with URL reference');
