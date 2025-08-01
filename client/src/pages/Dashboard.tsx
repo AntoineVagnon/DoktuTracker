@@ -93,6 +93,33 @@ export default function Dashboard() {
   // All appointments (past, present, future) 
   const allAppointments = appointments || [];
 
+  // Fetch document counts for appointments
+  const { data: documentCounts = {} } = useQuery({
+    queryKey: ["/api/appointments/document-counts"],
+    enabled: isAuthenticated && allAppointments.length > 0,
+    queryFn: async () => {
+      const counts: Record<number, number> = {};
+      await Promise.all(
+        allAppointments.map(async (appointment: any) => {
+          try {
+            const response = await fetch(`/api/appointments/${appointment.id}/documents`, {
+              credentials: 'include',
+            });
+            if (response.ok) {
+              const docs = await response.json();
+              counts[appointment.id] = docs.length;
+            } else {
+              counts[appointment.id] = 0;
+            }
+          } catch {
+            counts[appointment.id] = 0;
+          }
+        })
+      );
+      return counts;
+    },
+  });
+
   // Get unique doctors from appointments
   const uniqueDoctors = allAppointments.reduce((doctors: any[], appointment: any) => {
     const doctor = appointment.doctor;
@@ -602,7 +629,22 @@ export default function Dashboard() {
                                   <p className="text-sm text-gray-600">{appointment.doctor?.specialty}</p>
                                 </div>
                               </div>
-                              {getStatusBadge(appointment.status)}
+                              <div className="flex items-center gap-2">
+                                {/* Document count badge */}
+                                {documentCounts[appointment.id] > 0 && (
+                                  <Badge 
+                                    variant="secondary" 
+                                    className="cursor-pointer hover:bg-gray-200 text-xs"
+                                    onClick={() => {
+                                      setSelectedAppointmentId(appointment.id);
+                                      setDocumentUploadOpen(true);
+                                    }}
+                                  >
+                                    Docs ({documentCounts[appointment.id]})
+                                  </Badge>
+                                )}
+                                {getStatusBadge(appointment.status)}
+                              </div>
                             </div>
 
                             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">

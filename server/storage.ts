@@ -1004,10 +1004,41 @@ export class PostgresStorage implements IStorage {
     try {
       console.log('💾 Creating document in library with data:', document);
       
+      // Handle duplicate filename by adding (1), (2), etc.
+      let finalFileName = document.fileName;
+      let counter = 1;
+      
+      while (true) {
+        const existingDoc = await db
+          .select()
+          .from(documentUploads)
+          .where(and(
+            eq(documentUploads.uploadedBy, document.uploadedBy),
+            eq(documentUploads.fileName, finalFileName)
+          ))
+          .limit(1);
+          
+        if (existingDoc.length === 0) {
+          break; // Filename is unique
+        }
+        
+        // Generate new filename with counter
+        const fileExtension = document.fileName.includes('.') 
+          ? '.' + document.fileName.split('.').pop() 
+          : '';
+        const baseFileName = document.fileName.includes('.') 
+          ? document.fileName.substring(0, document.fileName.lastIndexOf('.'))
+          : document.fileName;
+        
+        finalFileName = `${baseFileName} (${counter})${fileExtension}`;
+        counter++;
+      }
+      
       const [newDocument] = await db
         .insert(documentUploads)
         .values({
           ...document,
+          fileName: finalFileName,
           uploadedAt: new Date()
         })
         .returning();

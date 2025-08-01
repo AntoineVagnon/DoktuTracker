@@ -51,7 +51,7 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(403).json({ error: "Access denied" });
       }
 
-      const documents = await storage.getDocuments(Number(appointmentId));
+      const documents = await storage.getDocumentsForAppointment(Number(appointmentId));
       
       res.json(documents);
     } catch (error) {
