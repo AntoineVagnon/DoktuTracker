@@ -96,6 +96,11 @@ export const appointments = pgTable("appointments", {
   zoomJoinUrl: text("zoom_join_url"),
   zoomStartUrl: text("zoom_start_url"),
   zoomPassword: varchar("zoom_password"),
+  cancelReason: text("cancel_reason"),
+  cancelledBy: varchar("cancelled_by"),
+  rescheduleCount: integer("reschedule_count").default(0),
+  slotId: uuid("slot_id").references(() => doctorTimeSlots.id),
+  price: decimal("price", { precision: 10, scale: 2 }).default("35.00"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -103,8 +108,9 @@ export const appointments = pgTable("appointments", {
 // Appointment changes tracking
 export const appointmentChanges = pgTable("appointment_changes", {
   id: uuid("id").primaryKey().defaultRandom(),
-  appointmentId: uuid("appointment_id").references(() => appointments.id, { onDelete: "cascade" }).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id, { onDelete: "cascade" }).notNull(),
   action: varchar("action").notNull(), // reschedule, cancel
+  actorId: integer("actor_id").references(() => users.id),
   actorRole: varchar("actor_role"),
   reason: text("reason"),
   before: jsonb("before"),
@@ -115,9 +121,9 @@ export const appointmentChanges = pgTable("appointment_changes", {
 // Reviews and ratings
 export const reviews = pgTable("reviews", {
   id: uuid("id").primaryKey().defaultRandom(),
-  appointmentId: uuid("appointment_id").references(() => appointments.id).notNull(),
-  patientId: varchar("patient_id").references(() => users.id).notNull(),
-  doctorId: integer("doctor_id").references(() => doctors.id).notNull(), // Changed from uuid to integer to match doctors.id
+  appointmentId: integer("appointment_id").references(() => appointments.id).notNull(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  doctorId: integer("doctor_id").references(() => doctors.id).notNull(),
   rating: integer("rating").notNull(), // 1-5
   comment: text("comment"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -398,6 +404,13 @@ export const insertReviewSchema = createInsertSchema(reviews).omit({
 });
 export type InsertReview = z.infer<typeof insertReviewSchema>;
 export type Review = typeof reviews.$inferSelect;
+
+export const insertAppointmentChangesSchema = createInsertSchema(appointmentChanges).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertAppointmentChanges = z.infer<typeof insertAppointmentChangesSchema>;
+export type AppointmentChanges = typeof appointmentChanges.$inferSelect;
 
 export const insertPaymentSchema = createInsertSchema(payments).omit({
   id: true,

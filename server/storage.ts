@@ -76,8 +76,8 @@ export interface IStorage {
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
   updateAppointmentStatus(id: string, status: string, paymentIntentId?: string): Promise<void>;
   updateAppointmentPayment(id: string, paymentIntentId: string): Promise<void>;
-  rescheduleAppointment(id: string, newSlotId: string, reason: string): Promise<void>;
-  cancelAppointment(id: string, cancelledBy: string, reason: string): Promise<void>;
+  rescheduleAppointment(id: string, newSlotId: string, reason: string, actorId: number, actorRole: string): Promise<void>;
+  cancelAppointment(id: string, cancelledBy: string, reason: string, actorId: number, actorRole: string): Promise<void>;
   
   // Payment operations
   recordPayment(payment: {
@@ -116,6 +116,9 @@ export interface IStorage {
     averageRating: number;
   }>;
   getAuditEvents(): Promise<any[]>;
+  
+  // Appointment changes tracking
+  getAppointmentChanges(appointmentId: string): Promise<any[]>;
 }
 
 // PostgreSQL Storage Implementation
@@ -805,29 +808,33 @@ export class PostgresStorage implements IStorage {
       .where(eq(appointments.id, id));
   }
 
-  async rescheduleAppointment(id: string, newSlotId: string, reason: string): Promise<void> {
-    const [appointment] = await db.select().from(appointments).where(eq(appointments.id, id));
+  async rescheduleAppointment(id: string, newSlotId: string, reason: string, actorId: number, actorRole: string): Promise<void> {
+    const [appointment] = await db.select().from(appointments).where(eq(appointments.id, parseInt(id)));
 
     await db
       .update(appointments)
       .set({ 
-        timeSlotId: newSlotId, 
+        slotId: newSlotId, 
         rescheduleCount: (appointment.rescheduleCount || 0) + 1,
         updatedAt: new Date() 
       })
-      .where(eq(appointments.id, id));
+      .where(eq(appointments.id, parseInt(id)));
 
     // Log the change
     await db.insert(appointmentChanges).values({
-      appointmentId: id,
+      appointmentId: parseInt(id),
       action: "reschedule",
+      actorId,
+      actorRole,
       reason,
-      before: { timeSlotId: appointment.slotId },
-      after: { timeSlotId: newSlotId },
+      before: { slotId: appointment.slotId },
+      after: { slotId: newSlotId },
     });
   }
 
-  async cancelAppointment(id: string, cancelledBy: string, reason: string): Promise<void> {
+  async cancelAppointment(id: string, cancelledBy: string, reason: string, actorId: number, actorRole: string): Promise<void> {
+    const [appointment] = await db.select().from(appointments).where(eq(appointments.id, parseInt(id)));
+    
     await db
       .update(appointments)
       .set({ 
@@ -836,14 +843,16 @@ export class PostgresStorage implements IStorage {
         cancelReason: reason,
         updatedAt: new Date() 
       })
-      .where(eq(appointments.id, id));
+      .where(eq(appointments.id, parseInt(id)));
 
     // Log the change
     await db.insert(appointmentChanges).values({
-      appointmentId: id,
+      appointmentId: parseInt(id),
       action: "cancel",
+      actorId,
+      actorRole,
       reason,
-      before: { status: "confirmed" },
+      before: { status: appointment.status },
       after: { status: "cancelled", cancelledBy, cancelReason: reason },
     });
   }
@@ -916,6 +925,14 @@ export class PostgresStorage implements IStorage {
 
   async getAuditEvents(): Promise<any[]> {
     return await db.select().from(auditEvents).orderBy(desc(auditEvents.createdAt)).limit(100);
+  }
+  
+  async getAppointmentChanges(appointmentId: string): Promise<any[]> {
+    return await db
+      .select()
+      .from(appointmentChanges)
+      .where(eq(appointmentChanges.appointmentId, parseInt(appointmentId)))
+      .orderBy(desc(appointmentChanges.createdAt));
   }
 
   async recordPayment(payment: {

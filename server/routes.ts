@@ -25,9 +25,11 @@ declare module 'express-session' {
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
-import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema } from "@shared/schema";
+import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema, doctorTimeSlots } from "@shared/schema";
 import { z } from "zod";
 import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -363,6 +365,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating appointment:", error);
       res.status(500).json({ message: "Failed to create appointment" });
+    }
+  });
+  
+  // Reschedule appointment
+  app.put("/api/appointments/:id/reschedule", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const { newSlotId, reason } = req.body;
+      const appointmentId = req.params.id;
+      
+      if (!newSlotId || !reason) {
+        return res.status(400).json({ message: "New slot ID and reason are required" });
+      }
+      
+      // Get appointment to check ownership and status
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment) {
+        return res.status(404).json({ message: "Appointment not found" });
+      }
+      
+      // Check permissions
+      const isPatient = appointment.patientId === parseInt(user.id);
+      const isDoctor = appointment.doctor.userId === parseInt(user.id);
+      const isAdmin = user.role === 'admin';
+      
+      if (!isPatient && !isDoctor && !isAdmin) {
+        return res.status(403).json({ message: "You don't have permission to reschedule this appointment" });
+      }
+      
+      // Check if appointment is already cancelled
+      if (appointment.status === 'cancelled') {
+        return res.status(400).json({ message: "Cannot reschedule a cancelled appointment" });
+      }
+      
+      // Check reschedule count limit (max 2 reschedules)
+      if (appointment.rescheduleCount >= 2 && !isAdmin) {
+        return res.status(400).json({ message: "You've reached the reschedule limit for this appointment" });
+      }
+      
+      // Check 60-minute rule unless admin
+      const appointmentTime = new Date(appointment.appointmentDate);
+      const currentTime = new Date();
+      const timeDiffMinutes = (appointmentTime.getTime() - currentTime.getTime()) / (1000 * 60);
+      
+      if (timeDiffMinutes < 60 && !isAdmin) {
+        return res.status(400).json({ 
+          message: "Changes are only allowed at least 1 hour before your consultation" 
+        });
+      }
+      
+      // Release old slot
+      if (appointment.slotId) {
+        await db.update(doctorTimeSlots)
+          .set({ isAvailable: true })
+          .where(eq(doctorTimeSlots.id, appointment.slotId));
+      }
+      
+      // Lock new slot
+      await db.update(doctorTimeSlots)
+        .set({ isAvailable: false })
+        .where(eq(doctorTimeSlots.id, newSlotId));
+      
+      // Reschedule appointment
+      await storage.rescheduleAppointment(
+        appointmentId, 
+        newSlotId, 
+        reason,
+        parseInt(user.id),
+        user.role
+      );
+      
+      res.json({ 
+        success: true, 
+        message: "Appointment rescheduled successfully",
+        isAdminOverride: isAdmin && timeDiffMinutes < 60
+      });
+      
+    } catch (error) {
+      console.error("Error rescheduling appointment:", error);
+      res.status(500).json({ message: "Failed to reschedule appointment" });
+    }
+  });
+  
+  // Cancel appointment
+  app.put("/api/appointments/:id/cancel", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const { reason } = req.body;
+      const appointmentId = req.params.id;
+      
+      if (!reason) {
+        return res.status(400).json({ message: "Cancellation reason is required" });
+      }
+      
+      // Get appointment to check ownership and status
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment) {
+        return res.status(404).json({ message: "Appointment not found" });
+      }
+      
+      // Check permissions
+      const isPatient = appointment.patientId === parseInt(user.id);
+      const isDoctor = appointment.doctor.userId === parseInt(user.id);
+      const isAdmin = user.role === 'admin';
+      
+      if (!isPatient && !isDoctor && !isAdmin) {
+        return res.status(403).json({ message: "You don't have permission to cancel this appointment" });
+      }
+      
+      // Check if already cancelled
+      if (appointment.status === 'cancelled') {
+        return res.status(400).json({ message: "Appointment is already cancelled" });
+      }
+      
+      // Check 60-minute rule unless admin
+      const appointmentTime = new Date(appointment.appointmentDate);
+      const currentTime = new Date();
+      const timeDiffMinutes = (appointmentTime.getTime() - currentTime.getTime()) / (1000 * 60);
+      
+      if (timeDiffMinutes < 60 && !isAdmin) {
+        return res.status(400).json({ 
+          message: "Changes are only allowed at least 1 hour before your consultation" 
+        });
+      }
+      
+      // Release the slot
+      if (appointment.slotId) {
+        await db.update(doctorTimeSlots)
+          .set({ isAvailable: true })
+          .where(eq(doctorTimeSlots.id, appointment.slotId));
+      }
+      
+      // Determine who is cancelling
+      const cancelledBy = isPatient ? 'patient' : (isDoctor ? 'doctor' : 'admin');
+      
+      // Cancel appointment
+      await storage.cancelAppointment(
+        appointmentId, 
+        cancelledBy, 
+        reason,
+        parseInt(user.id),
+        user.role
+      );
+      
+      // Determine refund eligibility
+      const refundEligible = appointment.status === 'paid' && timeDiffMinutes >= 60;
+      
+      res.json({ 
+        success: true, 
+        message: "Appointment cancelled successfully",
+        refundEligible,
+        isAdminOverride: isAdmin && timeDiffMinutes < 60
+      });
+      
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      res.status(500).json({ message: "Failed to cancel appointment" });
+    }
+  });
+  
+  // Get appointment changes history
+  app.get("/api/appointments/:id/changes", isAuthenticated, async (req, res) => {
+    try {
+      const appointmentId = req.params.id;
+      const changes = await storage.getAppointmentChanges(appointmentId);
+      res.json(changes);
+    } catch (error) {
+      console.error("Error fetching appointment changes:", error);
+      res.status(500).json({ message: "Failed to fetch appointment changes" });
     }
   });
 

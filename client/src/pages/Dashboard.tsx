@@ -22,6 +22,7 @@ import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSa
 import { BannerSystem } from "@/components/BannerSystem";
 import { HealthProfileSidebar } from "@/components/HealthProfileSidebar";
 import { DocumentLibraryPanel } from "@/components/DocumentLibraryPanel";
+import { AppointmentActionsModal } from "@/components/AppointmentActionsModal";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -35,6 +36,7 @@ export default function Dashboard() {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<number | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+  const [appointmentAction, setAppointmentAction] = useState<"reschedule" | "cancel" | null>(null);
 
   useEffect(() => {
     // Check if user just completed verification or booking
@@ -144,36 +146,7 @@ export default function Dashboard() {
     enabled: !!user?.id,
   });
 
-  const cancelAppointmentMutation = useMutation({
-    mutationFn: async ({ appointmentId, reason }: { appointmentId: string; reason: string }) => {
-      await apiRequest("PATCH", `/api/appointments/${appointmentId}/cancel`, { reason });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
-      toast({
-        title: "Appointment Cancelled",
-        description: "Your appointment has been successfully cancelled.",
-      });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to cancel appointment. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
+
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -221,14 +194,7 @@ export default function Dashboard() {
     return minutesDiff <= 5 && minutesDiff >= -30 && appointment.status === "paid";
   };
 
-  const handleCancelAppointment = (appointmentId: string) => {
-    if (confirm("Are you sure you want to cancel this appointment?")) {
-      cancelAppointmentMutation.mutate({
-        appointmentId,
-        reason: "Cancelled by patient",
-      });
-    }
-  };
+
 
   const handleBookAppointment = () => {
     setLocation('/doctors');
@@ -673,16 +639,26 @@ export default function Dashboard() {
                                 <span className="sm:hidden">Upload</span>
                               </Button>
 
-                              <Button variant="outline" size="sm" className="h-9 flex-1 sm:flex-none">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-9 flex-1 sm:flex-none"
+                                onClick={() => {
+                                  setSelectedAppointment(appointment);
+                                  setAppointmentAction("reschedule");
+                                }}
+                              >
                                 Reschedule
                               </Button>
 
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                onClick={() => handleCancelAppointment(appointment.id)}
-                                disabled={cancelAppointmentMutation.isPending}
-                                className="h-9 flex-1 sm:flex-none"
+                                onClick={() => {
+                                  setSelectedAppointment(appointment);
+                                  setAppointmentAction("cancel");
+                                }}
+                                className="h-9 flex-1 sm:flex-none text-red-600 hover:text-red-700"
                               >
                                 Cancel
                               </Button>
@@ -973,6 +949,16 @@ export default function Dashboard() {
           appointmentId={selectedAppointmentId}
         />
       )}
+
+      {/* Appointment Actions Modal */}
+      <AppointmentActionsModal
+        appointment={selectedAppointment}
+        action={appointmentAction}
+        onClose={() => {
+          setSelectedAppointment(null);
+          setAppointmentAction(null);
+        }}
+      />
     </div>
   );
 }

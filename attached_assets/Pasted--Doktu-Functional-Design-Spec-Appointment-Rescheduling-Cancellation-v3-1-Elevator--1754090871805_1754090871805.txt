@@ -1,0 +1,107 @@
+# Doktu — Functional & Design Spec: Appointment Rescheduling & Cancellation (v3)
+
+## 1 — Elevator pitch
+
+Allow patients, doctors, and admins to reschedule or cancel consultations, with strict functional rules, graceful UI states, logging, and refund handling. Prevent last-minute changes while supporting emergency overrides.
+
+## 2 — Primary user roles
+
+* **Patient**: Can reschedule/cancel their own confirmed appointments.
+* **Doctor**: Can cancel or reschedule only confirmed appointments with patients.
+* **Admin / Support**: Can override all restrictions to reschedule/cancel any booking.
+
+## 3 — Key user flows
+
+* Patient reschedules >60 min before start time.
+* Doctor cancels <60 min before session.
+* Admin overrides restrictions.
+* Patient tries rescheduling >2x.
+* Time slot selection aligned with doctor availability.
+
+## 4 — Non-functional must-haves
+
+* No ghost bookings (atomic reschedule + slot release).
+* Always reflect changes in dashboards, doctor profiles, availability, and calendars.
+
+## 8 — UI references
+
+* Reschedule and cancel buttons inside appointment cards.
+* Time picker modal with disabled invalid slots.
+* Tooltip or modal when time limit is exceeded.
+* Display refund/credit option after cancellation (when allowed).
+* Admin override badge on force-edited items.
+
+## 9 — “Don’t break these” rules
+
+* Block cancel/reschedule <60min from appointment unless admin override.
+* Max 2 reschedules per appointment.
+* Never double-book a time slot.
+* On reschedule: release old slot and confirm new one immediately.
+* Show status updates (rescheduled, cancelled, etc) in all views.
+
+# Gherkin User Stories
+
+## Feature: Patient reschedules appointment
+
+```gherkin
+Scenario: Reschedule more than 60 minutes in advance
+  Given I am a logged-in patient
+  And I have an appointment scheduled more than 60 minutes from now
+  When I click "Reschedule" and select a new valid time
+  Then the system updates my appointment with the new time
+  And the previous slot becomes available again
+  And both parties are notified
+
+Scenario: Reschedule limit reached
+  Given I already rescheduled this appointment twice
+  When I attempt to reschedule again
+  Then I see an error message: "You’ve reached the reschedule limit for this appointment."
+
+Scenario: Reschedule blocked under 60 minutes
+  Given my appointment starts in 45 minutes
+  When I try to reschedule
+  Then I see a tooltip: "Changes are only allowed at least 1 hour before your consultation."
+
+Scenario: Admin overrides time limit
+  Given I am an admin
+  And the appointment starts in 30 minutes
+  When I override and reschedule
+  Then the system accepts the change and marks the action as "Admin override"
+```
+
+## Feature: Cancel appointment
+
+```gherkin
+Scenario: Patient cancels with refund
+  Given my appointment is scheduled more than 60 minutes from now
+  When I click "Cancel"
+  Then I am shown refund or credit option
+  And the appointment is marked as "Cancelled by patient"
+  And the slot is released
+
+Scenario: Doctor cancels with reason
+  Given I am a doctor with a confirmed appointment
+  When I cancel the appointment
+  Then I must provide a reason
+  And the patient is notified
+  And the appointment is marked accordingly
+
+Scenario: Admin cancels inside time limit
+  Given I am an admin
+  When I cancel an appointment scheduled in less than 60 minutes
+  Then the system processes the cancellation
+  And a log entry is created
+```
+
+## Feature: Audit and notifications
+
+```gherkin
+Scenario: Log all changes
+  When a reschedule or cancellation is performed
+  Then the system records:
+    | Action     | Actor | Timestamp | Reason | From Time | To Time |
+
+Scenario: Notifications
+  When a change occurs
+  Then both doctor and patient receive an email and/or in-app notification
+```
