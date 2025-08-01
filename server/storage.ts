@@ -537,7 +537,11 @@ export class PostgresStorage implements IStorage {
       const debugSlots = uniqueSlots.slice(0, 5);
       console.log(`📅 First 5 slots:`, debugSlots.map(s => `${s.date} ${s.startTime} (available: ${s.isAvailable})`));
       
-      return uniqueSlots;
+      // Return only available slots
+      const availableSlotsOnly = uniqueSlots.filter(slot => slot.isAvailable);
+      console.log(`📅 Returning ${availableSlotsOnly.length} available slots (filtered out ${uniqueSlots.length - availableSlotsOnly.length} unavailable)`);
+      
+      return availableSlotsOnly;
     } catch (error) {
       console.error(`Error fetching time slots for doctor ${doctorIntId}:`, error);
       return [];
