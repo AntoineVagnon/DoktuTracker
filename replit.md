@@ -19,10 +19,10 @@ The platform utilizes React with TypeScript for the frontend, styled with Tailwi
 - **Database**: PostgreSQL with Neon serverless, managed via Drizzle ORM and Drizzle Kit for type-safe operations and schema migrations.
 - **Core Features**:
     - **Doctor Management**: Comprehensive doctor profiles, real-time availability management with time slot locking, and verification (e.g., RPPS for France).
-    - **Appointment System**: Real-time slot reservation, integrated Stripe payments, and full appointment lifecycle management. Video consultation integration is planned.
+    - **Appointment System**: Real-time slot reservation, integrated Stripe payments, and full appointment lifecycle management. Video consultation integration is planned. **Critical Fix (Aug 2025)**: Resolved slot availability filtering - booked appointments now correctly hide from available slots through proper UTC-to-local timezone conversion.
     - **Administrative Dashboard**: Provides analytics, user management, appointment oversight, and revenue tracking.
     - **Naming System**: Structured name system (title, firstName, lastName) consistently applied across the platform for users.
-    - **Timezone Management**: Robust timezone handling ensures accurate display and storage of appointment times across all user interfaces.
+    - **Timezone Management**: Robust timezone handling ensures accurate display and storage of appointment times across all user interfaces. **Enhanced (Aug 2025)**: Fixed critical slot availability matching by implementing proper UTC+2 timezone conversion for European time zones.
     - **Document Management**: HIPAA/GDPR compliant document storage with encryption at rest/transit, access control lists (ACL), audit logging, and automatic PHI classification. Legacy document migration system guides users to re-upload through secure channels.
 
 ### System Design Choices
