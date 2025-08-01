@@ -77,12 +77,20 @@ export default function Checkout() {
           return;
         }
 
-        // First create appointment
-        // Fix timezone issue: ensure the slot time is treated as local time, not UTC
+        // Create appointment with proper timezone handling
+        // The slot parameter comes as "2025-08-01T14:00:00" representing LOCAL TIME
+        // We need to treat this as local time and store the correct UTC equivalent
+        console.log('Original slot parameter:', slot);
+        
+        // Parse as local time by treating it as a local datetime string
+        // When we parse "2025-08-01T14:00:00", it gets interpreted as local time
         const localSlotDate = new Date(slot);
-        // Adjust for timezone offset to store as local time
-        const timezoneOffset = localSlotDate.getTimezoneOffset() * 60000;
-        const localAppointmentDate = new Date(localSlotDate.getTime() + timezoneOffset);
+        console.log('Parsed as local date object:', localSlotDate);
+        console.log('Local time display:', localSlotDate.toLocaleString());
+        console.log('UTC conversion:', localSlotDate.toISOString());
+        
+        // The date object already contains the correct UTC time for storage
+        const appointmentDateUTC = localSlotDate;
         
         const appointmentResponse = await fetch('/api/appointments', {
           method: 'POST',
@@ -90,7 +98,7 @@ export default function Checkout() {
           body: JSON.stringify({
             doctorId: doctorId.toString(),
             timeSlotId: heldSlotData.heldSlot.id,
-            appointmentDate: localAppointmentDate.toISOString(), // Store as local time
+            appointmentDate: appointmentDateUTC.toISOString(), // Store as UTC
             price: price.toString(),
             status: 'pending_payment'
           })
