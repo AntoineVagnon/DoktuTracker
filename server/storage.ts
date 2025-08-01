@@ -10,6 +10,7 @@ import {
   payments,
   healthProfiles,
   documentUploads,
+  appointmentDocuments,
   type UpsertUser,
   type User,
   type Doctor,
@@ -26,6 +27,7 @@ import {
   type InsertHealthProfile,
   type DocumentUpload,
   type InsertDocumentUpload,
+  type InsertAppointmentDocument,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, gte, lte, isNull, or, count, avg, sql } from "drizzle-orm";
@@ -979,53 +981,29 @@ export class PostgresStorage implements IStorage {
     }
   }
 
-  // Document operations
-  async getDocuments(appointmentId?: number): Promise<DocumentUpload[]> {
-    try {
-      const query = db.select().from(documentUploads);
-      
-      if (appointmentId) {
-        const docs = await query.where(eq(documentUploads.appointmentId, appointmentId));
-        return docs;
-      } else {
-        const docs = await query;
-        return docs;
-      }
-    } catch (error) {
-      console.error('Error fetching documents:', error);
-      return [];
-    }
-  }
-
+  // Document Library operations
   async getDocumentsByPatient(patientId: number): Promise<DocumentUpload[]> {
     try {
-      // Join documents with appointments to get patient documents
+      console.log('📚 Fetching document library for patient:', patientId);
+      
       const docs = await db
-        .select({
-          id: documentUploads.id,
-          fileName: documentUploads.fileName,
-          uploadUrl: documentUploads.uploadUrl,
-          fileType: documentUploads.fileType,
-          fileSize: documentUploads.fileSize,
-          uploadedBy: documentUploads.uploadedBy,
-          appointmentId: documentUploads.appointmentId,
-          documentType: documentUploads.documentType,
-          uploadedAt: documentUploads.uploadedAt
-        })
+        .select()
         .from(documentUploads)
-        .innerJoin(appointments, eq(documentUploads.appointmentId, appointments.id))
-        .where(eq(appointments.patientId, patientId))
+        .where(eq(documentUploads.uploadedBy, patientId))
         .orderBy(desc(documentUploads.uploadedAt));
       
+      console.log('📄 Found documents in library:', docs.length);
       return docs;
     } catch (error) {
-      console.error('Error fetching documents for patient:', error);
+      console.error('Error fetching document library:', error);
       return [];
     }
   }
 
   async createDocument(document: InsertDocumentUpload): Promise<DocumentUpload> {
     try {
+      console.log('💾 Creating document in library with data:', document);
+      
       const [newDocument] = await db
         .insert(documentUploads)
         .values({
@@ -1034,6 +1012,7 @@ export class PostgresStorage implements IStorage {
         })
         .returning();
       
+      console.log('✅ Document created in library:', newDocument);
       return newDocument;
     } catch (error) {
       console.error('Error creating document:', error);
@@ -1043,11 +1022,14 @@ export class PostgresStorage implements IStorage {
 
   async getDocumentById(id: string): Promise<DocumentUpload | undefined> {
     try {
+      console.log('🔍 Fetching document by ID:', id);
+      
       const [document] = await db
         .select()
         .from(documentUploads)
         .where(eq(documentUploads.id, id));
       
+      console.log('📄 Document found:', document ? 'Yes' : 'No');
       return document;
     } catch (error) {
       console.error('Error fetching document by ID:', error);
@@ -1057,10 +1039,83 @@ export class PostgresStorage implements IStorage {
 
   async deleteDocument(id: string): Promise<void> {
     try {
+      console.log('🗑️ Deleting document from library:', id);
+      
+      // First, remove all appointment attachments
+      await db.delete(appointmentDocuments).where(eq(appointmentDocuments.documentId, id));
+      
+      // Then delete the document itself
       await db.delete(documentUploads).where(eq(documentUploads.id, id));
+      
+      console.log('✅ Document deleted from library');
     } catch (error) {
       console.error('Error deleting document:', error);
       throw error;
+    }
+  }
+
+  // Appointment-Document attachment operations
+  async attachDocumentToAppointment(appointmentId: number, documentId: string): Promise<any> {
+    try {
+      console.log('📎 Attaching document to appointment:', { appointmentId, documentId });
+      
+      const [attachment] = await db.insert(appointmentDocuments).values({
+        appointmentId,
+        documentId,
+        attachedAt: new Date(),
+      }).returning();
+      
+      console.log('✅ Document attached to appointment:', attachment);
+      return attachment;
+    } catch (error) {
+      console.error('Error attaching document:', error);
+      throw error;
+    }
+  }
+
+  async detachDocumentFromAppointment(appointmentId: number, documentId: string): Promise<void> {
+    try {
+      console.log('📎 Detaching document from appointment:', { appointmentId, documentId });
+      
+      await db
+        .delete(appointmentDocuments)
+        .where(and(
+          eq(appointmentDocuments.appointmentId, appointmentId),
+          eq(appointmentDocuments.documentId, documentId)
+        ));
+      
+      console.log('✅ Document detached from appointment');
+    } catch (error) {
+      console.error('Error detaching document:', error);
+      throw error;
+    }
+  }
+
+  async getDocumentsForAppointment(appointmentId: number): Promise<any[]> {
+    try {
+      console.log('📄 Fetching documents for appointment:', appointmentId);
+      
+      const documents = await db
+        .select({
+          id: documentUploads.id,
+          fileName: documentUploads.fileName,
+          fileSize: documentUploads.fileSize,
+          fileType: documentUploads.fileType,
+          uploadUrl: documentUploads.uploadUrl,
+          documentType: documentUploads.documentType,
+          uploadedAt: documentUploads.uploadedAt,
+          attachedAt: appointmentDocuments.attachedAt,
+        })
+        .from(appointmentDocuments)
+        .innerJoin(documentUploads, eq(appointmentDocuments.documentId, documentUploads.id))
+        .where(eq(appointmentDocuments.appointmentId, appointmentId))
+        .orderBy(appointmentDocuments.attachedAt);
+      
+      console.log('📄 Found attached documents:', documents.length);
+      return documents;
+    } catch (error) {
+      console.error('Error fetching appointment documents:', error);
+      return [];
     }
   }
 

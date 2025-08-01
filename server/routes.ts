@@ -27,6 +27,7 @@ import { storage } from "./storage";
 import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
 import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema } from "@shared/schema";
 import { z } from "zod";
+import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -39,6 +40,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Supabase authentication
   await setupSupabaseAuth(app);
+
+  // Register document library routes
+  registerDocumentLibraryRoutes(app);
 
   // Configure multer for file uploads (in-memory storage for processing before cloud upload)
   const upload = multer({

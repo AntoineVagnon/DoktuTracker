@@ -57,10 +57,11 @@ export default function PatientRecords() {
     } catch (error) {
       console.error('❌ Error downloading document:', error);
       // Show a more user-friendly error message for different scenarios
-      if (error.message && error.message.includes('404')) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      if (errorMessage.includes('404')) {
         alert(`Document migration required: This document was uploaded with the old system and needs to be re-uploaded for security compliance. Please upload the document again.`);
       } else {
-        alert(`Unable to download document: ${error.message || 'An error occurred while accessing the document.'}`);
+        alert(`Unable to download document: ${errorMessage || 'An error occurred while accessing the document.'}`);
       }
     }
   };
@@ -281,9 +282,9 @@ export default function PatientRecords() {
                     <div className="flex items-center justify-center py-8">
                       <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
                     </div>
-                  ) : patientDocuments.length > 0 ? (
+                  ) : (patientDocuments as any[]).length > 0 ? (
                     <div className="space-y-4">
-                      {patientDocuments.map((document: any) => (
+                      {(patientDocuments as any[]).map((document: any) => (
                         <div key={document.id} className="flex items-center justify-between p-4 border rounded-lg">
                           <div className="flex items-center gap-3">
                             <FileText className="h-5 w-5 text-gray-500" />

@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload, Edit2, Save, X, Activity } from "lucide-react";
+import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload, Edit2, Save, X, Activity, FileText } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { formatAppointmentDateTimeUS, categorizeAppointmentsByTiming, getTimeUntilAppointment } from "@/lib/dateUtils";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns";
@@ -792,7 +792,7 @@ export default function Dashboard() {
                             <div className="h-4 bg-gray-200 rounded w-1/3"></div>
                             <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                           </div>
-                        ) : !healthProfile || healthProfile.profileStatus === 'incomplete' ? (
+                        ) : !healthProfile || (healthProfile as any).profileStatus === 'incomplete' ? (
                           <div className="text-center py-8">
                             <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Complete Your Health Profile</h3>
@@ -811,7 +811,7 @@ export default function Dashboard() {
                                 <span className="font-medium text-green-900">Health Profile Complete</span>
                               </div>
                               <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                {healthProfile.completionScore}% Complete
+                                {(healthProfile as any).completionScore || 100}% Complete
                               </Badge>
                             </div>
 
@@ -824,8 +824,8 @@ export default function Dashboard() {
                                     Date of Birth
                                   </label>
                                   <p className="text-gray-900">
-                                    {healthProfile.dateOfBirth ? 
-                                      new Date(healthProfile.dateOfBirth).toLocaleDateString() : 
+                                    {(healthProfile as any).dateOfBirth ? 
+                                      new Date((healthProfile as any).dateOfBirth).toLocaleDateString() : 
                                       'Not specified'
                                     }
                                   </p>
@@ -834,7 +834,7 @@ export default function Dashboard() {
                                   <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Gender
                                   </label>
-                                  <p className="text-gray-900">{healthProfile.gender || 'Not specified'}</p>
+                                  <p className="text-gray-900">{(healthProfile as any).gender || 'Not specified'}</p>
                                 </div>
                               </div>
 
@@ -850,8 +850,8 @@ export default function Dashboard() {
 
                             {/* Last Updated */}
                             <div className="text-sm text-gray-500 pt-4 border-t">
-                              Last updated: {healthProfile.lastReviewedAt ? 
-                                new Date(healthProfile.lastReviewedAt).toLocaleDateString() : 
+                              Last updated: {(healthProfile as any).lastReviewedAt ? 
+                                new Date((healthProfile as any).lastReviewedAt).toLocaleDateString() : 
                                 'Never'
                               }
                             </div>

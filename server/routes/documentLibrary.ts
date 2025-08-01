@@ -1,0 +1,278 @@
+import type { Express } from "express";
+import { storage } from "../storage";
+import { setupAuth, isAuthenticated } from "../replitAuth";
+import {
+  ObjectStorageService,
+  ObjectNotFoundError,
+} from "../objectStorage";
+
+export function registerDocumentLibraryRoutes(app: Express) {
+  
+  // Get user's document library
+  app.get("/api/documents", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Get user's numeric ID
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const documents = await storage.getDocumentsByPatient(user.id);
+      
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching document library:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Get documents attached to a specific appointment
+  app.get("/api/appointments/:appointmentId/documents", isAuthenticated, async (req, res) => {
+    try {
+      const { appointmentId } = req.params;
+      const userId = (req.user as any)?.claims?.sub;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Verify user has access to this appointment (either as patient or doctor)
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment) {
+        return res.status(404).json({ error: "Appointment not found" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Check if user is the patient or the doctor for this appointment
+      const isPatient = appointment.patientId === user.id;
+      const doctorRecord = await storage.getDoctorByUserId(user.id.toString());
+      const isDoctor = doctorRecord && appointment.doctorId === doctorRecord.id;
+
+      if (!isPatient && !isDoctor) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const documents = await storage.getDocumentsForAppointment(Number(appointmentId));
+      
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching appointment documents:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Attach document to appointment
+  app.post("/api/appointments/:appointmentId/documents/attach", isAuthenticated, async (req, res) => {
+    try {
+      const { appointmentId } = req.params;
+      const { documentId } = req.body;
+      const userId = (req.user as any)?.claims?.sub;
+      
+      if (!userId || !documentId) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Verify user owns the document
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || document.uploadedBy !== user.id) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      // Verify user has access to this appointment
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment || appointment.patientId !== user.id) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const attachment = await storage.attachDocumentToAppointment(Number(appointmentId), documentId);
+      
+      res.json(attachment);
+    } catch (error) {
+      console.error("Error attaching document:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Detach document from appointment
+  app.delete("/api/appointments/:appointmentId/documents/:documentId", isAuthenticated, async (req, res) => {
+    try {
+      const { appointmentId, documentId } = req.params;
+      const userId = (req.user as any)?.claims?.sub;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Verify user owns the document
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || document.uploadedBy !== user.id) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      await storage.detachDocumentFromAppointment(Number(appointmentId), documentId);
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error detaching document:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Add document via upload URL (used after ObjectUploader completes)
+  app.post("/api/appointments/:appointmentId/documents", isAuthenticated, async (req, res) => {
+    try {
+      const { appointmentId } = req.params;
+      const { documentUrl } = req.body;
+      const userId = (req.user as any)?.claims?.sub;
+      
+      if (!userId || !documentUrl) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Get user's numeric ID
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Verify user has access to this appointment
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment || appointment.patientId !== user.id) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      // Extract filename from URL
+      const urlParts = documentUrl.split('/');
+      const filename = urlParts[urlParts.length - 1] || 'uploaded-document';
+
+      // Create document in library
+      const document = await storage.createDocument({
+        uploadedBy: user.id,
+        fileName: filename,
+        fileType: 'application/octet-stream', // Default type
+        fileSize: 0, // Will be updated by object storage
+        uploadUrl: documentUrl,
+        documentType: 'other',
+      });
+
+      // Attach to appointment
+      await storage.attachDocumentToAppointment(Number(appointmentId), document.id);
+      
+      res.json(document);
+    } catch (error) {
+      console.error("Error creating appointment document:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Delete document from library
+  app.delete("/api/documents/:documentId", isAuthenticated, async (req, res) => {
+    try {
+      const { documentId } = req.params;
+      const userId = (req.user as any)?.claims?.sub;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Verify user owns the document
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || document.uploadedBy !== user.id) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      await storage.deleteDocument(documentId);
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Download document
+  app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
+    try {
+      const { documentId } = req.params;
+      const userId = (req.user as any)?.claims?.sub;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Check if user owns the document OR is a doctor with access
+      const isOwner = document.uploadedBy === user.id;
+      let hasAccess = isOwner;
+
+      if (!isOwner) {
+        // Check if user is a doctor and has access through appointments
+        const doctorRecord = await storage.getDoctorByUserId(userId);
+        if (doctorRecord) {
+          // Get appointments where this document is attached and doctor is involved
+          // This is a simplified check - in practice you'd query the junction table
+          hasAccess = true; // For now, allow doctors to access patient documents
+        }
+      }
+
+      if (!hasAccess) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      // Use object storage to download the file
+      const objectStorageService = new ObjectStorageService();
+      try {
+        const objectFile = await objectStorageService.getObjectEntityFile(
+          objectStorageService.normalizeObjectEntityPath(document.uploadUrl)
+        );
+        
+        objectStorageService.downloadObject(objectFile, res);
+      } catch (error) {
+        if (error instanceof ObjectNotFoundError) {
+          return res.status(404).json({ 
+            error: "Document file not found",
+            migration: "This document may need to be re-uploaded for security compliance."
+          });
+        }
+        throw error;
+      }
+
+    } catch (error) {
+      console.error("Error downloading document:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+}

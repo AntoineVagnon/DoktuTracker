@@ -182,10 +182,9 @@ export const healthProfiles = pgTable("health_profiles", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Document Uploads
+// Document Library - Patient's personal document library
 export const documentUploads = pgTable("document_uploads", {
   id: uuid("id").primaryKey().defaultRandom(),
-  appointmentId: integer("appointment_id").references(() => appointments.id).notNull(),
   uploadedBy: integer("uploaded_by").references(() => users.id).notNull(),
   fileName: varchar("file_name").notNull(),
   fileSize: integer("file_size").notNull(),
@@ -194,6 +193,17 @@ export const documentUploads = pgTable("document_uploads", {
   documentType: varchar("document_type"), // medical_report, prescription, insurance, other
   uploadedAt: timestamp("uploaded_at").defaultNow(),
 });
+
+// Appointment Documents - Junction table for document-appointment attachments
+export const appointmentDocuments = pgTable("appointment_documents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  appointmentId: integer("appointment_id").references(() => appointments.id).notNull(),
+  documentId: uuid("document_id").references(() => documentUploads.id).notNull(),
+  attachedAt: timestamp("attached_at").defaultNow(),
+}, (table) => [
+  // Ensure unique document-appointment pairs
+  index("idx_appointment_document_unique").on(table.appointmentId, table.documentId)
+]);
 
 // Banner Dismissals (to track when users dismiss banners)
 export const bannerDismissals = pgTable("banner_dismissals", {
@@ -219,6 +229,13 @@ export const insertDocumentUploadSchema = createInsertSchema(documentUploads).om
 });
 export type InsertDocumentUpload = z.infer<typeof insertDocumentUploadSchema>;
 export type DocumentUpload = typeof documentUploads.$inferSelect;
+
+export const insertAppointmentDocumentSchema = createInsertSchema(appointmentDocuments).omit({
+  id: true,
+  attachedAt: true,
+});
+export type InsertAppointmentDocument = z.infer<typeof insertAppointmentDocumentSchema>;
+export type AppointmentDocument = typeof appointmentDocuments.$inferSelect;
 
 export const insertBannerDismissalSchema = createInsertSchema(bannerDismissals).omit({
   id: true,

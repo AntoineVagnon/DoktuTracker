@@ -1,0 +1,79 @@
+Feature: Document library & per-appointment sharing
+
+  Purpose:
+    A patient keeps one personal library of medical documents
+    and explicitly decides which file is visible to each consultation.
+    Doctors see only the documents attached to their own appointment.
+
+  #############################################
+  # 1.  Patient upload & library management   #
+  #############################################
+
+  Scenario: Upload a new document during booking
+    Given I am booking an appointment
+    When I drop “blood_test.pdf” in the **Upload New** tab
+    Then the file is saved in “My Library”
+    And the checkbox “Attach to this appointment” is selected by default
+    And the file appears immediately in the “Files for this appointment” list
+
+  Scenario: Re-use a previous document
+    Given I have at least one file in My Library
+    And I open the **Attach from Library** tab during a later booking
+    When I click “Attach” next to “blood_test.pdf”
+    Then “blood_test.pdf” moves to the “Files for this appointment” list
+    And it remains available in My Library for future use
+
+  Scenario: Remove attachment without deleting the file
+    Given a file is attached to the current appointment
+    When I click the “× Remove” icon
+    Then the file disappears from “Files for this appointment”
+    And it is still present in My Library for other appointments
+
+  Scenario: Delete file from library
+    Given a file is stored in My Library
+    And it is not attached to any future appointment
+    When I click “Delete forever”
+    Then a confirmation modal appears
+    And upon confirmation the file disappears from both the library and any past view
+
+  #############################################
+  # 2.  Doctor perspective                    #
+  #############################################
+
+  Scenario: Doctor views documents for their appointment
+    Given Dr. Smith opens Appointment #123 with Patient Alice
+    When the “Documents” tab loads
+    Then Dr. Smith sees only the files Alice attached to Appointment #123
+    And no other files from Alice’s personal library are visible
+
+  Scenario: Doctor cannot see another doctor’s files
+    Given Dr. Brown opens Patient Alice’s record for Appointment #789
+    And “blood_test.pdf” was attached only to Appointment #123
+    Then “blood_test.pdf” is not shown in Dr. Brown’s view
+
+  #############################################
+  # 3.  UI placement & indicators             #
+  #############################################
+
+  Rule: Side-panel layout
+    • Tabs at top: “Attach from Library” | “Upload New”
+    • Section headers:
+        – “Files for this appointment” (list with remove)
+        – “Other files in your library” (list with attach)
+
+  Rule: Appointment card badge
+    • If one or more files are attached, show a badge “Docs (n)”
+    • Clicking the badge opens the side-panel pre-filtered to “Files for this appointment”
+
+  #############################################
+  # 4.  Edge cases                            #
+  #############################################
+
+  Scenario: Duplicate filename on upload
+    When I upload “scan.pdf” a second time
+    Then the library stores it as “scan (1).pdf” and displays the new name
+
+  Scenario: Attachment expires after cancellation
+    Given an appointment is cancelled
+    Then its document links are removed
+    And the files remain in the library for future use
