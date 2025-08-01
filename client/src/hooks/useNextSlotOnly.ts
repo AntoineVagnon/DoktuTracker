@@ -9,9 +9,12 @@ export function useNextSlotOnly(doctorId: string) {
     queryKey: ["/api/next-slot", doctorId],
     queryFn: async () => {
       try {
+        console.log(`🔍 Fetching next slot only for doctor ${doctorId}`);
         const response = await fetch(`/api/doctors/${doctorId}/slots?nextOnly=true`);
         if (!response.ok) return [];
-        return response.json();
+        const result = await response.json();
+        console.log(`📅 Got next slot result for doctor ${doctorId}:`, result);
+        return result;
       } catch (error) {
         console.warn("Failed to fetch next slot for doctor", doctorId);
         return [];

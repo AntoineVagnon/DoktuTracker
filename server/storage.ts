@@ -405,54 +405,23 @@ export class PostgresStorage implements IStorage {
 
   async getDoctorByEmail(email: string): Promise<(Doctor & { user: User }) | undefined> {
     try {
-      const [result] = await db
-        .select({
-          id: doctors.id,
-          userId: doctors.userId,
-          specialty: doctors.specialty,
-          isOnline: doctors.isOnline,
-          bio: doctors.bio,
-          profileImageUrl: doctors.profileImageUrl,
-          consultationPrice: doctors.consultationPrice,
-          experience: doctors.experience,
-          location: doctors.location,
-          rppsNumber: doctors.rppsNumber,  // Added RPPS for French doctors
-          clinicAddress: doctors.clinicAddress,
-          clinicPhone: doctors.clinicPhone,
-          emergencyPhone: doctors.emergencyPhone,
-          consultationDuration: doctors.consultationDuration,
-          isVerified: doctors.isVerified,
-          verificationDate: doctors.verificationDate,
-          languages: doctors.languages,
-          acceptsNewPatients: doctors.acceptsNewPatients,
-          createdAt: doctors.createdAt,
-          updatedAt: doctors.updatedAt,
-          user: {
-            id: users.id,
-            email: users.email,
-            title: users.title,
-            firstName: users.firstName,
-            lastName: users.lastName,
-            dateOfBirth: users.dateOfBirth,
-            phone: users.phone,
-            address: users.address,
-            emergencyContact: users.emergencyContact,
-            medicalHistory: users.medicalHistory,
-            allergies: users.allergies,
-            currentMedications: users.currentMedications,
-            role: users.role,
-            approved: users.approved,
-            stripeCustomerId: users.stripeCustomerId,
-            stripeSubscriptionId: users.stripeSubscriptionId,
-            createdAt: users.createdAt,
-            updatedAt: users.updatedAt
-          }
-        })
-        .from(doctors)
-        .innerJoin(users, eq(doctors.userId, users.id))
-        .where(eq(users.email, email));
+      // First get the user by email
+      const user = await this.getUserByEmail(email);
+      if (!user) {
+        return undefined;
+      }
 
-      return result;
+      // Then get the doctor by userId
+      const doctor = await this.getDoctorByUserId(user.id.toString());
+      if (!doctor) {
+        return undefined;
+      }
+
+      // Return combined doctor and user info
+      return {
+        ...doctor,
+        user
+      };
     } catch (error) {
       console.error(`Error fetching doctor by email ${email}:`, error);
       return undefined;
