@@ -23,9 +23,12 @@ The platform utilizes React with TypeScript for the frontend, styled with Tailwi
     - **Administrative Dashboard**: Provides analytics, user management, appointment oversight, and revenue tracking.
     - **Naming System**: Structured name system (title, firstName, lastName) consistently applied across the platform for users.
     - **Timezone Management**: Robust timezone handling ensures accurate display and storage of appointment times across all user interfaces.
+    - **Document Management**: HIPAA/GDPR compliant document storage with encryption at rest/transit, access control lists (ACL), audit logging, and automatic PHI classification. Legacy document migration system guides users to re-upload through secure channels.
 
 ### System Design Choices
 The architecture emphasizes a clear separation of concerns between frontend and backend. Data flow is designed for security and efficiency, from user registration through authentication and appointment booking. The system employs secure session management with PostgreSQL storage and adheres to role-based access control. Error handling is comprehensive, including global error suppression for a stable user experience. The design prioritizes scalability and maintainability through modular components and well-defined API structures.
+
+**Medical Compliance**: All document storage implements HIPAA/GDPR compliance through encrypted object storage with comprehensive access controls. The system automatically classifies medical documents as PHI (Protected Health Information), applies encryption at rest and in transit, logs all access attempts for audit trails, and enforces role-based access permissions. Legacy documents from the pre-compliance era are handled with clear migration paths to ensure no data loss while maintaining security standards.
 
 ## External Dependencies
 
