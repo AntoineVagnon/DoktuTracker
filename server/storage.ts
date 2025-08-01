@@ -57,6 +57,7 @@ export interface IStorage {
 
   // Time slot operations
   getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]>;
+  getAllDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]>;
   getTimeSlots(): Promise<TimeSlot[]>;
   createTimeSlot(slot: InsertTimeSlot): Promise<TimeSlot>;
   deleteTimeSlot(id: string): Promise<void>;
@@ -456,6 +457,40 @@ export class PostgresStorage implements IStorage {
     }
 
     await db.delete(doctors).where(eq(doctors.id, doctorId));
+  }
+
+  async getAllDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]> {
+    const doctorIntId = typeof doctorId === 'string' ? parseInt(doctorId, 10) : doctorId;
+    
+    if (isNaN(doctorIntId)) {
+      console.log(`❌ Invalid doctor ID: ${doctorId}`);
+      return [];
+    }
+    
+    try {
+      // Get ALL time slots without filtering
+      let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorIntId));
+      
+      if (date) {
+        query = query.where(eq(doctorTimeSlots.date, date)) as any;
+      }
+      
+      const slots = await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
+      
+      console.log(`📅 Retrieved ${slots.length} total slots for doctor ${doctorIntId}`);
+      
+      return slots.map(slot => ({
+        id: slot.id,
+        doctorId: slot.doctorId,
+        date: slot.date,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        isAvailable: slot.isAvailable
+      }));
+    } catch (error) {
+      console.error(`Error fetching all time slots for doctor ${doctorIntId}:`, error);
+      return [];
+    }
   }
 
   async getDoctorTimeSlots(doctorId: string | number, date?: string): Promise<TimeSlot[]> {

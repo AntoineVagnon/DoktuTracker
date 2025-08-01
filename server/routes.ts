@@ -244,12 +244,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { doctorId } = req.params;
       console.log(`🔍 Fetching available slots for rescheduling - doctor ID: ${doctorId}`);
       
-      // Get all available slots for this doctor
-      const slots = await storage.getDoctorTimeSlots(doctorId);
+      // Get all slots for this doctor (not just available ones)
+      const allSlots = await storage.getAllDoctorTimeSlots(doctorId);
       
-      // Return only available slots (storage method already filters out booked ones)
-      console.log(`📅 Found ${slots.length} available slots for doctor ${doctorId}`);
-      res.json(slots);
+      // Filter for available slots only
+      const availableSlots = allSlots.filter(slot => slot.isAvailable);
+      
+      console.log(`📅 Found ${availableSlots.length} available slots out of ${allSlots.length} total slots for doctor ${doctorId}`);
+      
+      // Debug: Show some available slots
+      if (availableSlots.length > 0) {
+        console.log('Sample available slots:', availableSlots.slice(0, 3).map(s => `${s.date} ${s.startTime}`));
+      }
+      
+      res.json(availableSlots);
     } catch (error) {
       console.error("Error fetching available slots:", error);
       res.status(500).json({ message: "Failed to fetch available slots" });
