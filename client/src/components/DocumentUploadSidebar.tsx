@@ -74,10 +74,13 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
         setUploadProgress(100);
 
         if (!response.ok) {
-          throw new Error('Upload failed');
+          const errorText = await response.text();
+          throw new Error(`Upload failed: ${response.status} ${errorText}`);
         }
 
-        return response.json();
+        const result = await response.json();
+        console.log('Upload successful:', result);
+        return result;
       } catch (error) {
         clearInterval(progressInterval);
         throw error;
@@ -150,7 +153,13 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
         continue;
       }
 
-      await uploadDocumentMutation.mutateAsync({ file, documentType });
+      try {
+        await uploadDocumentMutation.mutateAsync({ file, documentType });
+      } catch (error) {
+        console.error('Upload error:', error);
+        // Error is already handled by the mutation's onError callback
+        // Just log it here to prevent unhandled promise rejection
+      }
     }
   }, [uploadDocumentMutation, toast]);
 
