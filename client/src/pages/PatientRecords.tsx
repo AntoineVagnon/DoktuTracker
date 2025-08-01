@@ -26,7 +26,7 @@ export default function PatientRecords() {
 
   // Fetch health profile for selected patient
   const { data: healthProfile, isLoading: isLoadingProfile } = useQuery({
-    queryKey: ["/api/health-profile", selectedPatientId],
+    queryKey: [`/api/health-profile/${selectedPatientId}`],
     enabled: !!selectedPatientId,
   });
 
@@ -96,7 +96,7 @@ export default function PatientRecords() {
                 <h1 className="text-2xl font-bold text-gray-900">
                   {selectedPatient ? formatUserFullName(selectedPatient) : 'Patient Record'}
                 </h1>
-                <p className="text-gray-600">{selectedPatient?.email}</p>
+
               </div>
             </div>
 
@@ -126,10 +126,7 @@ export default function PatientRecords() {
                       <label className="text-sm font-medium text-gray-500">Full Name</label>
                       <p className="text-base">{selectedPatient ? formatUserFullName(selectedPatient) : 'N/A'}</p>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">Email</label>
-                      <p className="text-base">{selectedPatient?.email || 'N/A'}</p>
-                    </div>
+
                     <div>
                       <label className="text-sm font-medium text-gray-500">Total Appointments</label>
                       <p className="text-base">{selectedPatient?.appointmentCount || 0}</p>
@@ -204,18 +201,7 @@ export default function PatientRecords() {
                             </div>
                           </div>
                         )}
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">Profile Completion</label>
-                          <div className="flex items-center gap-2 mt-1">
-                            <div className="flex-1 bg-gray-200 rounded-full h-2">
-                              <div 
-                                className="bg-primary h-2 rounded-full transition-all duration-300" 
-                                style={{ width: `${(healthProfile as any)?.completionScore || 0}%` }}
-                              />
-                            </div>
-                            <span className="text-sm font-medium">{(healthProfile as any)?.completionScore || 0}%</span>
-                          </div>
-                        </div>
+
                       </div>
                     ) : (
                       <div className="text-center py-8 text-gray-500">
