@@ -44,18 +44,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register document library routes
   registerDocumentLibraryRoutes(app);
 
-  // Temporary endpoint to initialize document tables
-  app.post("/api/init-document-tables", async (req, res) => {
+  // Fix document tables - make appointment_id nullable
+  app.post("/api/fix-document-tables", async (req, res) => {
     try {
-      console.log('🔨 Creating document library tables...');
+      console.log('🔧 Fixing document library table schema...');
       
-      // Use raw SQL since tables don't exist yet
       const db = (await import("./db")).db;
       const { sql } = await import("drizzle-orm");
       
-      // Create document uploads table
+      // Drop existing tables to recreate with correct schema
+      await db.execute(sql`DROP TABLE IF EXISTS appointment_documents CASCADE`);
+      await db.execute(sql`DROP TABLE IF EXISTS document_uploads CASCADE`);
+      
+      // Create document uploads table with nullable appointment_id
       await db.execute(sql`
-        CREATE TABLE IF NOT EXISTS document_uploads (
+        CREATE TABLE document_uploads (
             id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
             uploaded_by integer NOT NULL REFERENCES users(id),
             file_name varchar NOT NULL,
@@ -69,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create appointment documents junction table
       await db.execute(sql`
-        CREATE TABLE IF NOT EXISTS appointment_documents (
+        CREATE TABLE appointment_documents (
             id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
             appointment_id integer NOT NULL REFERENCES appointments(id),
             document_id uuid NOT NULL REFERENCES document_uploads(id),
@@ -79,19 +82,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create index
       await db.execute(sql`
-        CREATE INDEX IF NOT EXISTS idx_appointment_document_unique 
+        CREATE INDEX idx_appointment_document_unique 
         ON appointment_documents(appointment_id, document_id)
       `);
       
-      console.log('✅ Document library tables created successfully');
+      console.log('✅ Document library tables fixed successfully');
       
       res.json({ 
         success: true, 
-        message: "Document library tables created successfully" 
+        message: "Document library tables fixed successfully" 
       });
       
     } catch (error: any) {
-      console.error('❌ Error creating tables:', error);
+      console.error('❌ Error fixing tables:', error);
       res.status(500).json({ 
         success: false, 
         error: error.message 
