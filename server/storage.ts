@@ -487,6 +487,17 @@ export class PostgresStorage implements IStorage {
       
       console.log(`🔒 Found ${confirmedAppointments.length} confirmed appointments that should block slots`);
       
+      // Debug: Get ALL appointments for this doctor to see what's there
+      const allAppointments = await db.select()
+        .from(appointments)
+        .where(eq(appointments.doctorId, doctorIntId));
+      
+      console.log(`🔍 ALL appointments for doctor ${doctorIntId}:`);
+      allAppointments.forEach(apt => {
+        const aptDate = new Date(apt.appointmentDate);
+        console.log(`  - ID ${apt.id}: ${aptDate.toISOString()} (${apt.status}) - Patient ${apt.patientId}`);
+      });
+      
       // Remove duplicates by date+startTime, keeping the most restrictive availability
       const uniqueSlots = rawSlots.reduce((acc: TimeSlot[], current: TimeSlot) => {
         const key = `${current.date}_${current.startTime}`;
