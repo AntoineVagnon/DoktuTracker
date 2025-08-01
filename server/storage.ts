@@ -508,15 +508,21 @@ export class PostgresStorage implements IStorage {
           const hasConflictingAppointment = confirmedAppointments.some(apt => {
             const appointmentDate = new Date(apt.appointmentDate);
             
-            // Convert UTC appointment time to local time for matching
-            const localAppointmentDate = new Date(appointmentDate.getTime() - (appointmentDate.getTimezoneOffset() * 60000));
+            // Convert UTC appointment time to European local time (UTC+2 during summer)
+            // Appointments are stored in UTC, slots are stored in local time
+            const localAppointmentDate = new Date(appointmentDate.getTime() + (2 * 60 * 60 * 1000)); // Add 2 hours
             const appointmentDateString = localAppointmentDate.toISOString().split('T')[0];
             const appointmentTimeString = localAppointmentDate.toISOString().split('T')[1].slice(0, 8);
             
             const isMatch = current.date === appointmentDateString && current.startTime === appointmentTimeString;
             
+            // Special debug for appointment 15 (August 2nd 7 AM UTC should be 9 AM local)
+            if (apt.id === 15) {
+              console.log(`🎯 APPOINTMENT 15 DEBUG: UTC ${apt.appointmentDate} -> Local ${appointmentDateString} ${appointmentTimeString}, checking against slot ${current.date} ${current.startTime}, match: ${isMatch}`);
+            }
+            
             if (isMatch) {
-              console.log(`🎯 MATCH FOUND: Slot ${current.date} ${current.startTime} matches appointment ${apt.id} (${appointmentDateString} ${appointmentTimeString})`);
+              console.log(`🎯 MATCH FOUND: Slot ${current.date} ${current.startTime} matches appointment ${apt.id} (UTC: ${apt.appointmentDate} -> Local: ${appointmentDateString} ${appointmentTimeString})`);
             }
             
             return isMatch;
