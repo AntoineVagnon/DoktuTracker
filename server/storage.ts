@@ -517,9 +517,9 @@ export class PostgresStorage implements IStorage {
             current.isAvailable = false;
           }
           
-          // Special debug for August 1st morning slots
-          if (current.date === '2025-08-01' && (current.startTime === '09:00:00' || current.startTime === '10:00:00')) {
-            console.log(`🎯 AUGUST 1ST DEBUG: Slot ${current.date} ${current.startTime} - Available: ${current.isAvailable}, Had conflict: ${hasConflictingAppointment}`);
+          // Special debug for August 1st and 2nd morning slots  
+          if ((current.date === '2025-08-01' || current.date === '2025-08-02') && (current.startTime === '09:00:00' || current.startTime === '10:00:00')) {
+            console.log(`🎯 AUGUST DEBUG: Slot ${current.date} ${current.startTime} - Available: ${current.isAvailable}, Had conflict: ${hasConflictingAppointment}`);
           }
           
           acc.push(current);
