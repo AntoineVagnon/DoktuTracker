@@ -78,11 +78,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/doctors/:doctorId/slots", async (req, res) => {
     try {
       const { doctorId } = req.params;
-      const { date } = req.query;
-      console.log(`🔍 Fetching slots for doctor ID: ${doctorId}, date: ${date}`);
+      const { date, nextOnly } = req.query;
+      console.log(`🔍 Fetching slots for doctor ID: ${doctorId}, date: ${date}, nextOnly: ${nextOnly}`);
+      
       const slots = await storage.getDoctorTimeSlots(doctorId, date as string);
-      console.log(`📅 Found ${slots.length} slots for doctor ${doctorId}`);
-      res.json(slots);
+      
+      // If nextOnly is requested (for homepage), return just the next available slot
+      if (nextOnly === 'true') {
+        const now = new Date();
+        const nextSlot = slots
+          .filter(slot => slot.isAvailable && new Date(`${slot.date}T${slot.startTime}`) > now)
+          .sort((a, b) => new Date(`${a.date}T${a.startTime}`).getTime() - new Date(`${b.date}T${b.startTime}`).getTime())[0];
+        
+        console.log(`📅 Next available slot for doctor ${doctorId}:`, nextSlot ? `${nextSlot.date}T${nextSlot.startTime}` : 'none');
+        res.json(nextSlot ? [nextSlot] : []);
+      } else {
+        console.log(`📅 Found ${slots.length} slots for doctor ${doctorId}`);
+        res.json(slots);
+      }
     } catch (error) {
       console.error("Error fetching slots:", error);
       res.status(500).json({ message: "Failed to fetch slots" });

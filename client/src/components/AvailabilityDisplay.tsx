@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
-import { useNextAvailableSlot } from "@/hooks/useNextAvailableSlot";
+import { useNextSlotOnly } from "@/hooks/useNextSlotOnly";
 import { format } from "date-fns";
 
 interface AvailabilityDisplayProps {
@@ -32,7 +32,7 @@ function formatSlotTime(datetime: string): string {
 }
 
 export function AvailabilityDisplay({ doctorId }: AvailabilityDisplayProps) {
-  const { nextSlot, hasAvailability, isLoading } = useNextAvailableSlot(doctorId);
+  const { nextSlot, hasAvailability, isLoading } = useNextSlotOnly(doctorId);
   
   if (isLoading) {
     return (
