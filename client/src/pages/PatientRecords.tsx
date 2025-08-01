@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, FileText, User, Heart, Plus, Upload, Calendar } from "lucide-react";
+import { Search, FileText, User, Heart, Plus, Upload, Download, Calendar } from "lucide-react";
 import { useLocation } from "wouter";
 import DoctorLayout from "@/components/DoctorLayout";
 import { formatUserFullName } from "@/lib/nameUtils";
@@ -17,6 +17,27 @@ export default function PatientRecords() {
   const [location, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+
+  // Handle document download
+  const handleDownloadDocument = async (document: any) => {
+    try {
+      const response = await fetch(`/api/documents/download/${document.id}`);
+      if (!response.ok) throw new Error('Failed to download document');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = document.fileName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading document:', error);
+    }
+  };
 
   // Fetch doctor's patient records (from appointments)
   const { data: appointments = [], isLoading } = useQuery({
@@ -224,15 +245,9 @@ export default function PatientRecords() {
             <TabsContent value="documents">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-5 w-5" />
-                      Patient Documents
-                    </div>
-                    <Button size="sm">
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload Document
-                    </Button>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Patient Documents
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -257,8 +272,13 @@ export default function PatientRecords() {
                             <Badge variant="secondary" className="text-xs">
                               {document.fileType?.toUpperCase() || 'FILE'}
                             </Badge>
-                            <Button variant="outline" size="sm">
-                              View
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleDownloadDocument(document)}
+                            >
+                              <Download className="h-4 w-4 mr-1" />
+                              Download
                             </Button>
                           </div>
                         </div>

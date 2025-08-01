@@ -1041,6 +1041,20 @@ export class PostgresStorage implements IStorage {
     }
   }
 
+  async getDocumentById(id: string): Promise<DocumentUpload | undefined> {
+    try {
+      const [document] = await db
+        .select()
+        .from(documentUploads)
+        .where(eq(documentUploads.id, id));
+      
+      return document;
+    } catch (error) {
+      console.error('Error fetching document by ID:', error);
+      throw error;
+    }
+  }
+
   async deleteDocument(id: string): Promise<void> {
     try {
       await db.delete(documentUploads).where(eq(documentUploads.id, id));

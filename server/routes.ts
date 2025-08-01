@@ -1035,6 +1035,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
+    try {
+      const documentId = req.params.documentId;
+      const document = await storage.getDocumentById(documentId);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Set appropriate headers for file download
+      res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
+      res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+      
+      // For now, we'll serve the file content directly from uploadUrl
+      // In a real implementation, you might need to fetch from cloud storage
+      // This assumes the uploadUrl contains the actual file data or path
+      if (document.uploadUrl.startsWith('data:')) {
+        // Handle data URLs (base64 encoded files)
+        const base64Data = document.uploadUrl.split(',')[1];
+        const buffer = Buffer.from(base64Data, 'base64');
+        res.send(buffer);
+      } else {
+        // Handle regular file URLs
+        res.redirect(document.uploadUrl);
+      }
+    } catch (error) {
+      console.error("Error downloading document:", error);
+      res.status(500).json({ message: "Failed to download document" });
+    }
+  });
+
   app.post("/api/documents/upload", isAuthenticated, upload.single('file'), async (req, res) => {
     try {
       console.log('📁 Document upload request received');
