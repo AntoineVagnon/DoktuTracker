@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, FileText, User, Calendar, Plus, Upload, MessageCircle, Video } from "lucide-react";
+import { Search, FileText, User, Heart, Plus, Upload } from "lucide-react";
 import { useLocation } from "wouter";
 import DoctorLayout from "@/components/DoctorLayout";
 import { formatUserFullName } from "@/lib/nameUtils";
@@ -22,6 +22,12 @@ export default function PatientRecords() {
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ["/api/appointments"],
     enabled: !!user,
+  });
+
+  // Fetch health profile for selected patient
+  const { data: healthProfile, isLoading: isLoadingProfile } = useQuery({
+    queryKey: ["/api/health-profile", selectedPatientId],
+    enabled: !!selectedPatientId,
   });
 
   // Get unique patients from appointments
@@ -93,16 +99,7 @@ export default function PatientRecords() {
                 <p className="text-gray-600">{selectedPatient?.email}</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Message
-              </Button>
-              <Button variant="outline" size="sm">
-                <Video className="h-4 w-4 mr-2" />
-                Video Call
-              </Button>
-            </div>
+
           </div>
 
           {/* Patient Detail Tabs */}
@@ -148,55 +145,85 @@ export default function PatientRecords() {
                   </CardContent>
                 </Card>
 
-                {/* Next Appointment */}
+                {/* Health Profile */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5" />
-                      Next Appointment
+                      <Heart className="h-5 w-5" />
+                      Health Profile
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {/* Find next upcoming appointment */}
-                    {(() => {
-                      const upcomingAppointment = patientAppointments.find((apt: any) => 
-                        new Date(apt.appointmentDate) > new Date() && apt.status !== 'cancelled'
-                      );
-                      
-                      if (upcomingAppointment) {
-                        return (
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">Date & Time</label>
-                              <p className="text-base">{formatAppointmentDateTimeUS(upcomingAppointment.appointmentDate)}</p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">Status</label>
-                              <div className="mt-1">
-                                <Badge variant={upcomingAppointment.status === 'paid' ? 'default' : 'secondary'}>
-                                  {upcomingAppointment.status}
+                    {isLoadingProfile ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
+                      </div>
+                    ) : healthProfile ? (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Date of Birth</label>
+                          <p className="text-base">{healthProfile.dateOfBirth ? new Date(healthProfile.dateOfBirth).toLocaleDateString() : 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Gender</label>
+                          <p className="text-base">{healthProfile.gender || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Blood Type</label>
+                          <p className="text-base">{healthProfile.bloodType || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Height</label>
+                          <p className="text-base">{healthProfile.height ? `${healthProfile.height} cm` : 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Weight</label>
+                          <p className="text-base">{healthProfile.weight ? `${healthProfile.weight} kg` : 'Not provided'}</p>
+                        </div>
+                        {healthProfile.allergies && healthProfile.allergies.length > 0 && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Allergies</label>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {healthProfile.allergies.map((allergy: string, index: number) => (
+                                <Badge key={index} variant="destructive" className="text-xs">
+                                  {allergy}
                                 </Badge>
-                              </div>
+                              ))}
                             </div>
-                            <Button size="sm" className="w-full mt-4">
-                              <Video className="h-4 w-4 mr-2" />
-                              Join Video Call
-                            </Button>
                           </div>
-                        );
-                      } else {
-                        return (
-                          <div className="text-center py-8 text-gray-500">
-                            <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                            <p>No upcoming appointments</p>
-                            <Button size="sm" className="mt-3" onClick={() => setLocation('/doctor-calendar')}>
-                              <Plus className="h-4 w-4 mr-2" />
-                              Schedule Appointment
-                            </Button>
+                        )}
+                        {healthProfile.medications && healthProfile.medications.length > 0 && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Current Medications</label>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {healthProfile.medications.map((medication: string, index: number) => (
+                                <Badge key={index} variant="secondary" className="text-xs">
+                                  {medication}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
-                        );
-                      }
-                    })()}
+                        )}
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Profile Completion</label>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex-1 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-primary h-2 rounded-full transition-all duration-300" 
+                                style={{ width: `${healthProfile.completionScore || 0}%` }}
+                              />
+                            </div>
+                            <span className="text-sm font-medium">{healthProfile.completionScore || 0}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <Heart className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                        <p>No health profile available</p>
+                        <p className="text-sm mt-1">Patient needs to complete their health profile</p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
