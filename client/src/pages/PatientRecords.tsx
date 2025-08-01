@@ -21,21 +21,42 @@ export default function PatientRecords() {
   // Handle document download
   const handleDownloadDocument = async (document: any) => {
     try {
-      const response = await fetch(`/api/documents/download/${document.id}`);
-      if (!response.ok) throw new Error('Failed to download document');
+      console.log('📥 Starting download for:', document.fileName);
+      
+      const response = await fetch(`/api/documents/download/${document.id}`, {
+        method: 'GET',
+        credentials: 'include', // Include authentication cookies
+      });
+      
+      console.log('📡 Download response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to download document: ${response.status} ${response.statusText}`);
+      }
       
       const blob = await response.blob();
+      console.log('📦 Blob created, size:', blob.size);
+      
+      // Create download link
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = window.document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = document.fileName;
-      document.body.appendChild(a);
+      a.download = document.fileName || 'download';
+      
+      // Append to body, click, and cleanup
+      window.document.body.appendChild(a);
       a.click();
+      
+      // Cleanup
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      window.document.body.removeChild(a);
+      
+      console.log('✅ Download completed for:', document.fileName);
+      
     } catch (error) {
-      console.error('Error downloading document:', error);
+      console.error('❌ Error downloading document:', error);
+      alert(`Failed to download document: ${error.message}`);
     }
   };
 

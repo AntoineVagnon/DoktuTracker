@@ -1038,27 +1038,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
     try {
       const documentId = req.params.documentId;
+      console.log('📥 Download request for document ID:', documentId);
+      
       const document = await storage.getDocumentById(documentId);
       
       if (!document) {
+        console.log('❌ Document not found:', documentId);
         return res.status(404).json({ message: "Document not found" });
       }
+
+      console.log('📄 Document found:', { fileName: document.fileName, fileType: document.fileType, uploadUrlPrefix: document.uploadUrl.substring(0, 50) });
 
       // Set appropriate headers for file download
       res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
       res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
       
-      // For now, we'll serve the file content directly from uploadUrl
-      // In a real implementation, you might need to fetch from cloud storage
-      // This assumes the uploadUrl contains the actual file data or path
       if (document.uploadUrl.startsWith('data:')) {
         // Handle data URLs (base64 encoded files)
+        console.log('📦 Serving data URL file');
         const base64Data = document.uploadUrl.split(',')[1];
         const buffer = Buffer.from(base64Data, 'base64');
         res.send(buffer);
+      } else if (document.uploadUrl.startsWith('http')) {
+        // Fetch the file from URL and serve it
+        console.log('🌐 Fetching file from URL:', document.uploadUrl);
+        const fetch = (await import('node-fetch')).default;
+        const response = await fetch(document.uploadUrl);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch file: ${response.statusText}`);
+        }
+        
+        const fileBuffer = await response.buffer();
+        res.send(fileBuffer);
       } else {
-        // Handle regular file URLs
-        res.redirect(document.uploadUrl);
+        // For local files or other formats, create a simple text file with the URL
+        console.log('📝 Creating text file with URL reference');
+        const content = `Document URL: ${document.uploadUrl}\n\nThis document was uploaded to: ${document.fileName}`;
+        res.send(Buffer.from(content, 'utf8'));
       }
     } catch (error) {
       console.error("Error downloading document:", error);
