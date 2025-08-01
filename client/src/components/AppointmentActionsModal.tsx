@@ -107,10 +107,17 @@ export function AppointmentActionsModal({ appointment, action, onClose }: Appoin
   const timeDiff = appointmentTime.getTime() - now.getTime();
   const hoursUntilAppointment = Math.floor(timeDiff / (1000 * 60 * 60));
 
-  // Filter slots to only show future ones
+  // Filter slots to only show future ones and exclude the current appointment slot
   const futureSlots = (availableSlots as any[]).filter((slot: any) => {
     const slotDate = new Date(`${slot.date}T${slot.startTime}`);
-    return slotDate > now;
+    // Check if this is the current appointment's slot
+    const currentAppointmentLocal = utcToLocal(appointment.appointmentDate);
+    const currentDate = currentAppointmentLocal.toISOString().split('T')[0];
+    const currentTime = currentAppointmentLocal.toTimeString().slice(0, 8);
+    
+    const isCurrentSlot = slot.date === currentDate && slot.startTime === currentTime;
+    
+    return slotDate > now && !isCurrentSlot;
   });
 
   return (
