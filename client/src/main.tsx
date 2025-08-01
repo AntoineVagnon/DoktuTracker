@@ -44,6 +44,9 @@ window.addEventListener('unhandledrejection', (event) => {
   console.warn('Unhandled promise rejection:', event.reason);
   // Prevent the runtime error overlay from showing
   event.preventDefault();
+  // Stop the event completely
+  event.stopImmediatePropagation();
+  return false;
 });
 
 // Global error handling for uncaught errors

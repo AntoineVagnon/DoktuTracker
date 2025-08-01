@@ -170,32 +170,55 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
           clearInterval(progressInterval);
           setUploadProgress(100);
           
-          // Refresh documents list
-          queryClient.invalidateQueries({ queryKey: ["/api/documents", appointmentId] });
+          // Refresh documents list with promise handling
+          try {
+            await queryClient.invalidateQueries({ queryKey: ["/api/documents", appointmentId] });
+          } catch (queryError) {
+            console.log('Query invalidation error (non-critical):', queryError);
+          }
           
-          toast({
-            title: "Document Uploaded",
-            description: "Your document has been uploaded successfully.",
-          });
+          // Show success toast with promise handling
+          try {
+            toast({
+              title: "Document Uploaded",
+              description: "Your document has been uploaded successfully.",
+            });
+          } catch (toastError) {
+            console.log('Toast error (non-critical):', toastError);
+          }
           
-          setTimeout(() => setUploadProgress(0), 1000);
+          setTimeout(() => {
+            try {
+              setUploadProgress(0);
+            } catch (progressError) {
+              console.log('Progress reset error (non-critical):', progressError);
+            }
+          }, 1000);
           
         } catch (uploadError) {
           console.log('Direct upload error:', uploadError);
           clearInterval(progressInterval);
           setUploadProgress(0);
           
-          toast({
-            title: "Upload Failed",
-            description: uploadError instanceof Error ? uploadError.message : "Failed to upload document",
-            variant: "destructive",
-          });
+          try {
+            toast({
+              title: "Upload Failed",
+              description: uploadError instanceof Error ? uploadError.message : "Failed to upload document",
+              variant: "destructive",
+            });
+          } catch (toastError) {
+            console.log('Error toast failed (non-critical):', toastError);
+          }
         }
       }
     } catch (error) {
       console.log('File processing error:', error);
-      clearInterval(progressInterval);
-      setUploadProgress(0);
+      try {
+        clearInterval(progressInterval);
+        setUploadProgress(0);
+      } catch (cleanupError) {
+        console.log('Cleanup error (non-critical):', cleanupError);
+      }
     }
   }, [appointmentId, queryClient, toast]);
 
