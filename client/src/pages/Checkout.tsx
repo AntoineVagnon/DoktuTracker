@@ -79,18 +79,21 @@ export default function Checkout() {
 
         // Create appointment with proper timezone handling
         // The slot parameter comes as "2025-08-01T14:00:00" representing LOCAL TIME
-        // We need to treat this as local time and store the correct UTC equivalent
-        console.log('Original slot parameter:', slot);
+        // We need to convert this local time to the correct UTC time for storage
+        console.log('🕐 Original slot parameter:', slot);
         
-        // Parse as local time by treating it as a local datetime string
-        // When we parse "2025-08-01T14:00:00", it gets interpreted as local time
+        // Parse as local time - JavaScript treats "YYYY-MM-DDTHH:MM:SS" as local time
         const localSlotDate = new Date(slot);
-        console.log('Parsed as local date object:', localSlotDate);
-        console.log('Local time display:', localSlotDate.toLocaleString());
-        console.log('UTC conversion:', localSlotDate.toISOString());
+        console.log('🕐 Parsed local date:', localSlotDate.toLocaleString());
+        console.log('🕐 Current timezone offset (minutes):', localSlotDate.getTimezoneOffset());
         
-        // The date object already contains the correct UTC time for storage
+        // Convert to UTC for storage - JavaScript's toISOString() does this automatically
         const appointmentDateUTC = localSlotDate;
+        console.log('🕐 UTC for storage:', appointmentDateUTC.toISOString());
+        
+        // Verify the conversion
+        const verifyLocal = new Date(appointmentDateUTC.toISOString());
+        console.log('🕐 Verification - stored UTC converted back to local:', verifyLocal.toLocaleString());
         
         const appointmentResponse = await fetch('/api/appointments', {
           method: 'POST',
