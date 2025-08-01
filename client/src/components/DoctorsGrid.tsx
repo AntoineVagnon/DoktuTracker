@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Star, Clock } from "lucide-react";
 import { SkeletonCard } from "./SkeletonCard";
 import { Link } from "wouter";
+import { AvailabilityDisplay } from "./AvailabilityDisplay";
 
 interface Doctor {
   id: string;
@@ -116,31 +117,8 @@ export function DoctorsGrid() {
               )}
             </div>
             
-            {/* Availability - Optimized with selective loading */}
-            <div className="space-y-1 w-full">
-              <div className="flex items-center justify-center space-x-1 text-xs text-gray-600">
-                <Clock className="h-3 w-3" />
-                <span>Next available:</span>
-              </div>
-              {doctor.nextAvailableSlots && doctor.nextAvailableSlots.length >= 2 ? (
-                <div className="space-y-1 text-xs text-gray-700">
-                  <div>{formatSlotTime(doctor.nextAvailableSlots[0])}</div>
-                  <div>{formatSlotTime(doctor.nextAvailableSlots[1])}</div>
-                </div>
-              ) : doctor.nextAvailableSlots && doctor.nextAvailableSlots.length === 1 ? (
-                <div className="text-xs text-gray-700">
-                  {formatSlotTime(doctor.nextAvailableSlots[0])}
-                </div>
-              ) : doctor.nextAvailableSlots && doctor.nextAvailableSlots.length === 0 ? (
-                <div className="text-xs text-red-600 font-medium">
-                  Fully booked
-                </div>
-              ) : (
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
-                  Click to view schedule
-                </Badge>
-              )}
-            </div>
+            {/* Availability - Using real-time data */}
+            <AvailabilityDisplay doctorId={doctor.id} />
           </div>
         </CardContent>
       </Card>
