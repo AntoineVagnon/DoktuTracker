@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload, Edit2, Save, X, Activity, FileText } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { formatAppointmentDateTimeUS, categorizeAppointmentsByTiming, getTimeUntilAppointment } from "@/lib/dateUtils";
+import { formatAppointmentTime, utcToLocal } from "@/lib/timezoneUtils";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns";
 import { BannerSystem } from "@/components/BannerSystem";
 import { HealthProfileSidebar } from "@/components/HealthProfileSidebar";
@@ -211,7 +212,8 @@ export default function Dashboard() {
   };
 
   const canJoinVideo = (appointment: any) => {
-    const appointmentTime = new Date(appointment.appointmentDate);
+    // Use proper timezone conversion for appointment time
+    const appointmentTime = utcToLocal(appointment.appointmentDate);
     const now = new Date();
     const timeDiff = appointmentTime.getTime() - now.getTime();
     const minutesDiff = timeDiff / (1000 * 60);
@@ -388,7 +390,7 @@ export default function Dashboard() {
 
     const getAppointmentForDay = (date: Date) => {
       return allAppointments?.find((apt: any) => 
-        isSameDay(new Date(apt.appointmentDate), date)
+        isSameDay(utcToLocal(apt.appointmentDate), date)
       );
     };
 
@@ -456,7 +458,7 @@ export default function Dashboard() {
                 </div>
                 {appointment && (
                   <div className="text-xs text-green-700 mt-1 truncate">
-                    <div className="font-medium">{format(new Date(appointment.appointmentDate), 'HH:mm')}</div>
+                    <div className="font-medium">{format(utcToLocal(appointment.appointmentDate), 'HH:mm')}</div>
                     <div className="hidden sm:block truncate">Dr. {appointment.doctor?.user?.lastName}</div>
                   </div>
                 )}
@@ -478,7 +480,14 @@ export default function Dashboard() {
             <CardContent className="space-y-2">
               <p><strong>Doctor:</strong> Dr. {selectedAppointment.doctor?.user?.firstName} {selectedAppointment.doctor?.user?.lastName}</p>
               <p><strong>Specialty:</strong> {selectedAppointment.doctor?.specialty}</p>
-              <p><strong>Date & Time:</strong> {formatAppointmentDateTimeUS(selectedAppointment.appointmentDate)}</p>
+              <p><strong>Date & Time:</strong> {formatAppointmentTime(selectedAppointment.appointmentDate, { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              })}</p>
               <p><strong>Status:</strong> {getStatusBadge(selectedAppointment.status)}</p>
               <p><strong>Price:</strong> €{selectedAppointment.price || '35'}</p>
             </CardContent>

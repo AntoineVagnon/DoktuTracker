@@ -60,7 +60,15 @@ export function formatTimeOnly(dateString: string): string {
 }
 
 export function formatDateOnly(dateString: string): string {
-  const localDate = new Date(dateString);
+  // Convert UTC date to local date for display
+  const localDate = utcToLocal(dateString);
+  
+  // Add validation to prevent NaN values
+  if (isNaN(localDate.getTime())) {
+    console.error('Invalid date string:', dateString);
+    return 'Invalid date';
+  }
+  
   const day = String(localDate.getDate()).padStart(2, '0');
   const month = String(localDate.getMonth() + 1).padStart(2, '0');
   const year = localDate.getFullYear();

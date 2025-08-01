@@ -231,14 +231,15 @@ export default function InteractiveCalendar() {
     const timeSlot = timeSlots30Min[slotIndex];
     const dateStr = day.toISOString().split('T')[0];
 
-    // Check for booked appointment
+    // Check for booked appointment using proper timezone conversion
     const bookedAppointment = appointments.find((apt: Appointment) => {
-      // Apply timezone correction - subtract 2 hours for existing appointments with incorrect timezone
-      const aptTime = new Date(apt.appointmentDate);
-      const adjustedAptTime = new Date(aptTime.getTime() - (2 * 60 * 60 * 1000));
-      const aptDate = adjustedAptTime.toISOString().split('T')[0];
-      const aptHour = adjustedAptTime.getHours();
-      const aptMinute = adjustedAptTime.getMinutes();
+      // Convert UTC appointment time to local time
+      const localAptTime = new Date(apt.appointmentDate);
+      if (isNaN(localAptTime.getTime())) return false;
+      
+      const aptDate = localAptTime.toISOString().split('T')[0];
+      const aptHour = localAptTime.getHours();
+      const aptMinute = localAptTime.getMinutes();
       return aptDate === dateStr && aptHour === timeSlot.hour && aptMinute === timeSlot.minute && apt.status !== 'cancelled';
     });
 

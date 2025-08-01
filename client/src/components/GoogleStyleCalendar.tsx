@@ -395,14 +395,15 @@ export default function GoogleStyleCalendar() {
     const dateStr = format(date, 'yyyy-MM-dd');
     const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 
-    // Check for booked appointment
+    // Check for booked appointment using proper timezone conversion
     const bookedAppointment = appointments.find((apt: Appointment) => {
-      // Apply timezone correction - subtract 2 hours for existing appointments with incorrect timezone
-      const aptTime = new Date(apt.appointmentDate);
-      const adjustedAptTime = new Date(aptTime.getTime() - (2 * 60 * 60 * 1000));
-      const aptDate = format(adjustedAptTime, 'yyyy-MM-dd');
-      const aptHour = adjustedAptTime.getHours();
-      const aptMinute = adjustedAptTime.getMinutes();
+      // Convert UTC appointment time to local time properly
+      const localAptTime = new Date(apt.appointmentDate);
+      if (isNaN(localAptTime.getTime())) return false;
+      
+      const aptDate = format(localAptTime, 'yyyy-MM-dd');
+      const aptHour = localAptTime.getHours();
+      const aptMinute = localAptTime.getMinutes();
       return aptDate === dateStr && aptHour === hour && aptMinute === minute && apt.status !== 'cancelled';
     });
 
