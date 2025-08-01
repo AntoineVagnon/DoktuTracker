@@ -23,27 +23,17 @@ export function AppointmentActionsModal({ appointment, action, onClose }: Appoin
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  if (!appointment || !action) return null;
-
-  const appointmentTime = utcToLocal(appointment.appointmentDate);
-  const now = new Date();
-  const timeDiff = appointmentTime.getTime() - now.getTime();
-  const hoursUntilAppointment = Math.floor(timeDiff / (1000 * 60 * 60));
-
   // Fetch available slots for the doctor (for rescheduling)
   const { data: availableSlots = [], isLoading: slotsLoading } = useQuery({
-    queryKey: [`/api/doctors/${appointment.doctorId}/slots/available`],
-    enabled: action === "reschedule",
-  });
-
-  // Filter slots to only show future ones
-  const futureSlots = (availableSlots as any[]).filter((slot: any) => {
-    const slotDate = new Date(`${slot.date}T${slot.startTime}`);
-    return slotDate > now;
+    queryKey: [`/api/doctors/${appointment?.doctorId}/slots/available`],
+    enabled: action === "reschedule" && !!appointment?.doctorId,
   });
 
   const rescheduleMutation = useMutation({
     mutationFn: async () => {
+      if (!appointment) {
+        throw new Error("No appointment selected");
+      }
       if (!selectedSlotId || !reason) {
         throw new Error("Please select a new time slot and provide a reason");
       }
@@ -71,6 +61,9 @@ export function AppointmentActionsModal({ appointment, action, onClose }: Appoin
 
   const cancelMutation = useMutation({
     mutationFn: async () => {
+      if (!appointment) {
+        throw new Error("No appointment selected");
+      }
       if (!reason) {
         throw new Error("Please provide a reason for cancellation");
       }
@@ -104,6 +97,21 @@ export function AppointmentActionsModal({ appointment, action, onClose }: Appoin
       cancelMutation.mutate();
     }
   };
+
+  // Early return after all hooks
+  if (!appointment || !action) return null;
+
+  // Calculate values after hooks but before JSX
+  const appointmentTime = utcToLocal(appointment.appointmentDate);
+  const now = new Date();
+  const timeDiff = appointmentTime.getTime() - now.getTime();
+  const hoursUntilAppointment = Math.floor(timeDiff / (1000 * 60 * 60));
+
+  // Filter slots to only show future ones
+  const futureSlots = (availableSlots as any[]).filter((slot: any) => {
+    const slotDate = new Date(`${slot.date}T${slot.startTime}`);
+    return slotDate > now;
+  });
 
   return (
     <Dialog open={!!action} onOpenChange={() => onClose()}>
@@ -233,11 +241,13 @@ export function AppointmentActionsModal({ appointment, action, onClose }: Appoin
               }
               variant={action === "cancel" ? "destructive" : "default"}
             >
-              {rescheduleMutation.isPending || cancelMutation.isPending
-                ? "Processing..."
-                : action === "reschedule"
-                ? "Reschedule"
-                : "Cancel Appointment"}
+              {rescheduleMutation.isPending || cancelMutation.isPending ? (
+                "Processing..."
+              ) : action === "reschedule" ? (
+                "Reschedule Appointment"
+              ) : (
+                "Cancel Appointment"
+              )}
             </Button>
           )}
         </DialogFooter>
