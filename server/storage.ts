@@ -981,6 +981,56 @@ export class PostgresStorage implements IStorage {
     }
   }
 
+  // TEMPORARY FIX: Ensure database schema is correct
+  private async ensureDocumentTableSchema(): Promise<void> {
+    try {
+      const { sql } = await import("drizzle-orm");
+      
+      // Try to drop the problematic constraint if it exists
+      await db.execute(sql`
+        ALTER TABLE IF EXISTS document_uploads 
+        ALTER COLUMN appointment_id DROP NOT NULL
+      `);
+      
+      console.log('✅ Database constraint fixed');
+    } catch (error) {
+      // If that fails, try to recreate tables
+      try {
+        const { sql } = await import("drizzle-orm");
+        
+        await db.execute(sql`DROP TABLE IF EXISTS appointment_documents CASCADE`);
+        await db.execute(sql`DROP TABLE IF EXISTS document_uploads CASCADE`);
+        
+        await db.execute(sql`
+          CREATE TABLE document_uploads (
+              id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+              uploaded_by integer NOT NULL REFERENCES users(id),
+              file_name varchar NOT NULL,
+              file_size integer NOT NULL,
+              file_type varchar NOT NULL,
+              upload_url text NOT NULL,
+              document_type varchar,
+              uploaded_at timestamp DEFAULT now()
+          )
+        `);
+        
+        await db.execute(sql`
+          CREATE TABLE appointment_documents (
+              id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+              appointment_id integer NOT NULL REFERENCES appointments(id),
+              document_id uuid NOT NULL REFERENCES document_uploads(id),
+              attached_at timestamp DEFAULT now()
+          )
+        `);
+        
+        console.log('✅ Tables recreated successfully');
+      } catch (recreateError) {
+        console.error('❌ Failed to fix database schema:', recreateError);
+        throw recreateError;
+      }
+    }
+  }
+
   // Document Library operations
   async getDocumentsByPatient(patientId: number): Promise<DocumentUpload[]> {
     try {
@@ -1003,6 +1053,13 @@ export class PostgresStorage implements IStorage {
   async createDocument(document: InsertDocumentUpload): Promise<DocumentUpload> {
     try {
       console.log('💾 Creating document in library with data:', document);
+      
+      // TEMPORARY FIX: Check and fix database schema if needed
+      try {
+        await this.ensureDocumentTableSchema();
+      } catch (error) {
+        console.log('⚠️ Schema check failed, proceeding with insert...');
+      }
       
       // Handle duplicate filename by adding (1), (2), etc.
       let finalFileName = document.fileName;

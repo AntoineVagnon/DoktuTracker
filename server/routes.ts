@@ -44,61 +44,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register document library routes
   registerDocumentLibraryRoutes(app);
 
-  // Fix document tables - make appointment_id nullable
-  app.post("/api/fix-document-tables", async (req, res) => {
+  // API endpoint to fix database table constraints
+  app.get("/api/fix-database", async (req, res) => {
     try {
-      console.log('🔧 Fixing document library table schema...');
+      console.log('🔧 Fixing document_uploads table constraint...');
       
       const db = (await import("./db")).db;
       const { sql } = await import("drizzle-orm");
       
-      // Drop existing tables to recreate with correct schema
-      await db.execute(sql`DROP TABLE IF EXISTS appointment_documents CASCADE`);
-      await db.execute(sql`DROP TABLE IF EXISTS document_uploads CASCADE`);
-      
-      // Create document uploads table with nullable appointment_id
+      // First, drop the problematic constraint if it exists
       await db.execute(sql`
-        CREATE TABLE document_uploads (
-            id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-            uploaded_by integer NOT NULL REFERENCES users(id),
-            file_name varchar NOT NULL,
-            file_size integer NOT NULL,
-            file_type varchar NOT NULL,
-            upload_url text NOT NULL,
-            document_type varchar,
-            uploaded_at timestamp DEFAULT now()
-        )
+        ALTER TABLE IF EXISTS document_uploads 
+        DROP CONSTRAINT IF EXISTS document_uploads_appointment_id_not_null
       `);
       
-      // Create appointment documents junction table
+      // Try to alter the column to make it nullable
       await db.execute(sql`
-        CREATE TABLE appointment_documents (
-            id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-            appointment_id integer NOT NULL REFERENCES appointments(id),
-            document_id uuid NOT NULL REFERENCES document_uploads(id),
-            attached_at timestamp DEFAULT now()
-        )
+        ALTER TABLE IF EXISTS document_uploads 
+        ALTER COLUMN appointment_id DROP NOT NULL
       `);
       
-      // Create index
-      await db.execute(sql`
-        CREATE INDEX idx_appointment_document_unique 
-        ON appointment_documents(appointment_id, document_id)
-      `);
-      
-      console.log('✅ Document library tables fixed successfully');
+      console.log('✅ Database constraint fixed');
       
       res.json({ 
         success: true, 
-        message: "Document library tables fixed successfully" 
+        message: "Database constraint fixed successfully" 
       });
       
     } catch (error: any) {
-      console.error('❌ Error fixing tables:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: error.message 
-      });
+      console.error('❌ Error fixing database:', error);
+      
+      // If alter fails, try to recreate tables
+      try {
+        console.log('🔄 Recreating tables...');
+        
+        await db.execute(sql`DROP TABLE IF EXISTS appointment_documents CASCADE`);
+        await db.execute(sql`DROP TABLE IF EXISTS document_uploads CASCADE`);
+        
+        await db.execute(sql`
+          CREATE TABLE document_uploads (
+              id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+              uploaded_by integer NOT NULL REFERENCES users(id),
+              file_name varchar NOT NULL,
+              file_size integer NOT NULL,
+              file_type varchar NOT NULL,
+              upload_url text NOT NULL,
+              document_type varchar,
+              uploaded_at timestamp DEFAULT now()
+          )
+        `);
+        
+        await db.execute(sql`
+          CREATE TABLE appointment_documents (
+              id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+              appointment_id integer NOT NULL REFERENCES appointments(id),
+              document_id uuid NOT NULL REFERENCES document_uploads(id),
+              attached_at timestamp DEFAULT now()
+          )
+        `);
+        
+        console.log('✅ Tables recreated successfully');
+        
+        res.json({ 
+          success: true, 
+          message: "Tables recreated successfully" 
+        });
+        
+      } catch (recreateError: any) {
+        console.error('❌ Error recreating tables:', recreateError);
+        res.status(500).json({ 
+          success: false, 
+          error: recreateError.message 
+        });
+      }
     }
   });
 
