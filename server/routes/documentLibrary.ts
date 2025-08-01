@@ -16,11 +16,53 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(401).json({ error: "Unauthorized" });
       }
 
+      console.log('📚 Fetching document library for patient:', parseInt(userId.toString()));
       const documents = await storage.getDocumentsByPatient(parseInt(userId.toString()));
+      console.log('📄 Found documents in library:', documents.length);
       
       res.json(documents);
     } catch (error) {
       console.error("Error fetching document library:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Create new document in library
+  app.post("/api/documents", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { fileName, fileType, fileSize, uploadUrl, documentType } = req.body;
+      
+      if (!fileName || !uploadUrl) {
+        return res.status(400).json({ error: "Missing required fields: fileName, uploadUrl" });
+      }
+
+      console.log('💾 Creating document in library:', {
+        fileName,
+        fileType,
+        fileSize,
+        documentType,
+        uploadedBy: parseInt(userId.toString())
+      });
+
+      const document = await storage.createDocument({
+        uploadedBy: parseInt(userId.toString()),
+        fileName,
+        fileType: fileType || 'application/octet-stream',
+        fileSize: fileSize || 0,
+        uploadUrl,
+        documentType: documentType || 'other',
+      });
+
+      console.log('✅ Document created successfully:', document.id);
+      
+      res.json(document);
+    } catch (error) {
+      console.error("Error creating document:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

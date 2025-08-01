@@ -121,6 +121,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.send('✅ Callback received with query: ' + JSON.stringify(req.query));
   });
 
+  // Object upload endpoint - Get presigned upload URL
+  app.post("/api/objects/upload", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+
+      console.log('🔗 Generating upload URL for user:', userId);
+      
+      // Initialize object storage service
+      const objectStorageService = new ObjectStorageService();
+      
+      // Get presigned URL for secure upload
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      console.log('✅ Generated secure upload URL');
+
+      res.json({ 
+        uploadURL,
+        method: "PUT"
+      });
+      
+    } catch (error: any) {
+      console.error('❌ Error generating upload URL:', error);
+      res.status(500).json({ 
+        error: "Failed to generate upload URL",
+        message: error.message 
+      });
+    }
+  });
+
   // Doctor-related routes
   app.get("/api/doctors", async (req, res) => {
     try {
