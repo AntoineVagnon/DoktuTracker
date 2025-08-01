@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { storage } from "../storage";
-import { setupAuth, isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../supabaseAuth";
 import {
   ObjectStorageService,
   ObjectNotFoundError,
@@ -11,18 +11,12 @@ export function registerDocumentLibraryRoutes(app: Express) {
   // Get user's document library
   app.get("/api/documents", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
       }
 
-      // Get user's numeric ID
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      const documents = await storage.getDocumentsByPatient(user.id);
+      const documents = await storage.getDocumentsByPatient(parseInt(userId.toString()));
       
       res.json(documents);
     } catch (error) {
@@ -35,7 +29,7 @@ export function registerDocumentLibraryRoutes(app: Express) {
   app.get("/api/appointments/:appointmentId/documents", isAuthenticated, async (req, res) => {
     try {
       const { appointmentId } = req.params;
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = req.user?.id;
       
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -47,21 +41,17 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(404).json({ error: "Appointment not found" });
       }
 
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
       // Check if user is the patient or the doctor for this appointment
-      const isPatient = appointment.patientId === user.id;
-      const doctorRecord = await storage.getDoctorByUserId(user.id.toString());
+      const userIdInt = parseInt(userId.toString());
+      const isPatient = appointment.patientId === userIdInt;
+      const doctorRecord = await storage.getDoctorByUserId(userId.toString());
       const isDoctor = doctorRecord && appointment.doctorId === doctorRecord.id;
 
       if (!isPatient && !isDoctor) {
         return res.status(403).json({ error: "Access denied" });
       }
 
-      const documents = await storage.getDocumentsForAppointment(Number(appointmentId));
+      const documents = await storage.getDocuments(Number(appointmentId));
       
       res.json(documents);
     } catch (error) {
@@ -75,7 +65,7 @@ export function registerDocumentLibraryRoutes(app: Express) {
     try {
       const { appointmentId } = req.params;
       const { documentId } = req.body;
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = req.user?.id;
       
       if (!userId || !documentId) {
         return res.status(400).json({ error: "Missing required fields" });
@@ -87,14 +77,14 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(404).json({ error: "Document not found" });
       }
 
-      const user = await storage.getUser(userId);
-      if (!user || document.uploadedBy !== user.id) {
+      const userIdInt = parseInt(userId.toString());
+      if (document.uploadedBy !== userIdInt) {
         return res.status(403).json({ error: "Access denied" });
       }
 
       // Verify user has access to this appointment
       const appointment = await storage.getAppointment(appointmentId);
-      if (!appointment || appointment.patientId !== user.id) {
+      if (!appointment || appointment.patientId !== userIdInt) {
         return res.status(403).json({ error: "Access denied" });
       }
 
@@ -111,7 +101,7 @@ export function registerDocumentLibraryRoutes(app: Express) {
   app.delete("/api/appointments/:appointmentId/documents/:documentId", isAuthenticated, async (req, res) => {
     try {
       const { appointmentId, documentId } = req.params;
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = req.user?.id;
       
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -123,8 +113,8 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(404).json({ error: "Document not found" });
       }
 
-      const user = await storage.getUser(userId);
-      if (!user || document.uploadedBy !== user.id) {
+      const userIdInt = parseInt(userId.toString());
+      if (document.uploadedBy !== userIdInt) {
         return res.status(403).json({ error: "Access denied" });
       }
 
@@ -142,21 +132,16 @@ export function registerDocumentLibraryRoutes(app: Express) {
     try {
       const { appointmentId } = req.params;
       const { documentUrl } = req.body;
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = req.user?.id;
       
       if (!userId || !documentUrl) {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      // Get user's numeric ID
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
       // Verify user has access to this appointment
       const appointment = await storage.getAppointment(appointmentId);
-      if (!appointment || appointment.patientId !== user.id) {
+      const userIdInt = parseInt(userId.toString());
+      if (!appointment || appointment.patientId !== userIdInt) {
         return res.status(403).json({ error: "Access denied" });
       }
 
@@ -166,7 +151,7 @@ export function registerDocumentLibraryRoutes(app: Express) {
 
       // Create document in library
       const document = await storage.createDocument({
-        uploadedBy: user.id,
+        uploadedBy: userIdInt,
         fileName: filename,
         fileType: 'application/octet-stream', // Default type
         fileSize: 0, // Will be updated by object storage
@@ -188,7 +173,7 @@ export function registerDocumentLibraryRoutes(app: Express) {
   app.delete("/api/documents/:documentId", isAuthenticated, async (req, res) => {
     try {
       const { documentId } = req.params;
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = req.user?.id;
       
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -200,8 +185,8 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(404).json({ error: "Document not found" });
       }
 
-      const user = await storage.getUser(userId);
-      if (!user || document.uploadedBy !== user.id) {
+      const userIdInt = parseInt(userId.toString());
+      if (document.uploadedBy !== userIdInt) {
         return res.status(403).json({ error: "Access denied" });
       }
 
@@ -218,7 +203,7 @@ export function registerDocumentLibraryRoutes(app: Express) {
   app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
     try {
       const { documentId } = req.params;
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = req.user?.id;
       
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -229,18 +214,14 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(404).json({ error: "Document not found" });
       }
 
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
       // Check if user owns the document OR is a doctor with access
-      const isOwner = document.uploadedBy === user.id;
+      const userIdInt = parseInt(userId.toString());
+      const isOwner = document.uploadedBy === userIdInt;
       let hasAccess = isOwner;
 
       if (!isOwner) {
         // Check if user is a doctor and has access through appointments
-        const doctorRecord = await storage.getDoctorByUserId(userId);
+        const doctorRecord = await storage.getDoctorByUserId(userId.toString());
         if (doctorRecord) {
           // Get appointments where this document is attached and doctor is involved
           // This is a simplified check - in practice you'd query the junction table
