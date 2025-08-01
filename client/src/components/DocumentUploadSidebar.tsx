@@ -32,7 +32,6 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
 
@@ -50,46 +49,18 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
       formData.append('appointmentId', appointmentId.toString());
       formData.append('documentType', documentType);
 
-      // Simulate upload progress
-      setUploading(true);
-      setUploadProgress(0);
-      
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return prev;
-          }
-          return prev + 10;
-        });
-      }, 200);
+      const response = await fetch('/api/documents/upload', {
+        method: 'POST',
+        body: formData,
+      });
 
-      try {
-        const response = await fetch('/api/documents/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        clearInterval(progressInterval);
-        setUploadProgress(100);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Upload failed: ${response.status} ${errorText}`);
-        }
-
-        const result = await response.json();
-        console.log('Upload successful:', result);
-        return result;
-      } catch (error) {
-        clearInterval(progressInterval);
-        throw error;
-      } finally {
-        setTimeout(() => {
-          setUploading(false);
-          setUploadProgress(0);
-        }, 1000);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Upload failed: ${response.status} ${errorText}`);
       }
+
+      const result = await response.json();
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/documents", appointmentId] });
@@ -97,13 +68,16 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
         title: "Document Uploaded",
         description: "Your document has been uploaded successfully.",
       });
+      setUploadProgress(0);
     },
     onError: (error: any) => {
+      console.error('Upload mutation error:', error);
       toast({
         title: "Upload Failed",
         description: error.message || "Failed to upload document",
         variant: "destructive",
       });
+      setUploadProgress(0);
     }
   });
 
@@ -128,14 +102,28 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
     }
   });
 
-  const handleFileUpload = useCallback(async (files: FileList, documentType: string = 'other') => {
+  const handleFileUpload = useCallback((files: FileList, documentType: string = 'other') => {
     if (!files.length) return;
 
     const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'text/plain'];
     const maxSize = 10 * 1024 * 1024; // 10MB
 
+    // Start progress simulation
+    setUploadProgress(10);
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return prev;
+        }
+        return prev + 15;
+      });
+    }, 300);
+
     for (const file of Array.from(files)) {
       if (!validTypes.includes(file.type)) {
+        clearInterval(progressInterval);
+        setUploadProgress(0);
         toast({
           title: "Invalid File Type",
           description: "Please upload PDF, image, or text files only.",
@@ -145,6 +133,8 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
       }
 
       if (file.size > maxSize) {
+        clearInterval(progressInterval);
+        setUploadProgress(0);
         toast({
           title: "File Too Large",
           description: "Please upload files smaller than 10MB.",
@@ -153,13 +143,18 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
         continue;
       }
 
-      try {
-        await uploadDocumentMutation.mutateAsync({ file, documentType });
-      } catch (error) {
-        console.error('Upload error:', error);
-        // Error is already handled by the mutation's onError callback
-        // Just log it here to prevent unhandled promise rejection
-      }
+      // Use mutate instead of mutateAsync to avoid promise handling issues
+      uploadDocumentMutation.mutate({ file, documentType }, {
+        onSuccess: () => {
+          clearInterval(progressInterval);
+          setUploadProgress(100);
+          setTimeout(() => setUploadProgress(0), 1000);
+        },
+        onError: () => {
+          clearInterval(progressInterval);
+          setUploadProgress(0);
+        }
+      });
     }
   }, [uploadDocumentMutation, toast]);
 
@@ -227,7 +222,7 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
             className={cn(
               "border-2 border-dashed rounded-lg p-8 text-center transition-colors",
               dragOver ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400",
-              uploading && "pointer-events-none opacity-50"
+              uploadDocumentMutation.isPending && "pointer-events-none opacity-50"
             )}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -244,7 +239,7 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
             <div className="space-y-3">
               <Button 
                 type="button" 
-                disabled={uploading}
+                disabled={uploadDocumentMutation.isPending}
                 onClick={() => {
                   const input = document.createElement('input');
                   input.type = 'file';
@@ -265,7 +260,7 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
               </p>
             </div>
 
-            {uploading && (
+            {(uploadDocumentMutation.isPending || uploadProgress > 0) && (
               <div className="mt-4">
                 <Progress value={uploadProgress} className="h-2" />
                 <p className="text-sm text-gray-600 mt-2">Uploading... {uploadProgress}%</p>
