@@ -153,50 +153,89 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
         formData.append('appointmentId', appointmentId.toString());
         formData.append('documentType', documentType);
 
-        // Use Promise constructor to fully control error handling
-        new Promise<void>((resolve, reject) => {
-          fetch('/api/documents/upload', {
-            method: 'POST',
-            body: formData,
-          })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`Upload failed: ${response.status}`);
+        // Add comprehensive debugging and use XMLHttpRequest for better error handling
+        console.log('Starting upload for file:', file.name, 'size:', file.size);
+        
+        const xhr = new XMLHttpRequest();
+        
+        xhr.onload = function() {
+          console.log('XHR load event - status:', xhr.status, 'response:', xhr.responseText);
+          
+          if (xhr.status === 200) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+              console.log('Upload successful:', result);
+              
+              // Clear progress and show success
+              clearInterval(progressInterval);
+              setUploadProgress(100);
+              
+              // Refresh documents list (non-blocking)
+              queryClient.invalidateQueries({ queryKey: ["/api/documents", appointmentId] }).catch(() => {});
+              
+              // Show success toast
+              toast({
+                title: "Document Uploaded",
+                description: "Your document has been uploaded successfully.",
+              });
+              
+              setTimeout(() => setUploadProgress(0), 1000);
+            } catch (parseError) {
+              console.log('JSON parse error:', parseError);
+              clearInterval(progressInterval);
+              setUploadProgress(0);
+              toast({
+                title: "Upload Error",
+                description: "Server response could not be parsed",
+                variant: "destructive",
+              });
             }
-            return response.json();
-          })
-          .then(result => {
-            console.log('Upload successful:', result);
-            
-            // Clear progress and show success
-            clearInterval(progressInterval);
-            setUploadProgress(100);
-            
-            // Refresh documents list (non-blocking)
-            queryClient.invalidateQueries({ queryKey: ["/api/documents", appointmentId] }).catch(() => {});
-            
-            // Show success toast
-            toast({
-              title: "Document Uploaded",
-              description: "Your document has been uploaded successfully.",
-            });
-            
-            setTimeout(() => setUploadProgress(0), 1000);
-            resolve();
-          })
-          .catch(uploadError => {
-            console.log('Upload failed:', uploadError?.message || uploadError || 'Unknown error');
+          } else {
+            console.log('Upload failed with status:', xhr.status);
             clearInterval(progressInterval);
             setUploadProgress(0);
-            
             toast({
               title: "Upload Failed",
-              description: uploadError?.message || "Failed to upload document",
+              description: `Server error: ${xhr.status}`,
               variant: "destructive",
             });
-            resolve(); // Always resolve to prevent unhandled rejection
+          }
+        };
+        
+        xhr.onerror = function() {
+          console.log('XHR error event occurred');
+          clearInterval(progressInterval);
+          setUploadProgress(0);
+          toast({
+            title: "Network Error",
+            description: "Unable to upload document - please check your connection",
+            variant: "destructive",
           });
-        }).catch(() => {}); // Final catch to prevent any escape
+        };
+        
+        xhr.onabort = function() {
+          console.log('XHR abort event occurred');
+          clearInterval(progressInterval);
+          setUploadProgress(0);
+        };
+        
+        xhr.ontimeout = function() {
+          console.log('XHR timeout event occurred');
+          clearInterval(progressInterval);
+          setUploadProgress(0);
+          toast({
+            title: "Upload Timeout",
+            description: "The upload took too long - please try again",
+            variant: "destructive",
+          });
+        };
+        
+        // Set timeout
+        xhr.timeout = 30000; // 30 seconds
+        
+        // Open and send request
+        xhr.open('POST', '/api/documents/upload');
+        xhr.send(formData);
       }
     } catch (error) {
       console.log('File processing error:', error);
