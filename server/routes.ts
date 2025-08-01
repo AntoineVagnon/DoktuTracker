@@ -996,6 +996,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/documents/upload", isAuthenticated, async (req, res) => {
     try {
+      console.log('📁 Document upload request received');
+      
+      // Add explicit CORS headers
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      
       // Placeholder response - actual implementation would handle file uploads
       const document = {
         id: Date.now().toString(),
@@ -1008,7 +1015,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         documentType: req.body.documentType || 'other',
         uploadedAt: new Date().toISOString(),
       };
-      res.json(document);
+      
+      console.log('📁 Sending document response:', document);
+      res.status(200).json(document);
     } catch (error) {
       console.error("Error uploading document:", error);
       res.status(500).json({ message: "Failed to upload document" });
