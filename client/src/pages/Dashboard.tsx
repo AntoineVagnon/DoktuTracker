@@ -20,7 +20,7 @@ import { formatAppointmentDateTimeUS, categorizeAppointmentsByTiming, getTimeUnt
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns";
 import { BannerSystem } from "@/components/BannerSystem";
 import { HealthProfileSidebar } from "@/components/HealthProfileSidebar";
-import { DocumentUploadSidebar } from "@/components/DocumentUploadSidebar";
+import { DocumentLibraryPanel } from "@/components/DocumentLibraryPanel";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -971,9 +971,9 @@ export default function Dashboard() {
         onClose={() => setHealthProfileOpen(false)}
       />
 
-      {/* Document Upload Sidebar */}
+      {/* Document Library Panel */}
       {selectedAppointmentId && (
-        <DocumentUploadSidebar
+        <DocumentLibraryPanel
           isOpen={documentUploadOpen}
           onClose={() => {
             setDocumentUploadOpen(false);

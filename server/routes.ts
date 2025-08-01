@@ -44,6 +44,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register document library routes
   registerDocumentLibraryRoutes(app);
 
+  // Temporary endpoint to initialize document tables
+  app.post("/api/init-document-tables", async (req, res) => {
+    try {
+      console.log('🔨 Creating document library tables...');
+      
+      // Use raw SQL since tables don't exist yet
+      const db = (await import("./db")).db;
+      const { sql } = await import("drizzle-orm");
+      
+      // Create document uploads table
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS document_uploads (
+            id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+            uploaded_by integer NOT NULL REFERENCES users(id),
+            file_name varchar NOT NULL,
+            file_size integer NOT NULL,
+            file_type varchar NOT NULL,
+            upload_url text NOT NULL,
+            document_type varchar,
+            uploaded_at timestamp DEFAULT now()
+        )
+      `);
+      
+      // Create appointment documents junction table
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS appointment_documents (
+            id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+            appointment_id integer NOT NULL REFERENCES appointments(id),
+            document_id uuid NOT NULL REFERENCES document_uploads(id),
+            attached_at timestamp DEFAULT now()
+        )
+      `);
+      
+      // Create index
+      await db.execute(sql`
+        CREATE INDEX IF NOT EXISTS idx_appointment_document_unique 
+        ON appointment_documents(appointment_id, document_id)
+      `);
+      
+      console.log('✅ Document library tables created successfully');
+      
+      res.json({ 
+        success: true, 
+        message: "Document library tables created successfully" 
+      });
+      
+    } catch (error: any) {
+      console.error('❌ Error creating tables:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message 
+      });
+    }
+  });
+
   // Configure multer for file uploads (in-memory storage for processing before cloud upload)
   const upload = multer({
     storage: multer.memoryStorage(),
