@@ -238,6 +238,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get available slots for rescheduling
+  app.get("/api/doctors/:doctorId/slots/available", async (req, res) => {
+    try {
+      const { doctorId } = req.params;
+      console.log(`🔍 Fetching available slots for rescheduling - doctor ID: ${doctorId}`);
+      
+      // Get all available slots for this doctor
+      const slots = await storage.getDoctorTimeSlots(doctorId);
+      
+      // Return only available slots (storage method already filters out booked ones)
+      console.log(`📅 Found ${slots.length} available slots for doctor ${doctorId}`);
+      res.json(slots);
+    } catch (error) {
+      console.error("Error fetching available slots:", error);
+      res.status(500).json({ message: "Failed to fetch available slots" });
+    }
+  });
+
 
 
 
