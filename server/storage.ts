@@ -30,7 +30,7 @@ import {
   type InsertAppointmentDocument,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, asc, and, gte, lte, isNull, or, count, avg, sql } from "drizzle-orm";
+import { eq, desc, asc, and, gte, lte, isNull, or, count, avg, sql, inArray } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 
