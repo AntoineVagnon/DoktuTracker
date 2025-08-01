@@ -159,7 +159,11 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
         const xhr = new XMLHttpRequest();
         
         xhr.onload = function() {
-          console.log('XHR load event - status:', xhr.status, 'response:', xhr.responseText);
+          console.log('XHR load event - status:', xhr.status, 'statusText:', xhr.statusText);
+          console.log('Response headers:', xhr.getAllResponseHeaders());
+          console.log('Response text:', xhr.responseText);
+          console.log('Response type:', xhr.responseType);
+          console.log('Ready state:', xhr.readyState);
           
           if (xhr.status === 200) {
             try {
@@ -204,6 +208,11 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
         
         xhr.onerror = function() {
           console.log('XHR error event occurred');
+          console.log('Error status:', xhr.status, 'statusText:', xhr.statusText);
+          console.log('Error response:', xhr.responseText);
+          console.log('Error ready state:', xhr.readyState);
+          console.log('Network error details:', xhr);
+          
           clearInterval(progressInterval);
           setUploadProgress(0);
           toast({
