@@ -180,13 +180,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let appointments;
       
       if (user.role === 'doctor') {
-        // For doctors, get doctor record and fetch appointments by doctorId
+        // For doctors, find doctor by email efficiently
         console.log(`🩺 Looking for doctor with email: ${user.email}`);
-        const doctors = await storage.getDoctors();
-        console.log("Available doctors:", doctors.map(d => ({ id: d.id, userId: d.userId, email: d.user?.email })));
         
-        // Find doctor by email
-        let doctor = doctors.find(d => d.user?.email === user.email);
+        const doctor = await storage.getDoctorByEmail(user.email);
         
         if (!doctor) {
           console.log(`❌ No doctor profile found for: ${user.email}`);
