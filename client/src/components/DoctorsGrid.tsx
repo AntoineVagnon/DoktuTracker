@@ -49,17 +49,20 @@ export function DoctorsGrid() {
   }
 
   const formatSlotTime = (dateString: string) => {
-    const date = new Date(dateString);
+    // Convert UTC to local time for display
+    const utcDate = new Date(dateString);
+    const localDate = new Date(utcDate.toLocaleString());
+    
     const today = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
 
-    if (date.toDateString() === today.toDateString()) {
-      return `Today ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (date.toDateString() === tomorrow.toDateString()) {
-      return `Tomorrow ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    if (localDate.toDateString() === today.toDateString()) {
+      return `Today ${localDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    } else if (localDate.toDateString() === tomorrow.toDateString()) {
+      return `Tomorrow ${localDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     } else {
-      return date.toLocaleDateString([], { 
+      return localDate.toLocaleDateString([], { 
         month: 'short', 
         day: 'numeric',
         hour: '2-digit',

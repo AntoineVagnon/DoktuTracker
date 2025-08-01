@@ -258,10 +258,12 @@ export default function InteractiveCalendar() {
 
     // Check for available slot
     const availableSlot = timeSlots.find((slot: TimeSlot) => {
-      const slotDate = new Date(slot.startTime).toISOString().split('T')[0];
-      const slotTime = new Date(slot.startTime);
-      const slotHour = slotTime.getHours();
-      const slotMinute = slotTime.getMinutes();
+      // Convert UTC to local time for proper comparison
+      const utcSlotTime = new Date(slot.startTime);
+      const localSlotTime = new Date(utcSlotTime.toLocaleString());
+      const slotDate = localSlotTime.toISOString().split('T')[0];
+      const slotHour = localSlotTime.getHours();
+      const slotMinute = localSlotTime.getMinutes();
       return slotDate === dateStr && slotHour === timeSlot.hour && slotMinute === timeSlot.minute && slot.isAvailable;
     });
 
@@ -283,8 +285,13 @@ export default function InteractiveCalendar() {
   };
 
   const handleSaveSlot = () => {
-    const startDateTime = new Date(`${slotModal.date}T${slotModal.startTime}:00`);
-    const endDateTime = new Date(`${slotModal.date}T${slotModal.endTime}:00`);
+    // Create local time first, then convert to UTC for storage
+    const localStartDateTime = new Date(`${slotModal.date}T${slotModal.startTime}:00`);
+    const localEndDateTime = new Date(`${slotModal.date}T${slotModal.endTime}:00`);
+    
+    // Convert to UTC for storage (reverse of display conversion)
+    const startDateTime = new Date(localStartDateTime.getTime() - localStartDateTime.getTimezoneOffset() * 60000);
+    const endDateTime = new Date(localEndDateTime.getTime() - localEndDateTime.getTimezoneOffset() * 60000);
 
     const data = {
       startTime: startDateTime.toISOString(),

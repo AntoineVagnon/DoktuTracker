@@ -1,14 +1,14 @@
 /**
  * Date utilities to handle consistent local timezone formatting
  * This ensures all dates and times are displayed in the user's local timezone
+ * Uses centralized timezone conversion utilities
  */
+
+import { utcToLocal } from './timezoneUtils';
 
 export function formatAppointmentDateTime(dateString: string): string {
   // Convert UTC appointment time to local time for display
-  const utcDate = new Date(dateString);
-  
-  // Use the browser's local timezone to automatically convert from UTC
-  const localDate = new Date(utcDate.toLocaleString());
+  const localDate = utcToLocal(dateString);
   
   const day = String(localDate.getDate()).padStart(2, '0');
   const month = String(localDate.getMonth() + 1).padStart(2, '0');
@@ -20,10 +20,7 @@ export function formatAppointmentDateTime(dateString: string): string {
 
 export function formatAppointmentDateTimeUS(dateString: string): string {
   // Convert UTC appointment time to local time for display
-  const utcDate = new Date(dateString);
-  
-  // Use proper timezone conversion
-  const localDate = new Date(utcDate.toLocaleString());
+  const localDate = utcToLocal(dateString);
   
   const day = localDate.getDate();
   const month = localDate.toLocaleDateString('en-US', { month: 'short' });
@@ -37,10 +34,7 @@ export function formatAppointmentDateTimeUS(dateString: string): string {
 
 export function formatTimeOnly(dateString: string): string {
   // Convert UTC appointment time to local time for display
-  const utcDate = new Date(dateString);
-  
-  // Use proper timezone conversion
-  const localDate = new Date(utcDate.toLocaleString());
+  const localDate = utcToLocal(dateString);
   
   const hours = String(localDate.getHours()).padStart(2, '0');
   const minutes = String(localDate.getMinutes()).padStart(2, '0');
@@ -111,8 +105,7 @@ export function getAppointmentTimingStatus(appointmentDate: string): Appointment
   const now = new Date();
   
   // Convert UTC appointment time to local time
-  const utcAppointmentTime = new Date(appointmentDate);
-  const localAppointmentTime = new Date(utcAppointmentTime.toLocaleString());
+  const localAppointmentTime = utcToLocal(appointmentDate);
   
   // Calculate time differences in minutes
   const timeDifference = (localAppointmentTime.getTime() - now.getTime()) / (1000 * 60);
@@ -177,8 +170,7 @@ export function getTimeUntilAppointment(appointmentDate: string): string {
   const now = new Date();
   
   // Convert UTC appointment time to local time
-  const utcAppointmentTime = new Date(appointmentDate);
-  const localAppointmentTime = new Date(utcAppointmentTime.toLocaleString());
+  const localAppointmentTime = utcToLocal(appointmentDate);
   
   const timeDifference = localAppointmentTime.getTime() - now.getTime();
   const minutes = Math.floor(timeDifference / (1000 * 60));
