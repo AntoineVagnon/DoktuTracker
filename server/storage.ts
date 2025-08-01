@@ -845,11 +845,24 @@ export class PostgresStorage implements IStorage {
 
   async rescheduleAppointment(id: string, newSlotId: string, reason: string, actorId: number, actorRole: string): Promise<void> {
     const [appointment] = await db.select().from(appointments).where(eq(appointments.id, parseInt(id)));
+    
+    // Get the new slot details to update appointment date/time
+    const [newSlot] = await db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.id, newSlotId));
+    
+    if (!newSlot) {
+      throw new Error("New slot not found");
+    }
+    
+    // Convert slot date and time to UTC appointment date
+    const newAppointmentDate = new Date(`${newSlot.date}T${newSlot.startTime}`);
+    // Subtract 2 hours to convert from local (UTC+2) to UTC
+    newAppointmentDate.setHours(newAppointmentDate.getHours() - 2);
 
     await db
       .update(appointments)
       .set({ 
-        slotId: newSlotId, 
+        slotId: newSlotId,
+        appointmentDate: newAppointmentDate,
         rescheduleCount: (appointment.rescheduleCount || 0) + 1,
         updatedAt: new Date() 
       })
@@ -862,8 +875,14 @@ export class PostgresStorage implements IStorage {
       actorId,
       actorRole,
       reason,
-      before: { slotId: appointment.slotId },
-      after: { slotId: newSlotId },
+      before: { 
+        slotId: appointment.slotId,
+        appointmentDate: appointment.appointmentDate 
+      },
+      after: { 
+        slotId: newSlotId,
+        appointmentDate: newAppointmentDate
+      },
     });
   }
 
