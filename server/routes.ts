@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import multer from "multer";
 
 // Extend express session type
 declare module 'express-session' {
@@ -19,7 +20,7 @@ declare module 'express-session' {
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
-import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema } from "@shared/schema";
+import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema } from "@shared/schema";
 import { z } from "zod";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -33,6 +34,23 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Supabase authentication
   await setupSupabaseAuth(app);
+
+  // Configure multer for file uploads (in-memory storage for simplicity)
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB limit
+    },
+    fileFilter: (req, file, cb) => {
+      // Allow specific file types
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'text/plain'];
+      if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Invalid file type. Only PDF, JPG, PNG, GIF, and TXT files are allowed.'));
+      }
+    }
+  });
 
   // Test callback endpoint for OAuth troubleshooting
   app.get('/test-callback', (req, res) => {
@@ -983,44 +1001,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Document Upload Routes (placeholder implementation)
-  app.get("/api/documents/:appointmentId", isAuthenticated, async (req, res) => {
+  // Document Routes with real database integration
+  app.get("/api/documents", isAuthenticated, async (req, res) => {
     try {
-      // Return empty array for now - would fetch from database in full implementation
-      res.json([]);
+      const appointmentId = req.query.appointmentId ? parseInt(req.query.appointmentId as string) : undefined;
+      const documents = await storage.getDocuments(appointmentId);
+      res.json(documents);
     } catch (error) {
       console.error("Error fetching documents:", error);
       res.status(500).json({ message: "Failed to fetch documents" });
     }
   });
 
-  app.post("/api/documents/upload", isAuthenticated, async (req, res) => {
+  app.get("/api/documents/:appointmentId", isAuthenticated, async (req, res) => {
+    try {
+      const appointmentId = parseInt(req.params.appointmentId);
+      const documents = await storage.getDocuments(appointmentId);
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
+  app.post("/api/documents/upload", isAuthenticated, upload.single('file'), async (req, res) => {
     try {
       console.log('📁 Document upload request received');
+      console.log('📁 File info:', req.file ? { 
+        filename: req.file.originalname, 
+        size: req.file.size, 
+        mimetype: req.file.mimetype 
+      } : 'No file');
+      console.log('📁 Body:', req.body);
       
-      // Add explicit CORS headers
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      
-      // Placeholder response - actual implementation would handle file uploads
-      const document = {
-        id: Date.now().toString(),
-        appointmentId: req.body.appointmentId,
-        uploadedBy: req.session.user?.id,
-        fileName: 'uploaded-document.pdf',
-        fileSize: 1024,
-        fileType: 'application/pdf',
-        uploadUrl: '/uploads/placeholder.pdf',
-        documentType: req.body.documentType || 'other',
-        uploadedAt: new Date().toISOString(),
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      // Get user from session
+      const user = req.user as any;
+      if (!user?.id) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      // Parse appointmentId from form data
+      const appointmentId = req.body.appointmentId ? parseInt(req.body.appointmentId) : null;
+      const documentType = req.body.documentType || 'other';
+
+      // For now, we'll store the file info in the database but not the actual file
+      // In production, you'd upload to cloud storage (S3, etc.) and store the URL
+      const documentData = {
+        appointmentId: appointmentId,
+        uploadedBy: parseInt(user.id),
+        fileName: req.file.originalname,
+        fileSize: req.file.size,
+        fileType: req.file.mimetype,
+        uploadUrl: `/uploads/${Date.now()}-${req.file.originalname}`, // Placeholder URL
+        documentType: documentType
       };
+
+      const document = await storage.createDocument(documentData);
       
-      console.log('📁 Sending document response:', document);
+      console.log('📁 Document saved to database:', document);
       res.status(200).json(document);
     } catch (error) {
       console.error("Error uploading document:", error);
       res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  app.delete("/api/documents/:id", isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteDocument(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      res.status(500).json({ message: "Failed to delete document" });
     }
   });
 

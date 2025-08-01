@@ -9,6 +9,7 @@ import {
   auditEvents,
   payments,
   healthProfiles,
+  documentUploads,
   type UpsertUser,
   type User,
   type Doctor,
@@ -23,6 +24,8 @@ import {
   type InsertReview,
   type HealthProfile,
   type InsertHealthProfile,
+  type DocumentUpload,
+  type InsertDocumentUpload,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, gte, lte, isNull, or, count, avg, sql } from "drizzle-orm";
@@ -95,7 +98,8 @@ export interface IStorage {
   updateHealthProfile(id: string, updates: Partial<HealthProfile>): Promise<HealthProfile>;
 
   // Document operations
-  getDocuments(appointmentId: number): Promise<any[]>;
+  getDocuments(appointmentId?: number): Promise<DocumentUpload[]>;
+  createDocument(document: InsertDocumentUpload): Promise<DocumentUpload>;
   deleteDocument(id: string): Promise<void>;
 
   // Banner dismissal operations
@@ -976,15 +980,47 @@ export class PostgresStorage implements IStorage {
   }
 
   // Document operations
-  async getDocuments(appointmentId: number): Promise<any[]> {
-    // For now, return empty array
-    // This would normally query a documents table
-    return [];
+  async getDocuments(appointmentId?: number): Promise<DocumentUpload[]> {
+    try {
+      const query = db.select().from(documentUploads);
+      
+      if (appointmentId) {
+        const docs = await query.where(eq(documentUploads.appointmentId, appointmentId));
+        return docs;
+      } else {
+        const docs = await query;
+        return docs;
+      }
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      return [];
+    }
+  }
+
+  async createDocument(document: InsertDocumentUpload): Promise<DocumentUpload> {
+    try {
+      const [newDocument] = await db
+        .insert(documentUploads)
+        .values({
+          ...document,
+          uploadedAt: new Date()
+        })
+        .returning();
+      
+      return newDocument;
+    } catch (error) {
+      console.error('Error creating document:', error);
+      throw error;
+    }
   }
 
   async deleteDocument(id: string): Promise<void> {
-    // For now, just log
-    console.log('Document deleted:', id);
+    try {
+      await db.delete(documentUploads).where(eq(documentUploads.id, id));
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      throw error;
+    }
   }
 
   // Banner dismissal operations
