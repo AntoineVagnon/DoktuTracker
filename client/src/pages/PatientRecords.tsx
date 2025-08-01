@@ -56,8 +56,12 @@ export default function PatientRecords() {
       
     } catch (error) {
       console.error('❌ Error downloading document:', error);
-      // Show a more user-friendly error message
-      alert(`Unable to download document: The file content is not available on the server. Only document metadata is currently stored.`);
+      // Show a more user-friendly error message for different scenarios
+      if (error.message && error.message.includes('404')) {
+        alert(`Document migration required: This document was uploaded with the old system and needs to be re-uploaded for security compliance. Please upload the document again.`);
+      } else {
+        alert(`Unable to download document: ${error.message || 'An error occurred while accessing the document.'}`);
+      }
     }
   };
 

@@ -1060,41 +1060,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "User not authenticated" });
       }
 
-      // Use object storage service for HIPAA-compliant access
-      const objectStorageService = new ObjectStorageService();
-      
-      try {
-        // Get the object file from secure storage
-        const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
-        
-        // Check access permissions (HIPAA compliance)
-        const canAccess = await objectStorageService.canAccessObjectEntity({
-          objectFile,
-          userId: user.id,
-          requestedPermission: ObjectPermission.READ,
-        });
-        
-        if (!canAccess) {
-          console.log(`❌ Access denied for user ${user.id} to document ${documentId}`);
-          return res.status(403).json({ message: "Access denied" });
-        }
+      console.log('📂 Document uploadUrl:', document.uploadUrl);
 
-        // Set HIPAA-compliant headers
-        res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
-        res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
-        res.setHeader('X-Content-Type-Options', 'nosniff');
-        res.setHeader('X-Frame-Options', 'DENY');
-        res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+      // Check if this is a legacy document (old system) or new secure storage
+      if (document.uploadUrl.startsWith('/objects/')) {
+        // New secure storage system
+        console.log('🔒 Processing secure storage document');
+        const objectStorageService = new ObjectStorageService();
         
-        // Stream the file securely
-        await objectStorageService.downloadObject(objectFile, res);
-        
-      } catch (objectError) {
-        console.error('Error accessing object storage:', objectError);
-        if (objectError instanceof ObjectNotFoundError) {
-          return res.status(404).json({ message: "Document file not found in secure storage" });
+        try {
+          // Get the object file from secure storage
+          const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
+          
+          // Check access permissions (HIPAA compliance)
+          const canAccess = await objectStorageService.canAccessObjectEntity({
+            objectFile,
+            userId: user.id,
+            requestedPermission: ObjectPermission.READ,
+          });
+          
+          if (!canAccess) {
+            console.log(`❌ Access denied for user ${user.id} to document ${documentId}`);
+            return res.status(403).json({ message: "Access denied" });
+          }
+
+          // Set HIPAA-compliant headers
+          res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
+          res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+          res.setHeader('X-Content-Type-Options', 'nosniff');
+          res.setHeader('X-Frame-Options', 'DENY');
+          res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+          
+          // Stream the file securely
+          await objectStorageService.downloadObject(objectFile, res);
+          
+        } catch (objectError) {
+          console.error('Error accessing object storage:', objectError);
+          if (objectError instanceof ObjectNotFoundError) {
+            return res.status(404).json({ message: "Document file not found in secure storage" });
+          }
+          throw objectError;
         }
-        throw objectError;
+      } else {
+        // Legacy document (old system) - inform user about migration needed
+        console.log('⚠️ Legacy document detected - needs migration to secure storage');
+        
+        const migrationMessage = `Document Migration Required
+
+File: ${document.fileName}
+Type: ${document.fileType}
+Upload Date: ${new Date(document.uploadedAt).toLocaleDateString()}
+Size: ${document.fileSize} bytes
+
+This document was uploaded before the secure storage system was implemented.
+For HIPAA/GDPR compliance, all medical documents must be stored in encrypted, 
+access-controlled storage.
+
+To access this document:
+1. The document needs to be re-uploaded through the secure system
+2. This will ensure proper encryption and access controls
+3. The original upload metadata is preserved for audit purposes
+
+Please upload the document again through the secure upload system.`;
+
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Content-Disposition', `attachment; filename="Migration_Notice_${document.fileName}.txt"`);
+        res.send(Buffer.from(migrationMessage, 'utf8'));
       }
     } catch (error) {
       console.error("Error downloading document:", error);
