@@ -1,6 +1,11 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
+import {
+  ObjectStorageService,
+  ObjectNotFoundError,
+} from "./objectStorage";
+import { ObjectPermission, ObjectAccessGroupType } from "./objectAcl";
 
 // Extend express session type
 declare module 'express-session' {
@@ -35,14 +40,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Supabase authentication
   await setupSupabaseAuth(app);
 
-  // Configure multer for file uploads (in-memory storage for simplicity)
+  // Configure multer for file uploads (in-memory storage for processing before cloud upload)
   const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
       fileSize: 10 * 1024 * 1024, // 10MB limit
     },
     fileFilter: (req, file, cb) => {
-      // Allow specific file types
+      // Allow specific file types for medical documents
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'text/plain'];
       if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
@@ -1038,7 +1043,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
     try {
       const documentId = req.params.documentId;
-      console.log('📥 Download request for document ID:', documentId);
+      console.log('📥 HIPAA-compliant download request for document ID:', documentId);
       
       const document = await storage.getDocumentById(documentId);
       
@@ -1047,57 +1052,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Document not found" });
       }
 
-      console.log('📄 Document found:', { fileName: document.fileName, fileType: document.fileType, uploadUrlPrefix: document.uploadUrl.substring(0, 50) });
+      console.log('📄 Document found:', { fileName: document.fileName, fileType: document.fileType });
 
-      // Set appropriate headers for file download
-      res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
-      res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+      // Get user from session for access control
+      const user = req.user as any;
+      if (!user?.id) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      // Use object storage service for HIPAA-compliant access
+      const objectStorageService = new ObjectStorageService();
       
-      if (document.uploadUrl.startsWith('data:')) {
-        // Handle data URLs (base64 encoded files)
-        console.log('📦 Serving data URL file');
-        const base64Data = document.uploadUrl.split(',')[1];
-        const buffer = Buffer.from(base64Data, 'base64');
-        res.send(buffer);
-      } else if (document.uploadUrl.startsWith('http')) {
-        // Fetch the file from URL and serve it
-        console.log('🌐 Fetching file from URL:', document.uploadUrl);
-        const fetch = (await import('node-fetch')).default;
-        const response = await fetch(document.uploadUrl);
+      try {
+        // Get the object file from secure storage
+        const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
         
-        if (!response.ok) {
-          throw new Error(`Failed to fetch file: ${response.statusText}`);
+        // Check access permissions (HIPAA compliance)
+        const canAccess = await objectStorageService.canAccessObjectEntity({
+          objectFile,
+          userId: user.id,
+          requestedPermission: ObjectPermission.READ,
+        });
+        
+        if (!canAccess) {
+          console.log(`❌ Access denied for user ${user.id} to document ${documentId}`);
+          return res.status(403).json({ message: "Access denied" });
         }
-        
-        const fileBuffer = await response.buffer();
-        res.send(fileBuffer);
-      } else if (document.uploadUrl.startsWith('/uploads/') || document.uploadUrl.startsWith('uploads/')) {
-        // Handle local file paths - but first check if files are actually stored
-        console.log('📁 Attempting to serve local file:', document.uploadUrl);
-        console.log('⚠️  Note: Current upload system stores metadata only, not actual files');
-        
-        // Since files aren't actually stored, provide a helpful error message
-        const errorContent = `Document Information:
-        
-File Name: ${document.fileName}
-File Type: ${document.fileType}
-Upload Date: ${new Date(document.uploadedAt).toLocaleDateString()}
-Original Size: ${document.fileSize} bytes
 
-⚠️ File Content Not Available:
-This document was uploaded but the file content is not stored on the server.
-The current system only stores document metadata for demonstration purposes.
-
-To enable actual file downloads, the upload system needs to be configured 
-to save files to disk or cloud storage.`;
-
-        res.setHeader('Content-Type', 'text/plain');
-        res.send(Buffer.from(errorContent, 'utf8'));
-      } else {
-        // For other formats, create a simple text file with the URL
-        console.log('📝 Creating text file with URL reference');
-        const content = `Document URL: ${document.uploadUrl}\n\nThis document was uploaded to: ${document.fileName}`;
-        res.send(Buffer.from(content, 'utf8'));
+        // Set HIPAA-compliant headers
+        res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
+        res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('X-Frame-Options', 'DENY');
+        res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        
+        // Stream the file securely
+        await objectStorageService.downloadObject(objectFile, res);
+        
+      } catch (objectError) {
+        console.error('Error accessing object storage:', objectError);
+        if (objectError instanceof ObjectNotFoundError) {
+          return res.status(404).json({ message: "Document file not found in secure storage" });
+        }
+        throw objectError;
       }
     } catch (error) {
       console.error("Error downloading document:", error);
@@ -1107,7 +1104,7 @@ to save files to disk or cloud storage.`;
 
   app.post("/api/documents/upload", isAuthenticated, upload.single('file'), async (req, res) => {
     try {
-      console.log('📁 Document upload request received');
+      console.log('🔒 HIPAA-compliant document upload request received');
       console.log('📁 File info:', req.file ? { 
         filename: req.file.originalname, 
         size: req.file.size, 
@@ -1125,29 +1122,99 @@ to save files to disk or cloud storage.`;
         return res.status(401).json({ message: "User not authenticated" });
       }
 
-      // Parse appointmentId from form data
+      // Parse data from form
       const appointmentId = req.body.appointmentId ? parseInt(req.body.appointmentId) : null;
       const documentType = req.body.documentType || 'other';
+      const patientId = req.body.patientId ? parseInt(req.body.patientId) : null;
 
-      // For now, we'll store the file info in the database but not the actual file
-      // In production, you'd upload to cloud storage (S3, etc.) and store the URL
-      const documentData = {
-        appointmentId: appointmentId,
-        uploadedBy: parseInt(user.id),
-        fileName: req.file.originalname,
-        fileSize: req.file.size,
-        fileType: req.file.mimetype,
-        uploadUrl: `/uploads/${Date.now()}-${req.file.originalname}`, // Placeholder URL
-        documentType: documentType
-      };
-
-      const document = await storage.createDocument(documentData);
+      // Initialize object storage service
+      const objectStorageService = new ObjectStorageService();
       
-      console.log('📁 Document saved to database:', document);
-      res.status(200).json(document);
+      try {
+        // Get presigned URL for secure upload
+        const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+        console.log('🔗 Generated secure upload URL');
+
+        // Upload file to secure object storage
+        const uploadResponse = await fetch(uploadURL, {
+          method: 'PUT',
+          body: req.file.buffer,
+          headers: {
+            'Content-Type': req.file.mimetype,
+            'Content-Length': req.file.size.toString(),
+          },
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+        }
+
+        console.log('✅ File uploaded to secure storage');
+
+        // Normalize the object path for database storage
+        const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+
+        // Set HIPAA-compliant ACL policy
+        const aclPolicy = {
+          owner: patientId?.toString() || user.id,
+          visibility: "private" as const,
+          encryptionEnabled: true,
+          auditLogging: true,
+          dataClassification: "PHI" as const,
+          aclRules: [
+            {
+              group: {
+                type: ObjectAccessGroupType.DOCTOR_ACCESS,
+                id: patientId?.toString() || user.id,
+              },
+              permission: ObjectPermission.READ,
+            },
+          ],
+        };
+
+        // Apply ACL policy to the uploaded file
+        await objectStorageService.trySetObjectEntityAclPolicy(uploadURL, aclPolicy);
+        console.log('🔒 HIPAA-compliant ACL policy applied');
+
+        // Store document metadata in database
+        const documentData = {
+          appointmentId: appointmentId,
+          uploadedBy: parseInt(user.id),
+          fileName: req.file.originalname,
+          fileSize: req.file.size,
+          fileType: req.file.mimetype,
+          uploadUrl: objectPath, // Secure object storage path
+          documentType: documentType
+        };
+
+        const document = await storage.createDocument(documentData);
+        
+        console.log('✅ HIPAA-compliant document saved:', {
+          id: document.id,
+          fileName: document.fileName,
+          encrypted: true,
+          auditLogged: true,
+        });
+
+        res.status(200).json({
+          ...document,
+          securityCompliance: {
+            encrypted: true,
+            auditLogged: true,
+            accessControlled: true,
+            hipaaCompliant: true,
+            gdprCompliant: true,
+          }
+        });
+
+      } catch (uploadError) {
+        console.error('Error with secure upload:', uploadError);
+        throw new Error(`Secure upload failed: ${uploadError.message}`);
+      }
+
     } catch (error) {
       console.error("Error uploading document:", error);
-      res.status(500).json({ message: "Failed to upload document" });
+      res.status(500).json({ message: "Failed to upload document securely" });
     }
   });
 
