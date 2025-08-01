@@ -438,10 +438,18 @@ export default function DoctorProfile() {
                               });
                               
                               if (response.ok) {
-                                // Slot successfully held - redirect directly to register page
-                                const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
-                                console.log('Slot held successfully, redirecting to register with URL:', registerUrl);
-                                window.location.href = registerUrl;
+                                // Slot successfully held - redirect based on authentication status
+                                if (user) {
+                                  // User is authenticated - go directly to checkout
+                                  const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                                  console.log('Slot held successfully, user authenticated, redirecting to checkout:', checkoutUrl);
+                                  window.location.href = checkoutUrl;
+                                } else {
+                                  // User not authenticated - go to register page
+                                  const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                                  console.log('Slot held successfully, user not authenticated, redirecting to register:', registerUrl);
+                                  window.location.href = registerUrl;
+                                }
                               } else {
                                 // Slot couldn't be held (probably taken by another user)
                                 const error = await response.json();
