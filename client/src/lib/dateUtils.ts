@@ -125,14 +125,8 @@ export function getAppointmentTimingStatus(appointmentDate: string): Appointment
   // Convert UTC appointment time to local time
   const localAppointmentTime = utcToLocal(appointmentDate);
   
-  console.log('📊 Timing Status Check for appointment:', {
-    originalUTC: appointmentDate,
-    localTime: localAppointmentTime.toLocaleString(),
-    currentTime: now.toLocaleString(),
-    appointmentUTC: new Date(appointmentDate).toISOString(),
-    localTimeISO: localAppointmentTime.toISOString(),
-    timezoneOffset: now.getTimezoneOffset()
-  });
+  // Remove detailed logging now that timezone fix is confirmed working
+  // console.log('📊 Timing Status Check for appointment:', { appointmentDate, status: 'checking...' });
   
   // Validate date
   if (isNaN(localAppointmentTime.getTime())) {
@@ -148,21 +142,14 @@ export function getAppointmentTimingStatus(appointmentDate: string): Appointment
   const appointmentEndTime = localAppointmentTime.getTime() + (appointmentDurationMinutes * 60 * 1000);
   const timeUntilEnd = (appointmentEndTime - now.getTime()) / (1000 * 60);
   
-  console.log('📊 Time calculations:', {
-    timeDifferenceMinutes: timeDifference.toFixed(1),
-    timeUntilEndMinutes: timeUntilEnd.toFixed(1),
-    appointmentEndTime: new Date(appointmentEndTime).toLocaleString()
-  });
+  // console.log('📊 Time calculations:', { timeDifference: timeDifference.toFixed(1), timeUntilEnd: timeUntilEnd.toFixed(1) });
   
   // Logic for timing status
   if (timeUntilEnd <= 0) {
-    console.log('📊 Status: COMPLETED (past end time)');
     return 'completed'; // Past the end time
   } else if (timeDifference <= 5) {
-    console.log('📊 Status: LIVE (within 5 minutes)');
     return 'live'; // Within 5 minutes of start time (or already started but not ended)
   } else {
-    console.log('📊 Status: UPCOMING (more than 5 minutes away)');
     return 'upcoming'; // More than 5 minutes before start time
   }
 }

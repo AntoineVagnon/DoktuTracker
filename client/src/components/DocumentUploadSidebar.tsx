@@ -233,25 +233,23 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
             </p>
             
             <div className="space-y-3">
-              <div className="flex gap-2">
-                <Input
-                  type="file"
-                  multiple
-                  accept=".pdf,.jpg,.jpeg,.png,.gif,.txt"
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      handleFileUpload(e.target.files);
-                    }
-                  }}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <Label htmlFor="file-upload" className="cursor-pointer">
-                  <Button type="button" disabled={uploading}>
-                    Choose Files
-                  </Button>
-                </Label>
-              </div>
+              <Button 
+                type="button" 
+                disabled={uploading}
+                onClick={() => {
+                  const input = document.createElement('input');
+                  input.type = 'file';
+                  input.multiple = true;
+                  input.accept = '.pdf,.jpg,.jpeg,.png,.gif,.txt';
+                  input.onchange = (e) => {
+                    const files = (e.target as HTMLInputElement).files;
+                    if (files) handleFileUpload(files);
+                  };
+                  input.click();
+                }}
+              >
+                Choose Files
+              </Button>
               
               <p className="text-xs text-gray-500">
                 Supported formats: PDF, JPG, PNG, GIF, TXT (max 10MB each)
