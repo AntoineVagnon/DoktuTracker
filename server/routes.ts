@@ -1071,8 +1071,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         const fileBuffer = await response.buffer();
         res.send(fileBuffer);
+      } else if (document.uploadUrl.startsWith('/uploads/') || document.uploadUrl.startsWith('uploads/')) {
+        // Handle local file paths
+        console.log('📁 Serving local file:', document.uploadUrl);
+        const fs = await import('fs/promises');
+        const path = await import('path');
+        
+        // Construct the full file path
+        const filePath = path.join(process.cwd(), document.uploadUrl);
+        console.log('📂 Full file path:', filePath);
+        
+        try {
+          // Check if file exists and read it
+          const fileBuffer = await fs.readFile(filePath);
+          console.log('📄 File read successfully, size:', fileBuffer.length);
+          res.send(fileBuffer);
+        } catch (fileError) {
+          console.error('❌ Error reading file:', fileError);
+          // Fallback: try without leading slash
+          const altFilePath = path.join(process.cwd(), document.uploadUrl.replace(/^\//, ''));
+          console.log('🔄 Trying alternative path:', altFilePath);
+          
+          try {
+            const fileBuffer = await fs.readFile(altFilePath);
+            console.log('📄 File read successfully from alt path, size:', fileBuffer.length);
+            res.send(fileBuffer);
+          } catch (altError) {
+            console.error('❌ Error reading file from alt path:', altError);
+            throw new Error(`File not found: ${document.uploadUrl}`);
+          }
+        }
       } else {
-        // For local files or other formats, create a simple text file with the URL
+        // For other formats, create a simple text file with the URL
         console.log('📝 Creating text file with URL reference');
         const content = `Document URL: ${document.uploadUrl}\n\nThis document was uploaded to: ${document.fileName}`;
         res.send(Buffer.from(content, 'utf8'));
