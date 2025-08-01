@@ -153,63 +153,50 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
         formData.append('appointmentId', appointmentId.toString());
         formData.append('documentType', documentType);
 
-        try {
-          const response = await fetch('/api/documents/upload', {
+        // Use Promise constructor to fully control error handling
+        new Promise<void>((resolve, reject) => {
+          fetch('/api/documents/upload', {
             method: 'POST',
             body: formData,
-          });
-
-          if (!response.ok) {
-            throw new Error(`Upload failed: ${response.status}`);
-          }
-
-          const result = await response.json();
-          console.log('Upload successful:', result);
-          
-          // Clear progress and show success
-          clearInterval(progressInterval);
-          setUploadProgress(100);
-          
-          // Refresh documents list with promise handling
-          try {
-            await queryClient.invalidateQueries({ queryKey: ["/api/documents", appointmentId] });
-          } catch (queryError) {
-            console.log('Query invalidation error (non-critical):', queryError);
-          }
-          
-          // Show success toast with promise handling
-          try {
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Upload failed: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(result => {
+            console.log('Upload successful:', result);
+            
+            // Clear progress and show success
+            clearInterval(progressInterval);
+            setUploadProgress(100);
+            
+            // Refresh documents list (non-blocking)
+            queryClient.invalidateQueries({ queryKey: ["/api/documents", appointmentId] }).catch(() => {});
+            
+            // Show success toast
             toast({
               title: "Document Uploaded",
               description: "Your document has been uploaded successfully.",
             });
-          } catch (toastError) {
-            console.log('Toast error (non-critical):', toastError);
-          }
-          
-          setTimeout(() => {
-            try {
-              setUploadProgress(0);
-            } catch (progressError) {
-              console.log('Progress reset error (non-critical):', progressError);
-            }
-          }, 1000);
-          
-        } catch (uploadError) {
-          console.log('Direct upload error:', uploadError);
-          clearInterval(progressInterval);
-          setUploadProgress(0);
-          
-          try {
+            
+            setTimeout(() => setUploadProgress(0), 1000);
+            resolve();
+          })
+          .catch(uploadError => {
+            console.log('Upload failed:', uploadError?.message || uploadError || 'Unknown error');
+            clearInterval(progressInterval);
+            setUploadProgress(0);
+            
             toast({
               title: "Upload Failed",
-              description: uploadError instanceof Error ? uploadError.message : "Failed to upload document",
+              description: uploadError?.message || "Failed to upload document",
               variant: "destructive",
             });
-          } catch (toastError) {
-            console.log('Error toast failed (non-critical):', toastError);
-          }
-        }
+            resolve(); // Always resolve to prevent unhandled rejection
+          });
+        }).catch(() => {}); // Final catch to prevent any escape
       }
     } catch (error) {
       console.log('File processing error:', error);

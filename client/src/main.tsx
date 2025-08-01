@@ -46,6 +46,10 @@ window.addEventListener('unhandledrejection', (event) => {
   event.preventDefault();
   // Stop the event completely
   event.stopImmediatePropagation();
+  // Force handled
+  if (event.promise) {
+    event.promise.catch(() => {});
+  }
   return false;
 });
 
