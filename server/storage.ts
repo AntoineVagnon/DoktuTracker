@@ -496,10 +496,19 @@ export class PostgresStorage implements IStorage {
           // Check if this slot conflicts with any confirmed appointment
           const hasConflictingAppointment = confirmedAppointments.some(apt => {
             const appointmentDate = new Date(apt.appointmentDate);
-            const appointmentDateString = appointmentDate.toISOString().split('T')[0];
-            const appointmentTimeString = appointmentDate.toISOString().split('T')[1].slice(0, 8);
             
-            return current.date === appointmentDateString && current.startTime === appointmentTimeString;
+            // Convert UTC appointment time to local time for matching
+            const localAppointmentDate = new Date(appointmentDate.getTime() - (appointmentDate.getTimezoneOffset() * 60000));
+            const appointmentDateString = localAppointmentDate.toISOString().split('T')[0];
+            const appointmentTimeString = localAppointmentDate.toISOString().split('T')[1].slice(0, 8);
+            
+            const isMatch = current.date === appointmentDateString && current.startTime === appointmentTimeString;
+            
+            if (isMatch) {
+              console.log(`🎯 MATCH FOUND: Slot ${current.date} ${current.startTime} matches appointment ${apt.id} (${appointmentDateString} ${appointmentTimeString})`);
+            }
+            
+            return isMatch;
           });
           
           // If there's a conflicting appointment, mark slot as unavailable
