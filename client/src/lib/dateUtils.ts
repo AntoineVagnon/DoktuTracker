@@ -10,6 +10,12 @@ export function formatAppointmentDateTime(dateString: string): string {
   // Convert UTC appointment time to local time for display
   const localDate = utcToLocal(dateString);
   
+  // Add validation to prevent NaN values
+  if (isNaN(localDate.getTime())) {
+    console.error('Invalid date string:', dateString);
+    return 'Invalid date';
+  }
+  
   const day = String(localDate.getDate()).padStart(2, '0');
   const month = String(localDate.getMonth() + 1).padStart(2, '0');
   const year = localDate.getFullYear();
@@ -21,6 +27,12 @@ export function formatAppointmentDateTime(dateString: string): string {
 export function formatAppointmentDateTimeUS(dateString: string): string {
   // Convert UTC appointment time to local time for display
   const localDate = utcToLocal(dateString);
+  
+  // Add validation to prevent NaN values
+  if (isNaN(localDate.getTime())) {
+    console.error('Invalid date string:', dateString);
+    return 'Invalid date';
+  }
   
   const day = localDate.getDate();
   const month = localDate.toLocaleDateString('en-US', { month: 'short' });
@@ -35,6 +47,12 @@ export function formatAppointmentDateTimeUS(dateString: string): string {
 export function formatTimeOnly(dateString: string): string {
   // Convert UTC appointment time to local time for display
   const localDate = utcToLocal(dateString);
+  
+  // Add validation to prevent NaN values
+  if (isNaN(localDate.getTime())) {
+    console.error('Invalid date string:', dateString);
+    return 'Invalid time';
+  }
   
   const hours = String(localDate.getHours()).padStart(2, '0');
   const minutes = String(localDate.getMinutes()).padStart(2, '0');
@@ -107,6 +125,12 @@ export function getAppointmentTimingStatus(appointmentDate: string): Appointment
   // Convert UTC appointment time to local time
   const localAppointmentTime = utcToLocal(appointmentDate);
   
+  // Validate date
+  if (isNaN(localAppointmentTime.getTime())) {
+    console.error('Invalid appointment date:', appointmentDate);
+    return 'upcoming'; // Default to upcoming for invalid dates
+  }
+  
   // Calculate time differences in minutes
   const timeDifference = (localAppointmentTime.getTime() - now.getTime()) / (1000 * 60);
   
@@ -171,6 +195,12 @@ export function getTimeUntilAppointment(appointmentDate: string): string {
   
   // Convert UTC appointment time to local time
   const localAppointmentTime = utcToLocal(appointmentDate);
+  
+  // Validate date
+  if (isNaN(localAppointmentTime.getTime())) {
+    console.error('Invalid appointment date:', appointmentDate);
+    return 'Invalid time';
+  }
   
   const timeDifference = localAppointmentTime.getTime() - now.getTime();
   const minutes = Math.floor(timeDifference / (1000 * 60));

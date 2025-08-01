@@ -7,8 +7,8 @@
  * Convert UTC date string to local time for display
  */
 export function utcToLocal(utcDateString: string): Date {
-  const utcDate = new Date(utcDateString);
-  return new Date(utcDate.toLocaleString());
+  // Simply return the Date object - JavaScript automatically handles timezone conversion
+  return new Date(utcDateString);
 }
 
 /**

@@ -50,8 +50,13 @@ export function DoctorsGrid() {
 
   const formatSlotTime = (dateString: string) => {
     // Convert UTC to local time for display
-    const utcDate = new Date(dateString);
-    const localDate = new Date(utcDate.toLocaleString());
+    const localDate = new Date(dateString);
+    
+    // Validate date
+    if (isNaN(localDate.getTime())) {
+      console.error('Invalid date string:', dateString);
+      return 'Invalid date';
+    }
     
     const today = new Date();
     const tomorrow = new Date();

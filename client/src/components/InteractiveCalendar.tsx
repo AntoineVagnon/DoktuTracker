@@ -259,8 +259,9 @@ export default function InteractiveCalendar() {
     // Check for available slot
     const availableSlot = timeSlots.find((slot: TimeSlot) => {
       // Convert UTC to local time for proper comparison
-      const utcSlotTime = new Date(slot.startTime);
-      const localSlotTime = new Date(utcSlotTime.toLocaleString());
+      const localSlotTime = new Date(slot.startTime);
+      if (isNaN(localSlotTime.getTime())) return false;
+      
       const slotDate = localSlotTime.toISOString().split('T')[0];
       const slotHour = localSlotTime.getHours();
       const slotMinute = localSlotTime.getMinutes();
