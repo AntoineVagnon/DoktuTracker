@@ -750,6 +750,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/time-slots/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { isAvailable } = req.body;
+      
+      if (typeof isAvailable !== 'boolean') {
+        return res.status(400).json({ error: "isAvailable must be a boolean" });
+      }
+
+      const timeSlot = await storage.updateTimeSlot(id, { isAvailable });
+      
+      res.json(timeSlot);
+    } catch (error) {
+      console.error("Error updating time slot availability:", error);
+      res.status(500).json({ message: "Failed to update time slot" });
+    }
+  });
+
   app.put("/api/time-slots/:id", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
@@ -867,11 +885,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
           const appointmentDate = new Date(appointment.appointmentDate);
           
-          // Convert to local time for matching with slots that are stored in local time format
-          const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format (local time)
+          // Extract date and time components from UTC appointment date
           const appointmentDateString = appointmentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+          const appointmentTimeString = appointmentDate.toISOString().split('T')[1].slice(0, 8); // HH:MM:SS format from UTC
           
-          console.log(`🔍 Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString} (local time)`);
+          console.log(`🔍 Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString} (UTC time)`);
           console.log(`📅 Available slots:`, timeSlots.map(s => `${s.date} ${s.startTime} (available: ${s.isAvailable})`));
           
           const matchingSlot = timeSlots.find(slot => 

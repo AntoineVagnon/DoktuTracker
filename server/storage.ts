@@ -467,7 +467,7 @@ export class PostgresStorage implements IStorage {
     console.log(`🔍 Looking for time slots for doctor ID: ${doctorIntId}`);
     
     try {
-      // Now using integer doctor_id - schema fixed!
+      // Get time slots
       let query = db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.doctorId, doctorIntId));
       
       if (date) {
@@ -477,12 +477,37 @@ export class PostgresStorage implements IStorage {
       const rawSlots = await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
       console.log(`📅 Found ${rawSlots.length} raw time slots for doctor ${doctorIntId}`);
       
+      // Get confirmed appointments for this doctor
+      const confirmedAppointments = await db.select()
+        .from(appointments)
+        .where(and(
+          eq(appointments.doctorId, doctorIntId),
+          inArray(appointments.status, ['paid', 'confirmed'])
+        ));
+      
+      console.log(`🔒 Found ${confirmedAppointments.length} confirmed appointments that should block slots`);
+      
       // Remove duplicates by date+startTime, keeping the most restrictive availability
       const uniqueSlots = rawSlots.reduce((acc: TimeSlot[], current: TimeSlot) => {
         const key = `${current.date}_${current.startTime}`;
         const existingIndex = acc.findIndex(slot => `${slot.date}_${slot.startTime}` === key);
         
         if (existingIndex === -1) {
+          // Check if this slot conflicts with any confirmed appointment
+          const hasConflictingAppointment = confirmedAppointments.some(apt => {
+            const appointmentDate = new Date(apt.appointmentDate);
+            const appointmentDateString = appointmentDate.toISOString().split('T')[0];
+            const appointmentTimeString = appointmentDate.toISOString().split('T')[1].slice(0, 8);
+            
+            return current.date === appointmentDateString && current.startTime === appointmentTimeString;
+          });
+          
+          // If there's a conflicting appointment, mark slot as unavailable
+          if (hasConflictingAppointment && current.isAvailable) {
+            console.log(`🔒 Slot ${current.date} ${current.startTime} has conflicting appointment - marking as unavailable`);
+            current.isAvailable = false;
+          }
+          
           acc.push(current);
         } else {
           // Keep the slot that is NOT available (more restrictive) if one exists
@@ -493,7 +518,7 @@ export class PostgresStorage implements IStorage {
         return acc;
       }, []);
       
-      console.log(`📅 After deduplication: ${uniqueSlots.length} unique slots for doctor ${doctorIntId}`);
+      console.log(`📅 After deduplication and appointment filtering: ${uniqueSlots.length} unique slots for doctor ${doctorIntId}`);
       return uniqueSlots;
     } catch (error) {
       console.error(`Error fetching time slots for doctor ${doctorIntId}:`, error);
