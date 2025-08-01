@@ -997,6 +997,33 @@ export class PostgresStorage implements IStorage {
     }
   }
 
+  async getDocumentsByPatient(patientId: number): Promise<DocumentUpload[]> {
+    try {
+      // Join documents with appointments to get patient documents
+      const docs = await db
+        .select({
+          id: documentUploads.id,
+          fileName: documentUploads.fileName,
+          uploadUrl: documentUploads.uploadUrl,
+          fileType: documentUploads.fileType,
+          fileSize: documentUploads.fileSize,
+          uploadedBy: documentUploads.uploadedBy,
+          appointmentId: documentUploads.appointmentId,
+          documentType: documentUploads.documentType,
+          uploadedAt: documentUploads.uploadedAt
+        })
+        .from(documentUploads)
+        .innerJoin(appointments, eq(documentUploads.appointmentId, appointments.id))
+        .where(eq(appointments.patientId, patientId))
+        .orderBy(desc(documentUploads.uploadedAt));
+      
+      return docs;
+    } catch (error) {
+      console.error('Error fetching documents for patient:', error);
+      return [];
+    }
+  }
+
   async createDocument(document: InsertDocumentUpload): Promise<DocumentUpload> {
     try {
       const [newDocument] = await db

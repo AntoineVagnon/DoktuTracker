@@ -1024,6 +1024,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/documents/patient/:patientId", isAuthenticated, async (req, res) => {
+    try {
+      const patientId = parseInt(req.params.patientId);
+      const documents = await storage.getDocumentsByPatient(patientId);
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching patient documents:", error);
+      res.status(500).json({ message: "Failed to fetch patient documents" });
+    }
+  });
+
   app.post("/api/documents/upload", isAuthenticated, upload.single('file'), async (req, res) => {
     try {
       console.log('📁 Document upload request received');

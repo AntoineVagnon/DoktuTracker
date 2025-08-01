@@ -30,6 +30,12 @@ export default function PatientRecords() {
     enabled: !!selectedPatientId,
   });
 
+  // Fetch documents for selected patient
+  const { data: patientDocuments = [], isLoading: isLoadingDocuments } = useQuery({
+    queryKey: [`/api/documents/patient/${selectedPatientId}`],
+    enabled: !!selectedPatientId,
+  });
+
   // Get unique patients from appointments
   const uniquePatients = (appointments as any[])
     .filter((apt: any) => apt.patient)
@@ -230,24 +236,41 @@ export default function PatientRecords() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {/* Document upload area */}
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                    <p className="text-gray-600 mb-2">Drag and drop files here, or click to browse</p>
-                    <p className="text-xs text-gray-500">Supports PDF, PNG, JPG up to 10MB per file</p>
-                    <Button variant="outline" className="mt-4">
-                      Choose Files
-                    </Button>
-                  </div>
-                  
-                  {/* Document list placeholder */}
-                  <div className="mt-6">
-                    <h4 className="font-medium text-gray-900 mb-3">Recent Documents</h4>
+                  {isLoadingDocuments ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
+                    </div>
+                  ) : patientDocuments.length > 0 ? (
+                    <div className="space-y-4">
+                      {patientDocuments.map((document: any) => (
+                        <div key={document.id} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <FileText className="h-5 w-5 text-gray-500" />
+                            <div>
+                              <p className="font-medium text-gray-900">{document.fileName}</p>
+                              <p className="text-sm text-gray-500">
+                                Uploaded on {new Date(document.uploadedAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {document.fileType?.toUpperCase() || 'FILE'}
+                            </Badge>
+                            <Button variant="outline" size="sm">
+                              View
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
                     <div className="text-center py-8 text-gray-500">
                       <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                       <p>No documents uploaded yet</p>
+                      <p className="text-sm mt-1">Patient hasn't uploaded any documents</p>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
