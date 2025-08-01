@@ -510,54 +510,36 @@ export default function Dashboard() {
           </Button>
         </div>
 
-        {/* Live Appointments Banner */}
+        {/* Live Appointments Banner - Compact */}
         {live.length > 0 && (
-          <Card className="mb-6 bg-green-50 border-green-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-green-800 text-lg">
-                <Activity className="h-5 w-5" />
-                Live Appointments
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {live.map((appointment: any) => (
-                  <div key={appointment.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-white border border-green-200 rounded-lg space-y-3 sm:space-y-0">
-                    <div className="flex-1">
-                      <div className="font-medium text-base text-green-800">
-                        Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
-                      </div>
-                      <div className="text-sm text-green-600 mt-1 flex items-center gap-2">
-                        <Clock className="h-4 w-4" />
-                        {formatAppointmentDateTimeUS(appointment.appointmentDate)} • {getTimeUntilAppointment(appointment.appointmentDate)}
-                      </div>
+          <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3">
+            {live.map((appointment: any) => (
+              <div key={appointment.id} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Activity className="h-4 w-4 text-green-600" />
+                  <div>
+                    <div className="font-medium text-sm text-green-800">
+                      Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
                     </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-2">
-                      <span className="text-sm sm:text-base text-green-600 font-medium">
-                        €{appointment.price}
-                      </span>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 h-9 px-3">
-                        <Video className="h-4 w-4 mr-2 sm:mr-0" />
-                        <span className="sm:hidden">Join</span>
-                        <span className="hidden sm:inline">Join Call</span>
-                      </Button>
+                    <div className="text-xs text-green-600 flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {format(new Date(appointment.appointmentDate), 'MMM d, h:mm a')} • {getTimeUntilAppointment(appointment.appointmentDate)}
                     </div>
                   </div>
-                ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-green-600 font-medium">€{appointment.price}</span>
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700 h-8 px-3 text-xs">
+                    <Video className="h-3 w-3 mr-1" />
+                    Join Call
+                  </Button>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            ))}
+          </div>
         )}
 
-        {/* Banner System */}
-        <BannerSystem 
-          className="mb-6" 
-          onOpenHealthProfile={() => setHealthProfileOpen(true)}
-          onOpenDocumentUpload={(appointmentId) => {
-            setSelectedAppointmentId(appointmentId);
-            setDocumentUploadOpen(true);
-          }}
-        />
+        {/* Banner System - Removed for cleaner UI */}
 
         <div className="max-w-4xl mx-auto px-0 sm:px-4">
           {/* Main Content */}
