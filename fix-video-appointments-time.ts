@@ -1,85 +1,62 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import { appointments as appointmentsTable, users, doctors, doctorTimeSlots } from './shared/schema';
-import { eq, and, gte } from 'drizzle-orm';
+import { db } from './server/db';
+import { appointments } from './shared/schema';
+import { eq } from 'drizzle-orm';
 
-// Create database connection using the same settings as the server
-const databaseUrl = process.env.DATABASE_URL!;
-const client = postgres(databaseUrl.replace('[YOUR-PASSWORD]', process.env.DATABASE_PASSWORD || ''));
-const db = drizzle(client);
-
-async function createTestVideoAppointments() {
+async function fixVideoAppointmentsTimes() {
   try {
-    console.log('Creating test video appointments...');
+    console.log('🎥 Fixing video appointment times to match 30-minute intervals...');
     
-    // Find the patient (patient@test40.com) - ID is 49 based on logs
-    const patientId = 49;
-    
-    // Dr. James Rodriguez - ID is 9
-    const doctorId = 9;
-    
-    // Get current time and create appointments for immediate testing
     const now = new Date();
     
-    // Create 3 appointments:
-    // 1. One that's already "live" (started 5 minutes ago)
-    // 2. One that starts in 3 minutes (can join soon)
-    // 3. One that starts in 15 minutes (waiting)
+    // Round current time to nearest 30-minute interval
+    const minutes = now.getMinutes();
+    const roundedMinutes = Math.round(minutes / 30) * 30;
+    now.setMinutes(roundedMinutes, 0, 0);
     
-    const appointments = [
-      {
-        // Live appointment (started 5 minutes ago)
-        appointmentDate: new Date(now.getTime() - 5 * 60 * 1000),
-        description: 'Live appointment',
-      },
-      {
-        // Starting in 3 minutes
-        appointmentDate: new Date(now.getTime() + 3 * 60 * 1000),
-        description: 'Starting soon',
-      },
-      {
-        // Starting in 15 minutes
-        appointmentDate: new Date(now.getTime() + 15 * 60 * 1000),
-        description: 'Waiting appointment',
-      },
-    ];
+    // Update appointment 24 to be at current rounded time (live)
+    const liveTime = new Date(now);
+    await db.update(appointments).set({
+      type: 'video',
+      appointmentDate: liveTime,
+      zoomMeetingId: 'test-meeting-24',
+      zoomJoinUrl: 'https://zoom.us/j/test24',
+      zoomStartUrl: 'https://zoom.us/s/test24',
+      updatedAt: new Date()
+    }).where(eq(appointments.id, 24));
+    console.log(`✅ Updated appointment 24 to ${liveTime.toISOString()} (live now)`);
     
-    for (let i = 0; i < appointments.length; i++) {
-      const appt = appointments[i];
-      
-      const [newAppointment] = await db.insert(appointmentsTable).values({
-        patientId: patientId,
-        doctorId: doctorId,
-        appointmentDate: appt.appointmentDate,
-        status: 'confirmed',
-        type: 'video',
-        paymentStatus: 'paid',
-        paymentIntentId: `test_video_${Date.now()}_${i}`,
-        paymentAmount: 5000, // €50.00
-        currency: 'eur',
-        // Add Zoom meeting details
-        zoomMeetingId: `test-meeting-${Date.now()}-${i}`,
-        zoomJoinUrl: `https://zoom.us/j/test${Date.now()}${i}`,
-        zoomStartUrl: `https://zoom.us/s/test${Date.now()}${i}`,
-      }).returning();
-
-      console.log(`✅ Created ${appt.description}:`, {
-        id: newAppointment.id,
-        date: newAppointment.appointmentDate,
-        type: newAppointment.type,
-        zoomJoinUrl: newAppointment.zoomJoinUrl,
-      });
-    }
-
-    console.log('✅ Successfully created 3 test video appointments!');
-    console.log('Please refresh your dashboard to see the new video consultations.');
+    // Update appointment 16 to next 30-minute slot
+    const nextSlotTime = new Date(now.getTime() + 30 * 60 * 1000);
+    await db.update(appointments).set({
+      type: 'video',
+      appointmentDate: nextSlotTime,
+      zoomMeetingId: 'test-meeting-16',
+      zoomJoinUrl: 'https://zoom.us/j/test16',
+      zoomStartUrl: 'https://zoom.us/s/test16',
+      updatedAt: new Date()
+    }).where(eq(appointments.id, 16));
+    console.log(`✅ Updated appointment 16 to ${nextSlotTime.toISOString()} (next slot)`);
     
+    // Update appointment 22 to slot after that
+    const laterSlotTime = new Date(now.getTime() + 60 * 60 * 1000);
+    await db.update(appointments).set({
+      type: 'video',
+      appointmentDate: laterSlotTime,
+      zoomMeetingId: 'test-meeting-22',
+      zoomJoinUrl: 'https://zoom.us/j/test22',
+      zoomStartUrl: 'https://zoom.us/s/test22',
+      updatedAt: new Date()
+    }).where(eq(appointments.id, 22));
+    console.log(`✅ Updated appointment 22 to ${laterSlotTime.toISOString()} (in 1 hour)`);
+    
+    console.log('\n✅ Successfully fixed video appointment times!');
+    console.log('All appointments now align with 30-minute intervals.');
+    
+    process.exit(0);
   } catch (error) {
-    console.error('Error creating test appointments:', error);
-  } finally {
-    await client.end();
+    console.error('❌ Error:', error);
+    process.exit(1);
   }
 }
 
-// Run the script
-createTestVideoAppointments();
+fixVideoAppointmentsTimes();
