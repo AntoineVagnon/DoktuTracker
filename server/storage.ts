@@ -1268,9 +1268,9 @@ export class PostgresStorage implements IStorage {
     cancellationRate: number;
     status: 'active' | 'pending' | 'inactive';
   }>> {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    console.log('getAdminDoctorRoster - thirtyDaysAgo:', thirtyDaysAgo, typeof thirtyDaysAgo);
+    try {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     // Get all doctors with their users
     const doctorsData = await db
@@ -1302,7 +1302,7 @@ export class PostgresStorage implements IStorage {
         .from(appointments)
         .where(and(
           eq(appointments.doctorId, doctor.id),
-          gte(appointments.appointmentDate, thirtyDaysAgo),
+          gte(appointments.appointmentDate, thirtyDaysAgo.toISOString()),
           sql`status IN ('paid', 'completed')`
         ));
 
@@ -1312,7 +1312,7 @@ export class PostgresStorage implements IStorage {
         .from(appointments)
         .where(and(
           eq(appointments.doctorId, doctor.id),
-          gte(appointments.appointmentDate, thirtyDaysAgo),
+          gte(appointments.appointmentDate, thirtyDaysAgo.toISOString()),
           eq(appointments.status, 'cancelled')
         ));
 
@@ -1335,7 +1335,11 @@ export class PostgresStorage implements IStorage {
       };
     }));
 
-    return doctorMetrics;
+      return doctorMetrics;
+    } catch (error) {
+      console.error('Error in getAdminDoctorRoster:', error);
+      throw error;
+    }
   }
   
   async getAppointmentChanges(appointmentId: string): Promise<any[]> {
