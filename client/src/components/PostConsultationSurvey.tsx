@@ -28,12 +28,14 @@ export function PostConsultationSurvey({
   const queryClient = useQueryClient();
 
   const submitSurveyMutation = useMutation({
-    mutationFn: (data: { rating: number; comment: string }) => 
-      apiRequest({
-        url: `/api/appointments/${appointmentId}/survey`,
-        method: 'POST',
-        body: data
-      }),
+    mutationFn: async (data: { rating: number; comment: string }) => {
+      const response = await apiRequest(
+        'POST',
+        `/api/appointments/${appointmentId}/survey`,
+        data
+      );
+      return response.json();
+    },
     onSuccess: () => {
       toast({
         title: "Thank you!",
@@ -64,13 +66,17 @@ export function PostConsultationSurvey({
     submitSurveyMutation.mutate({ rating, comment });
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
     // For patients, we'll show a reminder later
     if (userRole === 'patient') {
-      apiRequest({
-        url: `/api/appointments/${appointmentId}/survey/skip`,
-        method: 'POST'
-      });
+      try {
+        await apiRequest(
+          'POST',
+          `/api/appointments/${appointmentId}/survey/skip`
+        );
+      } catch (error) {
+        console.error('Failed to skip survey:', error);
+      }
     }
     onClose();
   };
