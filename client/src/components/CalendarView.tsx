@@ -1,16 +1,20 @@
 import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { queryClient, apiRequest } from '@/lib/queryClient';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay, isToday, parseISO, differenceInMinutes, startOfDay, addHours, isWithinInterval } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar, ChevronLeft, ChevronRight, Clock, Video, AlertCircle, Users, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { utcToLocal, formatAppointmentTime } from '@/lib/timezoneUtils';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 interface Appointment {
   id: number;
@@ -47,10 +51,62 @@ export function CalendarView({ userRole, userId }: CalendarViewProps) {
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'day'>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showDayDetails, setShowDayDetails] = useState(false);
+  const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const { toast } = useToast();
 
   // Fetch appointments
   const { data: appointments = [], isLoading } = useQuery<Appointment[]>({
     queryKey: ['/api/appointments'],
+  });
+
+  // Reschedule mutation
+  const rescheduleMutation = useMutation({
+    mutationFn: async ({ appointmentId, newDate }: { appointmentId: number, newDate: string }) => {
+      return apiRequest(`/api/appointments/${appointmentId}/reschedule`, JSON.stringify({ newDate }));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+      setShowRescheduleDialog(false);
+      setSelectedAppointment(null);
+      toast({
+        title: "Appointment Rescheduled",
+        description: "Your appointment has been successfully rescheduled.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Reschedule Failed",
+        description: error.message || "Failed to reschedule appointment. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Cancel mutation
+  const cancelMutation = useMutation({
+    mutationFn: async ({ appointmentId, reason }: { appointmentId: number, reason: string }) => {
+      return apiRequest(`/api/appointments/${appointmentId}/cancel`, JSON.stringify({ reason }));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+      setShowCancelDialog(false);
+      setSelectedAppointment(null);
+      setCancelReason('');
+      toast({
+        title: "Appointment Cancelled",
+        description: "The appointment has been cancelled.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Cancellation Failed",
+        description: error.message || "Failed to cancel appointment. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
   // Calculate date ranges based on view mode
@@ -372,6 +428,14 @@ export function CalendarView({ userRole, userId }: CalendarViewProps) {
                       userRole={userRole}
                       canJoin={canJoinAppointment(apt)}
                       canReschedule={canRescheduleAppointment(apt)}
+                      onReschedule={(apt) => {
+                        setSelectedAppointment(apt);
+                        setShowRescheduleDialog(true);
+                      }}
+                      onCancel={(apt) => {
+                        setSelectedAppointment(apt);
+                        setShowCancelDialog(true);
+                      }}
                     />
                   ))}
                 </div>
@@ -383,9 +447,22 @@ export function CalendarView({ userRole, userId }: CalendarViewProps) {
     );
   };
 
+  // Handle reschedule
+  const handleReschedule = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setShowRescheduleDialog(true);
+  };
+
+  // Handle cancel
+  const handleCancel = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setShowCancelDialog(true);
+  };
+
   return (
-    <Card>
-      <CardHeader>
+    <>
+      <Card>
+        <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center">
             <Calendar className="h-5 w-5 mr-2" />
@@ -477,8 +554,101 @@ export function CalendarView({ userRole, userId }: CalendarViewProps) {
         userRole={userRole}
         canJoinAppointment={canJoinAppointment}
         canRescheduleAppointment={canRescheduleAppointment}
+        onReschedule={handleReschedule}
+        onCancel={handleCancel}
       />
     </Card>
+
+    {/* Reschedule Dialog */}
+    <Dialog open={showRescheduleDialog} onOpenChange={setShowRescheduleDialog}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Reschedule Appointment</DialogTitle>
+          <DialogDescription>
+            Select a new time for your appointment with {selectedAppointment?.doctor?.user?.firstName} {selectedAppointment?.doctor?.user?.lastName}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <p className="text-sm text-gray-600">
+            Current time: {selectedAppointment && formatAppointmentTime(selectedAppointment.appointmentDate)}
+          </p>
+          {/* Add time slot selection here */}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowRescheduleDialog(false)}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={() => {
+              if (selectedAppointment) {
+                // Implement reschedule logic
+                toast({
+                  title: "Feature coming soon",
+                  description: "Rescheduling functionality will be available soon.",
+                });
+                setShowRescheduleDialog(false);
+              }
+            }}
+          >
+            Confirm Reschedule
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* Cancel Dialog */}
+    <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Cancel Appointment</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to cancel this appointment? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div>
+            <Label htmlFor="cancel-reason">Reason for cancellation</Label>
+            <Textarea
+              id="cancel-reason"
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder="Please provide a reason for cancellation..."
+              className="mt-2"
+              rows={3}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => {
+            setShowCancelDialog(false);
+            setCancelReason('');
+          }}>
+            Keep Appointment
+          </Button>
+          <Button 
+            variant="destructive"
+            onClick={() => {
+              if (selectedAppointment && cancelReason.trim()) {
+                cancelMutation.mutate({
+                  appointmentId: selectedAppointment.id,
+                  reason: cancelReason.trim()
+                });
+              } else {
+                toast({
+                  title: "Reason required",
+                  description: "Please provide a reason for cancellation.",
+                  variant: "destructive",
+                });
+              }
+            }}
+            disabled={cancelMutation.isPending}
+          >
+            {cancelMutation.isPending ? "Cancelling..." : "Cancel Appointment"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
 
@@ -487,12 +657,16 @@ function AppointmentCard({
   appointment, 
   userRole, 
   canJoin, 
-  canReschedule 
+  canReschedule,
+  onReschedule,
+  onCancel
 }: { 
   appointment: Appointment;
   userRole: string;
   canJoin: boolean;
   canReschedule: boolean;
+  onReschedule: (apt: Appointment) => void;
+  onCancel: (apt: Appointment) => void;
 }) {
   return (
     <div className={cn(
@@ -540,26 +714,43 @@ function AppointmentCard({
             </Button>
           )}
           {canReschedule && userRole === 'patient' && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                // Handle reschedule
-              }}
-            >
-              Reschedule
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onReschedule(appointment)}
+                  >
+                    Reschedule
+                  </Button>
+                </TooltipTrigger>
+                {!canReschedule && (
+                  <TooltipContent>
+                    <p>Changes allowed until 60 minutes before start</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           )}
           {userRole === 'doctor' && appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
             <Button
               size="sm"
               variant="ghost"
               className="text-red-600 hover:text-red-700"
-              onClick={() => {
-                // Handle cancel
-              }}
+              onClick={() => onCancel(appointment)}
             >
               Cancel
+            </Button>
+          )}
+          {userRole === 'admin' && canReschedule === false && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-orange-600"
+              onClick={() => onReschedule(appointment)}
+            >
+              Override Reschedule
             </Button>
           )}
         </div>
@@ -576,7 +767,9 @@ function DayDetailsModal({
   appointments, 
   userRole,
   canJoinAppointment,
-  canRescheduleAppointment
+  canRescheduleAppointment,
+  onReschedule,
+  onCancel
 }: { 
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -585,6 +778,8 @@ function DayDetailsModal({
   userRole: string;
   canJoinAppointment: (apt: Appointment) => boolean;
   canRescheduleAppointment: (apt: Appointment) => boolean;
+  onReschedule: (apt: Appointment) => void;
+  onCancel: (apt: Appointment) => void;
 }) {
   if (!date) return null;
 
@@ -617,6 +812,8 @@ function DayDetailsModal({
                   userRole={userRole}
                   canJoin={canJoinAppointment(appointment)}
                   canReschedule={canRescheduleAppointment(appointment)}
+                  onReschedule={onReschedule}
+                  onCancel={onCancel}
                 />
               ))
           )}

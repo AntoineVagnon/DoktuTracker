@@ -1,0 +1,93 @@
+Feature: Calendar – multi-appointment rendering and inline actions
+
+# 1 — GENERAL RENDERING ################################################
+
+Scenario: Show multiple appointments on the same day
+  Given I am on the Month view
+  And I have 3 confirmed appointments on August 1
+  Then the August 1 tile displays
+    | 09:00 |
+    | 14:00 |
+    | +1    |   # If more events than fit, show “+n”
+
+Scenario: Switch to Day view for crowded day
+  When I click the August 1 tile
+  Then the view shifts to Day mode for August 1
+  And I see a vertical timeline listing every appointment
+
+Scenario: Week view shows stacked blocks
+  Given I am on Week view
+  And two appointments overlap in time
+  Then their blocks are displayed side-by-side with equal width
+  And hover tooltip reveals full details
+
+# 2 — INLINE ACTIONS (PATIENT) #########################################
+
+Scenario: Patient joins live appointment from calendar
+  Given the appointment starts in ≤5 minutes
+  When I click the green “Join” button in the Day view
+  Then the Zoom call opens in a new tab
+  And the appointment card is marked “In progress”
+
+Scenario: Patient reschedules from Day view
+  Given the appointment is >60 minutes away
+  When I click “Reschedule” in its quick-peek panel
+  Then the time-selection modal opens pre-filled with current slot
+
+Scenario: Patient tries to reschedule inside 60-minute window
+  Given the appointment starts in 30 minutes
+  When I click “Reschedule”
+  Then a tooltip appears: “Changes allowed until 60 minutes before start”
+
+# 3 — INLINE ACTIONS (DOCTOR) ##########################################
+
+Scenario: Doctor joins upcoming appointment
+  Given I am a doctor
+  And the session starts in 5 minutes
+  When I click “Join” on the tile
+  Then the Zoom call opens with patient profile side-panel
+
+Scenario: Doctor cancels appointment with reason
+  Given the appointment is live but patient has not joined
+  When I click “Cancel” and enter a reason
+  Then the tile turns red and is labelled “Cancelled by doctor”
+  And the patient receives a notification
+
+# 4 — ADMIN / SUPPORT VIEW #############################################
+
+Scenario: Admin hovers a day tile
+  Given I am an admin
+  When I hover August 1
+  Then I see counts by status:
+    | Confirmed | 4 |
+    | Pending   | 1 |
+    | Cancelled | 0 |
+
+Scenario: Admin opens quick-peek and overrides time rule
+  Given an appointment starts in 20 minutes
+  When I click “Override Reschedule” in the peek panel
+  Then the reschedule modal opens without 60-minute restriction
+
+# 5 — EDGE CASES #######################################################
+
+Scenario: More than 4 appointments on one tile
+  Given a day contains 6 appointments
+  Then the tile shows the first 3 start times and “+3 more”
+  And clicking the tile opens a scrollable list of all 6
+
+Scenario: Day view spanning midnight
+  Given a doctor has back-to-back sessions from 23:30 to 00:30
+  Then the timeline shows both slots under the correct dates
+  And scrolling across midnight is seamless
+
+Scenario: Overlapping actions
+  Given I open the reschedule modal
+  And the appointment is cancelled by the other party meanwhile
+  When I confirm the new time
+  Then I see an error banner: “Appointment was modified—please refresh”
+
+Scenario: Offline / slow network rendering fallback
+  When calendar events fail to load
+  Then skeleton placeholders appear
+  And a retry link is displayed
+
