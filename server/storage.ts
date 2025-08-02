@@ -1225,7 +1225,8 @@ export class PostgresStorage implements IStorage {
     ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
     patientStats.forEach(patient => {
-      const isChurnRisk = patient.lastAppointment < ninetyDaysAgo;
+      const lastAppointmentDate = patient.lastAppointment ? new Date(patient.lastAppointment) : null;
+      const isChurnRisk = lastAppointmentDate && lastAppointmentDate < ninetyDaysAgo;
       
       if (patient.totalSpent > 500) {
         segments.vip.patients.push(patient);
@@ -1269,6 +1270,7 @@ export class PostgresStorage implements IStorage {
   }>> {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    console.log('getAdminDoctorRoster - thirtyDaysAgo:', thirtyDaysAgo, typeof thirtyDaysAgo);
 
     // Get all doctors with their users
     const doctorsData = await db

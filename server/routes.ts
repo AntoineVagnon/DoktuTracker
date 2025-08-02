@@ -819,9 +819,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const doctors = await storage.getAdminDoctorRoster();
-      
-      res.json(doctors);
+      try {
+        const doctors = await storage.getAdminDoctorRoster();
+        res.json(doctors);
+      } catch (error) {
+        console.error("Error fetching doctor roster:", error);
+        throw error;
+      }
     } catch (error) {
       console.error("Error fetching doctor roster:", error);
       res.status(500).json({ message: "Failed to fetch doctors" });
