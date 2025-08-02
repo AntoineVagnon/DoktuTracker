@@ -86,26 +86,40 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
     const canJoin = sessionStatus === 'live' || (sessionStatus === 'waiting' && minutesUntilStart <= 5);
 
     return (
-      <div className="border border-blue-200 bg-blue-50/50 rounded-lg p-4 space-y-3">
-        {/* Compact header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <div className="border border-blue-200 bg-blue-50/50 rounded-lg p-3">
+        {/* Single line compact layout */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 flex-1">
             <Video className="h-5 w-5 text-blue-600" />
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Video Consultation</span>
-              {sessionStatus === 'live' && (
-                <Badge className="bg-green-600">Live</Badge>
-              )}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Video Consultation</span>
+                {sessionStatus === 'live' && (
+                  <Badge className="bg-green-600">Live</Badge>
+                )}
+              </div>
+              <div className="text-sm text-gray-600">
+                Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName} • {appointmentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
             </div>
           </div>
-          <div className="text-sm text-gray-600">
-            Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName} • {appointmentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </div>
+          
+          {/* Join button */}
+          {canJoin && (
+            <Button 
+              onClick={joinSession}
+              className="bg-blue-600 hover:bg-blue-700"
+              disabled={!canJoin}
+            >
+              <Video className="h-4 w-4 mr-2" />
+              Join Video Call
+            </Button>
+          )}
         </div>
 
-        {/* Status-specific content */}
+        {/* Status-specific content below the main line */}
         {sessionStatus === 'waiting' && minutesUntilStart > 5 && (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 mt-2">
             Your consultation will start in {formatDistanceToNow(appointmentTime)}
           </p>
         )}
@@ -134,32 +148,17 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
               </div>
             )}
 
-            {/* Compact action buttons */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  onClick={testEquipment}
-                  size="sm"
-                  className="h-9"
-                  title="Test equipment"
-                >
-                  <Camera className="h-4 w-4" />
-                </Button>
-                {/* Health profile reminder - inline */}
-                {appointment.patient?.healthProfileStatus !== 'complete' && (
-                  <a href="/dashboard#settings" className="text-xs text-blue-600 underline whitespace-nowrap">
-                    Complete health profile before your consultation
-                  </a>
-                )}
-              </div>
-              <Button 
-                onClick={joinSession}
-                className="bg-blue-600 hover:bg-blue-700"
-                disabled={!canJoin}
+            {/* Test equipment button */}
+            <div className="mt-2">
+              <Button
+                variant="outline"
+                onClick={testEquipment}
+                size="sm"
+                className="h-9"
+                title="Test equipment"
               >
-                <Video className="h-4 w-4 mr-2" />
-                Join Video Call
+                <Camera className="h-4 w-4 mr-2" />
+                Test Equipment
               </Button>
             </div>
           </>

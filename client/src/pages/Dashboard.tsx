@@ -145,7 +145,10 @@ export default function Dashboard() {
   }, []);
 
   // Fetch health profile for banner system and profile tab
-  const { data: healthProfile, isLoading: healthProfileLoading } = useQuery({
+  const { data: healthProfile, isLoading: healthProfileLoading } = useQuery<{
+    profileStatus: 'incomplete' | 'complete' | 'needs_review';
+    lastUpdated?: string;
+  }>({
     queryKey: ["/api/health-profile", user?.id],
     enabled: !!user?.id,
   });
@@ -508,7 +511,36 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Banner System - Removed for cleaner UI */}
+        {/* Health Profile Reminder - Separate Section */}
+        {user && healthProfile && (healthProfile.profileStatus === 'incomplete' || healthProfile.profileStatus === 'needs_review') && (
+          <Card className="mb-4 border-blue-200 bg-blue-50/50">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Heart className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <p className="font-medium text-blue-900">
+                      {healthProfile.profileStatus === 'needs_review' 
+                        ? "Please review your health profile (last update > 6 months)"
+                        : "Complete your health profile before booking consultations"}
+                    </p>
+                    <p className="text-sm text-blue-700 mt-1">
+                      Doctors need this information to provide better care
+                    </p>
+                  </div>
+                </div>
+                <Button 
+                  variant="default"
+                  size="sm"
+                  onClick={() => setHealthProfileOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {healthProfile.profileStatus === 'needs_review' ? "Review Profile" : "Complete Profile"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="max-w-4xl mx-auto px-0 sm:px-4">
           {/* Main Content */}
