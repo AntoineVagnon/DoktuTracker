@@ -90,17 +90,11 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
         {/* Single line compact layout */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-1">
-            <Video className="h-5 w-5 text-blue-600" />
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Video Consultation</span>
-                {sessionStatus === 'live' && (
-                  <Badge className="bg-green-600">Live</Badge>
-                )}
-              </div>
-              <div className="text-sm text-gray-600">
-                Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName} • {appointmentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </div>
+            {sessionStatus === 'live' && (
+              <Badge className="bg-green-600">Live</Badge>
+            )}
+            <div className="text-sm text-gray-600">
+              Dr. {appointment.doctor?.user?.lastName} • {appointmentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
           
@@ -111,24 +105,24 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
                 variant="outline"
                 onClick={testEquipment}
                 size="sm"
-                className={`h-9 ${equipmentTestResult ? (equipmentTestResult.camera && equipmentTestResult.mic ? 'border-green-500 text-green-600' : 'border-red-500 text-red-600') : ''}`}
-                title="Test equipment"
+                className={`h-8 text-xs px-2 ${equipmentTestResult ? (equipmentTestResult.camera && equipmentTestResult.mic ? 'border-green-500 text-green-600' : 'border-red-500 text-red-600') : ''}`}
+                title="Test your camera and microphone before joining the video call"
               >
                 {equipmentTestResult ? (
                   equipmentTestResult.camera && equipmentTestResult.mic ? (
                     <>
-                      <Check className="h-4 w-4 mr-2" />
+                      <Check className="h-3 w-3 mr-1" />
                       Equipment OK
                     </>
                   ) : (
                     <>
-                      <X className="h-4 w-4 mr-2" />
+                      <X className="h-3 w-3 mr-1" />
                       Test Failed
                     </>
                   )
                 ) : (
                   <>
-                    <Camera className="h-4 w-4 mr-2" />
+                    <Camera className="h-3 w-3 mr-1" />
                     Test Equipment
                   </>
                 )}
