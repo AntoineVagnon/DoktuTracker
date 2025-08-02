@@ -1271,6 +1271,8 @@ export class PostgresStorage implements IStorage {
     try {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const thirtyDaysAgoStr = thirtyDaysAgo.toISOString();
+      const thirtyDaysAgoDate = thirtyDaysAgo.toISOString().split('T')[0];
 
     // Get all doctors with their users
     const doctorsData = await db
@@ -1287,42 +1289,31 @@ export class PostgresStorage implements IStorage {
 
     // Get availability and cancellation metrics for each doctor
     const doctorMetrics = await Promise.all(doctorsData.map(async (doctor) => {
-      // Total slots in last 30 days
-      const [totalSlots] = await db
-        .select({ count: count() })
-        .from(doctorTimeSlots)
-        .where(and(
-          eq(doctorTimeSlots.doctorId, doctor.id),
-          sql`${doctorTimeSlots.date} >= ${thirtyDaysAgo.toISOString().split('T')[0]}::date`
-        ));
+      // Total slots in last 30 days - using raw SQL to avoid date serialization issues
+      const totalSlotsResult = await db.execute(
+        sql`SELECT COUNT(*) as count FROM doctor_time_slots WHERE doctor_id = ${doctor.id} AND date >= ${thirtyDaysAgoDate}::date`
+      );
+      const totalSlots = totalSlotsResult.rows[0]?.count || 0;
 
-      // Booked slots
-      const [bookedSlots] = await db
-        .select({ count: count() })
-        .from(appointments)
-        .where(and(
-          eq(appointments.doctorId, doctor.id),
-          sql`${appointments.appointmentDate} >= ${thirtyDaysAgo.toISOString()}::timestamp`,
-          sql`status IN ('paid', 'completed')`
-        ));
+      // Booked slots - using raw SQL
+      const bookedSlotsResult = await db.execute(
+        sql`SELECT COUNT(*) as count FROM appointments WHERE doctor_id = ${doctor.id} AND appointment_date >= ${thirtyDaysAgoStr}::timestamp AND status IN ('paid', 'completed')`
+      );
+      const bookedSlots = bookedSlotsResult.rows[0]?.count || 0;
 
-      // Cancelled appointments
-      const [cancelledAppts] = await db
-        .select({ count: count() })
-        .from(appointments)
-        .where(and(
-          eq(appointments.doctorId, doctor.id),
-          sql`${appointments.appointmentDate} >= ${thirtyDaysAgo.toISOString()}::timestamp`,
-          eq(appointments.status, 'cancelled')
-        ));
+      // Cancelled appointments - using raw SQL
+      const cancelledApptsResult = await db.execute(
+        sql`SELECT COUNT(*) as count FROM appointments WHERE doctor_id = ${doctor.id} AND appointment_date >= ${thirtyDaysAgoStr}::timestamp AND status = 'cancelled'`
+      );
+      const cancelledAppts = cancelledApptsResult.rows[0]?.count || 0;
 
-      const availability = totalSlots.count > 0 
-        ? Math.round((bookedSlots.count / totalSlots.count) * 100)
+      const availability = totalSlots > 0 
+        ? Math.round((bookedSlots / totalSlots) * 100)
         : 0;
 
-      const totalAppointments = bookedSlots.count + cancelledAppts.count;
+      const totalAppointments = Number(bookedSlots) + Number(cancelledAppts);
       const cancellationRate = totalAppointments > 0
-        ? Math.round((cancelledAppts.count / totalAppointments) * 100)
+        ? Math.round((cancelledAppts / totalAppointments) * 100)
         : 0;
 
       return {
