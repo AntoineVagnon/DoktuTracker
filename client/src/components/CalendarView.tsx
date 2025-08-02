@@ -428,14 +428,8 @@ export function CalendarView({ userRole, userId }: CalendarViewProps) {
                       userRole={userRole}
                       canJoin={canJoinAppointment(apt)}
                       canReschedule={canRescheduleAppointment(apt)}
-                      onReschedule={(apt) => {
-                        setSelectedAppointment(apt);
-                        setShowRescheduleDialog(true);
-                      }}
-                      onCancel={(apt) => {
-                        setSelectedAppointment(apt);
-                        setShowCancelDialog(true);
-                      }}
+                      onReschedule={handleReschedule}
+                      onCancel={handleCancel}
                     />
                   ))}
                 </div>
