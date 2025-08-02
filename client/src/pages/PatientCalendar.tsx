@@ -215,7 +215,15 @@ export function PatientCalendar() {
                     variant="default" 
                     className="w-full bg-green-600 hover:bg-green-700"
                     onClick={() => {
-                      window.location.href = `/appointments/${appointmentModal.appointment?.id}/video`;
+                      if (appointmentModal.appointment?.zoomJoinUrl) {
+                        window.open(appointmentModal.appointment.zoomJoinUrl, '_blank');
+                      } else {
+                        toast({
+                          title: "Video call not available",
+                          description: "The video link is not yet available. Please try again closer to the appointment time.",
+                          variant: "destructive"
+                        });
+                      }
                     }}
                   >
                     <Video className="h-4 w-4 mr-2" />
@@ -232,18 +240,26 @@ export function PatientCalendar() {
                     variant="outline" 
                     className="w-full"
                     onClick={() => {
-                      window.location.href = `/appointments/${appointmentModal.appointment?.id}`;
+                      // Documents are shown in DocumentLibraryPanel
+                      toast({
+                        title: "Documents",
+                        description: "To view documents, go to your Documents page from the dashboard.",
+                      });
                     }}
                   >
                     <FileText className="h-4 w-4 mr-2" />
-                    View Full Details & Documents
+                    View Documents
                   </Button>
                   
                   <Button 
                     variant="outline" 
                     className="w-full"
                     onClick={() => {
-                      window.location.href = `/appointments/${appointmentModal.appointment?.id}/reschedule`;
+                      // TODO: Implement reschedule functionality
+                      toast({
+                        title: "Coming Soon",
+                        description: "Rescheduling functionality will be available soon.",
+                      });
                     }}
                   >
                     <CalendarDays className="h-4 w-4 mr-2" />
