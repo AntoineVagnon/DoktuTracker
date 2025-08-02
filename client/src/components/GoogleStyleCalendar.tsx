@@ -513,9 +513,11 @@ export default function GoogleStyleCalendar({
             title="Click to view appointment details"
           >
             <div className="font-medium">Booked</div>
-            <div className="truncate text-xs">
-              {bookedAppointment.patient.firstName || bookedAppointment.patient.email}
-            </div>
+            {!isPatientView && (
+              <div className="truncate text-xs">
+                {bookedAppointment.patient?.firstName || bookedAppointment.patient?.email || 'Patient'}
+              </div>
+            )}
           </div>
         )
       };

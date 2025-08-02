@@ -17,16 +17,21 @@ interface Appointment {
   patientId: number;
   appointmentDate: string;
   status: string;
-  consultationType: 'in-person' | 'video';
+  consultationType?: 'in-person' | 'video';
   price: string;
   notes?: string;
   doctor: {
     id: number;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     specialty: string;
     phone?: string;
     email: string;
+    user?: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
   };
 }
 
@@ -40,7 +45,7 @@ export function PatientCalendar() {
 
   // Fetch patient's appointments
   const { data: appointments = [], isLoading } = useQuery<Appointment[]>({
-    queryKey: ['/api/patient/appointments'],
+    queryKey: ['/api/appointments'],
     enabled: !!user
   });
 
@@ -145,7 +150,7 @@ export function PatientCalendar() {
                 <div className="space-y-2 text-sm">
                   <div className="flex items-start gap-2">
                     <span className="font-medium text-gray-600 min-w-[80px]">Name:</span>
-                    <span>Dr. {appointmentModal.appointment.doctor.firstName} {appointmentModal.appointment.doctor.lastName}</span>
+                    <span>Dr. {appointmentModal.appointment.doctor.user?.firstName || appointmentModal.appointment.doctor.firstName} {appointmentModal.appointment.doctor.user?.lastName || appointmentModal.appointment.doctor.lastName}</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="font-medium text-gray-600 min-w-[80px]">Specialty:</span>
@@ -159,7 +164,7 @@ export function PatientCalendar() {
                   )}
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-gray-500" />
-                    <span>{appointmentModal.appointment.doctor.email}</span>
+                    <span>{appointmentModal.appointment.doctor.user?.email || appointmentModal.appointment.doctor.email}</span>
                   </div>
                 </div>
               </div>
