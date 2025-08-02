@@ -789,13 +789,31 @@ export class PostgresStorage implements IStorage {
     }
   }
 
-  async getAppointment(id: string): Promise<Appointment | undefined> {
+  async getAppointment(id: string): Promise<any> {
     try {
-      const [result] = await db
+      const [appointment] = await db
         .select()
         .from(appointments)
         .where(eq(appointments.id, parseInt(id))); // Convert string to integer
-      return result;
+      
+      if (!appointment) {
+        return undefined;
+      }
+      
+      // Get doctor details
+      const doctor = await this.getDoctor(appointment.doctorId);
+      
+      // Get patient details
+      const [patient] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, appointment.patientId));
+      
+      return {
+        ...appointment,
+        doctor: doctor || { specialty: "Unknown", user: { firstName: "Unknown", lastName: "Doctor" } },
+        patient: patient || { firstName: "Unknown", lastName: "Patient" }
+      };
     } catch (error) {
       console.error("Error in getAppointment:", error);
       return undefined;
