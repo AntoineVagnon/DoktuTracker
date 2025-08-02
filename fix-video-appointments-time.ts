@@ -1,98 +1,85 @@
-import { db } from "./server/db";
-import { appointments } from "./shared/schema";
-import { eq, and, gte } from "drizzle-orm";
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import { appointments as appointmentsTable, users, doctors, doctorTimeSlots } from './shared/schema';
+import { eq, and, gte } from 'drizzle-orm';
 
-async function fixAppointmentTimes() {
+// Create database connection using the same settings as the server
+const databaseUrl = process.env.DATABASE_URL!;
+const client = postgres(databaseUrl.replace('[YOUR-PASSWORD]', process.env.DATABASE_PASSWORD || ''));
+const db = drizzle(client);
+
+async function createTestVideoAppointments() {
   try {
-    console.log('Fixing test video consultation appointment times...');
+    console.log('Creating test video appointments...');
     
-    // First, delete the incorrectly timed appointments
-    const deletedAppointments = await db.delete(appointments)
-      .where(and(
-        eq(appointments.patientId, 49),
-        eq(appointments.doctorId, 9),
-        gte(appointments.id, 17)
-      ))
-      .returning();
+    // Find the patient (patient@test40.com) - ID is 49 based on logs
+    const patientId = 49;
     
-    console.log(`Deleted ${deletedAppointments.length} appointments`);
+    // Dr. James Rodriguez - ID is 9
+    const doctorId = 9;
     
-    // Get current date and set times for appointments
+    // Get current time and create appointments for immediate testing
     const now = new Date();
-    const baseDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     
-    // Create appointment times (in UTC - subtract 2 hours for CET/CEST)
-    const appointment1Time = new Date(`${baseDate}T12:30:00.000Z`); // 2:30 PM CEST
-    const appointment2Time = new Date(`${baseDate}T13:00:00.000Z`); // 3:00 PM CEST  
-    const appointment3Time = new Date(`${baseDate}T13:30:00.000Z`); // 3:30 PM CEST
+    // Create 3 appointments:
+    // 1. One that's already "live" (started 5 minutes ago)
+    // 2. One that starts in 3 minutes (can join soon)
+    // 3. One that starts in 15 minutes (waiting)
     
-    const patientId = 49; // patient@test40.com
-    const doctorId = 9; // James Rodriguez
-    
-    console.log('Creating appointments with correct times...');
-    console.log('Current time:', new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
-    
-    // Create appointments with Zoom details
-    const appointmentData = [
+    const appointments = [
       {
-        patientId: patientId,
-        doctorId: doctorId,
-        appointmentDate: appointment1Time,
-        status: 'paid' as const,
-        paymentIntentId: 'pi_test_video_1',
-        zoomMeetingId: '123456789',
-        zoomJoinUrl: 'https://zoom.us/j/123456789?pwd=test1',
-        zoomStartUrl: 'https://zoom.us/s/123456789?zak=test1',
-        zoomPassword: 'test123',
-        price: '35.00'
+        // Live appointment (started 5 minutes ago)
+        appointmentDate: new Date(now.getTime() - 5 * 60 * 1000),
+        description: 'Live appointment',
       },
       {
-        patientId: patientId,
-        doctorId: doctorId,
-        appointmentDate: appointment2Time,
-        status: 'paid' as const,
-        paymentIntentId: 'pi_test_video_2',
-        zoomMeetingId: '987654321',
-        zoomJoinUrl: 'https://zoom.us/j/987654321?pwd=test2',
-        zoomStartUrl: 'https://zoom.us/s/987654321?zak=test2',
-        zoomPassword: 'test456',
-        price: '35.00'
+        // Starting in 3 minutes
+        appointmentDate: new Date(now.getTime() + 3 * 60 * 1000),
+        description: 'Starting soon',
       },
       {
-        patientId: patientId,
-        doctorId: doctorId,
-        appointmentDate: appointment3Time,
-        status: 'paid' as const,
-        paymentIntentId: 'pi_test_video_3',
-        zoomMeetingId: '555666777',
-        zoomJoinUrl: 'https://zoom.us/j/555666777?pwd=test3',
-        zoomStartUrl: 'https://zoom.us/s/555666777?zak=test3',
-        zoomPassword: 'test789',
-        price: '35.00'
-      }
+        // Starting in 15 minutes
+        appointmentDate: new Date(now.getTime() + 15 * 60 * 1000),
+        description: 'Waiting appointment',
+      },
     ];
     
-    // Insert appointments
-    const results = await db.insert(appointments).values(appointmentData).returning();
-    
-    console.log('\n✅ Successfully created 3 test video consultation appointments with correct times!');
-    console.log('Times (CEST):');
-    results.forEach((apt, index) => {
-      const localTime = new Date(apt.appointmentDate).toLocaleString('en-US', { 
-        timeZone: 'Europe/Paris',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true 
+    for (let i = 0; i < appointments.length; i++) {
+      const appt = appointments[i];
+      
+      const [newAppointment] = await db.insert(appointmentsTable).values({
+        patientId: patientId,
+        doctorId: doctorId,
+        appointmentDate: appt.appointmentDate,
+        status: 'confirmed',
+        type: 'video',
+        paymentStatus: 'paid',
+        paymentIntentId: `test_video_${Date.now()}_${i}`,
+        paymentAmount: 5000, // €50.00
+        currency: 'eur',
+        // Add Zoom meeting details
+        zoomMeetingId: `test-meeting-${Date.now()}-${i}`,
+        zoomJoinUrl: `https://zoom.us/j/test${Date.now()}${i}`,
+        zoomStartUrl: `https://zoom.us/s/test${Date.now()}${i}`,
+      }).returning();
+
+      console.log(`✅ Created ${appt.description}:`, {
+        id: newAppointment.id,
+        date: newAppointment.appointmentDate,
+        type: newAppointment.type,
+        zoomJoinUrl: newAppointment.zoomJoinUrl,
       });
-      console.log(`- ${localTime} - ID: ${apt.id}`);
-    });
-    console.log('\nThe appointments should now appear correctly in the dashboard.');
+    }
+
+    console.log('✅ Successfully created 3 test video appointments!');
+    console.log('Please refresh your dashboard to see the new video consultations.');
     
   } catch (error) {
-    console.error('Error fixing appointment times:', error);
+    console.error('Error creating test appointments:', error);
+  } finally {
+    await client.end();
   }
-  
-  process.exit(0);
 }
 
-fixAppointmentTimes();
+// Run the script
+createTestVideoAppointments();

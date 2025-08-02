@@ -1,110 +1,104 @@
-import { neon } from '@neondatabase/serverless';
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
+// Simple script to create test video appointments
+import { createClient } from '@supabase/supabase-js';
 
-const sql = neon(process.env.DATABASE_URL);
+// Initialize Supabase client
+const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://hzmrkvooqjbxptqjqxii.supabase.co';
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6bXJrdm9vcWpieHB0cWpxeGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzMTQ0NjksImV4cCI6MjA2Njg5MDQ2OX0.1n6R5ELssn9g2aZGPU0TZN8eVPkW2sLFAYzoHKb34tU';
 
-async function createTestAppointments() {
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+async function createTestVideoAppointments() {
   try {
-    console.log('Creating test video consultation appointments...');
+    console.log('Creating test video appointments...');
     
-    // Get current date and set times for appointments
-    const today = new Date();
-    const baseDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    
-    // Create appointment times (in UTC - subtract 1 hour for CET)
-    const appointment1Time = new Date(`${baseDate}T13:30:00.000Z`); // 2:30 PM CET
-    const appointment2Time = new Date(`${baseDate}T14:00:00.000Z`); // 3:00 PM CET
-    const appointment3Time = new Date(`${baseDate}T14:30:00.000Z`); // 3:30 PM CET
-    
-    // Check if patient and doctor exist
-    const patient = await sql`SELECT id FROM users WHERE email = 'patient@test40.com'`;
-    const doctor = await sql`SELECT id FROM doctors WHERE id = 9`; // James Rodriguez
-    
-    if (!patient[0] || !doctor[0]) {
-      console.error('Patient or doctor not found!');
+    // Get patient user ID for patient@test40.com
+    const { data: patient, error: patientError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', 'patient@test40.com')
+      .single();
+      
+    if (patientError || !patient) {
+      console.error('Patient not found:', patientError);
       return;
     }
     
-    const patientId = patient[0].id;
-    const doctorId = 9;
+    console.log('Found patient:', patient.id);
     
-    console.log(`Creating appointments for patient ${patientId} with doctor ${doctorId}`);
-    
-    // Create appointments with Zoom details
-    const appointments = [
-      {
-        patient_id: patientId,
-        doctor_id: doctorId,
-        appointment_date: appointment1Time,
-        status: 'paid',
-        payment_intent_id: 'pi_test_video_1',
-        zoom_meeting_id: '123456789',
-        zoom_join_url: 'https://zoom.us/j/123456789?pwd=test1',
-        zoom_start_url: 'https://zoom.us/s/123456789?zak=test1',
-        zoom_password: 'test123',
-        price: 35.00
-      },
-      {
-        patient_id: patientId,
-        doctor_id: doctorId,
-        appointment_date: appointment2Time,
-        status: 'paid',
-        payment_intent_id: 'pi_test_video_2',
-        zoom_meeting_id: '987654321',
-        zoom_join_url: 'https://zoom.us/j/987654321?pwd=test2',
-        zoom_start_url: 'https://zoom.us/s/987654321?zak=test2',
-        zoom_password: 'test456',
-        price: 35.00
-      },
-      {
-        patient_id: patientId,
-        doctor_id: doctorId,
-        appointment_date: appointment3Time,
-        status: 'paid',
-        payment_intent_id: 'pi_test_video_3',
-        zoom_meeting_id: '555666777',
-        zoom_join_url: 'https://zoom.us/j/555666777?pwd=test3',
-        zoom_start_url: 'https://zoom.us/s/555666777?zak=test3',
-        zoom_password: 'test789',
-        price: 35.00
-      }
-    ];
-    
-    // Insert appointments
-    for (const appointment of appointments) {
-      const result = await sql`
-        INSERT INTO appointments (
-          patient_id, doctor_id, appointment_date, status, 
-          payment_intent_id, zoom_meeting_id, zoom_join_url, 
-          zoom_start_url, zoom_password, price
-        ) VALUES (
-          ${appointment.patient_id}, ${appointment.doctor_id}, 
-          ${appointment.appointment_date}, ${appointment.status},
-          ${appointment.payment_intent_id}, ${appointment.zoom_meeting_id},
-          ${appointment.zoom_join_url}, ${appointment.zoom_start_url},
-          ${appointment.zoom_password}, ${appointment.price}
-        ) RETURNING *
-      `;
+    // Get next available slots for Dr. James Rodriguez (doctor_id = 9)
+    const { data: slots, error: slotsError } = await supabase
+      .from('doctor_time_slots')
+      .select('*')
+      .eq('doctor_id', 9)
+      .eq('is_available', true)
+      .gte('date', new Date().toISOString().split('T')[0])
+      .order('date', { ascending: true })
+      .order('start_time', { ascending: true })
+      .limit(3);
       
-      console.log(`Created appointment at ${appointment.appointment_date.toLocaleString('en-US', { 
-        timeZone: 'Europe/Paris',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true 
-      })} CET:`, result[0].id);
+    if (slotsError || !slots || slots.length === 0) {
+      console.error('No available slots found:', slotsError);
+      return;
     }
     
-    console.log('\n✅ Successfully created 3 test video consultation appointments!');
-    console.log('Times (CET):');
-    console.log('- 2:30 PM');
-    console.log('- 3:00 PM'); 
-    console.log('- 3:30 PM');
-    console.log('\nYou can now test the video consultation feature in the dashboard.');
+    console.log(`Found ${slots.length} available slots`);
+    
+    // Create appointments for each slot
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      const appointmentDate = new Date(`${slot.date}T${slot.start_time}Z`);
+      
+      const appointmentData = {
+        patient_id: patient.id,
+        doctor_id: 9,
+        appointment_date: appointmentDate.toISOString(),
+        timeslot_id: slot.id,
+        status: 'confirmed',
+        type: 'video',
+        payment_status: 'paid',
+        payment_intent_id: `test_video_${Date.now()}_${i}`,
+        payment_amount: 50.00,
+        currency: 'eur',
+        zoom_meeting_id: `test-meeting-${Date.now()}-${i}`,
+        zoom_join_url: `https://zoom.us/j/test${Date.now()}${i}`,
+        zoom_start_url: `https://zoom.us/s/test${Date.now()}${i}`,
+      };
+      
+      const { data: appointment, error: appointmentError } = await supabase
+        .from('appointments')
+        .insert(appointmentData)
+        .select()
+        .single();
+        
+      if (appointmentError) {
+        console.error(`Error creating appointment ${i + 1}:`, appointmentError);
+        continue;
+      }
+      
+      // Mark slot as unavailable
+      const { error: updateError } = await supabase
+        .from('doctor_time_slots')
+        .update({ is_available: false })
+        .eq('id', slot.id);
+        
+      if (updateError) {
+        console.error(`Error updating slot ${i + 1}:`, updateError);
+      }
+      
+      console.log(`✅ Created appointment ${i + 1}:`, {
+        id: appointment.id,
+        date: appointment.appointment_date,
+        type: appointment.type,
+        zoom_url: appointment.zoom_join_url,
+      });
+    }
+    
+    console.log('✅ Successfully created test video appointments!');
     
   } catch (error) {
-    console.error('Error creating test appointments:', error);
+    console.error('Error:', error);
   }
 }
 
-createTestAppointments();
+// Run the script
+createTestVideoAppointments();

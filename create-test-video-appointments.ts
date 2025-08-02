@@ -1,79 +1,96 @@
-import { db } from "./server/db";
-import { appointments } from "./shared/schema";
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import { appointments, users, doctors, doctorTimeSlots } from './shared/schema';
+import { eq, and, gte, sql } from 'drizzle-orm';
 
-async function createTestAppointments() {
+// Create database connection
+const client = postgres(process.env.DATABASE_URL!);
+const db = drizzle(client);
+
+async function createTestVideoAppointments() {
   try {
-    console.log('Creating test video consultation appointments...');
+    // Find the patient (patient@test40.com)
+    const [patient] = await db.select().from(users).where(eq(users.email, 'patient@test40.com'));
+
+    if (!patient) {
+      console.error('Patient not found');
+      return;
+    }
+
+    // Find Dr. James Rodriguez
+    const [doctor] = await db.select().from(doctors).where(eq(doctors.id, 9));
+
+    if (!doctor) {
+      console.error('Doctor not found');
+      return;
+    }
+
+    // Get next 3 available slots from now
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
     
-    // Get current date and set times for appointments
-    const today = new Date();
-    const baseDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    
-    // Create appointment times (in UTC - subtract 1 hour for CET)
-    const appointment1Time = new Date(`${baseDate}T13:30:00.000Z`); // 2:30 PM CET
-    const appointment2Time = new Date(`${baseDate}T14:00:00.000Z`); // 3:00 PM CET  
-    const appointment3Time = new Date(`${baseDate}T14:30:00.000Z`); // 3:30 PM CET
-    
-    const patientId = 49; // patient@test40.com
-    const doctorId = 9; // James Rodriguez
-    
-    console.log(`Creating appointments for patient ${patientId} with doctor ${doctorId}`);
-    
-    // Create appointments with Zoom details
-    const appointmentData = [
-      {
-        patientId: patientId,
-        doctorId: doctorId,
-        appointmentDate: appointment1Time,
-        status: 'paid' as const,
-        paymentIntentId: 'pi_test_video_1',
-        zoomMeetingId: '123456789',
-        zoomJoinUrl: 'https://zoom.us/j/123456789?pwd=test1',
-        zoomStartUrl: 'https://zoom.us/s/123456789?zak=test1',
-        zoomPassword: 'test123',
-        price: '35.00'
-      },
-      {
-        patientId: patientId,
-        doctorId: doctorId,
-        appointmentDate: appointment2Time,
-        status: 'paid' as const,
-        paymentIntentId: 'pi_test_video_2',
-        zoomMeetingId: '987654321',
-        zoomJoinUrl: 'https://zoom.us/j/987654321?pwd=test2',
-        zoomStartUrl: 'https://zoom.us/s/987654321?zak=test2',
-        zoomPassword: 'test456',
-        price: '35.00'
-      },
-      {
-        patientId: patientId,
-        doctorId: doctorId,
-        appointmentDate: appointment3Time,
-        status: 'paid' as const,
-        paymentIntentId: 'pi_test_video_3',
-        zoomMeetingId: '555666777',
-        zoomJoinUrl: 'https://zoom.us/j/555666777?pwd=test3',
-        zoomStartUrl: 'https://zoom.us/s/555666777?zak=test3',
-        zoomPassword: 'test789',
-        price: '35.00'
-      }
-    ];
-    
-    // Insert appointments
-    const results = await db.insert(appointments).values(appointmentData).returning();
-    
-    console.log('\n✅ Successfully created 3 test video consultation appointments!');
-    console.log('Times (CET):');
-    console.log('- 2:30 PM - ID:', results[0].id);
-    console.log('- 3:00 PM - ID:', results[1].id); 
-    console.log('- 3:30 PM - ID:', results[2].id);
-    console.log('\nYou can now test the video consultation feature in the dashboard.');
-    
+    const availableSlots = await db.select()
+      .from(doctorTimeSlots)
+      .where(and(
+        eq(doctorTimeSlots.doctorId, doctor.id),
+        eq(doctorTimeSlots.isAvailable, true),
+        gte(doctorTimeSlots.date, todayStr)
+      ))
+      .orderBy(doctorTimeSlots.date, doctorTimeSlots.startTime)
+      .limit(3);
+
+    if (availableSlots.length < 3) {
+      console.error('Not enough available slots found. Found:', availableSlots.length);
+      return;
+    }
+
+    console.log('Found slots:', availableSlots.map(s => `${s.date} ${s.startTime}`));
+
+    // Create appointments for each slot
+    for (let i = 0; i < 3; i++) {
+      const slot = availableSlots[i];
+      
+      // Combine date and time to create full timestamp
+      const appointmentDateTime = new Date(`${slot.date}T${slot.startTime}`);
+      
+      // Create appointment
+      const [newAppointment] = await db.insert(appointments).values({
+        patientId: patient.id,
+        doctorId: doctor.id,
+        appointmentDate: appointmentDateTime,
+        timeslotId: slot.id,
+        status: 'confirmed',
+        type: 'video',
+        paymentStatus: 'paid',
+        paymentIntentId: `test_video_${Date.now()}_${i}`,
+        paymentAmount: 5000, // €50.00
+        currency: 'eur',
+        // Add Zoom meeting details
+        zoomMeetingId: `test-meeting-${Date.now()}-${i}`,
+        zoomJoinUrl: `https://zoom.us/j/test${Date.now()}${i}`,
+        zoomStartUrl: `https://zoom.us/s/test${Date.now()}${i}`,
+      }).returning();
+
+      // Mark the slot as unavailable
+      await db.update(doctorTimeSlots)
+        .set({ isAvailable: false })
+        .where(eq(doctorTimeSlots.id, slot.id));
+
+      console.log(`Created appointment ${i + 1}:`, {
+        id: newAppointment.id,
+        date: newAppointment.appointmentDate,
+        type: newAppointment.type,
+        zoomJoinUrl: newAppointment.zoomJoinUrl,
+      });
+    }
+
+    console.log('✅ Successfully created 3 test video appointments');
   } catch (error) {
     console.error('Error creating test appointments:', error);
+  } finally {
+    await client.end();
   }
-  
-  process.exit(0);
 }
 
-createTestAppointments();
+// Run the script
+createTestVideoAppointments();
