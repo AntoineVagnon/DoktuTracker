@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Calendar, Clock, Video, MapPin, CalendarDays, XCircle, FileText, Phone, Mail } from "lucide-react";
+import { Calendar, Clock, Video, MapPin, CalendarDays, XCircle, FileText, Phone, Mail, Download } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { format, isSameDay, isWithinInterval, addMinutes } from "date-fns";
@@ -20,6 +20,7 @@ interface Appointment {
   consultationType?: 'in-person' | 'video';
   price: string;
   notes?: string;
+  zoomJoinUrl?: string;
   doctor: {
     id: number;
     firstName?: string;
@@ -35,6 +36,13 @@ interface Appointment {
   };
 }
 
+interface AppointmentDocument {
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+}
+
 export function PatientCalendar() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -47,6 +55,12 @@ export function PatientCalendar() {
   const { data: appointments = [], isLoading } = useQuery<Appointment[]>({
     queryKey: ['/api/appointments'],
     enabled: !!user
+  });
+
+  // Fetch documents for the selected appointment
+  const { data: appointmentDocuments = [], isLoading: isLoadingDocs } = useQuery<AppointmentDocument[]>({
+    queryKey: [`/api/appointments/${appointmentModal.appointment?.id}/documents`],
+    enabled: !!appointmentModal.appointment?.id && appointmentModal.isOpen
   });
 
   // Filter appointments for the current view
@@ -162,10 +176,13 @@ export function PatientCalendar() {
                       <span>{appointmentModal.appointment.doctor.phone}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-gray-500" />
-                    <span>{appointmentModal.appointment.doctor.user?.email || appointmentModal.appointment.doctor.email}</span>
-                  </div>
+                  {/* Only show email for future appointments */}
+                  {new Date(appointmentModal.appointment.appointmentDate) > new Date() && (
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-gray-500" />
+                      <span>{appointmentModal.appointment.doctor.user?.email || appointmentModal.appointment.doctor.email}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -181,19 +198,6 @@ export function PatientCalendar() {
                   <span className="font-medium">Time:</span>
                   <span>{format(new Date(appointmentModal.appointment.appointmentDate), 'h:mm a')}</span>
                 </div>
-                {appointmentModal.appointment.consultationType === 'video' ? (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Video className="h-4 w-4 text-gray-500" />
-                    <span className="font-medium">Type:</span>
-                    <span>Video Consultation</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 text-sm">
-                    <MapPin className="h-4 w-4 text-gray-500" />
-                    <span className="font-medium">Type:</span>
-                    <span>In-Person Visit</span>
-                  </div>
-                )}
               </div>
 
               {/* Notes if any */}
@@ -204,6 +208,63 @@ export function PatientCalendar() {
                   </p>
                 </div>
               )}
+
+              {/* Documents Section */}
+              <div className="border-t pt-4">
+                <h3 className="font-semibold text-gray-900 mb-3">Attached Documents</h3>
+                {isLoadingDocs ? (
+                  <p className="text-sm text-gray-500">Loading documents...</p>
+                ) : appointmentDocuments.length > 0 ? (
+                  <div className="space-y-2">
+                    {appointmentDocuments.map((doc: any) => (
+                      <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-blue-500" />
+                          <div>
+                            <p className="text-sm font-medium">{doc.fileName}</p>
+                            <p className="text-xs text-gray-500">
+                              {doc.fileType} • {(doc.fileSize / 1024).toFixed(1)} KB
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={async () => {
+                            try {
+                              const response = await fetch(`/api/documents/download/${doc.id}`, {
+                                credentials: 'include',
+                              });
+                              
+                              if (!response.ok) {
+                                throw new Error(`Failed to download: ${response.status}`);
+                              }
+                              
+                              const blob = await response.blob();
+                              const url = window.URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = doc.fileName;
+                              a.click();
+                              window.URL.revokeObjectURL(url);
+                            } catch (error) {
+                              toast({
+                                title: "Download failed",
+                                description: "Unable to download document. Please try again.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No documents attached to this appointment.</p>
+                )}
+              </div>
 
               {/* Live video call banner */}
               {isAppointmentLive(appointmentModal.appointment) && (
@@ -236,21 +297,6 @@ export function PatientCalendar() {
               {new Date(appointmentModal.appointment.appointmentDate) > new Date() && 
                appointmentModal.appointment.status !== 'cancelled' && (
                 <div className="space-y-2 pt-4">
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => {
-                      // Documents are shown in DocumentLibraryPanel
-                      toast({
-                        title: "Documents",
-                        description: "To view documents, go to your Documents page from the dashboard.",
-                      });
-                    }}
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    View Documents
-                  </Button>
-                  
                   <Button 
                     variant="outline" 
                     className="w-full"
@@ -301,18 +347,8 @@ export function PatientCalendar() {
                !isAppointmentLive(appointmentModal.appointment) && (
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                   <p className="text-sm text-gray-600">
-                    This appointment has already taken place. You can still view details and documents.
+                    This appointment has already taken place.
                   </p>
-                  <Button 
-                    variant="outline" 
-                    className="w-full mt-2"
-                    onClick={() => {
-                      window.location.href = `/appointments/${appointmentModal.appointment?.id}`;
-                    }}
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    View Details & Documents
-                  </Button>
                 </div>
               )}
 
