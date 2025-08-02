@@ -812,44 +812,14 @@ export default function GoogleStyleCalendar({
             </Button>
           </div>
           
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setCurrentDate(new Date())}
-              className="h-9"
-            >
-              Today
-            </Button>
-            
-            {/* View Toggle */}
-            <div className="flex rounded-md shadow-sm" role="group">
-              <Button
-                variant={view === 'day' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setView('day')}
-                className="h-9 rounded-none rounded-l-md"
-              >
-                Day
-              </Button>
-              <Button
-                variant={view === 'week' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setView('week')}
-                className="h-9 rounded-none border-x-0"
-              >
-                Week
-              </Button>
-              <Button
-                variant={view === 'month' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setView('month')}
-                className="h-9 rounded-none rounded-r-md"
-              >
-                Month
-              </Button>
-            </div>
-          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setCurrentDate(new Date())}
+            className="h-9"
+          >
+            Today
+          </Button>
         </div>
       </div>
 

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calendar, Clock, Video, MapPin, CalendarDays, XCircle, FileText, Phone, Mail, Download } from "lucide-react";
@@ -126,24 +125,17 @@ export function PatientCalendar() {
 
   return (
     <div className="container mx-auto p-4 max-w-7xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">My Appointments</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <GoogleStyleCalendar
-            doctorId={user?.id || ""}
-            isPatientView={true}
-            appointments={visibleAppointments}
-            onAppointmentClick={handleAppointmentClick}
-            onDayClick={handleDayClick}
-            view={view}
-            onViewChange={setView}
-            currentDate={currentDate}
-            onDateChange={setCurrentDate}
-          />
-        </CardContent>
-      </Card>
+      <GoogleStyleCalendar
+        doctorId={user?.id || ""}
+        isPatientView={true}
+        appointments={visibleAppointments}
+        onAppointmentClick={handleAppointmentClick}
+        onDayClick={handleDayClick}
+        view={view}
+        onViewChange={setView}
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
+      />
 
       {/* Appointment Details Modal */}
       <Dialog open={appointmentModal.isOpen} onOpenChange={(open) => {
