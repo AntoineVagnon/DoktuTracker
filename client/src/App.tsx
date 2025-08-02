@@ -70,6 +70,7 @@ function Router() {
       <Route path="/documents" component={DocumentLibrary} />
       <Route path="/patient-calendar" component={PatientCalendar} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
