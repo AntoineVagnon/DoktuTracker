@@ -83,8 +83,8 @@ export default function AdminDashboard() {
       const endDate = new Date();
       const startDate = timeWindow === '7d' ? subDays(endDate, 7) : subDays(endDate, 30);
       
-      const response = await apiRequest(`/api/admin/metrics?start=${startDate.toISOString()}&end=${endDate.toISOString()}`, 'GET');
-      return response as DashboardMetrics;
+      const response = await apiRequest('GET', `/api/admin/metrics?start=${startDate.toISOString()}&end=${endDate.toISOString()}`);
+      return await response.json() as DashboardMetrics;
     },
     refetchInterval: 60000, // Refresh every minute
   });
@@ -93,8 +93,8 @@ export default function AdminDashboard() {
   const { data: funnelData } = useQuery({
     queryKey: ['/api/admin/funnel', timeWindow],
     queryFn: async () => {
-      const response = await apiRequest(`/api/admin/funnel?window=${timeWindow}`, 'GET');
-      return response as FunnelStage[];
+      const response = await apiRequest('GET', `/api/admin/funnel?window=${timeWindow}`);
+      return await response.json() as FunnelStage[];
     },
   });
 
@@ -102,8 +102,8 @@ export default function AdminDashboard() {
   const { data: segments } = useQuery({
     queryKey: ['/api/admin/segments'],
     queryFn: async () => {
-      const response = await apiRequest('/api/admin/segments', 'GET');
-      return response as PatientSegment[];
+      const response = await apiRequest('GET', '/api/admin/segments');
+      return await response.json() as PatientSegment[];
     },
   });
 
@@ -111,8 +111,8 @@ export default function AdminDashboard() {
   const { data: doctors } = useQuery({
     queryKey: ['/api/admin/doctors'],
     queryFn: async () => {
-      const response = await apiRequest('/api/admin/doctors', 'GET');
-      return response as DoctorRoster[];
+      const response = await apiRequest('GET', '/api/admin/doctors');
+      return await response.json() as DoctorRoster[];
     },
   });
 
@@ -195,15 +195,16 @@ export default function AdminDashboard() {
     const { data: adminUsers, refetch: refetchAdmins } = useQuery({
       queryKey: ['/api/admin/users'],
       queryFn: async () => {
-        const response = await apiRequest('/api/admin/users', 'GET');
-        return response as AdminUser[];
+        const response = await apiRequest('GET', '/api/admin/users');
+        return await response.json() as AdminUser[];
       },
     });
 
     // Create admin mutation
     const createAdminMutation = useMutation({
       mutationFn: async (userData: typeof newAdmin) => {
-        return await apiRequest('/api/admin/users', 'POST', userData);
+        const response = await apiRequest('POST', '/api/admin/users', userData);
+        return await response.json();
       },
       onSuccess: () => {
         toast({
@@ -226,7 +227,8 @@ export default function AdminDashboard() {
     // Remove admin mutation
     const removeAdminMutation = useMutation({
       mutationFn: async (userId: number) => {
-        return await apiRequest(`/api/admin/users/${userId}`, 'DELETE');
+        const response = await apiRequest('DELETE', `/api/admin/users/${userId}`);
+        return await response.json();
       },
       onSuccess: () => {
         toast({
