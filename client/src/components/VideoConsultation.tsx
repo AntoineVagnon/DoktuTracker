@@ -87,114 +87,110 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
     const canJoin = sessionStatus === 'live' || (sessionStatus === 'waiting' && minutesUntilStart <= 5);
 
     return (
-      <Card className="border-blue-200 bg-blue-50/50">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+      <div className="border border-blue-200 bg-blue-50/50 rounded-lg p-4 space-y-3">
+        {/* Compact header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Video className="h-5 w-5 text-blue-600" />
             <div className="flex items-center gap-2">
-              <Video className="h-5 w-5 text-blue-600" />
-              Video Consultation
-            </div>
-            {sessionStatus === 'live' && (
-              <Badge className="bg-green-600">Live</Badge>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Session info */}
-          <div className="space-y-2">
-            <p className="text-sm">
-              <strong>Doctor:</strong> Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
-            </p>
-            <p className="text-sm">
-              <strong>Scheduled:</strong> {appointmentTime.toLocaleString()}
-            </p>
-          </div>
-
-          {/* Status-specific content */}
-          {sessionStatus === 'waiting' && minutesUntilStart > 5 && (
-            <div className="bg-gray-100 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">
-                Your consultation will start in {formatDistanceToNow(appointmentTime)}
-              </p>
-            </div>
-          )}
-
-          {canJoin && (
-            <>
-              {/* Doctor late warning */}
-              {minutesSinceStart > 5 && !doctorJoined && (
-                <div className="bg-yellow-100 p-3 rounded-lg flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-yellow-600 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-medium text-yellow-800">Doctor is running late</p>
-                    <p className="text-yellow-700">They should join shortly</p>
-                  </div>
-                </div>
+              <span className="font-medium">Video Consultation</span>
+              {sessionStatus === 'live' && (
+                <Badge className="bg-green-600">Live</Badge>
               )}
+            </div>
+          </div>
+          <div className="text-sm text-gray-600">
+            Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName} • {appointmentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </div>
+        </div>
 
-              {/* Very late - offer reschedule */}
-              {minutesSinceStart > 15 && !doctorJoined && (
-                <div className="bg-red-100 p-3 rounded-lg">
-                  <p className="text-sm font-medium text-red-800 mb-2">
+        {/* Status-specific content */}
+        {sessionStatus === 'waiting' && minutesUntilStart > 5 && (
+          <p className="text-sm text-gray-600">
+            Your consultation will start in {formatDistanceToNow(appointmentTime)}
+          </p>
+        )}
+
+        {canJoin && (
+          <>
+            {/* Doctor late warning - compact version */}
+            {minutesSinceStart > 5 && !doctorJoined && (
+              <div className="bg-yellow-100 p-2 rounded flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                <span className="text-sm text-yellow-800">
+                  Doctor is running late • They should join shortly
+                </span>
+              </div>
+            )}
+
+            {/* Very late - compact version */}
+            {minutesSinceStart > 15 && !doctorJoined && (
+              <div className="bg-red-100 p-2 rounded">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-medium text-red-800">
                     Doctor hasn't joined yet
-                  </p>
+                  </span>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="text-xs">
+                    <Button size="sm" variant="outline" className="text-xs h-7">
                       Reschedule (no charge)
                     </Button>
-                    <Button size="sm" variant="outline" className="text-xs">
+                    <Button size="sm" variant="outline" className="text-xs h-7">
                       Get refund + €10 credit
                     </Button>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Action buttons */}
-              <div className="flex gap-2">
-                <Button 
-                  onClick={joinSession}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
-                  disabled={!canJoin}
-                >
-                  <Video className="h-4 w-4 mr-2" />
-                  Join Video Call
-                </Button>
+            {/* Compact action buttons */}
+            <div className="flex items-center justify-between gap-2">
+              <Button 
+                onClick={joinSession}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={!canJoin}
+              >
+                <Video className="h-4 w-4 mr-2" />
+                Join Video Call
+              </Button>
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   onClick={testEquipment}
-                  className="px-3"
+                  size="sm"
+                  className="h-9"
                   title="Test equipment"
                 >
                   <Camera className="h-4 w-4" />
                 </Button>
+                {/* Health profile reminder - inline */}
+                {appointment.patient?.healthProfileStatus !== 'complete' && (
+                  <a href="/dashboard#settings" className="text-xs text-blue-600 underline whitespace-nowrap">
+                    Complete health profile before your consultation
+                  </a>
+                )}
               </div>
+            </div>
+          </>
+        )}
 
-              {/* Health profile reminder */}
-              {appointment.patient?.healthProfileStatus !== 'complete' && (
-                <p className="text-xs text-blue-600">
-                  <a href="/dashboard#settings" className="underline">Complete health profile</a> before your consultation
-                </p>
-              )}
-            </>
-          )}
-
-          {sessionStatus === 'ended' && (
-            <div className="bg-gray-100 p-3 rounded-lg">
+        {sessionStatus === 'ended' && (
+          <div className="bg-gray-100 p-2 rounded">
+            <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">This consultation has ended</p>
               {!showSurvey && (
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  className="mt-2"
+                  className="text-xs h-7"
                   onClick={() => setShowSurvey(true)}
                 >
                   Rate your experience
                 </Button>
               )}
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </div>
+        )}
+      </div>
     );
   };
 
@@ -204,64 +200,62 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
     const isVeryLate = minutesSinceStart > 15;
 
     return (
-      <Card className={isLate ? "border-yellow-200 bg-yellow-50/50" : "border-green-200 bg-green-50/50"}>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+      <div className={`border rounded-lg p-4 space-y-3 ${isLate ? "border-yellow-200 bg-yellow-50/50" : "border-green-200 bg-green-50/50"}`}>
+        {/* Compact header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Video className="h-5 w-5 text-green-600" />
             <div className="flex items-center gap-2">
-              <Video className="h-5 w-5 text-green-600" />
-              Video Consultation
-            </div>
-            <div className="flex items-center gap-2">
-              {isLate && <Badge variant="destructive">You are late</Badge>}
-              {sessionStatus === 'live' && <Badge className="bg-green-600">Live</Badge>}
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Patient info */}
-          <div className="space-y-2">
-            <p className="text-sm">
-              <strong>Patient:</strong> {appointment.patient?.firstName} {appointment.patient?.lastName}
-            </p>
-            <p className="text-sm">
-              <strong>Scheduled:</strong> {appointmentTime.toLocaleString()}
-            </p>
-          </div>
-
-          {canJoin && (
-            <div className="space-y-3">
-              {/* Late warning */}
-              {isVeryLate && (
-                <div className="bg-red-100 p-3 rounded-lg">
-                  <p className="text-sm font-medium text-red-800">
-                    You are {minutesSinceStart} minutes late!
-                  </p>
-                  <p className="text-xs text-red-700">
-                    Patient may have been offered refund options
-                  </p>
-                </div>
+              <span className="font-medium">Video Consultation</span>
+              {sessionStatus === 'live' && (
+                <Badge className="bg-green-600">Live</Badge>
               )}
-
-              <div className="flex gap-2">
-                <Button 
-                  onClick={joinSession}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                >
-                  <Video className="h-4 w-4 mr-2" />
-                  Start Consultation
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => window.open(`/patient/${appointment.patientId}`, '_blank')}
-                >
-                  <User className="h-4 w-4 mr-2" />
-                  Review Profile
-                </Button>
-              </div>
+              {isLate && <Badge variant="destructive">You are late</Badge>}
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </div>
+          <div className="text-sm text-gray-600">
+            {appointment.patient?.firstName} {appointment.patient?.lastName} • {appointmentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </div>
+        </div>
+
+        {canJoin && (
+          <>
+            {/* Late warning - compact version */}
+            {isVeryLate && (
+              <div className="bg-red-100 p-2 rounded">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-red-800">
+                    You are {minutesSinceStart} minutes late!
+                  </span>
+                  <span className="text-xs text-red-700">
+                    Patient may have been offered refund
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Compact action buttons */}
+            <div className="flex items-center justify-between gap-2">
+              <Button 
+                onClick={joinSession}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <Video className="h-4 w-4 mr-2" />
+                Start Consultation
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.open(`/patient/${appointment.patientId}`, '_blank')}
+                className="h-9"
+              >
+                <User className="h-4 w-4 mr-2" />
+                Review Profile
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
     );
   };
 
@@ -269,41 +263,40 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
     const canJoin = sessionStatus === 'live';
 
     return (
-      <Card className="border-purple-200 bg-purple-50/50">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+      <div className="border border-purple-200 bg-purple-50/50 rounded-lg p-4 space-y-3">
+        {/* Compact header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Video className="h-5 w-5 text-purple-600" />
             <div className="flex items-center gap-2">
-              <Video className="h-5 w-5 text-purple-600" />
-              Video Consultation Support
+              <span className="font-medium">Video Consultation Support</span>
+              {sessionStatus === 'live' && (
+                <Badge className="bg-green-600">Live</Badge>
+              )}
             </div>
-            {sessionStatus === 'live' && <Badge className="bg-green-600">Live</Badge>}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <p className="text-sm">
-              <strong>Doctor:</strong> Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
-            </p>
-            <p className="text-sm">
-              <strong>Patient:</strong> {appointment.patient?.firstName} {appointment.patient?.lastName}
-            </p>
-            <p className="text-sm">
-              <strong>Status:</strong> {!doctorJoined && minutesSinceStart > 0 ? 'Doctor not joined' : 'In progress'}
-            </p>
           </div>
+          <div className="text-sm text-gray-600">
+            {!doctorJoined && minutesSinceStart > 0 ? 'Doctor not joined' : 'In progress'}
+          </div>
+        </div>
 
-          {canJoin && (
-            <Button 
-              onClick={joinSession}
-              variant="outline"
-              className="w-full"
-            >
-              <Video className="h-4 w-4 mr-2" />
-              Join as Support
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+        {/* Compact info */}
+        <div className="text-sm text-gray-700">
+          Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName} • {appointment.patient?.firstName} {appointment.patient?.lastName}
+        </div>
+
+        {/* Join button */}
+        {canJoin && (
+          <Button 
+            onClick={joinSession}
+            variant="outline"
+            className="w-full"
+          >
+            <Video className="h-4 w-4 mr-2" />
+            Join as Support
+          </Button>
+        )}
+      </div>
     );
   };
 
