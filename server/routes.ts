@@ -750,15 +750,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/metrics", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.claims?.sub;
-      if (!userId) {
+      if (!user || user.role !== 'admin') {
         return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Get user to check role
-      const dbUser = await storage.getUser(userId);
-      if (!dbUser || dbUser.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
       }
 
       const { start, end } = req.query;
@@ -784,15 +777,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/funnel", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.claims?.sub;
-      if (!userId) {
+      if (!user || user.role !== 'admin') {
         return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Get user to check role
-      const dbUser = await storage.getUser(userId);
-      if (!dbUser || dbUser.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
       }
 
       const { window } = req.query;
@@ -812,15 +798,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/segments", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.claims?.sub;
-      if (!userId) {
+      if (!user || user.role !== 'admin') {
         return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Get user to check role
-      const dbUser = await storage.getUser(userId);
-      if (!dbUser || dbUser.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
       }
 
       const segments = await storage.getPatientSegments();
@@ -836,15 +815,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/doctors", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.claims?.sub;
-      if (!userId) {
+      if (!user || user.role !== 'admin') {
         return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Get user to check role
-      const dbUser = await storage.getUser(userId);
-      if (!dbUser || dbUser.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
       }
 
       const doctors = await storage.getAdminDoctorRoster();
@@ -860,15 +832,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/users", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.claims?.sub;
-      if (!userId) {
+      if (!user || user.role !== 'admin') {
         return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Get user to check role
-      const dbUser = await storage.getUser(userId);
-      if (!dbUser || dbUser.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
       }
 
       const adminUsers = await storage.getAdminUsers();
@@ -882,15 +847,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/users", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.claims?.sub;
-      if (!userId) {
+      if (!user || user.role !== 'admin') {
         return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Get user to check role
-      const dbUser = await storage.getUser(userId);
-      if (!dbUser || dbUser.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
       }
 
       const { email, firstName, lastName } = z.object({
@@ -914,21 +872,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/admin/users/:userId", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.claims?.sub;
-      if (!userId) {
+      if (!user || user.role !== 'admin') {
         return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Get user to check role
-      const dbUser = await storage.getUser(userId);
-      if (!dbUser || dbUser.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
       }
 
       const targetUserId = parseInt(req.params.userId);
       
       // Prevent admins from removing their own access
-      if (dbUser.id === targetUserId) {
+      if (user.id === targetUserId) {
         return res.status(400).json({ message: "Cannot remove your own admin access" });
       }
 
