@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Calendar, ChevronLeft, ChevronRight, Clock, Video, AlertCircle, Users, X } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Clock, Video, AlertCircle, Users, X, MoreHorizontal, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { utcToLocal, formatAppointmentTime } from '@/lib/timezoneUtils';
 import { Textarea } from '@/components/ui/textarea';
@@ -269,9 +269,7 @@ export function CalendarView({ userRole, userId }: CalendarViewProps) {
               )}
               onClick={() => {
                 setSelectedDate(day);
-                if (dayAppointments.length > 0) {
-                  setShowDayDetails(true);
-                }
+                setShowDayDetails(true);
               }}
             >
               <div className="flex justify-between items-start mb-1">
@@ -293,10 +291,11 @@ export function CalendarView({ userRole, userId }: CalendarViewProps) {
                 {dayAppointments.slice(0, 3).map((apt, aptIdx) => (
                   <div
                     key={apt.id}
-                    className="text-xs text-gray-600 truncate"
+                    className="text-xs text-gray-600 truncate flex items-center gap-1"
                   >
-                    {format(utcToLocal(apt.appointmentDate), 'HH:mm')}
-                    {apt.type === 'video' && <Video className="inline w-3 h-3 ml-1" />}
+                    <span>{format(utcToLocal(apt.appointmentDate), 'HH:mm')}</span>
+                    {apt.type === 'video' && <Video className="inline w-3 h-3" />}
+                    {apt.status === 'cancelled' && <span className="text-red-500">×</span>}
                   </div>
                 ))}
                 {dayAppointments.length > 3 && (
@@ -364,13 +363,14 @@ export function CalendarView({ userRole, userId }: CalendarViewProps) {
                         <div
                           key={apt.id}
                           className={cn(
-                            "absolute inset-x-1 p-1 rounded text-xs cursor-pointer",
+                            "absolute inset-x-1 p-1 rounded text-xs cursor-pointer group",
                             "bg-blue-100 border border-blue-300 hover:bg-blue-200",
-                            apt.type === 'video' && "bg-green-100 border-green-300 hover:bg-green-200"
+                            apt.type === 'video' && "bg-green-100 border-green-300 hover:bg-green-200",
+                            apt.status === 'cancelled' && "opacity-50 line-through"
                           )}
                           style={{
-                            top: `${(idx * 20)}px`,
-                            height: '18px',
+                            top: `${(idx * 25)}px`,
+                            minHeight: '24px',
                             zIndex: idx
                           }}
                           onClick={() => {
@@ -378,12 +378,20 @@ export function CalendarView({ userRole, userId }: CalendarViewProps) {
                             setShowDayDetails(true);
                           }}
                         >
-                          <div className="truncate">
-                            {format(utcToLocal(apt.appointmentDate), 'HH:mm')}
-                            {userRole === 'doctor' 
-                              ? ` - ${apt.patient?.user?.lastName}`
-                              : ` - Dr. ${apt.doctor?.user?.lastName}`
-                            }
+                          <div className="flex items-center justify-between">
+                            <div className="truncate flex-1">
+                              {format(utcToLocal(apt.appointmentDate), 'HH:mm')}
+                              {userRole === 'doctor' 
+                                ? ` - ${apt.patient?.user?.lastName}`
+                                : ` - Dr. ${apt.doctor?.user?.lastName}`
+                              }
+                            </div>
+                            {/* Mini action indicator */}
+                            {(canJoinAppointment(apt) || canRescheduleAppointment(apt)) && (
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-1">
+                                <MoreHorizontal className="h-3 w-3" />
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -795,21 +803,42 @@ function DayDetailsModal({
 
         <div className="space-y-4 mt-4">
           {appointments.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">No appointments on this day</p>
+            <div className="text-center py-8">
+              <p className="text-gray-500">No appointments on this day</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-4"
+                onClick={() => {
+                  onOpenChange(false);
+                  // Navigate to book appointment
+                  window.location.href = '/book';
+                }}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Book Appointment
+              </Button>
+            </div>
           ) : (
-            appointments
-              .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime())
-              .map(appointment => (
-                <AppointmentCard
-                  key={appointment.id}
-                  appointment={appointment}
-                  userRole={userRole}
-                  canJoin={canJoinAppointment(appointment)}
-                  canReschedule={canRescheduleAppointment(appointment)}
-                  onReschedule={onReschedule}
-                  onCancel={onCancel}
-                />
-              ))
+            <>
+              <p className="text-sm text-gray-600 mb-2">
+                Click on any appointment below to see available actions:
+              </p>
+              {appointments
+                .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime())
+                .map(appointment => (
+                  <AppointmentCard
+                    key={appointment.id}
+                    appointment={appointment}
+                    userRole={userRole}
+                    canJoin={canJoinAppointment(appointment)}
+                    canReschedule={canRescheduleAppointment(appointment)}
+                    onReschedule={onReschedule}
+                    onCancel={onCancel}
+                  />
+                ))
+              }
+            </>
           )}
         </div>
       </DialogContent>
