@@ -428,7 +428,7 @@ export default function AdminDashboard() {
           title="Net Revenue €"
           value={metrics?.netRevenue || 0}
           previousValue={metrics?.netRevenuePrev}
-          format={(v) => `€${v.toLocaleString()}`}
+          format={(v) => `€${(v || 0).toLocaleString()}`}
           icon={Euro}
           sparkline={metrics?.revenueSparkline}
         />
@@ -470,7 +470,7 @@ export default function AdminDashboard() {
                       <span className="font-medium">{stage.name}</span>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-600">
-                          {stage.count.toLocaleString()} ({stage.percentage}%)
+                          {(stage.count || 0).toLocaleString()} ({stage.percentage || 0}%)
                         </span>
                         {stage.dropOffAlert && (
                           <Badge variant="destructive" className="text-xs">
@@ -524,12 +524,12 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div>
-                    <div className="text-2xl font-bold">€{segment.ltv.toLocaleString()}</div>
+                    <div className="text-2xl font-bold">€{(segment.ltv || 0).toLocaleString()}</div>
                     <div className="text-xs text-gray-600">Lifetime Value</div>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Appts/Patient</span>
-                    <span className="font-medium">{segment.appointmentsPerPatient.toFixed(1)}</span>
+                    <span className="font-medium">{(segment.appointmentsPerPatient || 0).toFixed(1)}</span>
                   </div>
                   {segment.churnRiskCount > 0 && (
                     <Badge variant="destructive" className="w-full justify-center">
