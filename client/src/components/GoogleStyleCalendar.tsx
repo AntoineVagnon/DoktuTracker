@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { 
   Calendar, Clock, Plus, Edit3, Trash2, Save, ChevronLeft, ChevronRight, 
-  CalendarDays, Eye, MoreHorizontal, Repeat, X, Check
+  CalendarDays, Eye, MoreHorizontal, Repeat, X, Check, Video, UserCheck, XCircle, User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -64,6 +64,11 @@ interface SlotModalData {
   deleteScope?: 'single' | 'forward' | 'all';
 }
 
+interface AppointmentModalData {
+  isOpen: boolean;
+  appointment: Appointment | null;
+}
+
 interface WeeklyTemplateData {
   [key: string]: { // Monday, Tuesday, etc.
     enabled: boolean;
@@ -91,6 +96,11 @@ export default function GoogleStyleCalendar() {
     endTime: '',
     date: '',
     isRecurring: false
+  });
+
+  const [appointmentModal, setAppointmentModal] = useState<AppointmentModalData>({
+    isOpen: false,
+    appointment: null
   });
 
   const [weeklyTemplate, setWeeklyTemplate] = useState<WeeklyTemplateData>({
@@ -280,6 +290,40 @@ export default function GoogleStyleCalendar() {
     return Array.from({ length: 7 }, (_, i) => addDays(start, i));
   };
 
+  const getMonthDates = () => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    
+    const dates = [];
+    const currentDateCopy = new Date(startDate);
+    
+    while (currentDateCopy <= lastDay || currentDateCopy.getDay() !== 0) {
+      dates.push(new Date(currentDateCopy));
+      currentDateCopy.setDate(currentDateCopy.getDate() + 1);
+    }
+    
+    return dates;
+  };
+
+  const getAppointmentsForDate = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return appointments.filter((apt: Appointment) => {
+      const localAptTime = new Date(apt.appointmentDate);
+      if (isNaN(localAptTime.getTime())) return false;
+      const aptDate = format(localAptTime, 'yyyy-MM-dd');
+      return aptDate === dateStr && apt.status !== 'cancelled';
+    });
+  };
+
+  const getSlotsForDate = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return timeSlots.filter((slot: TimeSlot) => slot.date === dateStr && slot.isAvailable);
+  };
+
   const navigateDate = (direction: 'prev' | 'next') => {
     if (view === 'week') {
       setCurrentDate(prev => direction === 'prev' ? subWeeks(prev, 1) : addWeeks(prev, 1));
@@ -372,6 +416,13 @@ export default function GoogleStyleCalendar() {
     });
   };
 
+  const handleAppointmentClick = (appointment: Appointment) => {
+    setAppointmentModal({
+      isOpen: true,
+      appointment
+    });
+  };
+
   const isBlockSelected30Min = (date: string, hour: number, minute: number) => {
     return selectedBlocks.some(block => {
       const [blockStartHour, blockStartMinute] = block.startTime.split(':').map(Number);
@@ -411,7 +462,11 @@ export default function GoogleStyleCalendar() {
       return {
         type: 'appointment',
         content: (
-          <div className="bg-blue-600 text-white text-xs p-1 rounded h-full flex flex-col justify-center border-l-4 border-blue-800">
+          <div 
+            className="bg-blue-600 text-white text-xs p-1 rounded h-full flex flex-col justify-center border-l-4 border-blue-800 cursor-pointer hover:bg-blue-700 transition-colors"
+            onClick={() => handleAppointmentClick(bookedAppointment)}
+            title="Click to view appointment details"
+          >
             <div className="font-medium">Booked</div>
             <div className="truncate text-xs">
               {bookedAppointment.patient.firstName || bookedAppointment.patient.email}
@@ -671,41 +726,126 @@ export default function GoogleStyleCalendar() {
       </div>
 
       {/* Navigation */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3 sm:gap-0">
-        <div className="flex items-center justify-center sm:justify-start gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigateDate('prev')} className="h-9 px-3">
-            <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">Previous</span>
-          </Button>
-          <span className="text-base sm:text-lg font-medium px-2 sm:px-4 text-center sm:text-left min-w-0 flex-1 sm:flex-none">
-            {view === 'week' && format(currentDate, 'MMMM yyyy')}
-            {view === 'day' && (
-              <>
-                <span className="hidden sm:inline">{format(currentDate, 'EEEE, MMMM d, yyyy')}</span>
-                <span className="sm:hidden">{format(currentDate, 'EEE, MMM d')}</span>
-              </>
-            )}
-            {view === 'month' && format(currentDate, 'MMMM yyyy')}
-          </span>
-          <Button variant="outline" size="sm" onClick={() => navigateDate('next')} className="h-9 px-3">
-            <ChevronRight className="h-4 w-4" />
-            <span className="sr-only">Next</span>
-          </Button>
+      <div className="flex flex-col gap-4">
+        {/* Navigation and View Toggle */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3 sm:gap-0">
+          <div className="flex items-center justify-center sm:justify-start gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigateDate('prev')} className="h-9 px-3">
+              <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Previous</span>
+            </Button>
+            <span className="text-base sm:text-lg font-medium px-2 sm:px-4 text-center sm:text-left min-w-0 flex-1 sm:flex-none">
+              {view === 'week' && format(currentDate, 'MMMM yyyy')}
+              {view === 'day' && (
+                <>
+                  <span className="hidden sm:inline">{format(currentDate, 'EEEE, MMMM d, yyyy')}</span>
+                  <span className="sm:hidden">{format(currentDate, 'EEE, MMM d')}</span>
+                </>
+              )}
+              {view === 'month' && format(currentDate, 'MMMM yyyy')}
+            </span>
+            <Button variant="outline" size="sm" onClick={() => navigateDate('next')} className="h-9 px-3">
+              <ChevronRight className="h-4 w-4" />
+              <span className="sr-only">Next</span>
+            </Button>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setCurrentDate(new Date())}
+              className="h-9"
+            >
+              Today
+            </Button>
+            
+            {/* View Toggle */}
+            <div className="flex rounded-md shadow-sm" role="group">
+              <Button
+                variant={view === 'day' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setView('day')}
+                className="h-9 rounded-none rounded-l-md"
+              >
+                Day
+              </Button>
+              <Button
+                variant={view === 'week' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setView('week')}
+                className="h-9 rounded-none border-x-0"
+              >
+                Week
+              </Button>
+              <Button
+                variant={view === 'month' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setView('month')}
+                className="h-9 rounded-none rounded-r-md"
+              >
+                Month
+              </Button>
+            </div>
+          </div>
         </div>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => setCurrentDate(new Date())}
-          className="h-9 w-full sm:w-auto"
-        >
-          Today
-        </Button>
       </div>
 
 
 
       {/* Calendar Grid */}
+      {/* Daily View */}
+      {view === 'day' && (
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
+            <div className="grid grid-cols-2 border-b bg-gray-50 sticky top-0 z-10">
+              <div className="p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">
+                Time
+              </div>
+              <div className="p-2 sm:p-3 text-center border-l">
+                <div className="text-xs text-gray-600 uppercase">
+                  {format(currentDate, 'EEEE')}
+                </div>
+                <div className="text-xs sm:text-sm font-medium mt-1">
+                  {format(currentDate, 'MMMM d, yyyy')}
+                </div>
+              </div>
+            </div>
+
+            <div className="max-h-80 sm:max-h-96 overflow-y-auto" ref={calendarScrollRef}>
+              {timeSlots30Min.map((timeSlot, slotIndex) => {
+                const cellContent = getCellContent30Min(currentDate, timeSlot.hour, timeSlot.minute);
+                const dateStr = format(currentDate, 'yyyy-MM-dd');
+                const timeStr = timeSlot.display;
+                
+                return (
+                  <div key={slotIndex} className="grid grid-cols-2 border-b last:border-b-0">
+                    <div className="p-1 sm:p-2 text-xs sm:text-sm text-gray-600 bg-gray-50 border-r">
+                      {timeSlot.display}
+                    </div>
+                    <div
+                      className={cn(
+                        "h-10 sm:h-12 border-l border-gray-200 p-0.5 sm:p-1 transition-colors text-xs",
+                        cellContent.type === 'empty' && "hover:bg-blue-50 cursor-pointer touch-manipulation",
+                        cellContent.type === 'appointment' && "cursor-default"
+                      )}
+                      onMouseDown={() => cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
+                      onMouseEnter={() => handleCellMouseEnter30Min(dateStr, timeStr)}
+                      onMouseUp={() => handleCellMouseUp30Min()}
+                      onTouchStart={() => cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
+                      onTouchEnd={() => handleCellMouseUp30Min()}
+                    >
+                      {cellContent.content}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Weekly View */}
       {view === 'week' && (
         <Card className="overflow-hidden">
           <CardContent className="p-0">
@@ -759,6 +899,66 @@ export default function GoogleStyleCalendar() {
                   })}
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Monthly View */}
+      {view === 'month' && (
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
+            <div className="grid grid-cols-7 border-b bg-gray-50 sticky top-0 z-10">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+                <div key={index} className="p-2 text-center text-xs font-medium text-gray-600 border-r last:border-r-0">
+                  {day}
+                </div>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-7">
+              {getMonthDates().map((date, index) => {
+                const isCurrentMonth = date.getMonth() === currentDate.getMonth();
+                const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+                const dayAppointments = getAppointmentsForDate(date);
+                const daySlots = getSlotsForDate(date);
+                
+                return (
+                  <div
+                    key={index}
+                    className={cn(
+                      "min-h-[80px] p-2 border-r border-b last:border-r-0 cursor-pointer hover:bg-gray-50",
+                      !isCurrentMonth && "bg-gray-50 text-gray-400",
+                      isToday && "bg-blue-50"
+                    )}
+                    onClick={() => {
+                      setView('day');
+                      setCurrentDate(date);
+                    }}
+                  >
+                    <div className={cn(
+                      "text-sm font-medium mb-1",
+                      isToday && "text-blue-600"
+                    )}>
+                      {date.getDate()}
+                    </div>
+                    
+                    {/* Show appointment count */}
+                    {dayAppointments.length > 0 && (
+                      <div className="text-xs bg-blue-100 text-blue-800 rounded px-1 py-0.5 mb-1">
+                        {dayAppointments.length} appointment{dayAppointments.length > 1 ? 's' : ''}
+                      </div>
+                    )}
+                    
+                    {/* Show available slots count */}
+                    {daySlots.length > 0 && (
+                      <div className="text-xs bg-green-100 text-green-800 rounded px-1 py-0.5">
+                        {daySlots.length} slot{daySlots.length > 1 ? 's' : ''} available
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -1053,6 +1253,134 @@ export default function GoogleStyleCalendar() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Appointment Action Modal */}
+      <Dialog open={appointmentModal.isOpen} onOpenChange={(open) => {
+        if (!open) {
+          setAppointmentModal({ isOpen: false, appointment: null });
+        }
+      }}>
+        <DialogContent className="max-w-md mx-4 sm:mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg sm:text-xl">Appointment Details</DialogTitle>
+          </DialogHeader>
+          
+          {appointmentModal.appointment && (
+            <div className="space-y-4">
+              {/* Patient Info */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="h-4 w-4 text-gray-500" />
+                  <span className="font-medium">Patient:</span>
+                  <span>
+                    {appointmentModal.appointment.patient.firstName} {appointmentModal.appointment.patient.lastName}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="h-4 w-4 text-gray-500" />
+                  <span className="font-medium">Date:</span>
+                  <span>{format(new Date(appointmentModal.appointment.appointmentDate), 'EEEE, MMMM d, yyyy')}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="h-4 w-4 text-gray-500" />
+                  <span className="font-medium">Time:</span>
+                  <span>{format(new Date(appointmentModal.appointment.appointmentDate), 'h:mm a')}</span>
+                </div>
+                {appointmentModal.appointment.consultationType === 'video' && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Video className="h-4 w-4 text-gray-500" />
+                    <span className="font-medium">Type:</span>
+                    <span>Video Consultation</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Check if appointment is live (within 15 minutes before or during) */}
+              {(() => {
+                const now = new Date();
+                const appointmentTime = new Date(appointmentModal.appointment.appointmentDate);
+                const fifteenMinutesBefore = new Date(appointmentTime.getTime() - 15 * 60 * 1000);
+                const thirtyMinutesAfter = new Date(appointmentTime.getTime() + 30 * 60 * 1000);
+                const isLive = now >= fifteenMinutesBefore && now <= thirtyMinutesAfter;
+                
+                return isLive && appointmentModal.appointment.consultationType === 'video' ? (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-sm text-green-800 font-medium mb-2">
+                      Video consultation is ready to start
+                    </p>
+                    <Button 
+                      variant="default" 
+                      className="w-full bg-green-600 hover:bg-green-700"
+                      onClick={() => {
+                        window.location.href = `/appointments/${appointmentModal.appointment?.id}/video`;
+                      }}
+                    >
+                      <Video className="h-4 w-4 mr-2" />
+                      Join Video Call
+                    </Button>
+                  </div>
+                ) : null;
+              })()}
+
+              {/* Action Buttons */}
+              <div className="space-y-2 pt-4">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    window.location.href = `/appointments/${appointmentModal.appointment?.id}`;
+                  }}
+                >
+                  <UserCheck className="h-4 w-4 mr-2" />
+                  View Full Details
+                </Button>
+                
+                {appointmentModal.appointment.status !== 'cancelled' && (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => {
+                        window.location.href = `/appointments/${appointmentModal.appointment?.id}/reschedule`;
+                      }}
+                    >
+                      <CalendarDays className="h-4 w-4 mr-2" />
+                      Reschedule Appointment
+                    </Button>
+                    
+                    <Button 
+                      variant="destructive" 
+                      className="w-full"
+                      onClick={async () => {
+                        if (confirm('Are you sure you want to cancel this appointment?')) {
+                          try {
+                            await apiRequest('POST', `/api/appointments/${appointmentModal.appointment?.id}/cancel`);
+                            queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+                            toast({
+                              title: "Appointment cancelled",
+                              description: "The appointment has been cancelled successfully."
+                            });
+                            setAppointmentModal({ isOpen: false, appointment: null });
+                          } catch (error) {
+                            toast({
+                              title: "Error",
+                              description: "Failed to cancel appointment. Please try again.",
+                              variant: "destructive"
+                            });
+                          }
+                        }
+                      }}
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Cancel Appointment
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
