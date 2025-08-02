@@ -91,7 +91,7 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-1">
             {sessionStatus === 'live' && (
-              <Badge className="bg-green-600">Live</Badge>
+              <Badge className="bg-green-600">Meeting live</Badge>
             )}
             <div className="text-sm text-gray-600">
               Dr. {appointment.doctor?.user?.lastName} • {appointmentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
