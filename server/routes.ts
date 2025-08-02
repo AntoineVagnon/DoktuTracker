@@ -122,6 +122,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Temporary route to create video appointments for testing
+  app.post("/api/create-test-video-appointments", async (req, res) => {
+    try {
+      console.log('🎥 Creating test video appointments...');
+      
+      // Update existing appointments to be video type
+      const appointmentIds = [24, 16, 22];
+      const now = new Date();
+      
+      // Update appointment 24 to be video and live (started 5 minutes ago)
+      await storage.updateAppointment(24, {
+        type: 'video',
+        appointmentDate: new Date(now.getTime() - 5 * 60 * 1000),
+        zoomMeetingId: 'test-meeting-24',
+        zoomJoinUrl: 'https://zoom.us/j/test24',
+        zoomStartUrl: 'https://zoom.us/s/test24'
+      });
+      console.log('✅ Updated appointment 24 as live video');
+      
+      // Update appointment 16 to be video and start in 3 minutes
+      await storage.updateAppointment(16, {
+        type: 'video',
+        appointmentDate: new Date(now.getTime() + 3 * 60 * 1000),
+        zoomMeetingId: 'test-meeting-16',
+        zoomJoinUrl: 'https://zoom.us/j/test16',
+        zoomStartUrl: 'https://zoom.us/s/test16'
+      });
+      console.log('✅ Updated appointment 16 to start soon');
+      
+      // Update appointment 22 to be video and start in 15 minutes
+      await storage.updateAppointment(22, {
+        type: 'video',
+        appointmentDate: new Date(now.getTime() + 15 * 60 * 1000),
+        zoomMeetingId: 'test-meeting-22',
+        zoomJoinUrl: 'https://zoom.us/j/test22',
+        zoomStartUrl: 'https://zoom.us/s/test22'
+      });
+      console.log('✅ Updated appointment 22 as scheduled');
+      
+      res.json({ 
+        success: true, 
+        message: "Test video appointments created successfully",
+        appointments: [
+          { id: 24, status: 'live' },
+          { id: 16, status: 'starting soon' },
+          { id: 22, status: 'scheduled' }
+        ]
+      });
+      
+    } catch (error: any) {
+      console.error('❌ Error creating video appointments:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message 
+      });
+    }
+  });
+
   // Configure multer for file uploads (in-memory storage for processing before cloud upload)
   const upload = multer({
     storage: multer.memoryStorage(),

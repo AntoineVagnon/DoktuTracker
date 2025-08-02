@@ -77,6 +77,7 @@ export interface IStorage {
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
   updateAppointmentStatus(id: string, status: string, paymentIntentId?: string): Promise<void>;
   updateAppointmentPayment(id: string, paymentIntentId: string): Promise<void>;
+  updateAppointment(id: number, updates: Partial<Appointment>): Promise<void>;
   rescheduleAppointment(id: string, newSlotId: string, reason: string, actorId: number, actorRole: string): Promise<void>;
   cancelAppointment(id: string, cancelledBy: string, reason: string, actorId: number, actorRole: string): Promise<void>;
   
@@ -858,6 +859,16 @@ export class PostgresStorage implements IStorage {
     await db
       .update(appointments)
       .set({ paymentIntentId, status: "paid", updatedAt: new Date() })
+      .where(eq(appointments.id, id));
+  }
+
+  async updateAppointment(id: number, updates: Partial<Appointment>): Promise<void> {
+    await db
+      .update(appointments)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
       .where(eq(appointments.id, id));
   }
 
