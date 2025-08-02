@@ -166,9 +166,12 @@ export default function Dashboard() {
   // Categorize appointments by timing
   const { upcoming, live, completed } = categorizeAppointmentsByTiming(appointments);
   
+  // Filter out live video appointments from upcoming to avoid duplication
+  const upcomingWithoutLive = upcoming.filter(apt => !live.some(liveApt => liveApt.id === apt.id));
+  
   // Limit to 3 appointments for dashboard preview
-  const upcomingAppointments = upcoming.slice(0, 3);
-  const hasMoreAppointments = upcoming.length > 3;
+  const upcomingAppointments = upcomingWithoutLive.slice(0, 3);
+  const hasMoreAppointments = upcomingWithoutLive.length > 3;
 
   // Past appointments: completed appointments
   const pastAppointments = completed;
@@ -596,27 +599,8 @@ export default function Dashboard() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {upcomingAppointments.map((appointment: any) => {
-                          const showVideoConsultation = canJoinVideo(appointment);
-                          
-                          if (showVideoConsultation) {
-                            return (
-                              <VideoConsultation 
-                                key={appointment.id}
-                                appointment={appointment}
-                                userRole="patient"
-                                onStatusUpdate={(status) => {
-                                  if (status === 'ended') {
-                                    setSurveyAppointment(appointment);
-                                    setShowPostCallSurvey(true);
-                                  }
-                                }}
-                              />
-                            );
-                          }
-
-                          return (
-                            <div key={appointment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        {upcomingAppointments.map((appointment: any) => (
+                          <div key={appointment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center space-x-3">
                                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
@@ -701,8 +685,7 @@ export default function Dashboard() {
                                 </Button>
                               </div>
                             </div>
-                          );
-                        })}
+                        ))}
                         {hasMoreAppointments && (
                           <div className="pt-4 border-t">
                             <Button 
