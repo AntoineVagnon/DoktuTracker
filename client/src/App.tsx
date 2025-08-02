@@ -25,6 +25,7 @@ import DoctorCalendar from "@/pages/DoctorCalendar";
 import DoctorSettings from "@/pages/DoctorSettings";
 import PatientRecords from "@/pages/PatientRecords";
 import DocumentLibrary from "@/pages/DocumentLibrary";
+import { PatientCalendar } from "@/pages/PatientCalendar";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Payment from "@/pages/Payment";
 import Checkout from "@/pages/Checkout";
@@ -67,6 +68,7 @@ function Router() {
       <Route path="/doctor-settings" component={DoctorSettings} />
       <Route path="/doctor-records" component={PatientRecords} />
       <Route path="/documents" component={DocumentLibrary} />
+      <Route path="/patient-calendar" component={PatientCalendar} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>

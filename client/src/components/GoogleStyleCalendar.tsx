@@ -36,17 +36,27 @@ interface TimeSlot {
 }
 
 interface Appointment {
-  id: string;
-  patientId: string;
-  doctorId: string;
-  slotId: string;
+  id: string | number;
+  patientId: string | number;
+  doctorId: string | number;
+  slotId?: string;
   appointmentDate: string;
   status: string;
   price: string;
+  consultationType?: 'in-person' | 'video';
+  notes?: string;
   patient: {
     email: string;
     firstName?: string;
     lastName?: string;
+  };
+  doctor?: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    specialty: string;
+    phone?: string;
+    email: string;
   };
 }
 
@@ -76,14 +86,40 @@ interface WeeklyTemplateData {
   };
 }
 
-export default function GoogleStyleCalendar() {
+interface GoogleStyleCalendarProps {
+  doctorId?: string;
+  isPatientView?: boolean;
+  appointments?: any[];
+  onAppointmentClick?: (appointment: any) => void;
+  onDayClick?: (date: Date) => void;
+  view?: CalendarView;
+  onViewChange?: (view: CalendarView) => void;
+  currentDate?: Date;
+  onDateChange?: (date: Date) => void;
+}
+
+export default function GoogleStyleCalendar({
+  doctorId,
+  isPatientView = false,
+  appointments: externalAppointments,
+  onAppointmentClick,
+  onDayClick,
+  view: externalView,
+  onViewChange,
+  currentDate: externalCurrentDate,
+  onDateChange
+}: GoogleStyleCalendarProps = {}) {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { syncAvailability } = useAvailabilitySync();
   
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState<CalendarView>('week');
+  const [internalCurrentDate, setInternalCurrentDate] = useState(new Date());
+  const currentDate = externalCurrentDate || internalCurrentDate;
+  const setCurrentDate = onDateChange || setInternalCurrentDate;
+  const [internalView, setInternalView] = useState<CalendarView>('week');
+  const view = externalView || internalView;
+  const setView = onViewChange || setInternalView;
   const [selectedBlocks, setSelectedBlocks] = useState<Array<{ date: string; startTime: string; endTime: string }>>([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const [currentSelection, setCurrentSelection] = useState<{ date: string; startHour: number; endHour: number; startMinute?: number; endMinute?: number } | null>(null);
@@ -157,13 +193,16 @@ export default function GoogleStyleCalendar() {
   });
 
   // Optimized appointments fetching
-  const { data: appointments = [] as Appointment[], isLoading: appointmentsLoading } = useQuery({
+  const { data: fetchedAppointments = [] as Appointment[], isLoading: appointmentsLoading } = useQuery({
     queryKey: ['/api/appointments', user?.id],
-    enabled: !!user?.id,
+    enabled: !!user?.id && !isPatientView, // Don't fetch if in patient view
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
     refetchOnWindowFocus: false, // Reduce unnecessary refetches
   });
+
+  // Use external appointments if in patient view, otherwise use fetched appointments
+  const appointments: Appointment[] = isPatientView ? (externalAppointments as Appointment[] || []) : fetchedAppointments;
 
   // Batch create multiple 30-minute time slots - dramatically faster!
   const createSlotMutation = useMutation({
@@ -336,7 +375,7 @@ export default function GoogleStyleCalendar() {
     if (!time || typeof time !== 'string') return;
     const [hour, minute] = time.split(':').map(Number);
     const slotIndex = timeSlots30Min.findIndex(slot => slot.hour === hour && slot.minute === minute);
-    setCurrentSelection({ date, startHour: hour, endHour: hour, startMinute: minute, endMinute: minute + 30, slotIndex });
+    setCurrentSelection({ date, startHour: hour, endHour: hour, startMinute: minute, endMinute: minute + 30 });
     setIsSelecting(true);
   };
 
@@ -464,7 +503,13 @@ export default function GoogleStyleCalendar() {
         content: (
           <div 
             className="bg-blue-600 text-white text-xs p-1 rounded h-full flex flex-col justify-center border-l-4 border-blue-800 cursor-pointer hover:bg-blue-700 transition-colors"
-            onClick={() => handleAppointmentClick(bookedAppointment)}
+            onClick={() => {
+              if (onAppointmentClick) {
+                onAppointmentClick(bookedAppointment);
+              } else {
+                handleAppointmentClick(bookedAppointment);
+              }
+            }}
             title="Click to view appointment details"
           >
             <div className="font-medium">Booked</div>
@@ -476,46 +521,51 @@ export default function GoogleStyleCalendar() {
       };
     }
 
-    // Check for existing available slot
-    const existingSlot = timeSlots.find((slot: TimeSlot) => {
-      const slotDate = slot.date;
-      const slotTime = slot.startTime;
-      // Handle time format from database (09:00:00 vs 09:00)
-      const [slotHour, slotMinute] = slotTime.split(':').map(Number);
-      return slotDate === dateStr && slotHour === hour && slotMinute === minute && slot.isAvailable;
-    });
+    // Only show slots in doctor view
+    if (!isPatientView) {
+      // Check for existing available slot
+      const existingSlot = timeSlots.find((slot: TimeSlot) => {
+        const slotDate = slot.date;
+        const slotTime = slot.startTime;
+        // Handle time format from database (09:00:00 vs 09:00)
+        const [slotHour, slotMinute] = slotTime.split(':').map(Number);
+        return slotDate === dateStr && slotHour === hour && slotMinute === minute && slot.isAvailable;
+      });
 
-    if (existingSlot) {
-      return {
-        type: 'available',
-        content: (
-          <div 
-            className="bg-green-100 text-green-800 text-xs p-1 rounded h-full flex items-center justify-center border-l-4 border-green-500 cursor-pointer hover:bg-green-200 transition-colors"
-            onClick={() => handleSlotClick(existingSlot)}
-            title={`Available slot: ${timeStr}${existingSlot.isRecurring ? ' (Recurring)' : ''}`}
-          >
-            <div className="font-medium flex items-center gap-1">
-              Available
-              {existingSlot.isRecurring && <Repeat className="h-3 w-3" />}
+      if (existingSlot) {
+        return {
+          type: 'available',
+          content: (
+            <div 
+              className="bg-green-100 text-green-800 text-xs p-1 rounded h-full flex items-center justify-center border-l-4 border-green-500 cursor-pointer hover:bg-green-200 transition-colors"
+              onClick={() => handleSlotClick(existingSlot)}
+              title={`Available slot: ${timeStr}${existingSlot.isRecurring ? ' (Recurring)' : ''}`}
+            >
+              <div className="font-medium flex items-center gap-1">
+                Available
+                {existingSlot.isRecurring && <Repeat className="h-3 w-3" />}
+              </div>
             </div>
-          </div>
-        )
-      };
+          )
+        };
+      }
     }
 
-    // Check if this cell is part of current selection
-    const isSelected = isBlockSelected30Min(dateStr, hour, minute);
-    const isCurrent = isCurrentSelection30Min(dateStr, hour, minute);
+    // Check if this cell is part of current selection (only in doctor view)
+    if (!isPatientView) {
+      const isSelected = isBlockSelected30Min(dateStr, hour, minute);
+      const isCurrent = isCurrentSelection30Min(dateStr, hour, minute);
 
-    if (isSelected || isCurrent) {
-      return {
-        type: 'selected',
-        content: (
-          <div className="bg-green-100 border-2 border-dashed border-green-400 rounded h-full flex items-center justify-center">
-            <div className="text-green-700 text-xs font-medium">Selected</div>
-          </div>
-        )
-      };
+      if (isSelected || isCurrent) {
+        return {
+          type: 'selected',
+          content: (
+            <div className="bg-green-100 border-2 border-dashed border-green-400 rounded h-full flex items-center justify-center">
+              <div className="text-green-700 text-xs font-medium">Selected</div>
+            </div>
+          )
+        };
+      }
     }
 
     // Empty cell - available for selection
@@ -717,11 +767,13 @@ export default function GoogleStyleCalendar() {
             </TabsList>
           </Tabs>
           
-          <Button onClick={addAvailabilityFromTemplate} className="gap-2 h-9 sm:h-10">
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Add Template</span>
-            <span className="sm:hidden">Template</span>
-          </Button>
+          {!isPatientView && (
+            <Button onClick={addAvailabilityFromTemplate} className="gap-2 h-9 sm:h-10">
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Add Template</span>
+              <span className="sm:hidden">Template</span>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -932,8 +984,12 @@ export default function GoogleStyleCalendar() {
                       isToday && "bg-blue-50"
                     )}
                     onClick={() => {
-                      setView('day');
-                      setCurrentDate(date);
+                      if (onDayClick) {
+                        onDayClick(date);
+                      } else {
+                        setView('day');
+                        setCurrentDate(date);
+                      }
                     }}
                   >
                     <div className={cn(

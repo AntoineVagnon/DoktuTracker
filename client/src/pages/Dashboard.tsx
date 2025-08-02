@@ -26,6 +26,7 @@ import { AppointmentActionsModal } from "@/components/AppointmentActionsModal";
 import { VideoConsultation } from "@/components/VideoConsultation";
 import { PostConsultationSurvey } from "@/components/PostConsultationSurvey";
 import { CalendarView } from "@/components/CalendarView";
+import { PatientCalendar } from "@/pages/PatientCalendar";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -585,7 +586,7 @@ export default function Dashboard() {
               </TabsContent>
 
               <TabsContent value="calendar">
-                <CalendarView userRole="patient" userId={user?.id} />
+                <PatientCalendar />
               </TabsContent>
 
               <TabsContent value="doctors">
