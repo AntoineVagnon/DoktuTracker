@@ -113,23 +113,16 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
 
         {canJoin && (
           <>
-            {/* Doctor late warning - compact version */}
+            {/* Doctor late warning with actions */}
             {minutesSinceStart > 5 && !doctorJoined && (
-              <div className="bg-yellow-100 p-2 rounded flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-yellow-600" />
-                <span className="text-sm text-yellow-800">
-                  Doctor is running late • They should join shortly
-                </span>
-              </div>
-            )}
-
-            {/* Very late - compact version */}
-            {minutesSinceStart > 15 && !doctorJoined && (
-              <div className="bg-red-100 p-2 rounded">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-medium text-red-800">
-                    Doctor hasn't joined yet
+              <div className="bg-yellow-100 p-2 rounded flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-yellow-600" />
+                  <span className="text-sm text-yellow-800">
+                    Doctor is running late • They should join shortly
                   </span>
+                </div>
+                {minutesSinceStart > 15 && (
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" className="text-xs h-7">
                       Reschedule (no charge)
@@ -138,20 +131,12 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
                       Get refund + €10 credit
                     </Button>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
             {/* Compact action buttons */}
             <div className="flex items-center justify-between gap-2">
-              <Button 
-                onClick={joinSession}
-                className="bg-blue-600 hover:bg-blue-700"
-                disabled={!canJoin}
-              >
-                <Video className="h-4 w-4 mr-2" />
-                Join Video Call
-              </Button>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
@@ -169,6 +154,14 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
                   </a>
                 )}
               </div>
+              <Button 
+                onClick={joinSession}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={!canJoin}
+              >
+                <Video className="h-4 w-4 mr-2" />
+                Join Video Call
+              </Button>
             </div>
           </>
         )}
