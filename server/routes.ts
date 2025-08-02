@@ -285,11 +285,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const nextSlot = slots
           .filter(slot => {
             if (!slot.isAvailable) return false;
-            const slotDateTime = new Date(`${slot.date}T${slot.startTime}`);
+            // Slots are stored in local European time, so we need to interpret them correctly
+            // Add timezone offset to ensure proper comparison
+            const slotDateTime = new Date(`${slot.date}T${slot.startTime}+02:00`); // CEST (UTC+2)
             const diffMinutes = (slotDateTime.getTime() - now.getTime()) / (1000 * 60);
             return diffMinutes >= leadTimeMinutes; // Only show slots at least 60 minutes in the future
           })
-          .sort((a, b) => new Date(`${a.date}T${a.startTime}`).getTime() - new Date(`${b.date}T${b.startTime}`).getTime())[0];
+          .sort((a, b) => {
+            const aTime = new Date(`${a.date}T${a.startTime}+02:00`).getTime();
+            const bTime = new Date(`${b.date}T${b.startTime}+02:00`).getTime();
+            return aTime - bTime;
+          })[0];
         
         console.log(`📅 Next available slot for doctor ${doctorId} (with 60-min buffer):`, nextSlot ? `${nextSlot.date}T${nextSlot.startTime}` : 'none');
         res.json(nextSlot ? [nextSlot] : []);

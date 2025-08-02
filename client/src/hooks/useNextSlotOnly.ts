@@ -20,9 +20,9 @@ export function useNextSlotOnly(doctorId: string) {
         return [];
       }
     },
-    refetchOnWindowFocus: false,
-    staleTime: 10 * 60 * 1000, // 10 minutes cache for homepage
-    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: true, // Refetch when window gains focus
+    staleTime: 30 * 1000, // 30 seconds cache to ensure fresh data
+    gcTime: 60 * 1000, // 1 minute garbage collection
   });
 
   const nextSlot = slots && slots.length > 0 ? slots[0] : null;
