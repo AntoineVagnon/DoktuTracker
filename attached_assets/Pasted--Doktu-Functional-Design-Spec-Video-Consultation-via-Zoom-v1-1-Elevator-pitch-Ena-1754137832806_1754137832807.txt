@@ -1,0 +1,108 @@
+# Doktu — Functional & Design Spec: Video Consultation via Zoom (v1)
+
+## 1 — Elevator pitch
+
+Enable secure, one-click video consultations using Zoom. Patients and doctors receive personalized links, join directly from the platform, and handle edge cases gracefully (no-shows, late joins, equipment issues).
+
+## 2 — Primary user roles
+
+* **Patient**: Joins their session via "Join" button; can test equipment.
+* **Doctor**: Accesses Zoom session directly and can open patient profile.
+* **Admin / Support**: Can join any Zoom session for live support; sees session status and receives error signals.
+
+## 3 — Key user flows
+
+* Patient joins a consultation within 5 minutes of start.
+* Doctor joins and reviews patient profile before call.
+* **Patient and doctor can share documents inside the video call without leaving Zoom.**
+* **Patient completes a brief post‑call survey after the meeting.**
+* Missed session > mark no‑show.
+
+## 4 — Non-functional must-haves
+
+* One‑time use secure Zoom links.
+* Session state updates in real‑time.
+* In‑call document sharing must sync instantly, with progress and error feedback.
+* Post‑call survey is mandatory for patients (skippable after first reminder), optional for doctors.
+* Low‑bandwidth fallback relies on Zoom’s adaptive stream.
+
+## 5 — UI references
+
+* "Join Video Call" button appears directly in the appointment card when the session is live or <5 min away.
+* If the patient’s health profile is incomplete, a link “Complete health profile” is shown in the same card.
+* Doctors see a "Review patient profile" link inside the card.
+* **Admins** see a "Join as Support" button on any live/imminent appointment card.
+* **In‑call sidebar (within Zoom’s iframe overlay)**
+
+  * Tabs: **Chat | Files**
+  * Drag‑and‑drop zone or "Upload" button inside *Files* tab
+  * Each entry shows filename, size, and download icon; doctor/patient/admin label + timestamp.
+* **Post‑call survey modal**
+
+  * Five‑star rating scale
+  * Optional textarea for free comments
+  * “Submit” or “Skip for now” buttons
+* **Post‑call survey modal**
+
+  * Five‑star rating scale
+  * Optional textarea for free comments
+  * “Submit” or “Skip for now” buttons
+
+## 6 — "Don’t break these" rules
+
+* Show "Join" button only if session is live or imminent (<5min).
+* Remove from upcoming once started.
+* Zoom links are unique per session and expire after use.
+
+## 10 — Doctor late / no‑show handling
+
+* **Doctor late (joins 5–15 min after start)**
+  *Patient view*: appointment card shows countdown + label “Doctor is running late”; Join button still active.
+  *Doctor view*: label “You are late” appears when joining; no penalty recorded.
+
+* **Doctor very late (joins >15 min after start)**
+  *Patient view*: auto‑shows option “Reschedule or full refund”.
+  *System*: appointment marked `doctor_late`; admin alerted; doctor lateness counter++.
+
+* **Doctor no‑show (never joins within scheduled window)**
+  *After end time +5 min*: appointment status set to `doctor_no_show`.
+  *Patient*: offered free reschedule or refund + €10 credit.
+  *Doctor*: flagged; dashboard shows red badge; repeated no‑shows trigger account review after 3 cases/month.
+
+---
+
+### Added Gherkin scenarios
+
+```gherkin
+Scenario: Admin joins session as support
+  Given I am an admin
+  And a consultation is live
+  When I click "Join as Support"
+  Then I am connected to the Zoom call in observer mode
+  And doctor and patient are notified that support has joined
+
+# Existing scenarios
+Scenario: Doctor joins late (6 minutes after start)
+  Given it is 6 minutes past the scheduled start
+  And the patient is still waiting in Zoom lobby
+  When the doctor finally joins
+  Then the meeting opens normally
+  And the patient sees a note "Doctor joined late"
+  And no refund prompt is shown
+
+Scenario: Doctor joins very late (16 minutes)
+  Given it is 16 minutes past the start time
+  And the doctor has not joined
+  When the patient clicks "Join Video Call"
+  Then the system offers options:
+    | Reschedule at no cost |
+    | Full refund + €10 credit |
+  And the appointment status becomes doctor_late
+
+Scenario: Doctor no‑show
+  Given the doctor never joins before end time +5 minutes
+  Then the system sets status to doctor_no_show
+  And the patient automatically receives a refund and credit
+  And the doctor dashboard displays a red banner "Missed session"
+  And admin support is notified
+```

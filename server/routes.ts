@@ -577,6 +577,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Post-consultation survey endpoints
+  app.post("/api/appointments/:id/survey", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const appointmentId = req.params.id;
+      const { rating, comment } = req.body;
+
+      // Get appointment to validate
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment) {
+        return res.status(404).json({ message: "Appointment not found" });
+      }
+
+      // Check if user is the patient
+      if (appointment.patientId !== parseInt(user.id)) {
+        return res.status(403).json({ message: "You can only review your own appointments" });
+      }
+
+      // Create review
+      const reviewData = insertReviewSchema.parse({
+        appointmentId: parseInt(appointmentId),
+        patientId: parseInt(user.id),
+        doctorId: appointment.doctorId,
+        rating,
+        comment: comment || null
+      });
+      
+      const review = await storage.createReview(reviewData);
+      res.json(review);
+    } catch (error) {
+      console.error("Error creating survey:", error);
+      res.status(500).json({ message: "Failed to submit survey" });
+    }
+  });
+
+  app.post("/api/appointments/:id/survey/skip", isAuthenticated, async (req, res) => {
+    try {
+      // In a real app, we'd track this to show reminder later
+      res.json({ success: true, message: "Survey skipped" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to skip survey" });
+    }
+  });
+
   // Review routes
   app.post("/api/reviews", isAuthenticated, async (req, res) => {
     try {

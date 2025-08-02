@@ -23,6 +23,8 @@ import { BannerSystem } from "@/components/BannerSystem";
 import { HealthProfileSidebar } from "@/components/HealthProfileSidebar";
 import { DocumentLibraryPanel } from "@/components/DocumentLibraryPanel";
 import { AppointmentActionsModal } from "@/components/AppointmentActionsModal";
+import { VideoConsultation } from "@/components/VideoConsultation";
+import { PostConsultationSurvey } from "@/components/PostConsultationSurvey";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -37,6 +39,8 @@ export default function Dashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [appointmentAction, setAppointmentAction] = useState<"reschedule" | "cancel" | null>(null);
+  const [showPostCallSurvey, setShowPostCallSurvey] = useState(false);
+  const [surveyAppointment, setSurveyAppointment] = useState<any>(null);
 
   useEffect(() => {
     // Check if user just completed verification or booking
@@ -487,29 +491,19 @@ export default function Dashboard() {
 
         {/* Live Appointments Banner - Compact */}
         {live.length > 0 && (
-          <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3">
+          <div className="mb-4 space-y-4">
             {live.map((appointment: any) => (
-              <div key={appointment.id} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Activity className="h-4 w-4 text-green-600" />
-                  <div>
-                    <div className="font-medium text-sm text-green-800">
-                      Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
-                    </div>
-                    <div className="text-xs text-green-600 flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {format(new Date(appointment.appointmentDate), 'MMM d, h:mm a')} • {getTimeUntilAppointment(appointment.appointmentDate)}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-green-600 font-medium">€{appointment.price}</span>
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700 h-8 px-3 text-xs">
-                    <Video className="h-3 w-3 mr-1" />
-                    Join Call
-                  </Button>
-                </div>
-              </div>
+              <VideoConsultation 
+                key={appointment.id}
+                appointment={appointment}
+                userRole="patient"
+                onStatusUpdate={(status) => {
+                  if (status === 'ended') {
+                    setSurveyAppointment(appointment);
+                    setShowPostCallSurvey(true);
+                  }
+                }}
+              />
             ))}
           </div>
         )}
@@ -570,101 +564,113 @@ export default function Dashboard() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {upcomingAppointments.map((appointment: any) => (
-                          <div key={appointment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                  <span className="text-white font-bold text-sm">
-                                    {appointment.doctor?.user?.firstName?.[0]}{appointment.doctor?.user?.lastName?.[0]}
-                                  </span>
-                                </div>
-                                <div>
-                                  <h3 className="font-medium text-gray-900">
-                                    Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
-                                  </h3>
-                                  <p className="text-sm text-gray-600">{appointment.doctor?.specialty}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {/* Document count badge */}
-                                {documentCounts[appointment.id] > 0 && (
-                                  <Badge 
-                                    variant="secondary" 
-                                    className="cursor-pointer hover:bg-gray-200 text-xs"
-                                    onClick={() => {
-                                      setSelectedAppointmentId(appointment.id);
-                                      setDocumentUploadOpen(true);
-                                    }}
-                                  >
-                                    Docs ({documentCounts[appointment.id]})
-                                  </Badge>
-                                )}
-                                {getStatusBadge(appointment.status)}
-                              </div>
-                            </div>
+                        {upcomingAppointments.map((appointment: any) => {
+                          const showVideoConsultation = canJoinVideo(appointment);
+                          
+                          if (showVideoConsultation) {
+                            return (
+                              <VideoConsultation 
+                                key={appointment.id}
+                                appointment={appointment}
+                                userRole="patient"
+                                onStatusUpdate={(status) => {
+                                  if (status === 'ended') {
+                                    setSurveyAppointment(appointment);
+                                    setShowPostCallSurvey(true);
+                                  }
+                                }}
+                              />
+                            );
+                          }
 
-                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                              <div className="flex items-center">
-                                <Clock className="h-4 w-4 mr-1" />
+                          return (
+                            <div key={appointment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                    <span className="text-white font-bold text-sm">
+                                      {appointment.doctor?.user?.firstName?.[0]}{appointment.doctor?.user?.lastName?.[0]}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <h3 className="font-medium text-gray-900">
+                                      Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
+                                    </h3>
+                                    <p className="text-sm text-gray-600">{appointment.doctor?.specialty}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {/* Document count badge */}
+                                  {documentCounts[appointment.id] > 0 && (
+                                    <Badge 
+                                      variant="secondary" 
+                                      className="cursor-pointer hover:bg-gray-200 text-xs"
+                                      onClick={() => {
+                                        setSelectedAppointmentId(appointment.id);
+                                        setDocumentUploadOpen(true);
+                                      }}
+                                    >
+                                      Docs ({documentCounts[appointment.id]})
+                                    </Badge>
+                                  )}
+                                  {getStatusBadge(appointment.status)}
+                                </div>
+                              </div>
+
+                              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                                <div className="flex items-center">
+                                  <Clock className="h-4 w-4 mr-1" />
 {formatAppointmentDateTimeUS(appointment.appointmentDate)}
+                                </div>
+                                <div className="flex items-center">
+                                  <CreditCard className="h-4 w-4 mr-1" />
+                                  €{appointment.price}
+                                </div>
                               </div>
-                              <div className="flex items-center">
-                                <CreditCard className="h-4 w-4 mr-1" />
-                                €{appointment.price}
-                              </div>
-                            </div>
 
-                            <div className="flex flex-col sm:flex-row flex-wrap gap-2">
-                              {canJoinVideo(appointment) && (
-                                <Button size="sm" className="bg-green-600 hover:bg-green-700 h-9 flex-1 sm:flex-none">
-                                  <Video className="h-4 w-4 mr-2" />
-                                  <span className="hidden sm:inline">Join Video Call</span>
-                                  <span className="sm:hidden">Join Call</span>
+                              <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+                                {/* Pre-consultation actions */}
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedAppointmentId(appointment.id);
+                                    setDocumentUploadOpen(true);
+                                  }}
+                                  className="h-9 flex-1 sm:flex-none"
+                                >
+                                  <Upload className="h-4 w-4 mr-2" />
+                                  <span className="hidden sm:inline">Upload Docs</span>
+                                  <span className="sm:hidden">Upload</span>
                                 </Button>
-                              )}
 
-                              {/* Pre-consultation actions */}
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedAppointmentId(appointment.id);
-                                  setDocumentUploadOpen(true);
-                                }}
-                                className="h-9 flex-1 sm:flex-none"
-                              >
-                                <Upload className="h-4 w-4 mr-2" />
-                                <span className="hidden sm:inline">Upload Docs</span>
-                                <span className="sm:hidden">Upload</span>
-                              </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="h-9 flex-1 sm:flex-none"
+                                  onClick={() => {
+                                    setSelectedAppointment(appointment);
+                                    setAppointmentAction("reschedule");
+                                  }}
+                                >
+                                  Reschedule
+                                </Button>
 
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="h-9 flex-1 sm:flex-none"
-                                onClick={() => {
-                                  setSelectedAppointment(appointment);
-                                  setAppointmentAction("reschedule");
-                                }}
-                              >
-                                Reschedule
-                              </Button>
-
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => {
-                                  setSelectedAppointment(appointment);
-                                  setAppointmentAction("cancel");
-                                }}
-                                className="h-9 flex-1 sm:flex-none text-red-600 hover:text-red-700"
-                              >
-                                Cancel
-                              </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => {
+                                    setSelectedAppointment(appointment);
+                                    setAppointmentAction("cancel");
+                                  }}
+                                  className="h-9 flex-1 sm:flex-none text-red-600 hover:text-red-700"
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                         {hasMoreAppointments && (
                           <div className="pt-4 border-t">
                             <Button 
@@ -959,6 +965,20 @@ export default function Dashboard() {
           setAppointmentAction(null);
         }}
       />
+
+      {/* Post Consultation Survey */}
+      {surveyAppointment && (
+        <PostConsultationSurvey
+          appointmentId={surveyAppointment.id}
+          doctorName={`${surveyAppointment.doctor?.user?.firstName} ${surveyAppointment.doctor?.user?.lastName}`}
+          isOpen={showPostCallSurvey}
+          onClose={() => {
+            setShowPostCallSurvey(false);
+            setSurveyAppointment(null);
+          }}
+          userRole="patient"
+        />
+      )}
     </div>
   );
 }
