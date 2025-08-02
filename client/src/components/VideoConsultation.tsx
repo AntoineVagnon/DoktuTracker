@@ -17,7 +17,6 @@ interface VideoConsultationProps {
 export function VideoConsultation({ appointment, userRole, onStatusUpdate }: VideoConsultationProps) {
   const [sessionStatus, setSessionStatus] = useState<'waiting' | 'live' | 'ended' | 'no-show'>('waiting');
   const [showEquipmentTest, setShowEquipmentTest] = useState(false);
-  const [showSurvey, setShowSurvey] = useState(false);
   const [equipmentTestResult, setEquipmentTestResult] = useState<{camera: boolean; mic: boolean} | null>(null);
   const [doctorJoined, setDoctorJoined] = useState(false);
   const [patientJoined, setPatientJoined] = useState(false);
@@ -170,16 +169,14 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
           <div className="bg-gray-100 p-2 rounded">
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">This consultation has ended</p>
-              {!showSurvey && (
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="text-xs h-7"
-                  onClick={() => setShowSurvey(true)}
-                >
-                  Rate your experience
-                </Button>
-              )}
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-xs h-7"
+                onClick={() => onStatusUpdate?.('ended')}
+              >
+                Rate your experience
+              </Button>
             </div>
           </div>
         )}
