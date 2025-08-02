@@ -1,4 +1,4 @@
-import { CalendarView } from "@/components/CalendarView";
+import GoogleStyleCalendar from "@/components/GoogleStyleCalendar";
 import DoctorLayout from "@/components/DoctorLayout";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -7,7 +7,7 @@ export default function DoctorCalendar() {
   
   return (
     <DoctorLayout>
-      <CalendarView userRole="doctor" userId={user?.id} />
+      <GoogleStyleCalendar />
     </DoctorLayout>
   );
 }
