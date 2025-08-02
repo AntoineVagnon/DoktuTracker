@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Video, Clock, AlertCircle, CheckCircle, Camera, Mic, User } from "lucide-react";
+import { Video, Clock, AlertCircle, CheckCircle, Camera, Mic, User, Check, X } from "lucide-react";
 import { formatDistanceToNow, differenceInMinutes, addMinutes } from "date-fns";
 import { utcToLocal } from "@/lib/timezoneUtils";
 import { toast } from "@/hooks/use-toast";
@@ -104,16 +104,44 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
             </div>
           </div>
           
-          {/* Join button */}
+          {/* Action buttons */}
           {canJoin && (
-            <Button 
-              onClick={joinSession}
-              className="bg-blue-600 hover:bg-blue-700"
-              disabled={!canJoin}
-            >
-              <Video className="h-4 w-4 mr-2" />
-              Join Video Call
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={testEquipment}
+                size="sm"
+                className={`h-9 ${equipmentTestResult ? (equipmentTestResult.camera && equipmentTestResult.mic ? 'border-green-500 text-green-600' : 'border-red-500 text-red-600') : ''}`}
+                title="Test equipment"
+              >
+                {equipmentTestResult ? (
+                  equipmentTestResult.camera && equipmentTestResult.mic ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Equipment OK
+                    </>
+                  ) : (
+                    <>
+                      <X className="h-4 w-4 mr-2" />
+                      Test Failed
+                    </>
+                  )
+                ) : (
+                  <>
+                    <Camera className="h-4 w-4 mr-2" />
+                    Test Equipment
+                  </>
+                )}
+              </Button>
+              <Button 
+                onClick={joinSession}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={!canJoin}
+              >
+                <Video className="h-4 w-4 mr-2" />
+                Join Video Call
+              </Button>
+            </div>
           )}
         </div>
 
@@ -124,44 +152,23 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
           </p>
         )}
 
-        {canJoin && (
-          <>
-            {/* Doctor late warning with actions */}
-            {minutesSinceStart > 5 && !doctorJoined && (
-              <div className="bg-yellow-100 p-2 rounded flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-yellow-600" />
-                  <span className="text-sm text-yellow-800">
-                    Doctor is running late • They should join shortly
-                  </span>
-                </div>
-                {minutesSinceStart > 15 && (
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="text-xs h-7">
-                      Reschedule (no charge)
-                    </Button>
-                    <Button size="sm" variant="outline" className="text-xs h-7">
-                      Get refund + €10 credit
-                    </Button>
-                  </div>
-                )}
-              </div>
+        {/* Doctor late warning - compact inline */}
+        {canJoin && minutesSinceStart > 5 && !doctorJoined && (
+          <div className="flex items-center gap-2 text-sm text-yellow-700 mt-2">
+            <AlertCircle className="h-4 w-4 text-yellow-600" />
+            <span>Doctor is running late • They should join shortly</span>
+            {minutesSinceStart > 15 && (
+              <>
+                <Button size="sm" variant="link" className="text-xs h-auto p-0 text-yellow-700 underline">
+                  Reschedule (no charge)
+                </Button>
+                <span>or</span>
+                <Button size="sm" variant="link" className="text-xs h-auto p-0 text-yellow-700 underline">
+                  Get refund + €10 credit
+                </Button>
+              </>
             )}
-
-            {/* Test equipment button */}
-            <div className="mt-2">
-              <Button
-                variant="outline"
-                onClick={testEquipment}
-                size="sm"
-                className="h-9"
-                title="Test equipment"
-              >
-                <Camera className="h-4 w-4 mr-2" />
-                Test Equipment
-              </Button>
-            </div>
-          </>
+          </div>
         )}
 
         {sessionStatus === 'ended' && (
