@@ -25,6 +25,7 @@ import { DocumentLibraryPanel } from "@/components/DocumentLibraryPanel";
 import { AppointmentActionsModal } from "@/components/AppointmentActionsModal";
 import { VideoConsultation } from "@/components/VideoConsultation";
 import { PostConsultationSurvey } from "@/components/PostConsultationSurvey";
+import { CalendarView } from "@/components/CalendarView";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -349,129 +350,7 @@ export default function Dashboard() {
     );
   };
 
-  // Calendar Component
-  const AppointmentCalendar = () => {
-    const monthStart = startOfMonth(currentDate);
-    const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
 
-    const days = [];
-    let day = startDate;
-
-    while (day <= endDate) {
-      days.push(day);
-      day = addDays(day, 1);
-    }
-
-    const getAppointmentForDay = (date: Date) => {
-      return allAppointments?.find((apt: any) => 
-        isSameDay(utcToLocal(apt.appointmentDate), date)
-      );
-    };
-
-    return (
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <h3 className="text-lg font-medium text-center sm:text-left">
-            {format(currentDate, 'MMMM yyyy')}
-          </h3>
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-              className="h-9 px-3"
-            >
-              <span className="hidden sm:inline">Previous</span>
-              <span className="sm:hidden">Prev</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentDate(new Date())}
-              className="h-9 px-3"
-            >
-              Today
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-              className="h-9 px-3"
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-7 gap-1">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="p-1 sm:p-2 text-center font-medium text-gray-500 text-xs sm:text-sm">
-              <span className="hidden sm:inline">{day}</span>
-              <span className="sm:hidden">{day.slice(0, 1)}</span>
-            </div>
-          ))}
-          
-          {days.map((day, index) => {
-            const appointment = getAppointmentForDay(day);
-            const isCurrentMonth = isSameMonth(day, currentDate);
-            const isToday = isSameDay(day, new Date());
-
-            return (
-              <div
-                key={index}
-                className={`
-                  p-1 sm:p-2 h-16 sm:h-20 border rounded cursor-pointer transition-colors
-                  ${!isCurrentMonth ? 'text-gray-300 bg-gray-50' : ''}
-                  ${isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'}
-                  ${appointment ? 'bg-green-50 border-green-200 hover:bg-green-100' : 'hover:bg-gray-50'}
-                `}
-                onClick={() => appointment && setSelectedAppointment(appointment)}
-              >
-                <div className="text-xs sm:text-sm font-medium">
-                  {format(day, 'd')}
-                </div>
-                {appointment && (
-                  <div className="text-xs text-green-700 mt-1 truncate">
-                    <div className="font-medium">{format(utcToLocal(appointment.appointmentDate), 'HH:mm')}</div>
-                    <div className="hidden sm:block truncate">Dr. {appointment.doctor?.user?.lastName}</div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {selectedAppointment && (
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Appointment Details
-                <Button variant="ghost" size="sm" onClick={() => setSelectedAppointment(null)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <p><strong>Doctor:</strong> Dr. {selectedAppointment.doctor?.user?.firstName} {selectedAppointment.doctor?.user?.lastName}</p>
-              <p><strong>Specialty:</strong> {selectedAppointment.doctor?.specialty}</p>
-              <p><strong>Date & Time:</strong> {formatAppointmentTime(selectedAppointment.appointmentDate, { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })}</p>
-              <p><strong>Status:</strong> {getStatusBadge(selectedAppointment.status)}</p>
-              <p><strong>Price:</strong> €{selectedAppointment.price || '35'}</p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -706,17 +585,7 @@ export default function Dashboard() {
               </TabsContent>
 
               <TabsContent value="calendar">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Calendar className="h-5 w-5 mr-2" />
-                      Calendar View
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <AppointmentCalendar />
-                  </CardContent>
-                </Card>
+                <CalendarView userRole="patient" userId={user?.id} />
               </TabsContent>
 
               <TabsContent value="doctors">
