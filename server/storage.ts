@@ -1076,8 +1076,8 @@ export class PostgresStorage implements IStorage {
       })
       .from(appointments)
       .where(and(
-        gte(appointments.appointmentDate, startDate.toISOString()),
-        lte(appointments.appointmentDate, endDate.toISOString()),
+        gte(appointments.appointmentDate, startDate),
+        lte(appointments.appointmentDate, endDate),
         sql`status IN ('paid', 'completed')`
       ));
 
@@ -1090,8 +1090,8 @@ export class PostgresStorage implements IStorage {
       })
       .from(appointments)
       .where(and(
-        gte(appointments.appointmentDate, prevStartDate.toISOString()),
-        lte(appointments.appointmentDate, prevEndDate.toISOString()),
+        gte(appointments.appointmentDate, prevStartDate),
+        lte(appointments.appointmentDate, prevEndDate),
         sql`status IN ('paid', 'completed')`
       ));
 
@@ -1100,8 +1100,8 @@ export class PostgresStorage implements IStorage {
       .select({ count: count() })
       .from(doctorTimeSlots)
       .where(and(
-        gte(doctorTimeSlots.date, startDate.toISOString()),
-        lte(doctorTimeSlots.date, endDate.toISOString())
+        gte(doctorTimeSlots.date, startDate),
+        lte(doctorTimeSlots.date, endDate)
       ));
 
     const utilization = totalSlots.count > 0 
@@ -1122,7 +1122,7 @@ export class PostgresStorage implements IStorage {
         eq(users.role, 'patient'),
         or(
           isNull(appointments.appointmentDate),
-          lte(appointments.appointmentDate, ninetyDaysAgo.toISOString())
+          lte(appointments.appointmentDate, ninetyDaysAgo)
         )
       ));
 
@@ -1139,7 +1139,7 @@ export class PostgresStorage implements IStorage {
       })
       .from(appointments)
       .where(and(
-        gte(appointments.appointmentDate, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()),
+        gte(appointments.appointmentDate, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
         sql`status IN ('paid', 'completed')`
       ))
       .groupBy(sql`DATE(${appointments.appointmentDate})`)
@@ -1180,7 +1180,7 @@ export class PostgresStorage implements IStorage {
         completed: count(sql`CASE WHEN ${appointments.status} = 'completed' THEN 1 END`)
       })
       .from(appointments)
-      .where(gte(appointments.appointmentDate, startDate.toISOString()));
+      .where(gte(appointments.appointmentDate, startDate));
 
     const stages = [
       { name: 'Visitors', count: 1000, percentage: 100 },
@@ -1291,7 +1291,7 @@ export class PostgresStorage implements IStorage {
         .from(doctorTimeSlots)
         .where(and(
           eq(doctorTimeSlots.doctorId, doctor.id),
-          gte(doctorTimeSlots.date, thirtyDaysAgo.toISOString())
+          gte(doctorTimeSlots.date, thirtyDaysAgo)
         ));
 
       // Booked slots
@@ -1300,7 +1300,7 @@ export class PostgresStorage implements IStorage {
         .from(appointments)
         .where(and(
           eq(appointments.doctorId, doctor.id),
-          gte(appointments.appointmentDate, thirtyDaysAgo.toISOString()),
+          gte(appointments.appointmentDate, thirtyDaysAgo),
           sql`status IN ('paid', 'completed')`
         ));
 
@@ -1310,7 +1310,7 @@ export class PostgresStorage implements IStorage {
         .from(appointments)
         .where(and(
           eq(appointments.doctorId, doctor.id),
-          gte(appointments.appointmentDate, thirtyDaysAgo.toISOString()),
+          gte(appointments.appointmentDate, thirtyDaysAgo),
           eq(appointments.status, 'cancelled')
         ));
 
