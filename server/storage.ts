@@ -1100,8 +1100,8 @@ export class PostgresStorage implements IStorage {
       .select({ count: count() })
       .from(doctorTimeSlots)
       .where(and(
-        gte(doctorTimeSlots.date, startDate),
-        lte(doctorTimeSlots.date, endDate)
+        gte(doctorTimeSlots.date, startDate.toISOString().split('T')[0]),
+        lte(doctorTimeSlots.date, endDate.toISOString().split('T')[0])
       ));
 
     const utilization = totalSlots.count > 0 
@@ -1291,7 +1291,7 @@ export class PostgresStorage implements IStorage {
         .from(doctorTimeSlots)
         .where(and(
           eq(doctorTimeSlots.doctorId, doctor.id),
-          gte(doctorTimeSlots.date, thirtyDaysAgo)
+          gte(doctorTimeSlots.date, thirtyDaysAgo.toISOString().split('T')[0])
         ));
 
       // Booked slots
