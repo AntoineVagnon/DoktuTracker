@@ -21,8 +21,9 @@ export function useNextSlotOnly(doctorId: string) {
       }
     },
     refetchOnWindowFocus: true, // Refetch when window gains focus
-    staleTime: 30 * 1000, // 30 seconds cache to ensure fresh data
-    gcTime: 60 * 1000, // 1 minute garbage collection
+    staleTime: 0, // Always consider data stale immediately
+    gcTime: 0, // No garbage collection time
+    refetchInterval: 5000, // Refetch every 5 seconds
   });
 
   const nextSlot = slots && slots.length > 0 ? slots[0] : null;
