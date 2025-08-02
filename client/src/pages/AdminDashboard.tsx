@@ -11,9 +11,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   Calendar, Users, TrendingUp, AlertCircle, Euro, UserX,
   ChevronDown, RefreshCw, UserPlus, Ticket, Send, Video,
-  Clock, X, AlertTriangle
+  Clock, X, AlertTriangle, Shield, Mail, Trash2
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
@@ -58,6 +59,15 @@ interface DoctorRoster {
   availability: number;
   cancellationRate: number;
   status: 'active' | 'pending' | 'inactive';
+}
+
+interface AdminUser {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  createdAt: string;
+  lastLogin?: string;
 }
 
 export default function AdminDashboard() {
@@ -172,6 +182,191 @@ export default function AdminDashboard() {
     );
   };
 
+  // Admin Management Component
+  const AdminManagement = () => {
+    const [showCreateDialog, setShowCreateDialog] = useState(false);
+    const [newAdmin, setNewAdmin] = useState({
+      email: '',
+      firstName: '',
+      lastName: ''
+    });
+
+    // Fetch admin users
+    const { data: adminUsers, refetch: refetchAdmins } = useQuery({
+      queryKey: ['/api/admin/users'],
+      queryFn: async () => {
+        const response = await apiRequest('/api/admin/users', 'GET');
+        return response as AdminUser[];
+      },
+    });
+
+    // Create admin mutation
+    const createAdminMutation = useMutation({
+      mutationFn: async (userData: typeof newAdmin) => {
+        return await apiRequest('/api/admin/users', 'POST', userData);
+      },
+      onSuccess: () => {
+        toast({
+          title: "Admin created successfully",
+          description: "The new admin will receive a password reset email.",
+        });
+        setShowCreateDialog(false);
+        setNewAdmin({ email: '', firstName: '', lastName: '' });
+        refetchAdmins();
+      },
+      onError: (error: any) => {
+        toast({
+          title: "Error creating admin",
+          description: error.message || "Failed to create admin user",
+          variant: "destructive",
+        });
+      },
+    });
+
+    // Remove admin mutation
+    const removeAdminMutation = useMutation({
+      mutationFn: async (userId: number) => {
+        return await apiRequest(`/api/admin/users/${userId}`, 'DELETE');
+      },
+      onSuccess: () => {
+        toast({
+          title: "Admin removed",
+          description: "Admin access has been revoked.",
+        });
+        refetchAdmins();
+      },
+      onError: (error: any) => {
+        toast({
+          title: "Error removing admin",
+          description: error.message || "Failed to remove admin user",
+          variant: "destructive",
+        });
+      },
+    });
+
+    return (
+      <>
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Admin Users Management</CardTitle>
+              <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Add Admin
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create New Admin</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="admin-email">Email</Label>
+                      <Input
+                        id="admin-email"
+                        type="email"
+                        placeholder="admin@doktu.com"
+                        value={newAdmin.email}
+                        onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="admin-firstname">First Name</Label>
+                      <Input
+                        id="admin-firstname"
+                        placeholder="John"
+                        value={newAdmin.firstName}
+                        onChange={(e) => setNewAdmin({ ...newAdmin, firstName: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="admin-lastname">Last Name</Label>
+                      <Input
+                        id="admin-lastname"
+                        placeholder="Doe"
+                        value={newAdmin.lastName}
+                        onChange={(e) => setNewAdmin({ ...newAdmin, lastName: e.target.value })}
+                      />
+                    </div>
+                    <Alert>
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        The new admin will receive an email to set their password.
+                      </AlertDescription>
+                    </Alert>
+                    <Button
+                      className="w-full"
+                      onClick={() => createAdminMutation.mutate(newAdmin)}
+                      disabled={!newAdmin.email || !newAdmin.firstName || !newAdmin.lastName || createAdminMutation.isPending}
+                    >
+                      {createAdminMutation.isPending ? "Creating..." : "Create Admin"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {adminUsers?.map((admin) => (
+                <div
+                  key={admin.id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                      <Shield className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium">
+                        {admin.firstName} {admin.lastName}
+                      </div>
+                      <div className="text-sm text-gray-600 flex items-center gap-1">
+                        <Mail className="h-3 w-3" />
+                        {admin.email}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm text-gray-500">
+                      Created: {format(new Date(admin.createdAt), 'MMM d, yyyy')}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (confirm(`Remove admin access for ${admin.email}?`)) {
+                          removeAdminMutation.mutate(admin.id);
+                        }
+                      }}
+                      disabled={removeAdminMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {adminUsers?.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No admin users found. Create one to get started.
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Admin users have full access to all dashboard features, patient data, and system settings. 
+            Only grant admin access to trusted personnel.
+          </AlertDescription>
+        </Alert>
+      </>
+    );
+  };
+
   return (
     <div className="container mx-auto p-4 max-w-7xl space-y-6">
       {/* Data delay warning */}
@@ -247,11 +442,12 @@ export default function AdminDashboard() {
 
       {/* Main content tabs */}
       <Tabs defaultValue="funnel" className="space-y-4">
-        <TabsList className="grid grid-cols-4 w-full max-w-md">
+        <TabsList className="grid grid-cols-5 w-full max-w-lg">
           <TabsTrigger value="funnel">Funnel</TabsTrigger>
           <TabsTrigger value="segments">Segments</TabsTrigger>
           <TabsTrigger value="doctors">Doctors</TabsTrigger>
           <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
+          <TabsTrigger value="admins">Admins</TabsTrigger>
         </TabsList>
 
         {/* Conversion Funnel */}
@@ -445,6 +641,11 @@ export default function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Admin Management */}
+        <TabsContent value="admins" className="space-y-4">
+          <AdminManagement />
         </TabsContent>
       </Tabs>
 

@@ -856,6 +856,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin user management endpoints
+  app.get("/api/admin/users", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get user to check role
+      const dbUser = await storage.getUser(userId);
+      if (!dbUser || dbUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const adminUsers = await storage.getAdminUsers();
+      res.json(adminUsers);
+    } catch (error) {
+      console.error("Error fetching admin users:", error);
+      res.status(500).json({ message: "Failed to fetch admin users" });
+    }
+  });
+
+  app.post("/api/admin/users", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get user to check role
+      const dbUser = await storage.getUser(userId);
+      if (!dbUser || dbUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { email, firstName, lastName } = z.object({
+        email: z.string().email(),
+        firstName: z.string(),
+        lastName: z.string()
+      }).parse(req.body);
+
+      const newAdmin = await storage.createAdminUser({ email, firstName, lastName });
+      res.json(newAdmin);
+    } catch (error: any) {
+      console.error("Error creating admin user:", error);
+      if (error.name === 'ZodError') {
+        res.status(400).json({ message: "Invalid request data" });
+      } else {
+        res.status(500).json({ message: error.message || "Failed to create admin user" });
+      }
+    }
+  });
+
+  app.delete("/api/admin/users/:userId", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get user to check role
+      const dbUser = await storage.getUser(userId);
+      if (!dbUser || dbUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const targetUserId = parseInt(req.params.userId);
+      
+      // Prevent admins from removing their own access
+      if (dbUser.id === targetUserId) {
+        return res.status(400).json({ message: "Cannot remove your own admin access" });
+      }
+
+      await storage.removeAdminUser(targetUserId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error removing admin user:", error);
+      res.status(500).json({ message: "Failed to remove admin user" });
+    }
+  });
+
   // Email confirmation endpoint for post-signup
   app.post("/api/auth/confirm", async (req, res) => {
     try {

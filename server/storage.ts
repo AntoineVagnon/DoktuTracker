@@ -159,6 +159,11 @@ export interface IStorage {
   
   // Appointment changes tracking
   getAppointmentChanges(appointmentId: string): Promise<any[]>;
+  
+  // Admin user management
+  getAdminUsers(): Promise<Array<User & { lastLogin?: string }>>;
+  createAdminUser(userData: { email: string; firstName: string; lastName: string }): Promise<User>;
+  removeAdminUser(userId: number): Promise<void>;
 }
 
 // PostgreSQL Storage Implementation
@@ -1714,6 +1719,68 @@ export class PostgresStorage implements IStorage {
     // For now, return empty array
     // This would normally query a banner_dismissals table
     return [];
+  }
+
+  // Admin user management methods
+  async getAdminUsers(): Promise<Array<User & { lastLogin?: string }>> {
+    const adminUsers = await db
+      .select()
+      .from(users)
+      .where(eq(users.role, 'admin'))
+      .orderBy(desc(users.createdAt));
+    
+    // Add lastLogin field (currently null as we don't track login times yet)
+    return adminUsers.map(user => ({
+      ...user,
+      lastLogin: undefined
+    }));
+  }
+
+  async createAdminUser(userData: { email: string; firstName: string; lastName: string }): Promise<User> {
+    // Check if user already exists
+    const existingUser = await this.getUserByEmail(userData.email);
+    
+    if (existingUser) {
+      // Update existing user to admin role
+      const [updatedUser] = await db
+        .update(users)
+        .set({
+          role: 'admin',
+          approved: true,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, existingUser.id))
+        .returning();
+      
+      return updatedUser;
+    }
+    
+    // Create new admin user
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        role: 'admin',
+        approved: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
+    
+    return newUser;
+  }
+
+  async removeAdminUser(userId: number): Promise<void> {
+    // Don't delete the user, just revoke admin access
+    await db
+      .update(users)
+      .set({
+        role: 'patient',
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
   }
 }
 
