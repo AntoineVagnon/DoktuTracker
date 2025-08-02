@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AdminHeader from "@/components/AdminHeader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -370,7 +371,9 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl space-y-6">
+    <>
+      <AdminHeader />
+      <div className="container mx-auto p-4 max-w-7xl space-y-6">
       {/* Data delay warning */}
       {dataDelayWarning && (
         <Alert className="bg-yellow-50 border-yellow-200">
@@ -701,5 +704,6 @@ export default function AdminDashboard() {
         </Button>
       </div>
     </div>
+    </>
   );
 }
