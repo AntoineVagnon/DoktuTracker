@@ -280,11 +280,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // If nextOnly is requested (for homepage), return just the next available slot
       if (nextOnly === 'true') {
         const now = new Date();
+        const leadTimeMinutes = 60; // 60-minute buffer requirement
+        
         const nextSlot = slots
-          .filter(slot => slot.isAvailable && new Date(`${slot.date}T${slot.startTime}`) > now)
+          .filter(slot => {
+            if (!slot.isAvailable) return false;
+            const slotDateTime = new Date(`${slot.date}T${slot.startTime}`);
+            const diffMinutes = (slotDateTime.getTime() - now.getTime()) / (1000 * 60);
+            return diffMinutes >= leadTimeMinutes; // Only show slots at least 60 minutes in the future
+          })
           .sort((a, b) => new Date(`${a.date}T${a.startTime}`).getTime() - new Date(`${b.date}T${b.startTime}`).getTime())[0];
         
-        console.log(`📅 Next available slot for doctor ${doctorId}:`, nextSlot ? `${nextSlot.date}T${nextSlot.startTime}` : 'none');
+        console.log(`📅 Next available slot for doctor ${doctorId} (with 60-min buffer):`, nextSlot ? `${nextSlot.date}T${nextSlot.startTime}` : 'none');
         res.json(nextSlot ? [nextSlot] : []);
       } else {
         console.log(`📅 Found ${slots.length} slots for doctor ${doctorId}`);
