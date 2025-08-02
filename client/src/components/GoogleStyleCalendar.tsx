@@ -752,10 +752,18 @@ export default function GoogleStyleCalendar({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Calendar & Availability</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+            {isPatientView ? 'My Appointments' : 'Calendar & Availability'}
+          </h2>
           <p className="text-sm sm:text-base text-gray-600">
-            <span className="hidden sm:inline">Click and drag to create availability slots</span>
-            <span className="sm:hidden">Tap to create slots</span>
+            {isPatientView ? (
+              <>View and manage your appointments</>
+            ) : (
+              <>
+                <span className="hidden sm:inline">Click and drag to create availability slots</span>
+                <span className="sm:hidden">Tap to create slots</span>
+              </>
+            )}
           </p>
         </div>
         
@@ -880,14 +888,14 @@ export default function GoogleStyleCalendar({
                     <div
                       className={cn(
                         "h-10 sm:h-12 border-l border-gray-200 p-0.5 sm:p-1 transition-colors text-xs",
-                        cellContent.type === 'empty' && "hover:bg-blue-50 cursor-pointer touch-manipulation",
+                        cellContent.type === 'empty' && !isPatientView && "hover:bg-blue-50 cursor-pointer touch-manipulation",
                         cellContent.type === 'appointment' && "cursor-default"
                       )}
-                      onMouseDown={() => cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
-                      onMouseEnter={() => handleCellMouseEnter30Min(dateStr, timeStr)}
-                      onMouseUp={() => handleCellMouseUp30Min()}
-                      onTouchStart={() => cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
-                      onTouchEnd={() => handleCellMouseUp30Min()}
+                      onMouseDown={() => !isPatientView && cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
+                      onMouseEnter={() => !isPatientView && handleCellMouseEnter30Min(dateStr, timeStr)}
+                      onMouseUp={() => !isPatientView && handleCellMouseUp30Min()}
+                      onTouchStart={() => !isPatientView && cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
+                      onTouchEnd={() => !isPatientView && handleCellMouseUp30Min()}
                     >
                       {cellContent.content}
                     </div>
@@ -938,14 +946,14 @@ export default function GoogleStyleCalendar({
                         key={`${dayIndex}-${slotIndex}`}
                         className={cn(
                           "h-6 sm:h-8 border-l border-gray-200 p-0.5 sm:p-1 transition-colors text-xs",
-                          cellContent.type === 'empty' && "hover:bg-blue-50 cursor-pointer touch-manipulation",
+                          cellContent.type === 'empty' && !isPatientView && "hover:bg-blue-50 cursor-pointer touch-manipulation",
                           cellContent.type === 'appointment' && "cursor-default"
                         )}
-                        onMouseDown={() => cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
-                        onMouseEnter={() => handleCellMouseEnter30Min(dateStr, timeStr)}
-                        onMouseUp={() => handleCellMouseUp30Min()}
-                        onTouchStart={() => cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
-                        onTouchEnd={() => handleCellMouseUp30Min()}
+                        onMouseDown={() => !isPatientView && cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
+                        onMouseEnter={() => !isPatientView && handleCellMouseEnter30Min(dateStr, timeStr)}
+                        onMouseUp={() => !isPatientView && handleCellMouseUp30Min()}
+                        onTouchStart={() => !isPatientView && cellContent.type === 'empty' && handleCellMouseDown30Min(dateStr, timeStr)}
+                        onTouchEnd={() => !isPatientView && handleCellMouseUp30Min()}
                       >
                         {cellContent.content}
                       </div>
@@ -1008,8 +1016,8 @@ export default function GoogleStyleCalendar({
                       </div>
                     )}
                     
-                    {/* Show available slots count */}
-                    {daySlots.length > 0 && (
+                    {/* Show available slots count - only for doctors */}
+                    {!isPatientView && daySlots.length > 0 && (
                       <div className="text-xs bg-green-100 text-green-800 rounded px-1 py-0.5">
                         {daySlots.length} slot{daySlots.length > 1 ? 's' : ''} available
                       </div>
@@ -1022,15 +1030,16 @@ export default function GoogleStyleCalendar({
         </Card>
       )}
 
-      {/* Slot Modal */}
-      <Dialog open={slotModal.isOpen} onOpenChange={(open) => {
-        if (!open) {
-          // Clear selection when modal is closed
-          setSelectedBlocks([]);
-          console.log("Modal closed - selection cleared");
-        }
-        setSlotModal(prev => ({ ...prev, isOpen: open }));
-      }}>
+      {/* Slot Modal - Only for doctors */}
+      {!isPatientView && (
+        <Dialog open={slotModal.isOpen} onOpenChange={(open) => {
+          if (!open) {
+            // Clear selection when modal is closed
+            setSelectedBlocks([]);
+            console.log("Modal closed - selection cleared");
+          }
+          setSlotModal(prev => ({ ...prev, isOpen: open }));
+        }}>
         <DialogContent className="max-w-md mx-4 sm:mx-auto">
           <DialogHeader>
             <DialogTitle className="text-lg sm:text-xl">
@@ -1209,9 +1218,11 @@ export default function GoogleStyleCalendar({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      )}
 
-      {/* Weekly Template Sheet */}
-      <Sheet open={isTemplateOpen} onOpenChange={setIsTemplateOpen}>
+      {/* Weekly Template Sheet - Only for doctors */}
+      {!isPatientView && (
+        <Sheet open={isTemplateOpen} onOpenChange={setIsTemplateOpen}>
         <SheetContent side="right" className="w-full sm:w-[600px] lg:w-[700px]">
           <SheetHeader>
             <SheetTitle className="text-lg sm:text-xl">Add Weekly Availability</SheetTitle>
@@ -1311,6 +1322,7 @@ export default function GoogleStyleCalendar({
           </div>
         </SheetContent>
       </Sheet>
+      )}
 
       {/* Appointment Action Modal */}
       <Dialog open={appointmentModal.isOpen} onOpenChange={(open) => {
