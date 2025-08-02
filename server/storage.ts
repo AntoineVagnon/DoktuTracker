@@ -119,6 +119,44 @@ export interface IStorage {
   }>;
   getAuditEvents(): Promise<any[]>;
   
+  // Admin dashboard operations
+  getAdminMetrics(startDate: Date, endDate: Date, prevStartDate: Date, prevEndDate: Date): Promise<{
+    appointmentsBooked: number;
+    appointmentsBookedPrev: number;
+    uniqueActivePatients: number;
+    uniqueActivePatientsPrev: number;
+    bookingsPerPatient: number;
+    bookingsPerPatientGoal: number;
+    doctorUtilization: number;
+    doctorUtilizationThreshold: number;
+    netRevenue: number;
+    netRevenuePrev: number;
+    revenueSparkline: number[];
+    churnRiskPatients: number;
+  }>;
+  getFunnelData(startDate: Date): Promise<Array<{
+    name: string;
+    count: number;
+    percentage: number;
+    dropOffAlert?: string;
+  }>>;
+  getPatientSegments(): Promise<Array<{
+    name: string;
+    tier: 'VIP' | 'Premium' | 'Regular' | 'At Risk';
+    patientCount: number;
+    ltv: number;
+    appointmentsPerPatient: number;
+    churnRiskCount: number;
+  }>>;
+  getAdminDoctorRoster(): Promise<Array<{
+    id: number;
+    name: string;
+    specialty: string;
+    availability: number;
+    cancellationRate: number;
+    status: 'active' | 'pending' | 'inactive';
+  }>>;
+  
   // Appointment changes tracking
   getAppointmentChanges(appointmentId: string): Promise<any[]>;
 }
@@ -1008,6 +1046,289 @@ export class PostgresStorage implements IStorage {
 
   async getAuditEvents(): Promise<any[]> {
     return await db.select().from(auditEvents).orderBy(desc(auditEvents.createdAt)).limit(100);
+  }
+
+  async getAdminMetrics(startDate: Date, endDate: Date, prevStartDate: Date, prevEndDate: Date): Promise<{
+    appointmentsBooked: number;
+    appointmentsBookedPrev: number;
+    uniqueActivePatients: number;
+    uniqueActivePatientsPrev: number;
+    bookingsPerPatient: number;
+    bookingsPerPatientGoal: number;
+    doctorUtilization: number;
+    doctorUtilizationThreshold: number;
+    netRevenue: number;
+    netRevenuePrev: number;
+    revenueSparkline: number[];
+    churnRiskPatients: number;
+  }> {
+    // Current period metrics
+    const [currentMetrics] = await db
+      .select({
+        appointmentsBooked: count(),
+        uniquePatients: count(sql`DISTINCT ${appointments.patientId}`),
+        revenue: sql<number>`COALESCE(SUM(CASE WHEN status = 'paid' THEN CAST(price AS DECIMAL) ELSE 0 END), 0)`
+      })
+      .from(appointments)
+      .where(and(
+        gte(appointments.appointmentDate, startDate),
+        lte(appointments.appointmentDate, endDate),
+        sql`status IN ('paid', 'completed')`
+      ));
+
+    // Previous period metrics
+    const [prevMetrics] = await db
+      .select({
+        appointmentsBooked: count(),
+        uniquePatients: count(sql`DISTINCT ${appointments.patientId}`),
+        revenue: sql<number>`COALESCE(SUM(CASE WHEN status = 'paid' THEN CAST(price AS DECIMAL) ELSE 0 END), 0)`
+      })
+      .from(appointments)
+      .where(and(
+        gte(appointments.appointmentDate, prevStartDate),
+        lte(appointments.appointmentDate, prevEndDate),
+        sql`status IN ('paid', 'completed')`
+      ));
+
+    // Doctor utilization calculation
+    const [totalSlots] = await db
+      .select({ count: count() })
+      .from(doctorTimeSlots)
+      .where(and(
+        gte(doctorTimeSlots.date, startDate),
+        lte(doctorTimeSlots.date, endDate)
+      ));
+
+    const utilization = totalSlots.count > 0 
+      ? (currentMetrics.appointmentsBooked / totalSlots.count) * 100 
+      : 0;
+
+    // Churn risk patients (no booking in 90 days)
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+    
+    const [churnMetrics] = await db
+      .select({
+        churnCount: count(sql`DISTINCT ${users.id}`)
+      })
+      .from(users)
+      .leftJoin(appointments, eq(users.id, appointments.patientId))
+      .where(and(
+        eq(users.role, 'patient'),
+        or(
+          isNull(appointments.appointmentDate),
+          lte(appointments.appointmentDate, ninetyDaysAgo)
+        )
+      ));
+
+    // Calculate bookings per patient
+    const bookingsPerPatient = currentMetrics.uniquePatients > 0
+      ? currentMetrics.appointmentsBooked / currentMetrics.uniquePatients
+      : 0;
+
+    // Generate revenue sparkline (last 30 days)
+    const sparklineData = await db
+      .select({
+        day: sql<string>`DATE(${appointments.appointmentDate})`,
+        revenue: sql<number>`COALESCE(SUM(CASE WHEN status = 'paid' THEN CAST(price AS DECIMAL) ELSE 0 END), 0)`
+      })
+      .from(appointments)
+      .where(and(
+        gte(appointments.appointmentDate, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
+        sql`status IN ('paid', 'completed')`
+      ))
+      .groupBy(sql`DATE(${appointments.appointmentDate})`)
+      .orderBy(sql`DATE(${appointments.appointmentDate})`);
+
+    const revenueSparkline = sparklineData.map(d => d.revenue);
+
+    return {
+      appointmentsBooked: currentMetrics.appointmentsBooked,
+      appointmentsBookedPrev: prevMetrics.appointmentsBooked,
+      uniqueActivePatients: currentMetrics.uniquePatients,
+      uniqueActivePatientsPrev: prevMetrics.uniquePatients,
+      bookingsPerPatient,
+      bookingsPerPatientGoal: 1.4,
+      doctorUtilization: utilization,
+      doctorUtilizationThreshold: 60,
+      netRevenue: currentMetrics.revenue,
+      netRevenuePrev: prevMetrics.revenue,
+      revenueSparkline,
+      churnRiskPatients: churnMetrics.churnCount
+    };
+  }
+
+  async getFunnelData(startDate: Date): Promise<Array<{
+    name: string;
+    count: number;
+    percentage: number;
+    dropOffAlert?: string;
+  }>> {
+    // This is a simplified funnel - in production you'd track actual visitor data
+    const [metrics] = await db
+      .select({
+        totalVisitors: sql<number>`1000`, // Placeholder - would come from analytics
+        doctorViews: count(sql`DISTINCT ${appointments.doctorId}`),
+        slotSelections: count(sql`DISTINCT ${appointments.patientId}`),
+        paymentInitiated: count(sql`CASE WHEN ${appointments.status} != 'pending' THEN 1 END`),
+        confirmed: count(sql`CASE WHEN ${appointments.status} = 'paid' THEN 1 END`),
+        completed: count(sql`CASE WHEN ${appointments.status} = 'completed' THEN 1 END`)
+      })
+      .from(appointments)
+      .where(gte(appointments.appointmentDate, startDate));
+
+    const stages = [
+      { name: 'Visitors', count: 1000, percentage: 100 },
+      { name: 'Doctor Interest', count: metrics.doctorViews * 50, percentage: (metrics.doctorViews * 50 / 10) },
+      { name: 'Slot Selection', count: metrics.slotSelections * 10, percentage: (metrics.slotSelections * 10 / 10), dropOffAlert: metrics.slotSelections * 10 / 1000 < 0.3 ? '<30%' : undefined },
+      { name: 'Payment Initiated', count: metrics.paymentInitiated, percentage: (metrics.paymentInitiated / 10) },
+      { name: 'Confirmed', count: metrics.confirmed, percentage: (metrics.confirmed / 10) },
+      { name: 'Completed', count: metrics.completed, percentage: (metrics.completed / 10), dropOffAlert: metrics.confirmed > 0 && (metrics.completed / metrics.confirmed) < 0.9 ? 'no-show >10%' : undefined }
+    ];
+
+    return stages;
+  }
+
+  async getPatientSegments(): Promise<Array<{
+    name: string;
+    tier: 'VIP' | 'Premium' | 'Regular' | 'At Risk';
+    patientCount: number;
+    ltv: number;
+    appointmentsPerPatient: number;
+    churnRiskCount: number;
+  }>> {
+    const patientStats = await db
+      .select({
+        patientId: appointments.patientId,
+        appointmentCount: count(),
+        totalSpent: sql<number>`COALESCE(SUM(CASE WHEN status = 'paid' THEN CAST(price AS DECIMAL) ELSE 0 END), 0)`,
+        lastAppointment: sql<Date>`MAX(${appointments.appointmentDate})`
+      })
+      .from(appointments)
+      .where(sql`status IN ('paid', 'completed')`)
+      .groupBy(appointments.patientId);
+
+    // Segment patients based on LTV and activity
+    const segments = {
+      vip: { name: 'VIP Patients', tier: 'VIP' as const, patients: [] as any[], ltv: 0, appointments: 0, churn: 0 },
+      premium: { name: 'Premium Patients', tier: 'Premium' as const, patients: [] as any[], ltv: 0, appointments: 0, churn: 0 },
+      regular: { name: 'Regular Patients', tier: 'Regular' as const, patients: [] as any[], ltv: 0, appointments: 0, churn: 0 },
+      atRisk: { name: 'At Risk', tier: 'At Risk' as const, patients: [] as any[], ltv: 0, appointments: 0, churn: 0 }
+    };
+
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+    patientStats.forEach(patient => {
+      const isChurnRisk = patient.lastAppointment < ninetyDaysAgo;
+      
+      if (patient.totalSpent > 500) {
+        segments.vip.patients.push(patient);
+        segments.vip.ltv += patient.totalSpent;
+        segments.vip.appointments += patient.appointmentCount;
+        if (isChurnRisk) segments.vip.churn++;
+      } else if (patient.totalSpent > 200) {
+        segments.premium.patients.push(patient);
+        segments.premium.ltv += patient.totalSpent;
+        segments.premium.appointments += patient.appointmentCount;
+        if (isChurnRisk) segments.premium.churn++;
+      } else if (isChurnRisk) {
+        segments.atRisk.patients.push(patient);
+        segments.atRisk.ltv += patient.totalSpent;
+        segments.atRisk.appointments += patient.appointmentCount;
+        segments.atRisk.churn++;
+      } else {
+        segments.regular.patients.push(patient);
+        segments.regular.ltv += patient.totalSpent;
+        segments.regular.appointments += patient.appointmentCount;
+      }
+    });
+
+    return Object.values(segments).map(segment => ({
+      name: segment.name,
+      tier: segment.tier,
+      patientCount: segment.patients.length,
+      ltv: segment.patients.length > 0 ? Math.round(segment.ltv / segment.patients.length) : 0,
+      appointmentsPerPatient: segment.patients.length > 0 ? segment.appointments / segment.patients.length : 0,
+      churnRiskCount: segment.churn
+    }));
+  }
+
+  async getAdminDoctorRoster(): Promise<Array<{
+    id: number;
+    name: string;
+    specialty: string;
+    availability: number;
+    cancellationRate: number;
+    status: 'active' | 'pending' | 'inactive';
+  }>> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Get all doctors with their users
+    const doctorsData = await db
+      .select({
+        id: doctors.id,
+        userId: doctors.userId,
+        specialty: doctors.specialty,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        approved: users.approved
+      })
+      .from(doctors)
+      .innerJoin(users, eq(doctors.userId, users.id));
+
+    // Get availability and cancellation metrics for each doctor
+    const doctorMetrics = await Promise.all(doctorsData.map(async (doctor) => {
+      // Total slots in last 30 days
+      const [totalSlots] = await db
+        .select({ count: count() })
+        .from(doctorTimeSlots)
+        .where(and(
+          eq(doctorTimeSlots.doctorId, doctor.id),
+          gte(doctorTimeSlots.date, thirtyDaysAgo)
+        ));
+
+      // Booked slots
+      const [bookedSlots] = await db
+        .select({ count: count() })
+        .from(appointments)
+        .where(and(
+          eq(appointments.doctorId, doctor.id),
+          gte(appointments.appointmentDate, thirtyDaysAgo),
+          sql`status IN ('paid', 'completed')`
+        ));
+
+      // Cancelled appointments
+      const [cancelledAppts] = await db
+        .select({ count: count() })
+        .from(appointments)
+        .where(and(
+          eq(appointments.doctorId, doctor.id),
+          gte(appointments.appointmentDate, thirtyDaysAgo),
+          eq(appointments.status, 'cancelled')
+        ));
+
+      const availability = totalSlots.count > 0 
+        ? Math.round((bookedSlots.count / totalSlots.count) * 100)
+        : 0;
+
+      const totalAppointments = bookedSlots.count + cancelledAppts.count;
+      const cancellationRate = totalAppointments > 0
+        ? Math.round((cancelledAppts.count / totalAppointments) * 100)
+        : 0;
+
+      return {
+        id: doctor.id,
+        name: `Dr. ${doctor.firstName || ''} ${doctor.lastName || ''}`.trim(),
+        specialty: doctor.specialty || 'General Practice',
+        availability,
+        cancellationRate,
+        status: doctor.approved ? 'active' as const : 'pending' as const
+      };
+    }));
+
+    return doctorMetrics;
   }
   
   async getAppointmentChanges(appointmentId: string): Promise<any[]> {

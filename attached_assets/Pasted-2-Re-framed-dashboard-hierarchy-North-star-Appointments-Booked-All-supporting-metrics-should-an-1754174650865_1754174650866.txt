@@ -1,0 +1,136 @@
+2. Re-framed dashboard hierarchy
+North-star = “Appointments Booked”
+All supporting metrics should answer why that number is moving.
+
+2.1 Top bar – snapshots (always visible)
+Tile	Formula & notes	Default comparison
+Appointments Booked	Count of confirmed + paid consults in window	vs. previous equivalent window
+Unique Active Patients	Distinct patient IDs with ≥1 booking	vs. last period
+Bookings / Active Patient	Appointments ÷ active patients	goals: ≥1.4/mo
+Doctor Utilisation (%)	Booked slots ÷ total offered slots	warning <60 %
+Net Revenue €	Fees collected – refunds	spark-line 30 d
+Churn Risk Patients	Patients × (no booking in 90 d)	absolute count
+
+All tiles change colour when pre-set thresholds are crossed (green / amber / red).
+
+2.2 Conversion funnel panel
+Stage	Definition	Drop-off alert
+Visitors	Site users with >1 page view	—
+Doctor Interest	Clicked to doctor profile	>40 % ctr-dip
+Slot Selection	Reached booking widget	“<30 %”
+Payment Initiated	Entered checkout	payment error spike
+Confirmed	Payment succeeded	—
+Completed	Zoom status = “ended”	no-show >10 %
+
+Stacked horizontal bars with % labels; click a stage to open side panel with segment filter (device, geo, traffic source if available).
+
+2.3 Patient cohort cards (value tiers)
+Replace the colour-coded cards in your mock-ups with simpler heat-map blocks.
+
+Fields per card:
+
+Segment name (VIP, Premium, etc.)
+
+Patients (#) – badge
+
+LTV € – large text
+
+Appointments / Patient
+
+Churn risk count – red pill
+
+Clicking a card opens a lightweight table of patients (name, last visit, spend, status) but does not expose raw PII unless the viewer has “Admin” role.
+
+2.4 Doctor roster list
+Add two coloured tags per doctor row:
+
+Availability % (rolling 30 d)
+Green ≥80 / Amber 60-79 / Red <60
+
+Cancellation %
+Red badge >10 %
+
+Row action menu:
+
+View profile card (read-only)
+
+Open doctor calendar (for Ops manager)
+
+Reset password link
+
+Disable online status (soft hide)
+
+2.5 Appointment pipeline chart
+Keep the temporal line-chart but:
+
+Default window = last 7 days, quick-switch “7 d / 30 d / Custom”.
+
+Hover = exact counts + Δ vs. previous equal interval.
+
+Stacked area instead of multiple separate lines to improve visual density.
+
+Add a mini-table below with:
+
+Avg payment failure rate %
+
+Avg time doctor joins (mins after start)
+
+No-show rate %
+
+2.6 Action shortcuts (light-weight, no heavy CRUD)
+Add Doctor – opens modal (name, email, specialty, base fee).
+
+Create Discount Code – short modal (value, expiry, usage cap).
+
+Send Password Reset – one-click, confirmation toast.
+
+Join Meeting as Support – only visible for live sessions in pipeline panel.
+
+3. Edge-case UX rules
+Scenario	Dashboard response
+Data delay >4 h	Thin yellow banner “Data currently delayed – last update HH:MM UTC”.
+Metric fetch fails	Widget greys out with retry icon; does not block whole page.
+Privacy role mismatch	Any row/action requiring higher privilege is hidden (not just disabled).
+Rapid KPI spike (e.g., refund flood)	Red toast “Refund rate >X % in last hour” appears; toast links to filtered refunds table.
+
+4. Updated Gherkin user stories
+gherkin
+Copier
+Modifier
+Feature: Admin growth dashboard loads core KPIs
+
+Scenario: First load
+  Given I am an admin or growth user
+  When I open “Home → Admin Dashboard”
+  Then I see six KPI tiles:
+    | Appointments | Active Patients | Bookings per Patient | Utilisation | Net Revenue | Churn Risk |
+  And each tile compares current window to the previous one
+  And the window defaults to “Last 7 days”
+
+Scenario: Change time window
+  When I switch the date selector to “Last 30 days”
+  Then every metric, chart and table refreshes to that period
+  And the comparison delta updates accordingly
+
+Scenario: Doctor utilisation drops below threshold
+  Given Doctor Utilisation < 60 %
+  Then the tile background turns amber
+  And a tooltip explains “Low slot fill – consider promo push”
+
+Scenario: Click funnel stage
+  Given I click the “Slot Selection” bar in the funnel
+  Then a side panel opens showing:
+    | Device | Visitors | Conversion to Payment |
+  And filters persist until cleared
+
+Scenario: Add new doctor
+  When I click “Add Doctor”
+  And submit the form with valid details
+  Then the doctor roster adds a new row with status “pending setup”
+  And an invitation email is queued
+
+Scenario: Data fetch failure
+  Given the revenue API is unreachable
+  When the dashboard loads
+  Then the Net Revenue tile shows “N/A” and a retry icon
+  And other tiles still render normally

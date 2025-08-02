@@ -92,7 +92,17 @@ export default function Dashboard() {
       
       return () => clearTimeout(redirectTimer);
     }
-  }, [isAuthenticated, isLoading, toast]);
+
+    // Role-based redirects
+    if (!isLoading && isAuthenticated && user) {
+      if (user.role === 'doctor') {
+        setLocation('/doctor-dashboard');
+      } else if (user.role === 'admin') {
+        setLocation('/admin-dashboard');
+      }
+      // Patients stay on the regular dashboard
+    }
+  }, [isAuthenticated, isLoading, toast, user, setLocation]);
 
   const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<any[]>({
     queryKey: ["/api/appointments"],

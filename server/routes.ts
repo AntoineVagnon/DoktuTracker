@@ -746,6 +746,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin dashboard metrics endpoint
+  app.get("/api/admin/metrics", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get user to check role
+      const dbUser = await storage.getUser(userId);
+      if (!dbUser || dbUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { start, end } = req.query;
+      const startDate = start ? new Date(start as string) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const endDate = end ? new Date(end as string) : new Date();
+
+      // Calculate previous period for comparison
+      const periodLength = endDate.getTime() - startDate.getTime();
+      const prevStartDate = new Date(startDate.getTime() - periodLength);
+      const prevEndDate = new Date(startDate.getTime());
+
+      // Get metrics from storage
+      const metrics = await storage.getAdminMetrics(startDate, endDate, prevStartDate, prevEndDate);
+      
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching admin metrics:", error);
+      res.status(500).json({ message: "Failed to fetch metrics" });
+    }
+  });
+
+  // Admin funnel data endpoint
+  app.get("/api/admin/funnel", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get user to check role
+      const dbUser = await storage.getUser(userId);
+      if (!dbUser || dbUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { window } = req.query;
+      const days = window === '30d' ? 30 : 7;
+      const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+      
+      const funnelData = await storage.getFunnelData(startDate);
+      
+      res.json(funnelData);
+    } catch (error) {
+      console.error("Error fetching funnel data:", error);
+      res.status(500).json({ message: "Failed to fetch funnel data" });
+    }
+  });
+
+  // Admin patient segments endpoint
+  app.get("/api/admin/segments", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get user to check role
+      const dbUser = await storage.getUser(userId);
+      if (!dbUser || dbUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const segments = await storage.getPatientSegments();
+      
+      res.json(segments);
+    } catch (error) {
+      console.error("Error fetching patient segments:", error);
+      res.status(500).json({ message: "Failed to fetch segments" });
+    }
+  });
+
+  // Admin doctor roster endpoint
+  app.get("/api/admin/doctors", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get user to check role
+      const dbUser = await storage.getUser(userId);
+      if (!dbUser || dbUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const doctors = await storage.getAdminDoctorRoster();
+      
+      res.json(doctors);
+    } catch (error) {
+      console.error("Error fetching doctor roster:", error);
+      res.status(500).json({ message: "Failed to fetch doctors" });
+    }
+  });
+
   // Email confirmation endpoint for post-signup
   app.post("/api/auth/confirm", async (req, res) => {
     try {
