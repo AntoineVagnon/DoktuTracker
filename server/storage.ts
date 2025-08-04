@@ -1576,7 +1576,7 @@ export class PostgresStorage implements IStorage {
     const userActivity = await db
       .select({
         patientId: appointments.patientId,
-        weeksSinceRegistration: sql<number>`EXTRACT(WEEK FROM ${appointments.appointmentDate} - ${users.createdAt})`,
+        weeksSinceRegistration: sql<number>`FLOOR(EXTRACT(EPOCH FROM ${appointments.appointmentDate} - ${users.createdAt}) / 604800)`,
         hasActivity: sql<boolean>`true`
       })
       .from(appointments)
