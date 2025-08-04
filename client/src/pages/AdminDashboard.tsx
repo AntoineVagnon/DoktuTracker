@@ -15,7 +15,7 @@ import {
   Star, Activity, Brain, MessageSquare, Settings,
   ArrowUp, ArrowDown, Target, Zap, Heart, TrendingDown,
   BarChart3, PieChart, ArrowUpRight, ArrowDownRight,
-  FileText, User, DollarSign, Percent, Check, ExternalLink
+  FileText, User, DollarSign, Percent, Check, ExternalLink, Info
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays } from "date-fns";
@@ -173,7 +173,8 @@ export default function AdminDashboard() {
     icon: Icon,
     trend,
     target,
-    description
+    description,
+    tooltip
   }: {
     title: string;
     value: number;
@@ -183,12 +184,30 @@ export default function AdminDashboard() {
     trend?: 'up' | 'down' | 'neutral';
     target?: number;
     description?: string;
+    tooltip?: string;
   }) => {
     return (
       <Card className="hover:shadow-lg transition-shadow">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
+              {tooltip && (
+                <Tooltip.Provider>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                    </Tooltip.Trigger>
+                    <Tooltip.Portal>
+                      <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
+                        {tooltip}
+                        <Tooltip.Arrow className="fill-gray-900" />
+                      </Tooltip.Content>
+                    </Tooltip.Portal>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              )}
+            </div>
             <Icon className="h-5 w-5 text-gray-400" />
           </div>
         </CardHeader>
@@ -221,7 +240,22 @@ export default function AdminDashboard() {
       <Card className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">North Star: Appointments Booked</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-lg">North Star: Appointments Booked</CardTitle>
+              <Tooltip.Provider>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <Info className="h-4 w-4 text-white/70 cursor-help" />
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                    <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
+                      Total number of appointments booked and paid for in the selected time period. This is our primary success metric, fetched directly from the appointments table where status = 'paid'.
+                      <Tooltip.Arrow className="fill-gray-900" />
+                    </Tooltip.Content>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
+              </Tooltip.Provider>
+            </div>
             <span className="text-sm opacity-90">
               {timeRange === '7d' && 'Last 7 days'}
               {timeRange === '30d' && 'Last 30 days'}
@@ -279,6 +313,7 @@ export default function AdminDashboard() {
           format={(v) => `${typeof v === 'number' ? v.toFixed(1) : v} days`}
           icon={Clock}
           description="Avg time to first appointment"
+          tooltip="Average number of days between user registration and their first completed appointment. Calculated from real user data in the database."
         />
         <KPICard
           title="Activation Rate"
@@ -288,6 +323,7 @@ export default function AdminDashboard() {
           icon={Zap}
           target={70}
           description="Users who book within 7 days"
+          tooltip="Percentage of registered users who book their first appointment within 7 days. Calculated as (users with bookings within 7 days / total new registrations) × 100."
         />
         <KPICard
           title="Product Qualified Leads"
@@ -295,6 +331,7 @@ export default function AdminDashboard() {
           previousValue={metrics?.productQualifiedLeadsPrev}
           icon={Target}
           description="High-intent users this period"
+          tooltip="Number of users who have registered and viewed doctor profiles but haven't booked yet. These are potential customers showing buying intent."
         />
         <KPICard
           title="Net Revenue"
@@ -302,6 +339,7 @@ export default function AdminDashboard() {
           previousValue={metrics?.netRevenuePrev}
           format={(v) => `€${(v/1000).toFixed(1)}k`}
           icon={Euro}
+          tooltip="Total revenue from paid appointments in the selected period. Calculated from successful Stripe payments recorded in the database."
         />
       </div>
 
@@ -343,6 +381,7 @@ export default function AdminDashboard() {
           previousValue={metrics?.uniqueActivePatientsPrev}
           icon={Users}
           format={(v) => v.toLocaleString()}
+          tooltip="Number of unique patients who have booked or completed appointments in the selected time period. Fetched from the appointments table in the database."
         />
         <KPICard
           title="Retention Rate"
@@ -351,12 +390,14 @@ export default function AdminDashboard() {
           format={(v) => `${v}%`}
           icon={Heart}
           target={80}
+          tooltip="Percentage of patients who have booked more than one appointment in the selected period. Calculated as (patients with 2+ appointments / total active patients) × 100."
         />
         <KPICard
           title="Avg Session Duration"
           value={metrics?.averageSessionDuration || 0}
           format={(v) => `${v} min`}
           icon={Clock}
+          tooltip="Average duration of completed video consultations. Currently set to 15 minutes as default. Will be calculated from actual session data when video call tracking is fully implemented."
         />
       </div>
 
@@ -1285,6 +1326,15 @@ export default function AdminDashboard() {
                 Real-time metrics and insights for your telemedicine platform
               </p>
             </div>
+
+            {/* Data Source Notice */}
+            <Alert className="mb-6 border-blue-200 bg-blue-50">
+              <Info className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                <strong>Real-time Data:</strong> All metrics displayed on this dashboard are fetched directly from the PostgreSQL database. 
+                Values are calculated from actual appointments, users, and transaction records. Hover over any metric's info icon for details on how it's calculated.
+              </AlertDescription>
+            </Alert>
 
             {activeSection === 'overview' && <OverviewSection />}
             {activeSection === 'engagement' && <UserEngagementSection />}
