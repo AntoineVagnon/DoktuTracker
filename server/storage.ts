@@ -1448,22 +1448,23 @@ export class PostgresStorage implements IStorage {
         lte(u2.createdAt, prevEndDate)
       ));
 
-    // Monthly Growth Rate
-    const [currentMonthPatients] = await db
+    // Growth Rate (adapted to selected timeframe)
+    const [currentPeriodPatients] = await db
       .select({ count: count() })
       .from(users)
       .where(and(
         eq(users.role, 'patient'),
-        sql`created_at >= date_trunc('month', ${endDate.toISOString()}::timestamp)`
+        sql`created_at >= ${startDate.toISOString()}::timestamp`,
+        sql`created_at <= ${endDate.toISOString()}::timestamp`
       ));
 
-    const [previousMonthPatients] = await db
+    const [previousPeriodPatients] = await db
       .select({ count: count() })
       .from(users)
       .where(and(
         eq(users.role, 'patient'),
-        sql`created_at >= date_trunc('month', ${endDate.toISOString()}::timestamp - interval '1 month')`,
-        sql`created_at < date_trunc('month', ${endDate.toISOString()}::timestamp)`
+        sql`created_at >= ${prevStartDate.toISOString()}::timestamp`,
+        sql`created_at <= ${prevEndDate.toISOString()}::timestamp`
       ));
 
     // Calculate all metrics from real data
@@ -1486,8 +1487,8 @@ export class PostgresStorage implements IStorage {
     const productQualifiedLeadsPrev = pqlPrevious.count;
     const conversionRate = conversionCurrent.newUsers > 0 ? (conversionCurrent.converted / conversionCurrent.newUsers) * 100 : 0;
     const conversionRatePrev = conversionPrevious.newUsers > 0 ? (conversionPrevious.converted / conversionPrevious.newUsers) * 100 : 0;
-    const monthlyGrowthRate = previousMonthPatients.count > 0 
-      ? ((currentMonthPatients.count - previousMonthPatients.count) / previousMonthPatients.count) * 100 
+    const growthRate = previousPeriodPatients.count > 0 
+      ? ((currentPeriodPatients.count - previousPeriodPatients.count) / previousPeriodPatients.count) * 100 
       : 0;
     const revenuePerUser = currentMetrics.uniquePatients > 0 ? currentMetrics.revenue / currentMetrics.uniquePatients : 0;
     const lifetimeValue = revenuePerUser * 4.5; // Based on average retention
@@ -1497,7 +1498,7 @@ export class PostgresStorage implements IStorage {
     const csat = currentReviews.length > 0 ? (currentReviews.filter(r => r.rating >= 4).length / currentReviews.length) * 100 : 0;
     const reviewRating = Number(reviewStats.avgRating) || 0;
     const projectedRevenue = currentMetrics.revenue * 1.12; // 12% growth projection based on trend
-    const demandForecast = monthlyGrowthRate > 0 ? monthlyGrowthRate : 10; // % increase
+    const demandForecast = growthRate > 0 ? growthRate : 10; // % increase
     
     // Calculate viral coefficient (referrals per user - estimated)
     const viralCoefficient = 0.3; // Conservative estimate - would need referral tracking
@@ -1544,7 +1545,7 @@ export class PostgresStorage implements IStorage {
       conversionRate,
       conversionRatePrev,
       viralCoefficient: viralCoefficient,
-      monthlyGrowthRate,
+      monthlyGrowthRate: growthRate,
       revenuePerUser,
       lifetimeValue,
       customerAcquisitionCost,

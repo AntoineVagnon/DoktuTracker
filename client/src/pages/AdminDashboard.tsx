@@ -599,11 +599,11 @@ export default function AdminDashboard() {
           tooltip="Average number of new users each existing user brings in. Values > 1 indicate viral growth. Calculated as: (New Users from Referrals / Total Active Users)"
         />
         <KPICard
-          title="Monthly Growth"
+          title={`${timeRange === '7d' ? 'Weekly' : timeRange === '30d' ? 'Monthly' : 'Quarterly'} Growth`}
           value={metrics?.monthlyGrowthRate || 0}
-          format={(v) => `${v}%`}
+          format={(v) => `${v.toFixed(1)}%`}
           icon={TrendingUp}
-          tooltip="Month-over-month growth rate of active users. Calculated as: ((Current Month Users - Previous Month Users) / Previous Month Users) × 100"
+          tooltip={`${timeRange === '7d' ? 'Week-over-week' : timeRange === '30d' ? 'Month-over-month' : 'Quarter-over-quarter'} growth rate of new patients. Calculated as: ((Current Period Patients - Previous Period Patients) / Previous Period Patients) × 100`}
         />
         <KPICard
           title="CAC:LTV Ratio"
