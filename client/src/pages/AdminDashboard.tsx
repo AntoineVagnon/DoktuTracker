@@ -193,7 +193,7 @@ export default function AdminDashboard() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-gray-900">{format(value)}</div>
+          <div className="text-2xl font-bold text-gray-900">{format ? format(value) : value}</div>
           {previousValue !== undefined && (
             <MetricChange current={value} previous={previousValue} />
           )}
@@ -220,7 +220,14 @@ export default function AdminDashboard() {
       {/* North Star Metric */}
       <Card className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
         <CardHeader>
-          <CardTitle className="text-lg">North Star: Appointments Booked</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">North Star: Appointments Booked</CardTitle>
+            <span className="text-sm opacity-90">
+              {timeRange === '7d' && 'Last 7 days'}
+              {timeRange === '30d' && 'Last 30 days'}
+              {timeRange === '90d' && 'Last 90 days'}
+            </span>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-baseline gap-4">
@@ -232,7 +239,7 @@ export default function AdminDashboard() {
               />
             )}
           </div>
-          {metrics?.appointmentsBookedTrend && (
+          {metrics?.appointmentsBookedTrend && metrics.appointmentsBookedTrend.length > 0 && (
             <ResponsiveContainer width="100%" height={100} className="mt-4">
               <LineChart data={metrics.appointmentsBookedTrend}>
                 <Line 
@@ -241,6 +248,21 @@ export default function AdminDashboard() {
                   stroke="#ffffff" 
                   strokeWidth={2}
                   dot={false}
+                />
+                <XAxis 
+                  dataKey="date" 
+                  hide 
+                />
+                <RechartsTooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '8px'
+                  }}
+                  labelStyle={{ color: '#fff' }}
+                  formatter={(value) => [`${value} appointments`, '']}
+                  labelFormatter={(label) => format(new Date(label), 'MMM d, yyyy')}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -254,7 +276,7 @@ export default function AdminDashboard() {
           title="Time to Value"
           value={metrics?.timeToValue || 0}
           previousValue={metrics?.timeToValuePrev}
-          format={(v) => `${v} days`}
+          format={(v) => `${typeof v === 'number' ? v.toFixed(1) : v} days`}
           icon={Clock}
           description="Avg time to first appointment"
         />
@@ -262,7 +284,7 @@ export default function AdminDashboard() {
           title="Activation Rate"
           value={metrics?.activationRate || 0}
           previousValue={metrics?.activationRatePrev}
-          format={(v) => `${v}%`}
+          format={(v) => `${typeof v === 'number' ? v.toFixed(1) : v}%`}
           icon={Zap}
           target={70}
           description="Users who book within 7 days"
