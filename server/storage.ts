@@ -1427,12 +1427,12 @@ export class PostgresStorage implements IStorage {
     const activationCurrentRows = Array.isArray(activationCurrentQuery) ? activationCurrentQuery : (activationCurrentQuery as any).rows || [];
     const activationPreviousRows = Array.isArray(activationPreviousQuery) ? activationPreviousQuery : (activationPreviousQuery as any).rows || [];
     
-    const timeToValue = timeToValueRows[0]?.avg_days || 0;
-    const timeToValuePrev = timeToValuePrevRows[0]?.avg_days || 0;
+    const timeToValue = timeToValueRows[0]?.avg_days ? Number(Number(timeToValueRows[0].avg_days).toFixed(1)) : 0;
+    const timeToValuePrev = timeToValuePrevRows[0]?.avg_days ? Number(Number(timeToValuePrevRows[0].avg_days).toFixed(1)) : 0;
     const activationCurrent = activationCurrentRows[0] || { total: 0, activated: 0 };
     const activationPrevious = activationPreviousRows[0] || { total: 0, activated: 0 };
-    const activationRate = activationCurrent.total > 0 ? (activationCurrent.activated / activationCurrent.total) * 100 : 0;
-    const activationRatePrev = activationPrevious.total > 0 ? (activationPrevious.activated / activationPrevious.total) * 100 : 0;
+    const activationRate = activationCurrent.total > 0 ? Number(((activationCurrent.activated / activationCurrent.total) * 100).toFixed(1)) : 0;
+    const activationRatePrev = activationPrevious.total > 0 ? Number(((activationPrevious.activated / activationPrevious.total) * 100).toFixed(1)) : 0;
     const retentionRate = totalPatientsCurrent.count > 0 ? (retentionCurrent.returning / totalPatientsCurrent.count) * 100 : 0;
     const retentionRatePrev = 0; // Would need previous period calculation
     const npsScore = calculateNPS(currentReviews);
