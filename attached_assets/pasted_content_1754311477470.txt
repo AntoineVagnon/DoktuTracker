@@ -1,0 +1,587 @@
+Proposition de Dashboard pour une Plateforme de Téléconsultation
+
+Cette proposition révisée décrit un dashboard complet pour une plateforme de téléconsultation entre patients et médecins, conçu pour répondre aux besoins opérationnels du support client et des managers opérationnels, ainsi qu’aux besoins analytiques des product managers et administrateurs. L’objectif principal est d’augmenter le nombre de rendez-vous réservés, la métrique North Star, tout en intégrant une approche Product-Led Growth (PLG) avec des métriques comme le Time to Value (TTV). Le dashboard offre une compréhension rapide de la situation avec des options pour explorer les données en détail, tout en tenant compte de l’absence actuelle d’un système de tickets.
+
+Contexte et Objectifs
+
+Dans une approche PLG, le produit est le principal moteur d’acquisition, de rétention et d’expansion des utilisateurs. Le dashboard doit donc fournir des insights exploitables pour optimiser l’expérience utilisateur, tout en assurant une gestion efficace des opérations. Les recherches montrent que les plateformes de téléconsultation réussies, comme Teladoc ou Doctor Anywhere, utilisent des tableaux de bord pour suivre les métriques clés et améliorer la satisfaction des utilisateurs (RaftLabs, 2024).
+
+Le dashboard est structuré en cinq sections principales, chacune répondant à des besoins spécifiques tout en mettant l’accent sur la métrique North Star et les métriques PLG comme le TTV, le taux d’activation, et le taux de rétention.
+
+Structure du Dashboard
+
+1. Vue d’ensemble (Overview)
+
+Cette section donne une vue immédiate des performances globales de la plateforme, avec un focus sur la métrique North Star et les métriques PLG.
+
+
+
+
+
+Métriques clés :
+
+
+
+
+
+Nombre total de rendez-vous réservés : Affiché en grand avec des graphiques de tendances (journalières, hebdomadaires, mensuelles).
+
+
+
+Time to Value (TTV) : Temps moyen entre l’inscription d’un utilisateur et la réservation de son premier rendez-vous, mesuré en jours ou heures (Appcues, 2023).
+
+
+
+Taux d’activation : Pourcentage d’utilisateurs ayant réservé leur premier rendez-vous dans les 7 jours suivant leur inscription.
+
+
+
+Taux de rétention : Pourcentage d’utilisateurs ayant réservé un deuxième rendez-vous dans les 30 jours suivant le premier.
+
+
+
+Utilisateurs actifs : Nombre d’utilisateurs ayant réservé un rendez-vous dans les 30 derniers jours.
+
+
+
+Score de satisfaction (NPS) : Moyenne des évaluations des utilisateurs après les consultations, collectée via des sondages post-consultation.
+
+
+
+Visualisations :
+
+
+
+
+
+Un tableau de bord avec des cartes (cards) pour chaque KPI, utilisant des couleurs distinctes (vert pour les réservations, bleu pour l’activation, etc.) pour une lecture rapide.
+
+
+
+Un graphique linéaire montrant les tendances des rendez-vous réservés et du taux d’activation sur une semaine (voir le graphique ci-dessus).
+
+
+
+Un histogramme pour la distribution du TTV, permettant de voir combien d’utilisateurs réservent rapidement.
+
+2. Engagement des Utilisateurs
+
+Cette section se concentre sur la manière dont les utilisateurs interagissent avec la plateforme, un aspect clé pour une stratégie PLG.
+
+
+
+
+
+Métriques :
+
+
+
+
+
+Consultations moyennes par utilisateur par mois : Indique le niveau d’engagement des utilisateurs.
+
+
+
+Fréquence d’utilisation : Nombre moyen de connexions ou d’interactions par utilisateur (ex. : consultations, visites de l’application).
+
+
+
+Distribution des consultations : Par jour de la semaine ou par heure pour identifier les périodes de forte activité.
+
+
+
+Visualisations :
+
+
+
+
+
+Graphiques en barres pour les métriques moyennes (consultations et connexions par utilisateur).
+
+
+
+Une heatmap montrant la répartition des consultations par jour et heure, utile pour planifier les ressources.
+
+
+
+Une liste des utilisateurs les plus actifs (top 10 %) pour identifier les comportements d’engagement.
+
+3. Croissance et Acquisition
+
+Cette section aide à comprendre comment la plateforme acquiert et retient les utilisateurs, soutenant la croissance organique.
+
+
+
+
+
+Métriques :
+
+
+
+
+
+Acquisition par canal : Pourcentage d’utilisateurs provenant de canaux organiques, payants, ou références (si un programme de parrainage existe).
+
+
+
+Taux de référence : Nombre de nouveaux utilisateurs acquis via des recommandations d’utilisateurs existants.
+
+
+
+Taux de churn : Pourcentage d’utilisateurs inactifs (aucune réservation depuis 90 jours ou plus).
+
+
+
+Product Qualified Leads (PQLs) : Utilisateurs ayant complété une action clé, comme une première consultation, indiquant un fort potentiel de fidélité (ProductLed, 2023).
+
+
+
+Visualisations :
+
+
+
+
+
+Un graphique en camembert pour les canaux d’acquisition.
+
+
+
+Un graphique linéaire pour le taux de churn au fil du temps.
+
+
+
+Un entonnoir (funnel) interactif montrant le parcours utilisateur, de l’inscription à la première consultation, avec les taux de conversion à chaque étape.
+
+4. Feedback et Satisfaction
+
+Cette section évalue l’expérience utilisateur et identifie les opportunités d’amélioration, un élément essentiel pour réduire le churn et augmenter les réservations.
+
+
+
+
+
+Métriques :
+
+
+
+
+
+Net Promoter Score (NPS) : Mesure de la probabilité que les utilisateurs recommandent la plateforme, collectée via des sondages.
+
+
+
+Thèmes de feedback récurrents : Analyse des commentaires des utilisateurs pour identifier les points forts et faibles.
+
+
+
+Taux de complétion des consultations : Pourcentage de rendez-vous réservés qui sont effectivement réalisés.
+
+
+
+Visualisations :
+
+
+
+
+
+Un affichage simple du score NPS avec une tendance temporelle.
+
+
+
+Un nuage de mots ou une liste pour les thèmes de feedback.
+
+
+
+Un graphique en barres pour le taux de complétion des consultations, avec possibilité de filtrer par spécialité ou médecin.
+
+5. Insights Opérationnels
+
+En l’absence d’un système de tickets, cette section se concentre sur les aspects opérationnels critiques pour le support client et les managers opérationnels.
+
+
+
+
+
+Métriques :
+
+
+
+
+
+Consultations actives en temps réel : Nombre de consultations en cours à tout moment.
+
+
+
+Rendez-vous planifiés : Nombre de consultations prévues pour aujourd’hui et demain.
+
+
+
+Performance de la plateforme : Temps de fonctionnement (uptime), temps de réponse, et alertes sur les problèmes techniques (ex. : interruptions de service).
+
+
+
+Visualisations :
+
+
+
+
+
+Compteurs en temps réel pour les consultations actives.
+
+
+
+Une grille dynamique affichant les rendez-vous planifiés, avec filtres par statut (planifié, en cours, terminé, annulé).
+
+
+
+Un tableau de bord avec des alertes en rouge pour les problèmes techniques urgents.
+
+6. Analyse Prédictive
+
+Cette section utilise les données historiques pour anticiper les tendances futures et optimiser les ressources.
+
+
+
+
+
+Métriques :
+
+
+
+
+
+Prévisions de rendez-vous : Estimation des réservations pour les 30 prochains jours, basée sur les données historiques.
+
+
+
+Utilisateurs à haut potentiel : Identification des utilisateurs susceptibles de réserver plus de rendez-vous, basée sur leurs patterns d’utilisation.
+
+
+
+Visualisations :
+
+
+
+
+
+Un graphique linéaire pour les prévisions de réservations, avec des intervalles de confiance.
+
+
+
+Une liste ou un tableau des utilisateurs à haut potentiel, avec des détails comme le nombre de consultations passées.
+
+Tableau des Métriques Clés
+
+
+
+
+
+
+
+Métrique
+
+
+
+Description
+
+
+
+Section
+
+
+
+Utilisateur Principal
+
+
+
+
+
+Nombre de rendez-vous réservés
+
+
+
+Total des réservations, avec tendances journalières/hebdomadaires/mensuelles
+
+
+
+Vue d’ensemble
+
+
+
+Tous
+
+
+
+
+
+Time to Value (TTV)
+
+
+
+Temps moyen entre inscription et première réservation
+
+
+
+Vue d’ensemble
+
+
+
+Product Managers/Administrateurs
+
+
+
+
+
+Taux d’activation
+
+
+
+Pourcentage d’utilisateurs réservant dans les 7 jours suivant l’inscription
+
+
+
+Vue d’ensemble
+
+
+
+Product Managers/Administrateurs
+
+
+
+
+
+Taux de rétention
+
+
+
+Pourcentage d’utilisateurs réservant un deuxième rendez-vous dans les 30 jours
+
+
+
+Vue d’ensemble
+
+
+
+Product Managers/Administrateurs
+
+
+
+
+
+Utilisateurs actifs
+
+
+
+Utilisateurs ayant réservé dans les 30 derniers jours
+
+
+
+Vue d’ensemble
+
+
+
+Tous
+
+
+
+
+
+NPS
+
+
+
+Probabilité que les utilisateurs recommandent la plateforme
+
+
+
+Feedback
+
+
+
+Product Managers/Administrateurs
+
+
+
+
+
+Taux de churn
+
+
+
+Pourcentage d’utilisateurs inactifs depuis 90 jours ou plus
+
+
+
+Croissance
+
+
+
+Product Managers/Administrateurs
+
+
+
+
+
+Consultations actives
+
+
+
+Nombre de consultations en cours en temps réel
+
+
+
+Opérationnelle
+
+
+
+Support Client/Managers
+
+
+
+
+
+Prévisions de réservations
+
+
+
+Estimations des réservations futures basées sur les données historiques
+
+
+
+Prédictive
+
+
+
+Administrateurs
+
+Intégration avec l’Approche Product-Led Growth
+
+L’approche PLG met l’accent sur l’acquisition et la rétention via le produit lui-même. Le dashboard soutient cet objectif en :
+
+
+
+
+
+Réduisant le Time to Value : En suivant le TTV, vous pouvez identifier les obstacles dans le processus d’inscription ou de réservation et les optimiser pour accélérer l’adoption (Medium, 2022).
+
+
+
+Augmentant l’activation : Le taux d’activation montre si les nouveaux utilisateurs adoptent rapidement la plateforme, un indicateur clé de la facilité d’utilisation.
+
+
+
+Améliorant la rétention : Le taux de rétention et le NPS aident à comprendre pourquoi les utilisateurs reviennent (ou non) pour réserver d’autres rendez-vous.
+
+
+
+Encourageant la viralité : Le taux de référence (si un programme de parrainage existe) mesure la capacité des utilisateurs à attirer de nouveaux utilisateurs.
+
+
+
+Réduisant le churn : Le suivi du taux de churn permet d’identifier les utilisateurs à risque et de mettre en place des actions pour les réengager.
+
+Considérations Techniques
+
+
+
+
+
+Sources de Données : Le dashboard doit intégrer des données de la base de données de la plateforme (inscriptions, réservations, consultations), des systèmes d’authentification, et des sondages de satisfaction (si disponibles).
+
+
+
+Mises à Jour en Temps Réel : Utilisation de technologies comme WebSockets pour des métriques critiques comme les consultations actives.
+
+
+
+Sécurité : Chiffrement des données et contrôle d’accès basé sur les rôles pour protéger les informations sensibles, conformément aux réglementations comme le RGPD et HIPAA.
+
+
+
+Accessibilité Mobile : Conception responsive pour un accès sur smartphones et tablettes.
+
+
+
+Outils de Visualisation : Utilisation de Tableau, Power BI, ou des bibliothèques JavaScript comme Chart.js pour des graphiques interactifs.
+
+Rôles et Accès
+
+
+
+
+
+
+
+Rôle
+
+
+
+Accès
+
+
+
+
+
+Support Client
+
+
+
+Section opérationnelle, feedback, tableau de bord des consultations
+
+
+
+
+
+Managers Opérationnels
+
+
+
+Vue d’ensemble, opérationnelle, analytique (avec forage)
+
+
+
+
+
+Product Managers
+
+
+
+Accès complet, focus sur engagement, croissance, et prédictive
+
+
+
+
+
+Administrateurs
+
+
+
+Accès complet, avec gestion des utilisateurs et paramètres système
+
+Avantages du Dashboard
+
+
+
+
+
+Compréhension Rapide : Les visualisations claires permettent une lecture instantanée des performances.
+
+
+
+Flexibilité : Les filtres et options de forage répondent aux besoins d’analyse détaillée (ex. : par spécialité, région, ou canal d’acquisition).
+
+
+
+Soutien à la Croissance PLG : Les métriques comme TTV, activation, et rétention aident à optimiser l’expérience utilisateur et à augmenter les réservations.
+
+
+
+Adaptabilité : Le dashboard est conçu pour évoluer avec la plateforme, même sans système de tickets.
+
+
+
+Sécurité et Conformité : Respect des réglementations pour protéger les données des utilisateurs.
+
+Conclusion
+
+Ce dashboard révisé intègre des métriques PLG essentielles comme le Time to Value, le taux d’activation, et le taux de rétention, tout en s’adaptant à l’absence d’un système de tickets. Il offre une vue complète des performances de la plateforme, soutient la croissance orientée produit, et répond aux besoins variés des utilisateurs. Pour une mise en œuvre réussie, envisagez d’explorer des plateformes comme Teladoc ou Doctor Anywhere pour des inspirations supplémentaires (RaftLabs, 2024).
