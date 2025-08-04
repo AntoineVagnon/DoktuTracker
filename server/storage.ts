@@ -1355,40 +1355,52 @@ export class PostgresStorage implements IStorage {
       ) as qualified_leads`);
 
     // Conversion Rate (new users who made appointments)
+    const u = alias(users, 'u');
+    const a = alias(appointments, 'a');
+    
     const [conversionCurrent] = await db
       .select({
-        newUsers: count(sql`DISTINCT u.id`),
-        converted: count(sql`DISTINCT a.patient_id`)
+        newUsers: count(sql`DISTINCT ${u.id}`),
+        converted: count(sql`DISTINCT ${a.patientId}`)
       })
-      .from(users.as('u'))
-      .leftJoin(appointments.as('a'), and(
-        eq(sql`u.id`, sql`a.patient_id`),
-        sql`a.appointment_date >= ${startDate.toISOString()}::timestamp`,
-        sql`a.appointment_date <= ${endDate.toISOString()}::timestamp`,
-        sql`a.status IN ('paid', 'completed')`
+      .from(u)
+      .leftJoin(a, and(
+        eq(u.id, a.patientId),
+        gte(a.appointmentDate, startDate),
+        lte(a.appointmentDate, endDate),
+        or(
+          eq(a.status, 'paid'),
+          eq(a.status, 'completed')
+        )
       ))
       .where(and(
-        eq(sql`u.role`, 'patient'),
-        sql`u.created_at >= ${startDate.toISOString()}::timestamp`,
-        sql`u.created_at <= ${endDate.toISOString()}::timestamp`
+        eq(u.role, 'patient'),
+        gte(u.createdAt, startDate),
+        lte(u.createdAt, endDate)
       ));
 
+    const u2 = alias(users, 'u2');
+    const a2 = alias(appointments, 'a2');
+    
     const [conversionPrevious] = await db
       .select({
-        newUsers: count(sql`DISTINCT u.id`),
-        converted: count(sql`DISTINCT a.patient_id`)
+        newUsers: count(sql`DISTINCT ${u2.id}`),
+        converted: count(sql`DISTINCT ${a2.patientId}`)
       })
-      .from(users.as('u'))
-      .leftJoin(appointments.as('a'), and(
-        eq(sql`u.id`, sql`a.patient_id`),
-        sql`a.appointment_date >= ${prevStartDate.toISOString()}::timestamp`,
-        sql`a.appointment_date <= ${prevEndDate.toISOString()}::timestamp`,
-        sql`a.status IN ('paid', 'completed')`
+      .from(u2)
+      .leftJoin(a2, and(
+        eq(u2.id, a2.patientId),
+        gte(a2.appointmentDate, prevStartDate),
+        lte(a2.appointmentDate, prevEndDate),
+        or(
+          eq(a2.status, 'paid'),
+          eq(a2.status, 'completed')
+        )
       ))
       .where(and(
-        eq(sql`u.role`, 'patient'),
-        sql`u.created_at >= ${prevStartDate.toISOString()}::timestamp`,
-        sql`u.created_at <= ${prevEndDate.toISOString()}::timestamp`
+        eq(u2.role, 'patient'),
+        gte(u2.createdAt, prevStartDate),
+        lte(u2.createdAt, prevEndDate)
       ));
 
     // Monthly Growth Rate
@@ -1478,7 +1490,7 @@ export class PostgresStorage implements IStorage {
       churnRiskPatients: churnMetrics.churnCount,
       conversionRate,
       conversionRatePrev,
-      viralCoefficient,
+      viralCoefficient: viralCoefficient,
       monthlyGrowthRate,
       revenuePerUser,
       lifetimeValue,
@@ -2136,9 +2148,7 @@ export class PostgresStorage implements IStorage {
         patientId: appointments.patientId,
         doctorId: appointments.doctorId,
         appointmentDate: appointments.appointmentDate,
-        appointmentTime: appointments.appointmentTime,
         status: appointments.status,
-        duration: appointments.duration,
         patientFirstName: users.firstName,
         patientLastName: users.lastName,
         doctorFirstName: sql<string>`doctor_user.first_name`,
@@ -2201,7 +2211,7 @@ export class PostgresStorage implements IStorage {
         doctorName: `${apt.doctorFirstName || ''} ${apt.doctorLastName || ''}`.trim() || 'Unknown Doctor',
         scheduledTime: appointmentTime.toISOString(),
         status,
-        duration: apt.duration || 30,
+        duration: 30, // Default duration for appointments
         alertDetails
       };
     });
