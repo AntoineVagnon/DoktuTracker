@@ -586,22 +586,24 @@ export default function AdminDashboard() {
           title="Conversion Rate"
           value={metrics?.conversionRate || 0}
           previousValue={metrics?.conversionRatePrev}
-          format={(v) => `${v}%`}
+          format={(v) => `${v.toFixed(2)}%`}
           icon={Percent}
           target={15}
+          tooltip="Percentage of homepage visitors who complete a booking. Calculated as: (Bookings / Homepage Visits) × 100"
         />
         <KPICard
           title="Viral Coefficient"
           value={metrics?.viralCoefficient || 0}
           format={(v) => v.toFixed(2)}
           icon={Users}
-          description="Referrals per user"
+          tooltip="Average number of new users each existing user brings in. Values > 1 indicate viral growth. Calculated as: (New Users from Referrals / Total Active Users)"
         />
         <KPICard
           title="Monthly Growth"
           value={metrics?.monthlyGrowthRate || 0}
           format={(v) => `${v}%`}
           icon={TrendingUp}
+          tooltip="Month-over-month growth rate of active users. Calculated as: ((Current Month Users - Previous Month Users) / Previous Month Users) × 100"
         />
         <KPICard
           title="CAC:LTV Ratio"
@@ -609,6 +611,7 @@ export default function AdminDashboard() {
           format={(v) => `1:${v.toFixed(1)}`}
           icon={DollarSign}
           target={3}
+          tooltip="Customer Acquisition Cost to Lifetime Value ratio. Shows how much value each customer brings compared to their acquisition cost. Target ratio is 1:3 or higher. Calculated as: LTV / CAC"
         />
       </div>
 
