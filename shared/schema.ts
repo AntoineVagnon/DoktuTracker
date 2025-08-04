@@ -350,6 +350,17 @@ export const notifications = pgTable("notifications", {
 
 // Reviews table already defined above
 
+// Analytics events for frontend tracking
+export const analyticsEvents = pgTable("analytics_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sessionId: varchar("session_id").notNull(),
+  userId: integer("user_id").references(() => users.id),
+  eventType: varchar("event_type").notNull(), // page_view, discovery, booking_started, etc.
+  eventData: jsonb("event_data"), // flexible JSON data for event properties
+  timestamp: timestamp("timestamp").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Audit events
 export const auditEvents = pgTable("audit_events", {
   id: uuid("id").primaryKey().defaultRandom(),

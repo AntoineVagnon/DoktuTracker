@@ -7,6 +7,7 @@ import {
   appointmentPending,
   reviews,
   auditEvents,
+  analyticsEvents,
   payments,
   healthProfiles,
   documentUploads,
@@ -1406,12 +1407,12 @@ export class PostgresStorage implements IStorage {
     // First, get total homepage visits from analytics
     const [homepageVisits] = await db
       .select({ count: count() })
-      .from(auditEvents)
+      .from(analyticsEvents)
       .where(and(
-        eq(auditEvents.eventType, 'page_view'),
-        sql`${auditEvents.eventData}->>'page' = 'homepage'`,
-        gte(auditEvents.timestamp, startDate),
-        lte(auditEvents.timestamp, endDate)
+        eq(analyticsEvents.eventType, 'page_view'),
+        sql`${analyticsEvents.eventData}->>'page' = 'homepage'`,
+        gte(analyticsEvents.timestamp, startDate),
+        lte(analyticsEvents.timestamp, endDate)
       ));
     
     // Get bookings made in this period
@@ -1427,12 +1428,12 @@ export class PostgresStorage implements IStorage {
     // Get previous period homepage visits
     const [homepageVisitsPrev] = await db
       .select({ count: count() })
-      .from(auditEvents)
+      .from(analyticsEvents)
       .where(and(
-        eq(auditEvents.eventType, 'page_view'),
-        sql`${auditEvents.eventData}->>'page' = 'homepage'`,
-        gte(auditEvents.timestamp, prevStartDate),
-        lte(auditEvents.timestamp, prevEndDate)
+        eq(analyticsEvents.eventType, 'page_view'),
+        sql`${analyticsEvents.eventData}->>'page' = 'homepage'`,
+        gte(analyticsEvents.timestamp, prevStartDate),
+        lte(analyticsEvents.timestamp, prevEndDate)
       ));
     
     // Get previous period bookings
@@ -2319,8 +2320,7 @@ export class PostgresStorage implements IStorage {
 
   async createAnalyticsEvent(event: any): Promise<void> {
     try {
-      // For now, we'll just log analytics events to console
-      // In production, these would be stored in a dedicated analytics table
+      // Log analytics event for debugging
       console.log('📊 Analytics Event:', {
         sessionId: event.sessionId,
         userId: event.userId,
@@ -2329,8 +2329,14 @@ export class PostgresStorage implements IStorage {
         timestamp: event.timestamp
       });
       
-      // In the future, we would implement actual database storage:
-      // await db.insert(analyticsEvents).values(event);
+      // Store analytics event in the database
+      await db.insert(analyticsEvents).values({
+        sessionId: event.sessionId,
+        userId: event.userId ? parseInt(event.userId) : null,
+        eventType: event.eventType,
+        eventData: event.eventData,
+        timestamp: event.timestamp
+      });
     } catch (error) {
       console.error("Error creating analytics event:", error);
       throw error;
