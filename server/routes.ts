@@ -764,7 +764,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const prevEndDate = new Date(startDate.getTime());
 
       // Get metrics from storage
-      const metrics = await storage.getAdminMetrics(startDate, endDate, prevStartDate, prevEndDate);
+      const metrics = await storage.getAdminMetrics(startDate, endDate);
       
       res.json(metrics);
     } catch (error) {
