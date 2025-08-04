@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AdminHeader from "@/components/AdminHeader";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +15,7 @@ import {
   Star, Activity, Brain, MessageSquare, Settings,
   ArrowUp, ArrowDown, Target, Zap, Heart, TrendingDown,
   BarChart3, PieChart, ArrowUpRight, ArrowDownRight,
-  FileText, User, DollarSign, Percent, Check
+  FileText, User, DollarSign, Percent, Check, ExternalLink
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays } from "date-fns";
@@ -938,6 +939,7 @@ export default function AdminDashboard() {
   const MeetingsSection = () => {
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [sortBy, setSortBy] = useState<'time' | 'doctor'>('time');
+    const [searchFilter, setSearchFilter] = useState<string>('');
     
     // Fetch meetings data
     const { data: meetingStats, isLoading: meetingsLoading } = useQuery({
@@ -949,9 +951,13 @@ export default function AdminDashboard() {
       refetchInterval: 10000, // Refresh every 10 seconds for real-time updates
     });
 
-    const filteredMeetings = meetingStats?.meetings.filter(meeting => 
-      statusFilter === 'all' || meeting.status === statusFilter
-    ).sort((a, b) => {
+    const filteredMeetings = meetingStats?.meetings.filter(meeting => {
+      const matchesStatus = statusFilter === 'all' || meeting.status === statusFilter;
+      const matchesSearch = searchFilter === '' || 
+        meeting.patientName.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        meeting.doctorName.toLowerCase().includes(searchFilter.toLowerCase());
+      return matchesStatus && matchesSearch;
+    }).sort((a, b) => {
       if (sortBy === 'time') {
         return new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime();
       } else {
@@ -1077,6 +1083,13 @@ export default function AdminDashboard() {
                 </div>
               </CardTitle>
               <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  placeholder="Search patient or doctor..."
+                  value={searchFilter}
+                  onChange={(e) => setSearchFilter(e.target.value)}
+                  className="w-56"
+                />
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-32">
                     <SelectValue />
@@ -1148,6 +1161,21 @@ export default function AdminDashboard() {
                             </Tooltip.Portal>
                           </Tooltip.Root>
                         </Tooltip.Provider>
+                      )}
+                      
+                      {meeting.status === 'live' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-green-500 text-green-600 hover:bg-green-50"
+                          onClick={() => {
+                            // Navigate to video consultation
+                            window.location.href = `/video/${meeting.id}`;
+                          }}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Join Meeting
+                        </Button>
                       )}
                     </div>
                   </div>
