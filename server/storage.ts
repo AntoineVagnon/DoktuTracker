@@ -1422,7 +1422,6 @@ export class PostgresStorage implements IStorage {
       ));
 
     // Calculate all metrics from real data
-    console.log('timeToValueQuery result:', timeToValueQuery);
     const timeToValueRows = Array.isArray(timeToValueQuery) ? timeToValueQuery : (timeToValueQuery as any).rows || [];
     const timeToValuePrevRows = Array.isArray(timeToValuePrevQuery) ? timeToValuePrevQuery : (timeToValuePrevQuery as any).rows || [];
     const activationCurrentRows = Array.isArray(activationCurrentQuery) ? activationCurrentQuery : (activationCurrentQuery as any).rows || [];
@@ -1454,6 +1453,9 @@ export class PostgresStorage implements IStorage {
     const reviewRating = Number(reviewStats.avgRating) || 0;
     const projectedRevenue = currentMetrics.revenue * 1.12; // 12% growth projection based on trend
     const demandForecast = monthlyGrowthRate > 0 ? monthlyGrowthRate : 10; // % increase
+    
+    // Calculate viral coefficient (referrals per user - estimated)
+    const viralCoefficient = 0.3; // Conservative estimate - would need referral tracking
 
     // Generate appointment trend data
     const trendData = await db
