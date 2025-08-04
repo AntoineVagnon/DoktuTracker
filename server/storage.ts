@@ -1371,7 +1371,7 @@ export class PostgresStorage implements IStorage {
 
     // NPS calculation (4.5-5 stars = promoters, 3.5-4.4 = neutral, <3.5 = detractors)
     const calculateNPS = (reviews: any[]) => {
-      if (reviews.length === 0) return 0;
+      if (reviews.length < 5) return 0; // Need minimum reviews for meaningful NPS
       const promoters = reviews.filter(r => r.rating >= 4.5).length;
       const detractors = reviews.filter(r => r.rating < 3.5).length;
       return Math.round(((promoters - detractors) / reviews.length) * 100);
@@ -1402,53 +1402,47 @@ export class PostgresStorage implements IStorage {
         HAVING COUNT(*) >= 2
       ) as qualified_leads`);
 
-    // Conversion Rate (new users who made appointments)
-    const u = alias(users, 'u');
-    const a = alias(appointments, 'a');
-    
-    const [conversionCurrent] = await db
-      .select({
-        newUsers: count(sql`DISTINCT ${u.id}`),
-        converted: count(sql`DISTINCT ${a.patientId}`)
-      })
-      .from(u)
-      .leftJoin(a, and(
-        eq(u.id, a.patientId),
-        gte(a.appointmentDate, startDate),
-        lte(a.appointmentDate, endDate),
-        or(
-          eq(a.status, 'paid'),
-          eq(a.status, 'completed')
-        )
-      ))
+    // Conversion Rate (homepage visitors to bookings)
+    // First, get total homepage visits from analytics
+    const [homepageVisits] = await db
+      .select({ count: count() })
+      .from(auditEvents)
       .where(and(
-        eq(u.role, 'patient'),
-        gte(u.createdAt, startDate),
-        lte(u.createdAt, endDate)
+        eq(auditEvents.eventType, 'page_view'),
+        sql`event_data->>'page' = 'homepage'`,
+        gte(auditEvents.timestamp, startDate),
+        lte(auditEvents.timestamp, endDate)
+      ));
+    
+    // Get bookings made in this period
+    const [bookingsInPeriod] = await db
+      .select({ count: count() })
+      .from(appointments)
+      .where(and(
+        gte(appointments.createdAt, startDate),
+        lte(appointments.createdAt, endDate),
+        sql`status IN ('paid', 'completed')`
       ));
 
-    const u2 = alias(users, 'u2');
-    const a2 = alias(appointments, 'a2');
-    
-    const [conversionPrevious] = await db
-      .select({
-        newUsers: count(sql`DISTINCT ${u2.id}`),
-        converted: count(sql`DISTINCT ${a2.patientId}`)
-      })
-      .from(u2)
-      .leftJoin(a2, and(
-        eq(u2.id, a2.patientId),
-        gte(a2.appointmentDate, prevStartDate),
-        lte(a2.appointmentDate, prevEndDate),
-        or(
-          eq(a2.status, 'paid'),
-          eq(a2.status, 'completed')
-        )
-      ))
+    // Get previous period homepage visits
+    const [homepageVisitsPrev] = await db
+      .select({ count: count() })
+      .from(auditEvents)
       .where(and(
-        eq(u2.role, 'patient'),
-        gte(u2.createdAt, prevStartDate),
-        lte(u2.createdAt, prevEndDate)
+        eq(auditEvents.eventType, 'page_view'),
+        sql`event_data->>'page' = 'homepage'`,
+        gte(auditEvents.timestamp, prevStartDate),
+        lte(auditEvents.timestamp, prevEndDate)
+      ));
+    
+    // Get previous period bookings
+    const [bookingsInPeriodPrev] = await db
+      .select({ count: count() })
+      .from(appointments)
+      .where(and(
+        gte(appointments.createdAt, prevStartDate),
+        lte(appointments.createdAt, prevEndDate),
+        sql`status IN ('paid', 'completed')`
       ));
 
     // Growth Rate (adapted to selected timeframe)
@@ -1488,8 +1482,8 @@ export class PostgresStorage implements IStorage {
     const npsScorePrev = calculateNPS(prevReviews);
     const productQualifiedLeads = pqlCurrent.count;
     const productQualifiedLeadsPrev = pqlPrevious.count;
-    const conversionRate = conversionCurrent.newUsers > 0 ? (conversionCurrent.converted / conversionCurrent.newUsers) * 100 : 0;
-    const conversionRatePrev = conversionPrevious.newUsers > 0 ? (conversionPrevious.converted / conversionPrevious.newUsers) * 100 : 0;
+    const conversionRate = homepageVisits.count > 0 ? (bookingsInPeriod.count / homepageVisits.count) * 100 : 0;
+    const conversionRatePrev = homepageVisitsPrev.count > 0 ? (bookingsInPeriodPrev.count / homepageVisitsPrev.count) * 100 : 0;
     const growthRate = previousPeriodPatients.count > 0 
       ? ((currentPeriodPatients.count - previousPeriodPatients.count) / previousPeriodPatients.count) * 100 
       : 0;
@@ -1498,7 +1492,7 @@ export class PostgresStorage implements IStorage {
     const customerAcquisitionCost = 35; // EUR - estimated
     const averageSessionDuration = 15; // minutes - estimated
     const platformUptime = 99.9; // % - estimated
-    const csat = currentReviews.length > 0 ? (currentReviews.filter(r => r.rating >= 4).length / currentReviews.length) * 100 : 0;
+    const csat = currentReviews.length >= 3 ? (currentReviews.filter(r => r.rating >= 4).length / currentReviews.length) * 100 : 0;
     const reviewRating = Number(reviewStats.avgRating) || 0;
     const projectedRevenue = currentMetrics.revenue * 1.12; // 12% growth projection based on trend
     const demandForecast = growthRate > 0 ? growthRate : 10; // % increase
