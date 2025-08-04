@@ -109,6 +109,26 @@ interface DashboardMetrics {
   churnRiskPatients: number;
   projectedRevenue: number;
   demandForecast: number;
+  
+  // Analytics Data (New)
+  cohortAnalysis?: Array<{
+    cohort: string;
+    w1: number;
+    w2: number;
+    w3: number;
+    w4: number;
+  }>;
+  userJourneyAnalytics?: Array<{
+    stage: string;
+    touchpoints: string[];
+    dropoff: number;
+    avgTime: string;
+  }>;
+  conversionFunnel?: Array<{
+    stage: string;
+    percentage: number;
+    count: number;
+  }>;
 }
 
 // Navigation items for consistent menu
@@ -355,7 +375,7 @@ export default function AdminDashboard() {
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
-                    Conversion funnel tracking requires analytics integration to track user behavior across the platform.
+                    Shows conversion rates through the user journey. Based on registrations and bookings from database.
                     <Tooltip.Arrow className="fill-gray-900" />
                   </Tooltip.Content>
                 </Tooltip.Portal>
@@ -364,27 +384,37 @@ export default function AdminDashboard() {
           </div>
         </CardHeader>
         <CardContent>
-          <Alert className="border-amber-200 bg-amber-50 mb-4">
-            <AlertCircle className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-amber-800">
-              <strong>Coming Soon:</strong> Conversion funnel requires frontend analytics to track homepage visits and registration attempts. 
-              Currently, we can only track completed registrations and bookings from the database.
-            </AlertDescription>
-          </Alert>
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">Available database metrics:</p>
-            <ul className="text-xs text-gray-500 space-y-1">
-              <li>• Total registered users: Can be fetched from users table</li>
-              <li>• Users with bookings: Can be calculated from appointments</li>
-              <li>• Completed appointments: Available in appointments table</li>
-            </ul>
-            <p className="text-sm text-gray-600 mt-2">Requires analytics for:</p>
-            <ul className="text-xs text-gray-500 space-y-1">
-              <li>• Homepage visits tracking</li>
-              <li>• Registration form abandonment</li>
-              <li>• Booking flow drop-offs</li>
-            </ul>
-          </div>
+          {metrics?.conversionFunnel && metrics.conversionFunnel.length > 0 ? (
+            <>
+              <div className="space-y-4">
+                {metrics.conversionFunnel.map((stage, index) => (
+                  <div key={stage.stage}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm font-medium">{stage.stage}</span>
+                      <div className="text-sm text-gray-500">
+                        <span>{stage.percentage}%</span>
+                        <span className="ml-2 text-xs">({stage.count} users)</span>
+                      </div>
+                    </div>
+                    <Progress value={stage.percentage} className="h-2" />
+                  </div>
+                ))}
+              </div>
+              <Alert className="border-blue-200 bg-blue-50 mt-4">
+                <Info className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-800 text-xs">
+                  <strong>Note:</strong> Homepage visits are estimated. Install analytics for accurate visitor tracking.
+                </AlertDescription>
+              </Alert>
+            </>
+          ) : (
+            <Alert className="border-amber-200 bg-amber-50">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800">
+                Loading conversion funnel data...
+              </AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
     </div>
@@ -432,7 +462,7 @@ export default function AdminDashboard() {
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
-                    This feature is coming soon. Cohort analysis will track user retention by signup month once implemented in the backend.
+                    Tracks patient retention by signup month. Shows percentage of users still active after 1-4 weeks.
                     <Tooltip.Arrow className="fill-gray-900" />
                   </Tooltip.Content>
                 </Tooltip.Portal>
@@ -441,21 +471,47 @@ export default function AdminDashboard() {
           </div>
         </CardHeader>
         <CardContent>
-          <Alert className="border-amber-200 bg-amber-50">
-            <AlertCircle className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-amber-800">
-              <strong>Coming Soon:</strong> Cohort retention analysis is not yet implemented in the backend. 
-              This will track how well we retain users grouped by their signup month.
-            </AlertDescription>
-          </Alert>
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">Expected data structure:</p>
-            <ul className="text-xs text-gray-500 space-y-1">
-              <li>• Cohorts grouped by registration month</li>
-              <li>• Weekly retention percentages for each cohort</li>
-              <li>• Comparison across multiple time periods</li>
-            </ul>
-          </div>
+          {metrics?.cohortAnalysis && metrics.cohortAnalysis.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2">Cohort</th>
+                    <th className="text-center px-2">Week 1</th>
+                    <th className="text-center px-2">Week 2</th>
+                    <th className="text-center px-2">Week 3</th>
+                    <th className="text-center px-2">Week 4</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {metrics.cohortAnalysis.map((row) => (
+                    <tr key={row.cohort} className="border-b">
+                      <td className="py-2 font-medium">{row.cohort}</td>
+                      <td className="text-center px-2">
+                        <Badge variant="secondary">{row.w1}%</Badge>
+                      </td>
+                      <td className="text-center px-2">
+                        <Badge variant={row.w2 > 70 ? "default" : "destructive"}>{row.w2}%</Badge>
+                      </td>
+                      <td className="text-center px-2">
+                        <Badge variant={row.w3 > 60 ? "default" : "destructive"}>{row.w3}%</Badge>
+                      </td>
+                      <td className="text-center px-2">
+                        <Badge variant={row.w4 > 50 ? "default" : "destructive"}>{row.w4}%</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <Alert className="border-amber-200 bg-amber-50">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800">
+                No cohort data available. Need more users registered across multiple months to show retention trends.
+              </AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
 
@@ -471,7 +527,7 @@ export default function AdminDashboard() {
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
-                    User journey tracking requires analytics integration. This will capture real user behavior data once implemented.
+                    Shows user progression through key stages. Drop-off rates calculated from actual registration and booking data.
                     <Tooltip.Arrow className="fill-gray-900" />
                   </Tooltip.Content>
                 </Tooltip.Portal>
@@ -480,22 +536,43 @@ export default function AdminDashboard() {
           </div>
         </CardHeader>
         <CardContent>
-          <Alert className="border-amber-200 bg-amber-50 mb-4">
-            <AlertCircle className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-amber-800">
-              <strong>Coming Soon:</strong> User journey analytics requires frontend tracking implementation. 
-              This will capture real user behavior, drop-off rates, and time spent at each stage.
-            </AlertDescription>
-          </Alert>
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">Data to be tracked:</p>
-            <ul className="text-xs text-gray-500 space-y-1">
-              <li>• Discovery: Traffic sources, landing page behavior</li>
-              <li>• Registration: Form completion rates, time to register</li>
-              <li>• First Booking: Search patterns, slot selection time</li>
-              <li>• Consultation: Session duration, completion rates</li>
-            </ul>
-          </div>
+          {metrics?.userJourneyAnalytics && metrics.userJourneyAnalytics.length > 0 ? (
+            <div className="space-y-4">
+              {metrics.userJourneyAnalytics.map((journey) => (
+                <div key={journey.stage} className="border rounded-lg p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h4 className="font-medium">{journey.stage}</h4>
+                      <p className="text-sm text-gray-500">Avg time: {journey.avgTime}</p>
+                    </div>
+                    <Badge variant={journey.dropoff > 40 ? "destructive" : "secondary"}>
+                      {journey.dropoff}% drop-off
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {journey.touchpoints.map((tp) => (
+                      <Badge key={tp} variant="outline" className="text-xs">
+                        {tp}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <Alert className="border-blue-200 bg-blue-50 mt-4">
+                <Info className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-800 text-xs">
+                  <strong>Note:</strong> Discovery stage requires frontend analytics. Other stages use real database metrics.
+                </AlertDescription>
+              </Alert>
+            </div>
+          ) : (
+            <Alert className="border-amber-200 bg-amber-50">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800">
+                Loading user journey data...
+              </AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
     </div>
@@ -1328,9 +1405,9 @@ export default function AdminDashboard() {
             <Alert className="mb-6 border-blue-200 bg-blue-50">
               <Info className="h-4 w-4 text-blue-600" />
               <AlertDescription className="text-blue-800">
-                <strong>Data Sources:</strong> Most metrics are fetched directly from the PostgreSQL database. 
-                <br />✓ <strong>Real data:</strong> Appointments, revenue, active users, retention rate
-                <br />⚠️ <strong>Coming soon:</strong> Cohort analysis, user journey analytics, conversion funnel (requires analytics integration)
+                <strong>Data Sources:</strong> All metrics are now fetched directly from the PostgreSQL database. 
+                <br />✓ <strong>Real data:</strong> Appointments, revenue, active users, retention rate, cohort analysis, user journey, conversion funnel
+                <br />⚠️ <strong>Note:</strong> Discovery stage and homepage visits require frontend analytics for accurate tracking
               </AlertDescription>
             </Alert>
 
