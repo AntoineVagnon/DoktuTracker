@@ -105,6 +105,9 @@ export interface IStorage {
   getDocuments(appointmentId?: number): Promise<DocumentUpload[]>;
   createDocument(document: InsertDocumentUpload): Promise<DocumentUpload>;
   deleteDocument(id: string): Promise<void>;
+  
+  // Analytics operations
+  createAnalyticsEvent(event: any): Promise<void>;
 
   // Banner dismissal operations
   createBannerDismissal(dismissal: any): Promise<any>;
@@ -2312,6 +2315,26 @@ export class PostgresStorage implements IStorage {
     // For now, return empty array
     // This would normally query a banner_dismissals table
     return [];
+  }
+
+  async createAnalyticsEvent(event: any): Promise<void> {
+    try {
+      // For now, we'll just log analytics events to console
+      // In production, these would be stored in a dedicated analytics table
+      console.log('📊 Analytics Event:', {
+        sessionId: event.sessionId,
+        userId: event.userId,
+        eventType: event.eventType,
+        eventData: event.eventData,
+        timestamp: event.timestamp
+      });
+      
+      // In the future, we would implement actual database storage:
+      // await db.insert(analyticsEvents).values(event);
+    } catch (error) {
+      console.error("Error creating analytics event:", error);
+      throw error;
+    }
   }
 
   // Admin user management methods

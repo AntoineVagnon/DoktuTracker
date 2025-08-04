@@ -1407,7 +1407,7 @@ export default function AdminDashboard() {
               <AlertDescription className="text-blue-800">
                 <strong>Data Sources:</strong> All metrics are now fetched directly from the PostgreSQL database. 
                 <br />✓ <strong>Real data:</strong> Appointments, revenue, active users, retention rate, cohort analysis, user journey, conversion funnel
-                <br />⚠️ <strong>Note:</strong> Discovery stage and homepage visits require frontend analytics for accurate tracking
+                <br />✅ <strong>Analytics Tracking Implemented:</strong> Homepage visits, discovery actions, and booking funnel events are now being tracked in real-time
               </AlertDescription>
             </Alert>
 

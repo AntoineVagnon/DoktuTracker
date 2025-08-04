@@ -10,9 +10,10 @@ import { formatUserFullName, getUserInitials } from "@/lib/nameUtils";
 import { useAvailabilitySync } from "@/hooks/useAvailabilitySync";
 import { useAuth } from "@/hooks/useAuth";
 import { format, addDays, startOfWeek, isSameDay } from "date-fns";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import Header from "@/components/Header";
+import { analytics } from "@/lib/analytics";
 
 interface Doctor {
   id: string;
@@ -48,6 +49,17 @@ export default function DoctorProfile() {
   
   console.log('DoctorProfile - Raw params:', params);
   console.log('DoctorProfile - Doctor ID:', doctorId);
+  
+  // Track doctor profile view
+  useEffect(() => {
+    if (doctorId) {
+      analytics.trackPageView(`doctor_profile/${doctorId}`);
+      analytics.trackDiscovery('doctor_profile_viewed', { 
+        doctorId,
+        source: 'direct'
+      });
+    }
+  }, [doctorId]);
   
   // Initialize availability sync for real-time updates
   useAvailabilitySync();

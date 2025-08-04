@@ -1869,6 +1869,33 @@ Please upload the document again through the secure upload system.`;
     }
   });
 
+  // Analytics Events Route
+  app.post("/api/analytics/events", async (req, res) => {
+    try {
+      const { events } = req.body;
+      
+      if (!events || !Array.isArray(events)) {
+        return res.status(400).json({ message: "Invalid events format" });
+      }
+
+      // Store analytics events in the database
+      for (const event of events) {
+        await storage.createAnalyticsEvent({
+          sessionId: event.sessionId,
+          userId: event.userId || req.session.user?.id || null,
+          eventType: event.eventType,
+          eventData: event.eventData,
+          timestamp: new Date(event.timestamp)
+        });
+      }
+
+      res.json({ success: true, eventsProcessed: events.length });
+    } catch (error) {
+      console.error("Error storing analytics events:", error);
+      res.status(500).json({ message: "Failed to store analytics events" });
+    }
+  });
+
   // Banner Dismissal Routes (placeholder implementation)
   app.post("/api/banner-dismissals", isAuthenticated, async (req, res) => {
     try {

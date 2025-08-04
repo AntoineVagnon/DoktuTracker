@@ -10,6 +10,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DoctorCard from "@/components/DoctorCard";
 import AuthModal from "@/components/AuthModal";
+import { analytics } from "@/lib/analytics";
 
 export default function Landing() {
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
@@ -23,6 +24,13 @@ export default function Landing() {
   });
 
   useEffect(() => {
+    // Track homepage visit
+    analytics.trackPageView('homepage');
+    analytics.trackDiscovery('homepage_loaded', {
+      source: new URLSearchParams(window.location.search).get('utm_source') || 'direct',
+      doctorsShown: doctors.length
+    });
+
     console.log('Landing page loaded, checking for password reset tokens');
     console.log('Current URL hash:', window.location.hash);
     
@@ -217,12 +225,14 @@ export default function Landing() {
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-xl transition-all duration-200 text-lg px-8 py-4"
-                  asChild
+                  onClick={() => {
+                    analytics.trackDiscovery('cta_clicked', { location: 'hero', action: 'book_appointment' });
+                    analytics.trackBookingFunnel('interest_shown', undefined, { source: 'hero_cta' });
+                    document.getElementById('doctors')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
-                  <a href="#doctors">
-                    <Calendar className="mr-3 h-5 w-5" />
-                    Book Appointment
-                  </a>
+                  <Calendar className="mr-3 h-5 w-5" />
+                  Book Appointment
                 </Button>
                 <Button
                   variant="outline"

@@ -8,6 +8,7 @@ import { formatUserFullName, getUserInitials } from "@/lib/nameUtils";
 import { useNextAvailableSlot } from "@/hooks/useNextAvailableSlot";
 import { format } from "date-fns";
 import { convertSlotTimeToLocal } from "@/lib/dateUtils";
+import { analytics } from "@/lib/analytics";
 
 interface Doctor {
   id: string;
@@ -52,6 +53,15 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
   const gradientClass = gradientColors[parseInt(String(doctor.id).slice(-1), 16) % gradientColors.length];
 
   const handleBookClick = () => {
+    analytics.trackDiscovery('doctor_card_clicked', { 
+      doctorId: doctor.id,
+      specialty: doctor.specialty,
+      hasAvailability
+    });
+    analytics.trackBookingFunnel('doctor_selected', parseInt(doctor.id), {
+      source: 'doctor_card',
+      specialty: doctor.specialty
+    });
     if (onBookClick) {
       onBookClick(doctor.id);
     }
