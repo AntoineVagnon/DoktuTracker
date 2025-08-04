@@ -311,25 +311,20 @@ export default function AdminDashboard() {
           <CardTitle>Conversion Funnel</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[
-              { stage: 'Homepage Visits', value: 10000, conversion: 100 },
-              { stage: 'Registration Started', value: 3500, conversion: 35 },
-              { stage: 'Account Created', value: 2100, conversion: 60 },
-              { stage: 'First Booking', value: 1470, conversion: 70 },
-              { stage: 'Completed Appointment', value: 1323, conversion: 90 },
+              { stage: 'Homepage Visits', percentage: 100 },
+              { stage: 'Registration Started', percentage: 35 },
+              { stage: 'Account Created', percentage: 21 },
+              { stage: 'First Booking', percentage: 14.7 },
+              { stage: 'Completed Appointment', percentage: 13.2 },
             ].map((stage, index) => (
-              <div key={stage.stage} className="relative">
+              <div key={stage.stage}>
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-sm font-medium">{stage.stage}</span>
-                  <span className="text-sm text-gray-500">{stage.value.toLocaleString()}</span>
+                  <span className="text-sm text-gray-500">{stage.percentage}%</span>
                 </div>
-                <Progress value={stage.conversion} className="h-2" />
-                {index > 0 && (
-                  <span className="absolute right-0 -top-1 text-xs text-gray-400">
-                    {stage.conversion}% conversion
-                  </span>
-                )}
+                <Progress value={stage.percentage} className="h-2" />
               </div>
             ))}
           </div>
