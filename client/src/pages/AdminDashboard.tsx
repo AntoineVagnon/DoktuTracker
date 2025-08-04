@@ -19,7 +19,13 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays } from "date-fns";
-import * as Tooltip from "@radix-ui/react-tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { InfoIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -129,6 +135,8 @@ interface DashboardMetrics {
     percentage: number;
     count: number;
   }>;
+  userGrowthData?: Array<{month: string, users: number, revenue: number}>;
+  acquisitionChannels?: Array<{channel: string, users: number, conversion: number}>;
 }
 
 // Navigation items for consistent menu
@@ -213,19 +221,16 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2">
               <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
               {tooltip && (
-                <Tooltip.Provider>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
                       <Info className="h-3 w-3 text-gray-400 cursor-help" />
-                    </Tooltip.Trigger>
-                    <Tooltip.Portal>
-                      <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
-                        {tooltip}
-                        <Tooltip.Arrow className="fill-gray-900" />
-                      </Tooltip.Content>
-                    </Tooltip.Portal>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">{tooltip}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               )}
             </div>
             <Icon className="h-5 w-5 text-gray-400" />
@@ -262,19 +267,16 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CardTitle className="text-lg">North Star: Appointments Booked</CardTitle>
-              <Tooltip.Provider>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
                     <Info className="h-4 w-4 text-white/70 cursor-help" />
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
-                      Total number of appointments booked and paid for in the selected time period. This is our primary success metric, fetched directly from the appointments table where status = 'paid'.
-                      <Tooltip.Arrow className="fill-gray-900" />
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              </Tooltip.Provider>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total number of appointments booked and paid for in the selected time period. This is our primary success metric, fetched directly from the appointments table where status = 'paid'.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <span className="text-sm opacity-90">
               {timeRange === '7d' && 'Last 7 days'}
@@ -368,19 +370,20 @@ export default function AdminDashboard() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Conversion Funnel</CardTitle>
-            <Tooltip.Provider>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <Info className="h-4 w-4 text-gray-400 cursor-help" />
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
-                    Shows conversion rates through the user journey. Based on registrations and bookings from database.
-                    <Tooltip.Arrow className="fill-gray-900" />
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+                </TooltipTrigger>
+                
+                  <TooltipContent>
+                      <p>Shows conversion rates through the user journey. Based on registrations and bookings from database.
+                    
+                  </p>
+                    </TooltipContent>
+                
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </CardHeader>
         <CardContent>
@@ -455,19 +458,20 @@ export default function AdminDashboard() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Cohort Retention Analysis</CardTitle>
-            <Tooltip.Provider>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <Info className="h-4 w-4 text-gray-400 cursor-help" />
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
-                    Tracks patient retention by signup month. Shows percentage of users still active after 1-4 weeks.
-                    <Tooltip.Arrow className="fill-gray-900" />
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+                </TooltipTrigger>
+                
+                  <TooltipContent>
+                      <p>Tracks patient retention by signup month. Shows percentage of users still active after 1-4 weeks.
+                    
+                  </p>
+                    </TooltipContent>
+                
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </CardHeader>
         <CardContent>
@@ -520,19 +524,20 @@ export default function AdminDashboard() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>User Journey Analytics</CardTitle>
-            <Tooltip.Provider>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <Info className="h-4 w-4 text-gray-400 cursor-help" />
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
-                    Shows user progression through key stages. Drop-off rates calculated from actual registration and booking data.
-                    <Tooltip.Arrow className="fill-gray-900" />
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+                </TooltipTrigger>
+                
+                  <TooltipContent>
+                      <p>Shows user progression through key stages. Drop-off rates calculated from actual registration and booking data.
+                    
+                  </p>
+                    </TooltipContent>
+                
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </CardHeader>
         <CardContent>
@@ -607,7 +612,7 @@ export default function AdminDashboard() {
         />
         <KPICard
           title="CAC:LTV Ratio"
-          value={metrics?.lifetimeValue / metrics?.customerAcquisitionCost || 0}
+          value={(metrics?.lifetimeValue || 0) / (metrics?.customerAcquisitionCost || 1)}
           format={(v) => `1:${v.toFixed(1)}`}
           icon={DollarSign}
           target={3}
@@ -618,20 +623,24 @@ export default function AdminDashboard() {
       {/* Growth Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>User Growth Trajectory</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            User Growth Trajectory
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Shows cumulative user growth and monthly revenue over time. Total users accumulate while revenue is shown per month.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart
-              data={[
-                { month: 'Jul', users: 1200, revenue: 48000 },
-                { month: 'Aug', users: 1500, revenue: 60000 },
-                { month: 'Sep', users: 1800, revenue: 72000 },
-                { month: 'Oct', users: 2300, revenue: 92000 },
-                { month: 'Nov', users: 2800, revenue: 112000 },
-                { month: 'Dec', users: 3500, revenue: 140000 },
-                { month: 'Jan', users: 4200, revenue: 168000 },
-              ]}
+              data={metrics?.userGrowthData || []}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
@@ -665,18 +674,24 @@ export default function AdminDashboard() {
       {/* Acquisition Channels */}
       <Card>
         <CardHeader>
-          <CardTitle>Acquisition Channel Performance</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            Acquisition Channel Performance
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[300px]">
+                  <p>Shows user acquisition by marketing channel and their conversion rates. Note: Channel data is estimated based on typical healthcare platform patterns as actual tracking isn't implemented yet.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
-              data={[
-                { channel: 'Organic', users: 2100, conversion: 18 },
-                { channel: 'Paid Search', users: 1500, conversion: 12 },
-                { channel: 'Social', users: 800, conversion: 8 },
-                { channel: 'Referral', users: 600, conversion: 25 },
-                { channel: 'Direct', users: 400, conversion: 22 },
-              ]}
+              data={metrics?.acquisitionChannels || []}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="channel" />
@@ -1281,21 +1296,22 @@ export default function AdminDashboard() {
                       </div>
                       
                       {meeting.alertDetails && (
-                        <Tooltip.Provider>
-                          <Tooltip.Root>
-                            <Tooltip.Trigger asChild>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
                               <div className="p-2 bg-yellow-100 rounded-lg cursor-pointer">
                                 <AlertCircle className="h-4 w-4 text-yellow-600" />
                               </div>
-                            </Tooltip.Trigger>
-                            <Tooltip.Portal>
-                              <Tooltip.Content className="bg-gray-900 text-white p-2 rounded text-sm max-w-xs">
-                                {meeting.alertDetails}
-                                <Tooltip.Arrow className="fill-gray-900" />
-                              </Tooltip.Content>
-                            </Tooltip.Portal>
-                          </Tooltip.Root>
-                        </Tooltip.Provider>
+                            </TooltipTrigger>
+                            
+                              <TooltipContent>
+                      <p>{meeting.alertDetails}
+                                
+                              </p>
+                    </TooltipContent>
+                            
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
                       
                       {meeting.status === 'live' && (
