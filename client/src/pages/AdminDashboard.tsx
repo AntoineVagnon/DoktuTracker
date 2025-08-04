@@ -404,44 +404,38 @@ export default function AdminDashboard() {
       {/* Cohort Analysis */}
       <Card>
         <CardHeader>
-          <CardTitle>Cohort Retention Analysis</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Cohort Retention Analysis</CardTitle>
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <Info className="h-4 w-4 text-gray-400 cursor-help" />
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
+                    This feature is coming soon. Cohort analysis will track user retention by signup month once implemented in the backend.
+                    <Tooltip.Arrow className="fill-gray-900" />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2">Cohort</th>
-                  <th className="text-center px-2">Week 1</th>
-                  <th className="text-center px-2">Week 2</th>
-                  <th className="text-center px-2">Week 3</th>
-                  <th className="text-center px-2">Week 4</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { cohort: 'Jan 2025', w1: 100, w2: 78, w3: 65, w4: 58 },
-                  { cohort: 'Dec 2024', w1: 100, w2: 82, w3: 70, w4: 63 },
-                  { cohort: 'Nov 2024', w1: 100, w2: 75, w3: 62, w4: 55 },
-                ].map((row) => (
-                  <tr key={row.cohort} className="border-b">
-                    <td className="py-2 font-medium">{row.cohort}</td>
-                    <td className="text-center px-2">
-                      <Badge variant="secondary">{row.w1}%</Badge>
-                    </td>
-                    <td className="text-center px-2">
-                      <Badge variant={row.w2 > 70 ? "default" : "destructive"}>{row.w2}%</Badge>
-                    </td>
-                    <td className="text-center px-2">
-                      <Badge variant={row.w3 > 60 ? "default" : "destructive"}>{row.w3}%</Badge>
-                    </td>
-                    <td className="text-center px-2">
-                      <Badge variant={row.w4 > 50 ? "default" : "destructive"}>{row.w4}%</Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <Alert className="border-amber-200 bg-amber-50">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              <strong>Coming Soon:</strong> Cohort retention analysis is not yet implemented in the backend. 
+              This will track how well we retain users grouped by their signup month.
+            </AlertDescription>
+          </Alert>
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-2">Expected data structure:</p>
+            <ul className="text-xs text-gray-500 space-y-1">
+              <li>• Cohorts grouped by registration month</li>
+              <li>• Weekly retention percentages for each cohort</li>
+              <li>• Comparison across multiple time periods</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
