@@ -346,25 +346,44 @@ export default function AdminDashboard() {
       {/* Conversion Funnel */}
       <Card>
         <CardHeader>
-          <CardTitle>Conversion Funnel</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Conversion Funnel</CardTitle>
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <Info className="h-4 w-4 text-gray-400 cursor-help" />
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
+                    Conversion funnel tracking requires analytics integration to track user behavior across the platform.
+                    <Tooltip.Arrow className="fill-gray-900" />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {[
-              { stage: 'Homepage Visits', percentage: 100 },
-              { stage: 'Registration Started', percentage: 35 },
-              { stage: 'Account Created', percentage: 21 },
-              { stage: 'First Booking', percentage: 14.7 },
-              { stage: 'Completed Appointment', percentage: 13.2 },
-            ].map((stage, index) => (
-              <div key={stage.stage}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium">{stage.stage}</span>
-                  <span className="text-sm text-gray-500">{stage.percentage}%</span>
-                </div>
-                <Progress value={stage.percentage} className="h-2" />
-              </div>
-            ))}
+          <Alert className="border-amber-200 bg-amber-50 mb-4">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              <strong>Coming Soon:</strong> Conversion funnel requires frontend analytics to track homepage visits and registration attempts. 
+              Currently, we can only track completed registrations and bookings from the database.
+            </AlertDescription>
+          </Alert>
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-2">Available database metrics:</p>
+            <ul className="text-xs text-gray-500 space-y-1">
+              <li>• Total registered users: Can be fetched from users table</li>
+              <li>• Users with bookings: Can be calculated from appointments</li>
+              <li>• Completed appointments: Available in appointments table</li>
+            </ul>
+            <p className="text-sm text-gray-600 mt-2">Requires analytics for:</p>
+            <ul className="text-xs text-gray-500 space-y-1">
+              <li>• Homepage visits tracking</li>
+              <li>• Registration form abandonment</li>
+              <li>• Booking flow drop-offs</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
@@ -443,55 +462,39 @@ export default function AdminDashboard() {
       {/* User Journey Map */}
       <Card>
         <CardHeader>
-          <CardTitle>User Journey Analytics</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>User Journey Analytics</CardTitle>
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <Info className="h-4 w-4 text-gray-400 cursor-help" />
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content className="bg-gray-900 text-white text-xs rounded px-2 py-1 max-w-xs z-50">
+                    User journey tracking requires analytics integration. This will capture real user behavior data once implemented.
+                    <Tooltip.Arrow className="fill-gray-900" />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {[
-              { 
-                stage: 'Discovery', 
-                touchpoints: ['Google Search', 'Social Media', 'Referral'],
-                dropoff: 65,
-                avgTime: '2 min'
-              },
-              { 
-                stage: 'Registration', 
-                touchpoints: ['Email Signup', 'Profile Creation'],
-                dropoff: 40,
-                avgTime: '5 min'
-              },
-              { 
-                stage: 'First Booking', 
-                touchpoints: ['Doctor Search', 'Slot Selection', 'Payment'],
-                dropoff: 30,
-                avgTime: '12 min'
-              },
-              { 
-                stage: 'Consultation', 
-                touchpoints: ['Video Call', 'Follow-up'],
-                dropoff: 10,
-                avgTime: '25 min'
-              },
-            ].map((journey) => (
-              <div key={journey.stage} className="border rounded-lg p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h4 className="font-medium">{journey.stage}</h4>
-                    <p className="text-sm text-gray-500">Avg time: {journey.avgTime}</p>
-                  </div>
-                  <Badge variant={journey.dropoff > 40 ? "destructive" : "secondary"}>
-                    {journey.dropoff}% drop-off
-                  </Badge>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {journey.touchpoints.map((tp) => (
-                    <Badge key={tp} variant="outline" className="text-xs">
-                      {tp}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <Alert className="border-amber-200 bg-amber-50 mb-4">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              <strong>Coming Soon:</strong> User journey analytics requires frontend tracking implementation. 
+              This will capture real user behavior, drop-off rates, and time spent at each stage.
+            </AlertDescription>
+          </Alert>
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-2">Data to be tracked:</p>
+            <ul className="text-xs text-gray-500 space-y-1">
+              <li>• Discovery: Traffic sources, landing page behavior</li>
+              <li>• Registration: Form completion rates, time to register</li>
+              <li>• First Booking: Search patterns, slot selection time</li>
+              <li>• Consultation: Session duration, completion rates</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
@@ -1325,8 +1328,9 @@ export default function AdminDashboard() {
             <Alert className="mb-6 border-blue-200 bg-blue-50">
               <Info className="h-4 w-4 text-blue-600" />
               <AlertDescription className="text-blue-800">
-                <strong>Real-time Data:</strong> All metrics displayed on this dashboard are fetched directly from the PostgreSQL database. 
-                Values are calculated from actual appointments, users, and transaction records. Hover over any metric's info icon for details on how it's calculated.
+                <strong>Data Sources:</strong> Most metrics are fetched directly from the PostgreSQL database. 
+                <br />✓ <strong>Real data:</strong> Appointments, revenue, active users, retention rate
+                <br />⚠️ <strong>Coming soon:</strong> Cohort analysis, user journey analytics, conversion funnel (requires analytics integration)
               </AlertDescription>
             </Alert>
 
