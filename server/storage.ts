@@ -1422,10 +1422,16 @@ export class PostgresStorage implements IStorage {
       ));
 
     // Calculate all metrics from real data
-    const timeToValue = timeToValueQuery.rows[0]?.avg_days || 0;
-    const timeToValuePrev = timeToValuePrevQuery.rows[0]?.avg_days || 0;
-    const activationCurrent = activationCurrentQuery.rows[0] || { total: 0, activated: 0 };
-    const activationPrevious = activationPreviousQuery.rows[0] || { total: 0, activated: 0 };
+    console.log('timeToValueQuery result:', timeToValueQuery);
+    const timeToValueRows = Array.isArray(timeToValueQuery) ? timeToValueQuery : (timeToValueQuery as any).rows || [];
+    const timeToValuePrevRows = Array.isArray(timeToValuePrevQuery) ? timeToValuePrevQuery : (timeToValuePrevQuery as any).rows || [];
+    const activationCurrentRows = Array.isArray(activationCurrentQuery) ? activationCurrentQuery : (activationCurrentQuery as any).rows || [];
+    const activationPreviousRows = Array.isArray(activationPreviousQuery) ? activationPreviousQuery : (activationPreviousQuery as any).rows || [];
+    
+    const timeToValue = timeToValueRows[0]?.avg_days || 0;
+    const timeToValuePrev = timeToValuePrevRows[0]?.avg_days || 0;
+    const activationCurrent = activationCurrentRows[0] || { total: 0, activated: 0 };
+    const activationPrevious = activationPreviousRows[0] || { total: 0, activated: 0 };
     const activationRate = activationCurrent.total > 0 ? (activationCurrent.activated / activationCurrent.total) * 100 : 0;
     const activationRatePrev = activationPrevious.total > 0 ? (activationPrevious.activated / activationPrevious.total) * 100 : 0;
     const retentionRate = totalPatientsCurrent.count > 0 ? (retentionCurrent.returning / totalPatientsCurrent.count) * 100 : 0;
@@ -1634,19 +1640,22 @@ export class PostgresStorage implements IStorage {
       const totalSlotsResult = await db.execute(
         sql`SELECT COUNT(*) as count FROM doctor_time_slots WHERE doctor_id = ${doctor.id} AND date >= ${thirtyDaysAgoDate}::date`
       );
-      const totalSlots = totalSlotsResult.rows[0]?.count || 0;
+      const totalSlotsRows = Array.isArray(totalSlotsResult) ? totalSlotsResult : (totalSlotsResult as any).rows || [];
+      const totalSlots = totalSlotsRows[0]?.count || 0;
 
       // Booked slots - using raw SQL
       const bookedSlotsResult = await db.execute(
         sql`SELECT COUNT(*) as count FROM appointments WHERE doctor_id = ${doctor.id} AND appointment_date >= ${thirtyDaysAgoStr}::timestamp AND status IN ('paid', 'completed')`
       );
-      const bookedSlots = bookedSlotsResult.rows[0]?.count || 0;
+      const bookedSlotsRows = Array.isArray(bookedSlotsResult) ? bookedSlotsResult : (bookedSlotsResult as any).rows || [];
+      const bookedSlots = bookedSlotsRows[0]?.count || 0;
 
       // Cancelled appointments - using raw SQL
       const cancelledApptsResult = await db.execute(
         sql`SELECT COUNT(*) as count FROM appointments WHERE doctor_id = ${doctor.id} AND appointment_date >= ${thirtyDaysAgoStr}::timestamp AND status = 'cancelled'`
       );
-      const cancelledAppts = cancelledApptsResult.rows[0]?.count || 0;
+      const cancelledApptsRows = Array.isArray(cancelledApptsResult) ? cancelledApptsResult : (cancelledApptsResult as any).rows || [];
+      const cancelledAppts = cancelledApptsRows[0]?.count || 0;
 
       const availability = totalSlots > 0 
         ? Math.round((bookedSlots / totalSlots) * 100)
