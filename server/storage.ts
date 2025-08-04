@@ -1409,7 +1409,7 @@ export class PostgresStorage implements IStorage {
       .from(auditEvents)
       .where(and(
         eq(auditEvents.eventType, 'page_view'),
-        sql`event_data->>'page' = 'homepage'`,
+        sql`${auditEvents.eventData}->>'page' = 'homepage'`,
         gte(auditEvents.timestamp, startDate),
         lte(auditEvents.timestamp, endDate)
       ));
@@ -1430,7 +1430,7 @@ export class PostgresStorage implements IStorage {
       .from(auditEvents)
       .where(and(
         eq(auditEvents.eventType, 'page_view'),
-        sql`event_data->>'page' = 'homepage'`,
+        sql`${auditEvents.eventData}->>'page' = 'homepage'`,
         gte(auditEvents.timestamp, prevStartDate),
         lte(auditEvents.timestamp, prevEndDate)
       ));
