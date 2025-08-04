@@ -145,8 +145,6 @@ export default function AdminDashboard() {
       const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
       const startDate = subDays(endDate, days);
       
-      console.log('Fetching metrics for timeRange:', timeRange, 'Days:', days, 'Start:', startDate.toISOString(), 'End:', endDate.toISOString());
-      
       const response = await apiRequest('GET', `/api/admin/metrics?start=${startDate.toISOString()}&end=${endDate.toISOString()}`);
       return await response.json() as DashboardMetrics;
     },

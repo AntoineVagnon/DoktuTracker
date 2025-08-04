@@ -1114,8 +1114,6 @@ export class PostgresStorage implements IStorage {
     const prevStartDate = new Date(startDate.getTime() - periodLength);
     const prevEndDate = new Date(endDate.getTime() - periodLength);
     // Current period metrics
-    console.log('getAdminMetrics - Period:', startDate.toISOString(), 'to', endDate.toISOString());
-    
     const [currentMetrics] = await db
       .select({
         appointmentsBooked: count(),
@@ -1128,8 +1126,6 @@ export class PostgresStorage implements IStorage {
         sql`${appointments.appointmentDate} <= ${endDate.toISOString()}::timestamp`,
         sql`status IN ('paid', 'completed')`
       ));
-    
-    console.log('Current metrics result:', currentMetrics);
 
     // Previous period metrics
     const [prevMetrics] = await db

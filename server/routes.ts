@@ -758,7 +758,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const startDate = start ? new Date(start as string) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
       const endDate = end ? new Date(end as string) : new Date();
 
-      console.log('Admin metrics request - Start:', startDate.toISOString(), 'End:', endDate.toISOString());
+
 
       // Calculate previous period for comparison
       const periodLength = endDate.getTime() - startDate.getTime();
