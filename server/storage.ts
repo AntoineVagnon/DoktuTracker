@@ -1451,8 +1451,8 @@ export class PostgresStorage implements IStorage {
       .from(users)
       .where(and(
         eq(users.role, 'patient'),
-        sql`created_at >= ${startDate.toISOString()}::timestamp`,
-        sql`created_at <= ${endDate.toISOString()}::timestamp`
+        gte(users.createdAt, startDate),
+        lte(users.createdAt, endDate)
       ));
 
     const [previousPeriodPatients] = await db
@@ -1460,8 +1460,8 @@ export class PostgresStorage implements IStorage {
       .from(users)
       .where(and(
         eq(users.role, 'patient'),
-        sql`created_at >= ${prevStartDate.toISOString()}::timestamp`,
-        sql`created_at <= ${prevEndDate.toISOString()}::timestamp`
+        gte(users.createdAt, prevStartDate),
+        lte(users.createdAt, prevEndDate)
       ));
 
     // Calculate all metrics from real data
