@@ -1,0 +1,157 @@
+Specification for Adding "Live and Planned Meetings" Section to Teleconsultation Dashboard
+
+Overview
+
+This specification outlines the requirements for adding a new section titled "Live and Planned Meetings" to the existing teleconsultation platform dashboard. The section is designed for customer support to monitor all live (ongoing) and planned (upcoming) meetings in real-time and check their status. The dashboard is built using HTML, Tailwind CSS, and Chart.js, and this new section must integrate seamlessly with the existing design and functionality. The platform operates without a ticketing system, so the focus is on meeting data and status tracking. The specification ensures alignment with the Product-Led Growth (PLG) approach, emphasizing the North Star metric: number of rendez-vous réservés.
+
+The section will provide a clear, interactive interface for customer support to quickly assess meeting statuses, identify issues (e.g., delays or technical problems), and take action to ensure a smooth user experience, thereby supporting the platform’s growth objectives.
+
+Functional Requirements
+
+1. Purpose
+
+
+
+
+
+Objective: Enable customer support to view and monitor all live and planned meetings, with detailed status information to ensure operational efficiency and user satisfaction.
+
+
+
+Users: Primarily customer support, with potential read-only access for operational managers.
+
+
+
+Key Functionality:
+
+
+
+
+
+Display a real-time list of all live and planned meetings.
+
+
+
+Show detailed meeting information, including patient name, doctor name, meeting time, status, and any alerts (e.g., technical issues or delays).
+
+
+
+Allow filtering and sorting of meetings by status, time, or doctor.
+
+
+
+Provide a summary of meeting counts (live, planned, completed, cancelled) to give an immediate overview.
+
+
+
+Support real-time updates to reflect changes in meeting status.
+
+2. Key Metrics
+
+
+
+
+
+Total Live Meetings: Number of consultations currently in progress.
+
+
+
+Total Planned Meetings: Number of consultations scheduled for today and tomorrow.
+
+
+
+Meeting Status Breakdown: Counts of meetings by status (e.g., Live, Planned, Completed, Cancelled, Issue).
+
+
+
+Alerts: Number of meetings with reported issues (e.g., technical problems, no-show).
+
+3. Data Requirements
+
+
+
+
+
+Data Fields:
+
+
+
+
+
+Meeting ID: Unique identifier for each meeting.
+
+
+
+Patient Name: Anonymized or pseudonymized name (e.g., "Jean D.") to comply with privacy regulations.
+
+
+
+Doctor Name: Full name of the assigned doctor (e.g., "Dr. Marie Dubois").
+
+
+
+Meeting Time: Scheduled start time (e.g., "2025-08-04 14:30").
+
+
+
+Status: One of: Live, Planned, Completed, Cancelled, Issue (e.g., technical failure or no-show).
+
+
+
+Duration: Actual or estimated duration for live/planned meetings (e.g., "30 min").
+
+
+
+Alert Details: Brief description of any issues (e.g., "Video connection failed").
+
+
+
+Data Source:
+
+
+
+
+
+Real-time data from the platform’s database (e.g., via API or WebSocket connection).
+
+
+
+Historical data for completed or cancelled meetings (if needed for context).
+
+
+
+Update Frequency: Real-time updates for live meetings and status changes, with a refresh rate of at least every 10 seconds.
+
+4. User Interface Requirements
+
+
+
+
+
+Layout: A card-based panel consistent with the existing dashboard design, using Tailwind CSS for styling.
+
+
+
+Components:
+
+
+
+
+
+Summary Cards: Display counts of Live, Planned, Completed, and Cancelled meetings, with an additional card for meetings with issues.
+
+
+
+Interactive Table: A sortable and filterable table listing all live and planned meetings with columns for Meeting ID, Patient Name, Doctor Name, Meeting Time, Status, and Alerts.
+
+
+
+Filter Controls: Buttons or dropdowns to filter by status (e.g., Live, Planned) and sort by time or doctor.
+
+
+
+Alert Indicators: Visual cues (e.g., red badges) for meetings with issues, clickable to show alert details.
+
+
+
+Real-Time Indicator: A visual cue (e.g., green dot) to confirm the data is updating in real-time

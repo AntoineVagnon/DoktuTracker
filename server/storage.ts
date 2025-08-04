@@ -164,6 +164,24 @@ export interface IStorage {
   getAdminUsers(): Promise<Array<User & { lastLogin?: string }>>;
   createAdminUser(userData: { email: string; firstName: string; lastName: string }): Promise<User>;
   removeAdminUser(userId: number): Promise<void>;
+  
+  // Meeting stats for dashboard
+  getMeetingStats(): Promise<{
+    totalLive: number;
+    totalPlanned: number;
+    totalCompleted: number;
+    totalCancelled: number;
+    totalWithIssues: number;
+    meetings: Array<{
+      id: string;
+      patientName: string;
+      doctorName: string;
+      scheduledTime: string;
+      status: 'live' | 'planned' | 'completed' | 'cancelled' | 'issue';
+      duration: number;
+      alertDetails?: string;
+    }>;
+  }>;
 }
 
 // PostgreSQL Storage Implementation
@@ -2089,6 +2107,120 @@ export class PostgresStorage implements IStorage {
         updatedAt: new Date()
       })
       .where(eq(users.id, userId));
+  }
+
+  async getMeetingStats(): Promise<{
+    totalLive: number;
+    totalPlanned: number;
+    totalCompleted: number;
+    totalCancelled: number;
+    totalWithIssues: number;
+    meetings: Array<{
+      id: string;
+      patientName: string;
+      doctorName: string;
+      scheduledTime: string;
+      status: 'live' | 'planned' | 'completed' | 'cancelled' | 'issue';
+      duration: number;
+      alertDetails?: string;
+    }>;
+  }> {
+    const now = new Date();
+    const fifteenMinutesAgo = new Date(now.getTime() - 15 * 60 * 1000);
+    const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+
+    // Get all appointments with their related data
+    const appointmentsData = await db
+      .select({
+        id: appointments.id,
+        patientId: appointments.patientId,
+        doctorId: appointments.doctorId,
+        appointmentDate: appointments.appointmentDate,
+        appointmentTime: appointments.appointmentTime,
+        status: appointments.status,
+        duration: appointments.duration,
+        patientFirstName: users.firstName,
+        patientLastName: users.lastName,
+        doctorFirstName: sql<string>`doctor_user.first_name`,
+        doctorLastName: sql<string>`doctor_user.last_name`,
+      })
+      .from(appointments)
+      .innerJoin(users, eq(appointments.patientId, users.id))
+      .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
+      .innerJoin(sql`users as doctor_user`, sql`doctor_user.id = ${doctors.userId}`)
+      .where(
+        or(
+          // Live meetings: appointments happening now (started within last 15 mins)
+          and(
+            eq(appointments.status, 'paid'),
+            gte(appointments.appointmentDate, fifteenMinutesAgo),
+            lte(appointments.appointmentDate, now)
+          ),
+          // Planned meetings: upcoming appointments within next hour
+          and(
+            eq(appointments.status, 'paid'),
+            gte(appointments.appointmentDate, now),
+            lte(appointments.appointmentDate, oneHourFromNow)
+          ),
+          // Recent completed/cancelled appointments (last 24 hours)
+          and(
+            inArray(appointments.status, ['completed', 'cancelled']),
+            gte(appointments.appointmentDate, new Date(now.getTime() - 24 * 60 * 60 * 1000))
+          )
+        )
+      )
+      .orderBy(asc(appointments.appointmentDate));
+
+    // Process appointments to determine status and counts
+    const meetings = appointmentsData.map(apt => {
+      const appointmentTime = new Date(apt.appointmentDate);
+      const minutesFromNow = (appointmentTime.getTime() - now.getTime()) / (1000 * 60);
+      
+      let status: 'live' | 'planned' | 'completed' | 'cancelled' | 'issue';
+      let alertDetails: string | undefined;
+
+      if (apt.status === 'cancelled') {
+        status = 'cancelled';
+      } else if (apt.status === 'completed') {
+        status = 'completed';
+      } else if (minutesFromNow <= -15) {
+        // Meeting should have started more than 15 mins ago but still marked as paid
+        status = 'issue';
+        alertDetails = 'Meeting overdue - no connection established';
+      } else if (minutesFromNow <= 0) {
+        // Meeting is happening now
+        status = 'live';
+      } else {
+        // Meeting is upcoming
+        status = 'planned';
+      }
+
+      return {
+        id: apt.id.toString(),
+        patientName: `${apt.patientFirstName || ''} ${apt.patientLastName || ''}`.trim() || 'Unknown Patient',
+        doctorName: `${apt.doctorFirstName || ''} ${apt.doctorLastName || ''}`.trim() || 'Unknown Doctor',
+        scheduledTime: appointmentTime.toISOString(),
+        status,
+        duration: apt.duration || 30,
+        alertDetails
+      };
+    });
+
+    // Calculate totals
+    const totalLive = meetings.filter(m => m.status === 'live').length;
+    const totalPlanned = meetings.filter(m => m.status === 'planned').length;
+    const totalCompleted = meetings.filter(m => m.status === 'completed').length;
+    const totalCancelled = meetings.filter(m => m.status === 'cancelled').length;
+    const totalWithIssues = meetings.filter(m => m.status === 'issue').length;
+
+    return {
+      totalLive,
+      totalPlanned,
+      totalCompleted,
+      totalCancelled,
+      totalWithIssues,
+      meetings
+    };
   }
 }
 

@@ -773,6 +773,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin meetings endpoint
+  app.get("/api/admin/meetings", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get meetings data from storage
+      const meetingStats = await storage.getMeetingStats();
+      
+      res.json(meetingStats);
+    } catch (error) {
+      console.error("Error fetching meetings data:", error);
+      res.status(500).json({ message: "Failed to fetch meetings" });
+    }
+  });
+
   // Admin funnel data endpoint
   app.get("/api/admin/funnel", isAuthenticated, async (req, res) => {
     try {

@@ -14,10 +14,11 @@ import {
   Star, Activity, Brain, MessageSquare, Settings,
   ArrowUp, ArrowDown, Target, Zap, Heart, TrendingDown,
   BarChart3, PieChart, ArrowUpRight, ArrowDownRight,
-  FileText, User, DollarSign, Percent
+  FileText, User, DollarSign, Percent, Check
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays } from "date-fns";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -33,11 +34,31 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   Legend,
   Area,
   AreaChart
 } from "recharts";
+
+// Meeting Types
+interface Meeting {
+  id: string;
+  patientName: string;
+  doctorName: string;
+  scheduledTime: string;
+  status: 'live' | 'planned' | 'completed' | 'cancelled' | 'issue';
+  duration: number; // in minutes
+  alertDetails?: string;
+}
+
+interface MeetingStats {
+  totalLive: number;
+  totalPlanned: number;
+  totalCompleted: number;
+  totalCancelled: number;
+  totalWithIssues: number;
+  meetings: Meeting[];
+}
 
 // Extended Types for comprehensive metrics
 interface DashboardMetrics {
@@ -96,7 +117,8 @@ const navigationItems = [
   { id: 'growth', label: 'Growth', icon: TrendingUp },
   { id: 'feedback', label: 'Feedback', icon: MessageSquare },
   { id: 'operational', label: 'Operational', icon: Settings },
-  { id: 'predictive', label: 'Predictive Analytics', icon: Brain }
+  { id: 'predictive', label: 'Predictive Analytics', icon: Brain },
+  { id: 'meetings', label: 'Live & Planned Meetings', icon: Video }
 ];
 
 // Chart colors
@@ -479,7 +501,7 @@ export default function AdminDashboard() {
               <XAxis dataKey="month" />
               <YAxis yAxisId="left" />
               <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
+              <RechartsTooltip />
               <Legend />
               <Area
                 yAxisId="left"
@@ -524,7 +546,7 @@ export default function AdminDashboard() {
               <XAxis dataKey="channel" />
               <YAxis yAxisId="left" />
               <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
+              <RechartsTooltip />
               <Legend />
               <Bar yAxisId="left" dataKey="users" fill={CHART_COLORS.primary} name="New Users" />
               <Bar yAxisId="right" dataKey="conversion" fill={CHART_COLORS.secondary} name="Conversion %" />
@@ -637,7 +659,7 @@ export default function AdminDashboard() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="week" />
               <YAxis />
-              <Tooltip />
+              <RechartsTooltip />
               <Legend />
               <Line type="monotone" dataKey="nps" stroke={CHART_COLORS.primary} name="NPS Score" />
               <Line type="monotone" dataKey="csat" stroke={CHART_COLORS.success} name="CSAT %" />
@@ -842,7 +864,7 @@ export default function AdminDashboard() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip />
+              <RechartsTooltip />
               <Legend />
               <Area
                 type="monotone"
@@ -911,6 +933,232 @@ export default function AdminDashboard() {
       </Card>
     </div>
   );
+
+  // Meetings Section Component
+  const MeetingsSection = () => {
+    const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [sortBy, setSortBy] = useState<'time' | 'doctor'>('time');
+    
+    // Fetch meetings data
+    const { data: meetingStats, isLoading: meetingsLoading } = useQuery({
+      queryKey: ['/api/admin/meetings'],
+      queryFn: async () => {
+        const response = await apiRequest('GET', '/api/admin/meetings');
+        return await response.json() as MeetingStats;
+      },
+      refetchInterval: 10000, // Refresh every 10 seconds for real-time updates
+    });
+
+    const filteredMeetings = meetingStats?.meetings.filter(meeting => 
+      statusFilter === 'all' || meeting.status === statusFilter
+    ).sort((a, b) => {
+      if (sortBy === 'time') {
+        return new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime();
+      } else {
+        return a.doctorName.localeCompare(b.doctorName);
+      }
+    }) || [];
+
+    const getStatusColor = (status: Meeting['status']) => {
+      switch (status) {
+        case 'live': return 'bg-green-100 text-green-800 border-green-200';
+        case 'planned': return 'bg-blue-100 text-blue-800 border-blue-200';
+        case 'completed': return 'bg-gray-100 text-gray-800 border-gray-200';
+        case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
+        case 'issue': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      }
+    };
+
+    const getStatusIcon = (status: Meeting['status']) => {
+      switch (status) {
+        case 'live': return <Video className="h-4 w-4" />;
+        case 'planned': return <Clock className="h-4 w-4" />;
+        case 'completed': return <Check className="h-4 w-4" />;
+        case 'cancelled': return <X className="h-4 w-4" />;
+        case 'issue': return <AlertTriangle className="h-4 w-4" />;
+        default: return null;
+      }
+    };
+
+    if (meetingsLoading) {
+      return (
+        <div className="flex items-center justify-center h-96">
+          <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {/* Summary Cards */}
+        <div className="grid grid-cols-5 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Live</p>
+                  <p className="text-2xl font-bold text-green-600">{meetingStats?.totalLive || 0}</p>
+                </div>
+                <div className="p-3 bg-green-100 rounded-lg">
+                  <Video className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Planned</p>
+                  <p className="text-2xl font-bold text-blue-600">{meetingStats?.totalPlanned || 0}</p>
+                </div>
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <Clock className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Completed</p>
+                  <p className="text-2xl font-bold text-gray-600">{meetingStats?.totalCompleted || 0}</p>
+                </div>
+                <div className="p-3 bg-gray-100 rounded-lg">
+                  <Check className="h-6 w-6 text-gray-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Cancelled</p>
+                  <p className="text-2xl font-bold text-red-600">{meetingStats?.totalCancelled || 0}</p>
+                </div>
+                <div className="p-3 bg-red-100 rounded-lg">
+                  <X className="h-6 w-6 text-red-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Issues</p>
+                  <p className="text-2xl font-bold text-yellow-600">{meetingStats?.totalWithIssues || 0}</p>
+                </div>
+                <div className="p-3 bg-yellow-100 rounded-lg">
+                  <AlertTriangle className="h-6 w-6 text-yellow-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Meetings Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Video className="h-5 w-5" />
+                Live & Planned Meetings
+                <div className="ml-2 flex items-center gap-1">
+                  <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-xs text-gray-500">Real-time</span>
+                </div>
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="live">Live</SelectItem>
+                    <SelectItem value="planned">Planned</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="issue">Issues</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'time' | 'doctor')}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="time">Sort by Time</SelectItem>
+                    <SelectItem value="doctor">Sort by Doctor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {filteredMeetings.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No meetings found for the selected filter
+                </div>
+              ) : (
+                filteredMeetings.map((meeting) => (
+                  <div key={meeting.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <Badge className={cn("flex items-center gap-1", getStatusColor(meeting.status))}>
+                        {getStatusIcon(meeting.status)}
+                        {meeting.status.charAt(0).toUpperCase() + meeting.status.slice(1)}
+                      </Badge>
+                      <div>
+                        <p className="font-medium">{meeting.patientName}</p>
+                        <p className="text-sm text-gray-600">with {meeting.doctorName}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="font-medium">{format(new Date(meeting.scheduledTime), 'HH:mm')}</p>
+                        <p className="text-sm text-gray-600">{format(new Date(meeting.scheduledTime), 'MMM d, yyyy')}</p>
+                      </div>
+                      
+                      <div className="text-right">
+                        <p className="text-sm text-gray-600">{meeting.duration} min</p>
+                      </div>
+                      
+                      {meeting.alertDetails && (
+                        <Tooltip.Provider>
+                          <Tooltip.Root>
+                            <Tooltip.Trigger asChild>
+                              <div className="p-2 bg-yellow-100 rounded-lg cursor-pointer">
+                                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                              </div>
+                            </Tooltip.Trigger>
+                            <Tooltip.Portal>
+                              <Tooltip.Content className="bg-gray-900 text-white p-2 rounded text-sm max-w-xs">
+                                {meeting.alertDetails}
+                                <Tooltip.Arrow className="fill-gray-900" />
+                              </Tooltip.Content>
+                            </Tooltip.Portal>
+                          </Tooltip.Root>
+                        </Tooltip.Provider>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
 
   // Loading state
   if (isLoading) {
@@ -999,6 +1247,7 @@ export default function AdminDashboard() {
             {activeSection === 'feedback' && <FeedbackSection />}
             {activeSection === 'operational' && <OperationalSection />}
             {activeSection === 'predictive' && <PredictiveSection />}
+            {activeSection === 'meetings' && <MeetingsSection />}
           </div>
         </div>
       </div>
