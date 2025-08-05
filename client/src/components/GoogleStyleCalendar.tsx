@@ -1229,15 +1229,15 @@ export default function GoogleStyleCalendar({
       {/* Weekly Template Sheet - Only for doctors */}
       {!isPatientView && (
         <Sheet open={isTemplateOpen} onOpenChange={setIsTemplateOpen}>
-        <SheetContent side="right" className="w-full sm:w-[600px] lg:w-[700px]">
-          <SheetHeader>
+        <SheetContent side="right" className="w-full sm:w-[600px] lg:w-[700px] flex flex-col h-full">
+          <SheetHeader className="flex-shrink-0">
             <SheetTitle className="text-lg sm:text-xl">Add Weekly Availability</SheetTitle>
             <SheetDescription className="text-sm sm:text-base">
               Set up your weekly schedule. This will create recurring availability slots.
             </SheetDescription>
           </SheetHeader>
           
-          <div className="py-6 space-y-6">
+          <div className="flex-1 overflow-y-auto py-6 space-y-6">
             {weekDays.map((dayName) => (
               <div key={dayName} className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -1307,24 +1307,24 @@ export default function GoogleStyleCalendar({
                 onChange={(e) => setTemplateEndDate(e.target.value)}
               />
             </div>
-            
-            <div className="flex gap-2 pt-4">
-              <Button
-                onClick={applyWeeklyTemplate}
-                disabled={createTemplateSlotsMutation.isPending}
-                className="flex-1"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                Apply Template
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setIsTemplateOpen(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-            </div>
+          </div>
+          
+          <div className="flex gap-2 p-6 border-t bg-background mt-auto flex-shrink-0">
+            <Button
+              onClick={applyWeeklyTemplate}
+              disabled={createTemplateSlotsMutation.isPending}
+              className="flex-1"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Apply Template
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setIsTemplateOpen(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
           </div>
         </SheetContent>
       </Sheet>
