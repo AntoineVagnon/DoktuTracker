@@ -295,9 +295,18 @@ export default function Landing() {
               Connect with certified specialists across various medical fields. All our doctors are verified and highly rated by patients.
             </p>
             <div className="mt-6 flex justify-center">
-              <button className="text-[hsl(207,100%,52%)] font-semibold hover:text-[hsl(225,99%,52%)] transition-colors">
+              <Button 
+                variant="ghost"
+                className="text-[hsl(207,100%,52%)] font-semibold hover:text-[hsl(225,99%,52%)] transition-colors"
+                onClick={() => {
+                  const doctorsSection = document.getElementById('doctors');
+                  if (doctorsSection) {
+                    doctorsSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+              >
                 See All Doctors <ArrowRight className="ml-2 h-4 w-4 inline" />
-              </button>
+              </Button>
             </div>
           </div>
 
