@@ -64,6 +64,9 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
     });
     if (onBookClick) {
       onBookClick(doctor.id);
+    } else {
+      // Default behavior: redirect to doctor profile
+      window.location.href = `/doctor/${doctor.id}`;
     }
   };
 
@@ -133,9 +136,8 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
             <Button
               onClick={handleBookClick}
               className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-md transition-all duration-200"
-              disabled={availableSlots.length === 0}
             >
-              {availableSlots.length > 0 ? "Book Now" : "View Profile"}
+              Book Now
             </Button>
             
             <Button variant="ghost" size="sm" asChild className="w-full text-xs">
