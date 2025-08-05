@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Search, Star, Clock, MapPin } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import Header from '@/components/Header';
 
 // Helper function to translate French specialties to English
 const translateSpecialty = (specialty: string): string => {
@@ -109,24 +110,21 @@ export default function DoctorList() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+      <Header />
+      
+      {/* Page Title */}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto max-w-6xl px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to home
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Find Your Perfect Doctor</h1>
-                <p className="text-gray-600">Search by specialty, availability, or location</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">Log In</Button>
-              <Button size="sm">Sign Up Free</Button>
+          <div className="flex items-center space-x-4">
+            <Link href="/">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to home
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Find Your Perfect Doctor</h1>
+              <p className="text-gray-600">Search by specialty, availability, or location</p>
             </div>
           </div>
         </div>
