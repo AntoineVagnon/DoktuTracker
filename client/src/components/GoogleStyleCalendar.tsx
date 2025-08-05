@@ -715,12 +715,26 @@ export default function GoogleStyleCalendar({
       const targetDate = addDays(startOfWeek(currentDate, { weekStartsOn: 1 }), dayIndex);
       
       dayData.blocks.forEach(block => {
-        const startDateTime = new Date(`${format(targetDate, 'yyyy-MM-dd')}T${block.startTime}:00`);
-        const endDateTime = new Date(`${format(targetDate, 'yyyy-MM-dd')}T${block.endTime}:00`);
+        // Create date objects in local time and preserve the time when converting
+        const [startHour, startMinute] = block.startTime.split(':').map(Number);
+        const [endHour, endMinute] = block.endTime.split(':').map(Number);
+        
+        const startDateTime = new Date(targetDate);
+        startDateTime.setHours(startHour, startMinute, 0, 0);
+        
+        const endDateTime = new Date(targetDate);
+        endDateTime.setHours(endHour, endMinute, 0, 0);
+        
+        // Get timezone offset in minutes
+        const timezoneOffset = startDateTime.getTimezoneOffset();
+        
+        // Adjust for timezone to ensure the time stays as entered
+        const adjustedStartTime = new Date(startDateTime.getTime() - timezoneOffset * 60 * 1000);
+        const adjustedEndTime = new Date(endDateTime.getTime() - timezoneOffset * 60 * 1000);
         
         slots.push({
-          startTime: startDateTime.toISOString(),
-          endTime: endDateTime.toISOString(),
+          startTime: adjustedStartTime.toISOString(),
+          endTime: adjustedEndTime.toISOString(),
           isRecurring: !!templateEndDate,
           recurringEndDate: templateEndDate
         });
