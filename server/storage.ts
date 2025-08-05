@@ -772,10 +772,19 @@ export class PostgresStorage implements IStorage {
 
   async deleteTimeSlotsInRange(doctorId: string, date: string, startTime: string, endTime: string): Promise<void> {
     // Convert time strings to proper date times for comparison
-    const startDateTime = new Date(`${date}T${startTime}:00`);
-    const endDateTime = new Date(`${date}T${endTime}:00`);
+    // Handle both HH:MM and HH:MM:SS formats
+    const formattedStartTime = startTime.includes(':') && startTime.split(':').length === 2 
+      ? `${startTime}:00` 
+      : startTime;
+    const formattedEndTime = endTime.includes(':') && endTime.split(':').length === 2 
+      ? `${endTime}:00` 
+      : endTime;
+    
+    const startDateTime = new Date(`${date}T${formattedStartTime}`);
+    const endDateTime = new Date(`${date}T${formattedEndTime}`);
     
     console.log(`🗑️ Deleting time slots for doctor ${doctorId} on ${date} between ${startTime} and ${endTime}`);
+    console.log(`🗑️ Formatted times: start=${formattedStartTime}, end=${formattedEndTime}`);
     console.log(`🗑️ Start DateTime: ${startDateTime.toISOString()}, End DateTime: ${endDateTime.toISOString()}`);
     
     // Get all slots for the doctor on the specified date
@@ -795,9 +804,13 @@ export class PostgresStorage implements IStorage {
     // Filter slots that fall within the time range
     const slotIdsToDelete = slotsToDelete
       .filter(slot => {
-        const slotStartTime = new Date(`${date}T${slot.startTime}`);
+        // Handle both HH:MM and HH:MM:SS formats for slot times
+        const formattedSlotTime = slot.startTime.includes(':') && slot.startTime.split(':').length === 2 
+          ? `${slot.startTime}:00` 
+          : slot.startTime;
+        const slotStartTime = new Date(`${date}T${formattedSlotTime}`);
         const isInRange = slotStartTime >= startDateTime && slotStartTime < endDateTime;
-        console.log(`  - Checking ${slot.startTime}: ${isInRange ? '✅ IN RANGE' : '❌ OUT OF RANGE'}`);
+        console.log(`  - Checking ${slot.startTime} (${formattedSlotTime}): ${isInRange ? '✅ IN RANGE' : '❌ OUT OF RANGE'}`);
         return isInRange;
       })
       .map(slot => slot.id);
