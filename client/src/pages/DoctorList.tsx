@@ -123,17 +123,9 @@ export default function DoctorList() {
       {/* Page Title */}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto max-w-6xl px-4 py-4">
-          <div className="flex items-center space-x-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to home
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Find Your Perfect Doctor</h1>
-              <p className="text-gray-600">Search by specialty, availability, or location</p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Find Your Perfect Doctor</h1>
+            <p className="text-gray-600">Search by specialty, availability, or location</p>
           </div>
         </div>
       </div>
