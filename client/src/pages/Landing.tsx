@@ -298,14 +298,11 @@ export default function Landing() {
               <Button 
                 variant="ghost"
                 className="text-[hsl(207,100%,52%)] font-semibold hover:text-[hsl(225,99%,52%)] transition-colors"
-                onClick={() => {
-                  const doctorsSection = document.getElementById('doctors');
-                  if (doctorsSection) {
-                    doctorsSection.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
+                asChild
               >
-                See All Doctors <ArrowRight className="ml-2 h-4 w-4 inline" />
+                <a href="/doctors">
+                  See All Doctors <ArrowRight className="ml-2 h-4 w-4 inline" />
+                </a>
               </Button>
             </div>
           </div>
