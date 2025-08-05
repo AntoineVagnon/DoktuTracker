@@ -101,13 +101,7 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
             </span>
           </div>
 
-          {/* Online Status */}
-          {doctor.isOnline && (
-            <div className="flex items-center justify-center mb-4">
-              <div className="h-2 w-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-              <span className="text-xs text-green-700">Online now</span>
-            </div>
-          )}
+
 
           {/* Real-time Availability Badge */}
           <div className="flex items-center justify-center mb-3">
