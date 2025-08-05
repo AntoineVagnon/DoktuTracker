@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Search, Star, Clock, MapPin } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Header from '@/components/Header';
+import DoctorCard from '@/components/DoctorCard';
 import { useAuth } from '@/hooks/useAuth';
 import { queryClient } from '@/lib/queryClient';
 
@@ -50,8 +51,10 @@ type Doctor = {
   user: {
     id: string;
     email: string;
-    firstName?: string;
-    lastName?: string;
+    firstName: string | null;
+    lastName: string | null;
+    title: string | null;
+    role?: string;
   };
 };
 
@@ -83,25 +86,7 @@ export default function DoctorList() {
 
   const specialties = Array.from(new Set(doctors?.map(d => d.specialty) || []));
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(price);
-  };
 
-  const formatDoctorName = (doctor: Doctor) => {
-    if (doctor.user.firstName && doctor.user.lastName) {
-      return `Dr. ${doctor.user.firstName} ${doctor.user.lastName}`;
-    }
-    return `Dr. ${doctor.user.email?.split('@')[0] || 'Médecin'}`;
-  };
-
-  const getNextAvailableSlots = () => {
-    // Simulating next available slots - in real app this would come from API
-    const slots = ['Tomorrow 08:00', 'Tomorrow 09:30'];
-    return slots;
-  };
 
   if (error) {
     return (
@@ -198,60 +183,13 @@ export default function DoctorList() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDoctors.map((doctor) => (
-              <Card key={doctor.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  {/* Doctor Header */}
-                  <div className="flex items-start space-x-4 mb-4">
-                    <div className="h-16 w-16 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                      {formatDoctorName(doctor).charAt(3)}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        {formatDoctorName(doctor)}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-2">{translateSpecialty(doctor.specialty)}</p>
-                      <div className="flex items-center space-x-4 text-sm">
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                          <span className="font-medium">
-                            {typeof doctor.rating === 'number' && !isNaN(doctor.rating) 
-                              ? doctor.rating.toFixed(1)
-                              : 'No rating'
-                            }
-                          </span>
-                          <span className="text-gray-500 ml-1">
-                            ({typeof doctor.reviewCount === 'number' ? doctor.reviewCount : 0} reviews)
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bio */}
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-                    {doctor.bio || `${translateSpecialty(doctor.specialty)} specialist providing comprehensive medical care with expertise in clinical experience and patient-centered treatment approaches.`}
-                  </p>
-
-                  {/* Next Available Slots */}
-                  <div className="mb-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Next slots:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {getNextAvailableSlots().map((slot, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {slot}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Book Button */}
-                  <Link href={`/doctor/${doctor.id}`}>
-                    <Button className="w-full">
-                      Book Consultation
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <DoctorCard
+                key={doctor.id}
+                doctor={doctor}
+                onBookClick={(doctorId) => {
+                  window.location.href = `/doctor/${doctorId}`;
+                }}
+              />
             ))}
           </div>
         )}
