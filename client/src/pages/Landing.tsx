@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import DoctorCard from "@/components/DoctorCard";
 import AuthModal from "@/components/AuthModal";
 import { analytics } from "@/lib/analytics";
+import telemedicineImage from "@assets/generated_images/Telemedicine_consultation_scene_2b4068e3.png";
 
 export default function Landing() {
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
@@ -77,7 +78,7 @@ export default function Landing() {
         console.warn('Hero image failed to load, continuing without image');
         setHeroImageLoaded(true); // Allow the component to render normally
       };
-      img.src = "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600";
+      img.src = telemedicineImage;
     } catch (error) {
       console.warn('Error creating image element:', error);
       setHeroImageLoaded(true);
@@ -266,7 +267,7 @@ export default function Landing() {
             <div className="mt-12 lg:mt-0">
               {heroImageLoaded ? (
                 <img
-                  src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600"
+                  src={telemedicineImage}
                   alt="Professional medical consultation"
                   className="rounded-2xl shadow-2xl w-full h-auto"
                 />
