@@ -1511,7 +1511,11 @@ export default function GoogleStyleCalendar({
                     variant="destructive" 
                     className="w-full"
                     onClick={async () => {
-                      if (confirm('Are you sure you want to cancel this appointment? The patient will be notified and invited to reschedule.')) {
+                      const confirmMessage = 
+                        'Are you sure you want to cancel this appointment?\n\n' +
+                        'The patient will be notified and invited to reschedule.';
+                      
+                      if (confirm(confirmMessage)) {
                         try {
                           await apiRequest('POST', `/api/appointments/${appointmentModal.appointment?.id}/cancel`);
                           queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
