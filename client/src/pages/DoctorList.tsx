@@ -9,6 +9,34 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Search, Star, Clock, MapPin } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Helper function to translate French specialties to English
+const translateSpecialty = (specialty: string): string => {
+  const translations: { [key: string]: string } = {
+    'Médecine Générale': 'General Medicine',
+    'Pédiatrie': 'Pediatrics',
+    'Dermatologie': 'Dermatology',
+    'Cardiologie': 'Cardiology',
+    'Psychologie': 'Psychology',
+    'Psychiatrie': 'Psychiatry',
+    'Gynécologie': 'Gynecology',
+    'Orthopédie': 'Orthopedics',
+    'Ophtalmologie': 'Ophthalmology',
+    'ORL': 'ENT (Ear, Nose, Throat)',
+    'Neurologie': 'Neurology',
+    'Endocrinologie': 'Endocrinology',
+    'Gastro-entérologie': 'Gastroenterology',
+    'Pneumologie': 'Pulmonology',
+    'Rhumatologie': 'Rheumatology',
+    'Urologie': 'Urology',
+    'Néphrologie': 'Nephrology',
+    'Hématologie': 'Hematology',
+    'Oncologie': 'Oncology',
+    'Radiologie': 'Radiology'
+  };
+  
+  return translations[specialty] || specialty;
+};
+
 type Doctor = {
   id: string;
   specialty: string;
@@ -188,7 +216,7 @@ export default function DoctorList() {
                       <h3 className="font-semibold text-gray-900 mb-1">
                         {formatDoctorName(doctor)}
                       </h3>
-                      <p className="text-sm text-gray-600 mb-2">{doctor.specialty}</p>
+                      <p className="text-sm text-gray-600 mb-2">{translateSpecialty(doctor.specialty)}</p>
                       <div className="flex items-center space-x-4 text-sm">
                         <div className="flex items-center">
                           <Star className="h-4 w-4 text-yellow-400 mr-1" />
@@ -208,7 +236,7 @@ export default function DoctorList() {
 
                   {/* Bio */}
                   <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-                    {doctor.bio || `${doctor.specialty} specialist providing comprehensive medical care with expertise in clinical experience and patient-centered treatment approaches.`}
+                    {doctor.bio || `${translateSpecialty(doctor.specialty)} specialist providing comprehensive medical care with expertise in clinical experience and patient-centered treatment approaches.`}
                   </p>
 
                   {/* Next Available Slots */}
