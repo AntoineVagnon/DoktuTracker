@@ -419,16 +419,17 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
 
-      const { title, firstName, lastName, email, phone } = req.body;
+      const { title, firstName, lastName, phone } = req.body;
       
-      console.log('📱 Profile update request:', { userId, title, firstName, lastName, email, phone });
+      // NOTE: Email updates are disabled to prevent authentication issues
+      // Email changes should be done through Supabase Auth's email change flow
+      console.log('📱 Profile update request:', { userId, title, firstName, lastName, phone });
 
-      // Update user profile in storage
+      // Update user profile in storage (excluding email)
       const updatedUser = await storage.updateUser(userId, {
         title,
         firstName,
         lastName,
-        email,
         phone
       });
       

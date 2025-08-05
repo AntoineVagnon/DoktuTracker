@@ -42,7 +42,9 @@ export default function DoctorSettings() {
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: typeof profileData) => {
-      return await apiRequest('PATCH', '/api/auth/user', data);
+      // Remove email from the data to prevent authentication issues
+      const { email, ...dataWithoutEmail } = data;
+      return await apiRequest('PATCH', '/api/auth/user', dataWithoutEmail);
     },
     onSuccess: () => {
       toast({
@@ -140,8 +142,12 @@ export default function DoctorSettings() {
                       id="email" 
                       type="email"
                       value={profileData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      disabled
+                      className="bg-gray-100 cursor-not-allowed"
                     />
+                    <p className="text-sm text-gray-500 mt-1">
+                      Email cannot be changed from this page
+                    </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
