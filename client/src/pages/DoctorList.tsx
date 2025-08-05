@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Search, Star, Clock, MapPin } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Header from '@/components/Header';
+import { useAuth } from '@/hooks/useAuth';
+import { queryClient } from '@/lib/queryClient';
 
 // Helper function to translate French specialties to English
 const translateSpecialty = (specialty: string): string => {
@@ -57,6 +59,12 @@ export default function DoctorList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('anytime');
+  const { user, isAuthenticated } = useAuth();
+  
+  // Force refresh auth state on mount
+  React.useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+  }, []);
 
   const { data: doctors, isLoading, error } = useQuery<Doctor[]>({
     queryKey: ['/api/doctors'],
