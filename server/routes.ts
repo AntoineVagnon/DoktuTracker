@@ -1017,9 +1017,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       // Set the session on the client
-      await userSupabase.auth.setSession({
+      const { data: sessionData, error: sessionError } = await userSupabase.auth.setSession({
         access_token: session.access_token,
         refresh_token: session.refresh_token
+      });
+
+      if (sessionError) {
+        console.error("Session setup error:", sessionError);
+        return res.status(401).json({ error: "Failed to establish session" });
+      }
+
+      // Log current user info for debugging
+      const { data: currentUser } = await userSupabase.auth.getUser();
+      console.log("Current user for email change:", {
+        id: currentUser?.user?.id,
+        email: currentUser?.user?.email,
+        newEmail: email
       });
 
       // Update email using the authenticated client
@@ -1029,7 +1042,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (error) {
         console.error("Supabase email change error:", error);
-        return res.status(400).json({ error: error.message });
+        
+        // Provide more user-friendly error messages
+        let errorMessage = error.message;
+        if (error.message.includes('email_address_invalid')) {
+          errorMessage = "Please enter a valid email address";
+        } else if (error.message.includes('signup_disabled')) {
+          errorMessage = "Email changes are currently disabled";
+        } else if (error.message.includes('email_taken')) {
+          errorMessage = "This email address is already in use";
+        }
+        
+        return res.status(400).json({ error: errorMessage });
       }
 
       // Update user in database
