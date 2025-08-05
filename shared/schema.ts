@@ -34,6 +34,7 @@ export const users = pgTable("users", {
   title: varchar("title"), // Dr., M., Mme., etc.
   firstName: varchar("first_name"), // Structured first name
   lastName: varchar("last_name"), // Structured last name  
+  phone: varchar("phone"), // Phone number
   profileImageUrl: varchar("profile_image_url"), // Profile image URL
   role: varchar("role").notNull().default("patient"), // patient, doctor, admin
   approved: boolean("approved").default(false), // for doctor approval
