@@ -1009,21 +1009,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Not authenticated" });
       }
 
-      // Create a Supabase client with the user's session
+      // Create a Supabase client and set the user's session
       const { createClient } = await import('@supabase/supabase-js');
       const userSupabase = createClient(
         process.env.SUPABASE_URL!,
-        process.env.SUPABASE_KEY!,
-        {
-          global: {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`
-            }
-          }
-        }
+        process.env.SUPABASE_KEY!
       );
 
-      // Update email using the user's session
+      // Set the session on the client
+      await userSupabase.auth.setSession({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token
+      });
+
+      // Update email using the authenticated client
       const { data, error } = await userSupabase.auth.updateUser({
         email: email
       });
@@ -1071,21 +1070,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Current password is incorrect" });
       }
 
-      // Create a Supabase client with the user's session
+      // Create a Supabase client and set the user's session
       const { createClient } = await import('@supabase/supabase-js');
       const userSupabase = createClient(
         process.env.SUPABASE_URL!,
-        process.env.SUPABASE_KEY!,
-        {
-          global: {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`
-            }
-          }
-        }
+        process.env.SUPABASE_KEY!
       );
 
-      // Update password using the user's session
+      // Set the session on the client
+      await userSupabase.auth.setSession({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token
+      });
+
+      // Update password using the authenticated client
       const { data, error } = await userSupabase.auth.updateUser({
         password: newPassword
       });
