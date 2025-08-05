@@ -16,6 +16,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { HealthProfile } from "@shared/schema";
+import { calculateHealthProfileCompletion } from "@/lib/healthProfileUtils";
 
 const healthProfileSchema = z.object({
   dateOfBirth: z.string().optional(),
@@ -61,34 +62,9 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
   const { watch, setValue, reset } = form;
   const watchedValues = watch();
 
-  // Calculate completion score
+  // Calculate completion score using shared utility
   useEffect(() => {
-    const basicFields = [
-      watchedValues.dateOfBirth,
-      watchedValues.gender,
-      watchedValues.height,
-      watchedValues.weight,
-      watchedValues.bloodType,
-      watchedValues.emergencyContactName,
-      watchedValues.emergencyContactPhone,
-    ];
-    
-    const arrayFields = [
-      watchedValues.allergies,
-      watchedValues.medications,
-      watchedValues.medicalHistory,
-    ];
-    
-    // Count filled basic fields (strings)
-    const filledBasicFields = basicFields.filter(field => field && field.trim() !== '').length;
-    
-    // Count filled array fields (arrays with at least one item)
-    const filledArrayFields = arrayFields.filter(field => field && Array.isArray(field) && field.length > 0).length;
-    
-    const totalFields = basicFields.length + arrayFields.length;
-    const totalFilledFields = filledBasicFields + filledArrayFields;
-    
-    const score = Math.round((totalFilledFields / totalFields) * 100);
+    const score = calculateHealthProfileCompletion(watchedValues);
     setCompletionScore(score);
   }, [watchedValues]);
 
