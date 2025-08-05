@@ -2156,9 +2156,58 @@ Please upload the document again through the secure upload system.`;
     try {
       console.log('🔧 Test email mismatch fix requested');
       
-      // For this specific test case, recreate the user with matching credentials
+      // Check if service role key is available
+      if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        console.log('Service role key not available, using regular signup flow');
+        
+        // Try to create a new account with the correct email
+        const { data, error } = await supabase.auth.signUp({
+          email: 'kalyos.officiel@gmail.com',
+          password: 'Test123456!',
+          options: {
+            data: {
+              role: 'patient',
+              firstName: 'Test',
+              lastName: 'Patient'
+            }
+          }
+        });
+
+        if (error) {
+          console.error('Signup error:', error);
+          
+          // If user already exists, that's okay for test accounts
+          if (error.message.includes('already registered')) {
+            return res.json({
+              success: true,
+              message: 'Account already exists. Try logging in with the credentials below.',
+              credentials: {
+                email: 'kalyos.officiel@gmail.com',
+                password: 'Test123456!',
+                note: 'If password doesn\'t work, use the password reset flow'
+              }
+            });
+          }
+          
+          return res.status(500).json({ error: error.message });
+        }
+
+        console.log('✅ Created new test user via signup');
+        
+        return res.json({
+          success: true,
+          message: 'Test account created successfully!',
+          credentials: {
+            email: 'kalyos.officiel@gmail.com',
+            password: 'Test123456!',
+            note: data.session ? 'You can now login with these credentials' : 'Check your email to confirm the account'
+          }
+        });
+      }
+      
+      // Use service role key if available
       const supabaseAdmin = createClient(
-        process.env.VITE_SUPABASE_URL!,
+        process.env.SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!,
         {
           auth: {
