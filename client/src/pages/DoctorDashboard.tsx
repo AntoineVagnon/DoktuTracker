@@ -1,19 +1,15 @@
-import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Eye, Clock, Video, FileText } from "lucide-react";
+import { Calendar, Eye, Clock, Video } from "lucide-react";
 import { Link } from "wouter";
 import DoctorLayout from "@/components/DoctorLayout";
-import { DoctorDocumentViewer } from "@/components/DoctorDocumentViewer";
 import { formatUserFullName } from "@/lib/nameUtils";
 import { formatAppointmentDateTime, categorizeAppointmentsByTiming, getTimeUntilAppointment } from "@/lib/dateUtils";
 
 export default function DoctorDashboard() {
   const { user, isLoading } = useAuth();
-  const [documentViewerOpen, setDocumentViewerOpen] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
 
   const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<any[]>({
     queryKey: ["/api/appointments", "doctor"],
@@ -134,19 +130,7 @@ export default function DoctorDashboard() {
                       <span className="text-sm sm:text-base text-green-600 font-medium">
                         €{appointment.price}
                       </span>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="h-9 px-3"
-                        onClick={() => {
-                          setSelectedAppointment(appointment);
-                          setDocumentViewerOpen(true);
-                        }}
-                      >
-                        <FileText className="h-4 w-4 mr-1" />
-                        <span className="hidden sm:inline">Documents</span>
-                        <span className="sm:hidden">Docs</span>
-                      </Button>
+
                       <Button 
                         size="sm" 
                         variant="outline" 
@@ -181,22 +165,7 @@ export default function DoctorDashboard() {
           </CardContent>
         </Card>
       </div>
-      
-      {/* Doctor Document Viewer */}
-      {selectedAppointment && (
-        <DoctorDocumentViewer
-          appointmentId={selectedAppointment.id}
-          patientName={selectedAppointment.patient ? 
-            formatUserFullName(selectedAppointment.patient) : 
-            'Patient inconnu'
-          }
-          isOpen={documentViewerOpen}
-          onClose={() => {
-            setDocumentViewerOpen(false);
-            setSelectedAppointment(null);
-          }}
-        />
-      )}
+
     </DoctorLayout>
   );
 }
