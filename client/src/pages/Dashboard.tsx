@@ -717,7 +717,7 @@ export default function Dashboard() {
                             <div className="h-4 bg-gray-200 rounded w-1/3"></div>
                             <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                           </div>
-                        ) : !healthProfile || calculateHealthProfileCompletion(healthProfile) < 100 ? (
+                        ) : !healthProfile ? (
                           <div className="text-center py-8">
                             <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Complete Your Health Profile</h3>
@@ -760,6 +760,28 @@ export default function Dashboard() {
                                 {calculateHealthProfileCompletion(healthProfile)}% Complete
                               </Badge>
                             </div>
+
+                            {/* Completion encouragement banner for incomplete profiles */}
+                            {calculateHealthProfileCompletion(healthProfile) < 100 && (
+                              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-3">
+                                    <Heart className="h-5 w-5 text-blue-600" />
+                                    <div>
+                                      <h4 className="font-medium text-blue-900">Complete Your Health Profile</h4>
+                                      <p className="text-sm text-blue-700">Add the remaining information to unlock all features</p>
+                                    </div>
+                                  </div>
+                                  <Button 
+                                    onClick={() => setHealthProfileOpen(true)}
+                                    size="sm"
+                                    className="bg-blue-600 hover:bg-blue-700"
+                                  >
+                                    Complete Now
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
 
                             {/* Key Information */}
                             <div className="space-y-6">
