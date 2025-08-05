@@ -126,11 +126,7 @@ export default function DoctorDashboard() {
                         {formatAppointmentDateTime(appointment.appointmentDate)}
                       </div>
                     </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-2">
-                      <span className="text-sm sm:text-base text-green-600 font-medium">
-                        €{appointment.price}
-                      </span>
-
+                    <div className="flex items-center justify-end gap-2">
                       <Button 
                         size="sm" 
                         variant="outline" 
