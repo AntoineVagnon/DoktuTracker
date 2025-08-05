@@ -351,11 +351,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="sm:col-span-2">
-            <Label htmlFor="email" className="text-sm font-medium">Email</Label>
-            <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.email}</p>
-            <p className="text-xs text-gray-500 mt-1">Email changes require verification</p>
-          </div>
+
         </div>
       </div>
     );
