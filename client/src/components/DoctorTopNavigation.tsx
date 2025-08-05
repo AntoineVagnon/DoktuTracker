@@ -155,9 +155,11 @@ export default function DoctorTopNavigation() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/doctor-dashboard">
+                      <Home className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
                     <LogOut className="mr-2 h-4 w-4" />
