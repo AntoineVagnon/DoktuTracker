@@ -395,6 +395,34 @@ export async function setupSupabaseAuth(app: Express) {
     }
   });
 
+  // Update user profile endpoint
+  app.patch('/api/auth/user', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const { title, firstName, lastName } = req.body;
+
+      // Update user profile in storage
+      const updatedUser = await storage.updateUser(userId, {
+        title,
+        firstName,
+        lastName
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json(updatedUser);
+    } catch (error: any) {
+      console.error('Update user error:', error);
+      res.status(500).json({ message: 'Failed to update user profile' });
+    }
+  });
+
   // Password reset endpoint
   app.post('/api/auth/forgot-password', async (req, res) => {
     try {
