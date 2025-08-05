@@ -15,7 +15,8 @@ import {
   Star, Activity, Brain, MessageSquare, Settings,
   ArrowUp, ArrowDown, Target, Zap, Heart, TrendingDown,
   BarChart3, PieChart, ArrowUpRight, ArrowDownRight,
-  FileText, User, DollarSign, Percent, Check, ExternalLink, Info
+  FileText, User, DollarSign, Percent, Check, ExternalLink, Info,
+  Menu
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays } from "date-fns";
@@ -165,6 +166,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [activeSection, setActiveSection] = useState('overview');
   const [timeRange, setTimeRange] = useState('7d');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Fetch comprehensive dashboard metrics
   const { data: metrics, isLoading, error } = useQuery({
@@ -1685,9 +1687,25 @@ export default function AdminDashboard() {
   return (
     <>
       <AdminHeader />
-      <div className="flex h-[calc(100vh-64px)]">
+      <div className="flex h-[calc(100vh-64px)] relative">
+        {/* Mobile overlay */}
+        {isMobileSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" 
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+        )}
+
         {/* Sidebar Navigation */}
-        <div className="w-64 bg-gray-50 border-r p-4">
+        <div className={cn(
+          "bg-gray-50 border-r transition-transform duration-300 ease-in-out z-50",
+          // Desktop: always visible, fixed width
+          "lg:w-64 lg:translate-x-0 lg:relative",
+          // Mobile: overlay drawer
+          "fixed top-[64px] left-0 bottom-0 w-72 transform",
+          isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}>
+          <div className="p-4 h-full overflow-y-auto">
           <div className="mb-6">
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger>
@@ -1705,7 +1723,11 @@ export default function AdminDashboard() {
             {navigationItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveSection(item.id)}
+                onClick={() => {
+                  setActiveSection(item.id);
+                  // Close mobile sidebar when item is selected
+                  setIsMobileSidebarOpen(false);
+                }}
                 className={cn(
                   "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   activeSection === item.id
@@ -1714,22 +1736,42 @@ export default function AdminDashboard() {
                 )}
               >
                 <item.icon className="h-5 w-5" />
-                {item.label}
+                <span className="truncate">{item.label}</span>
               </button>
             ))}
           </nav>
+          </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="container mx-auto p-6 max-w-6xl">
+        <div className="flex-1 overflow-y-auto w-full lg:w-auto">
+          <div className="container mx-auto p-4 lg:p-6 max-w-6xl">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold">
-                {navigationItems.find(item => item.id === activeSection)?.label}
-              </h1>
-              <p className="text-gray-600">
-                Real-time metrics and insights for your telemedicine platform
-              </p>
+              {/* Mobile Header with Hamburger Menu */}
+              <div className="flex items-center justify-between mb-4 lg:hidden">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsMobileSidebarOpen(true)}
+                  className="p-2"
+                >
+                  <Menu className="h-6 w-6" />
+                </Button>
+                <h1 className="text-xl font-bold">
+                  {navigationItems.find(item => item.id === activeSection)?.label}
+                </h1>
+                <div className="w-10" /> {/* Spacer for center alignment */}
+              </div>
+              
+              {/* Desktop Header */}
+              <div className="hidden lg:block">
+                <h1 className="text-2xl font-bold">
+                  {navigationItems.find(item => item.id === activeSection)?.label}
+                </h1>
+                <p className="text-gray-600">
+                  Real-time metrics and insights for your telemedicine platform
+                </p>
+              </div>
             </div>
 
             {/* Data Source Notice */}
