@@ -212,24 +212,60 @@ export default function GoogleStyleCalendar({
       const endDateTime = new Date(data.endTime);
       
       const slots = [];
-      let currentTime = new Date(startDateTime);
       
-      // Prepare all slots data for batch creation (no API calls yet)
-      while (currentTime < endDateTime) {
-        const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
+      // If recurring, generate slots for each week until recurringEndDate
+      if (data.isRecurring && data.recurringEndDate) {
+        const recurringEnd = new Date(data.recurringEndDate);
+        let currentDate = new Date(startDateTime);
         
-        slots.push({
-          startTime: currentTime.toISOString(),
-          endTime: slotEnd.toISOString(),
-          isRecurring: data.isRecurring,
-          recurringEndDate: data.recurringEndDate
-        });
+        while (currentDate <= recurringEnd) {
+          let currentTime = new Date(currentDate);
+          const dayEndTime = new Date(currentDate);
+          dayEndTime.setHours(endDateTime.getHours(), endDateTime.getMinutes(), 0, 0);
+          
+          // Create 30-minute slots for this day
+          while (currentTime < dayEndTime) {
+            const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
+            
+            slots.push({
+              startTime: currentTime.toISOString(),
+              endTime: slotEnd.toISOString(),
+              isRecurring: data.isRecurring,
+              recurringEndDate: data.recurringEndDate
+            });
+            
+            currentTime = new Date(slotEnd);
+          }
+          
+          // Move to next week (same weekday)
+          currentDate.setDate(currentDate.getDate() + 7);
+        }
+      } else {
+        // Non-recurring: just create slots for the single day
+        let currentTime = new Date(startDateTime);
         
-        currentTime = new Date(slotEnd);
+        while (currentTime < endDateTime) {
+          const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
+          
+          slots.push({
+            startTime: currentTime.toISOString(),
+            endTime: slotEnd.toISOString(),
+            isRecurring: false,
+            recurringEndDate: null
+          });
+          
+          currentTime = new Date(slotEnd);
+        }
       }
       
       // Single batch API call instead of sequential calls - HUGE performance boost!
-      console.log(`🚀 Batch creating ${slots.length} slots with single API call`);
+      if (data.isRecurring && data.recurringEndDate) {
+        const weeks = Math.ceil((new Date(data.recurringEndDate).getTime() - startDateTime.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+        console.log(`🚀 Creating recurring availability: ${slots.length} slots across ${weeks} weeks`);
+      } else {
+        console.log(`🚀 Batch creating ${slots.length} slots with single API call`);
+      }
+      
       const response = await apiRequest('POST', '/api/time-slots/batch', { slots });
       const createdSlots = await response.json();
       
