@@ -152,8 +152,6 @@ export default function DoctorDashboard() {
                         variant="outline" 
                         className="h-9 px-3"
                         onClick={() => {
-                          console.log('Appointment data:', appointment);
-                          console.log('Patient ID:', appointment.patientId);
                           window.location.href = `/doctor-records?patientId=${appointment.patientId}`;
                         }}
                       >

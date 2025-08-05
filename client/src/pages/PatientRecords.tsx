@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +17,17 @@ export default function PatientRecords() {
   const [location, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+
+  // Check for patientId in URL parameters and auto-select the patient
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const patientIdFromUrl = urlParams.get('patientId');
+    
+    if (patientIdFromUrl) {
+      console.log('🎯 PatientRecords: Found patientId in URL:', patientIdFromUrl);
+      setSelectedPatientId(patientIdFromUrl);
+    }
+  }, [location]); // React to location changes
 
   // Handle document download
   const handleDownloadDocument = async (document: any) => {
