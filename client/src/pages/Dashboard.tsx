@@ -419,8 +419,8 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Health Profile Reminder - Separate Section */}
-        {user && healthProfile && (healthProfile.profileStatus === 'incomplete' || healthProfile.profileStatus === 'needs_review') && (
+        {/* Health Profile Completion Banner - Always visible until 100% complete */}
+        {user && healthProfile && !healthProfileLoading && calculateHealthProfileCompletion(healthProfile) < 100 && (
           <Card className="mb-4 border-blue-200 bg-blue-50/50">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -428,12 +428,10 @@ export default function Dashboard() {
                   <Heart className="h-5 w-5 text-blue-600" />
                   <div>
                     <p className="font-medium text-blue-900">
-                      {healthProfile.profileStatus === 'needs_review' 
-                        ? "Please review your health profile (last update > 6 months)"
-                        : "Complete your health profile before booking consultations"}
+                      Complete Your Health Profile ({calculateHealthProfileCompletion(healthProfile)}% complete)
                     </p>
                     <p className="text-sm text-blue-700 mt-1">
-                      Doctors need this information to provide better care
+                      Add the remaining information to unlock all features and enable appointment bookings
                     </p>
                   </div>
                 </div>
@@ -443,7 +441,7 @@ export default function Dashboard() {
                   onClick={() => setHealthProfileOpen(true)}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
-                  {healthProfile.profileStatus === 'needs_review' ? "Review Profile" : "Complete Profile"}
+                  Complete Now
                 </Button>
               </div>
             </CardContent>
@@ -761,27 +759,7 @@ export default function Dashboard() {
                               </Badge>
                             </div>
 
-                            {/* Completion encouragement banner for incomplete profiles */}
-                            {calculateHealthProfileCompletion(healthProfile) < 100 && (
-                              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center space-x-3">
-                                    <Heart className="h-5 w-5 text-blue-600" />
-                                    <div>
-                                      <h4 className="font-medium text-blue-900">Complete Your Health Profile</h4>
-                                      <p className="text-sm text-blue-700">Add the remaining information to unlock all features</p>
-                                    </div>
-                                  </div>
-                                  <Button 
-                                    onClick={() => setHealthProfileOpen(true)}
-                                    size="sm"
-                                    className="bg-blue-600 hover:bg-blue-700"
-                                  >
-                                    Complete Now
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
+
 
                             {/* Key Information */}
                             <div className="space-y-6">
