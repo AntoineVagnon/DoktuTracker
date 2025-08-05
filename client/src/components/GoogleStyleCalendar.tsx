@@ -334,17 +334,72 @@ export default function GoogleStyleCalendar({
 
   // Create multiple slots from template
   const createTemplateSlotsMutation = useMutation({
-    mutationFn: async (slots: Array<{ startTime: string; endTime: string; isRecurring: boolean; recurringEndDate?: string }>) => {
-      const promises = slots.map(slot => 
-        apiRequest('POST', '/api/time-slots', slot).then(res => res.json())
-      );
-      return Promise.all(promises);
+    mutationFn: async (timeBlocks: Array<{ startTime: string; endTime: string; isRecurring: boolean; recurringEndDate?: string }>) => {
+      // Break down each time block into 30-minute slots
+      const slots = [];
+      
+      for (const block of timeBlocks) {
+        const startDateTime = new Date(block.startTime);
+        const endDateTime = new Date(block.endTime);
+        
+        // If recurring, generate slots for each week until recurringEndDate
+        if (block.isRecurring && block.recurringEndDate) {
+          const recurringEnd = new Date(block.recurringEndDate);
+          let currentDate = new Date(startDateTime);
+          
+          while (currentDate <= recurringEnd) {
+            let currentTime = new Date(currentDate);
+            const dayEndTime = new Date(currentDate);
+            dayEndTime.setHours(endDateTime.getHours(), endDateTime.getMinutes(), 0, 0);
+            
+            // Create 30-minute slots for this day
+            while (currentTime < dayEndTime) {
+              const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
+              
+              slots.push({
+                startTime: currentTime.toISOString(),
+                endTime: slotEnd.toISOString(),
+                isRecurring: block.isRecurring,
+                recurringEndDate: block.recurringEndDate
+              });
+              
+              currentTime = new Date(slotEnd);
+            }
+            
+            // Move to next week (same weekday)
+            currentDate.setDate(currentDate.getDate() + 7);
+          }
+        } else {
+          // Non-recurring: just create slots for the single day
+          let currentTime = new Date(startDateTime);
+          
+          while (currentTime < endDateTime) {
+            const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
+            
+            slots.push({
+              startTime: currentTime.toISOString(),
+              endTime: slotEnd.toISOString(),
+              isRecurring: false,
+              recurringEndDate: null
+            });
+            
+            currentTime = new Date(slotEnd);
+          }
+        }
+      }
+      
+      console.log(`🚀 Batch creating ${slots.length} slots from ${timeBlocks.length} time blocks`);
+      const response = await apiRequest('POST', '/api/time-slots/batch', { slots });
+      return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (createdSlots) => {
       // Sync availability across all surfaces when template applied
       syncAvailability(user?.id);
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
-      toast({ title: "Weekly template applied successfully" });
+      toast({ 
+        title: "Success!",
+        description: `Created ${createdSlots.length} time slots from your weekly template` 
+      });
       setIsTemplateOpen(false);
     },
     onError: () => {
