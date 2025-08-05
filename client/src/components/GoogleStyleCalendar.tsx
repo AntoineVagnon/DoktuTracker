@@ -1507,45 +1507,32 @@ export default function GoogleStyleCalendar({
                 </Button>
                 
                 {appointmentModal.appointment.status !== 'cancelled' && (
-                  <>
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => {
-                        window.location.href = `/appointments/${appointmentModal.appointment?.id}/reschedule`;
-                      }}
-                    >
-                      <CalendarDays className="h-4 w-4 mr-2" />
-                      Reschedule Appointment
-                    </Button>
-                    
-                    <Button 
-                      variant="destructive" 
-                      className="w-full"
-                      onClick={async () => {
-                        if (confirm('Are you sure you want to cancel this appointment?')) {
-                          try {
-                            await apiRequest('POST', `/api/appointments/${appointmentModal.appointment?.id}/cancel`);
-                            queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
-                            toast({
-                              title: "Appointment cancelled",
-                              description: "The appointment has been cancelled successfully."
-                            });
-                            setAppointmentModal({ isOpen: false, appointment: null });
-                          } catch (error) {
-                            toast({
-                              title: "Error",
-                              description: "Failed to cancel appointment. Please try again.",
-                              variant: "destructive"
-                            });
-                          }
+                  <Button 
+                    variant="destructive" 
+                    className="w-full"
+                    onClick={async () => {
+                      if (confirm('Are you sure you want to cancel this appointment? The patient will be notified and invited to reschedule.')) {
+                        try {
+                          await apiRequest('POST', `/api/appointments/${appointmentModal.appointment?.id}/cancel`);
+                          queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+                          toast({
+                            title: "Appointment cancelled",
+                            description: "The patient will receive an invitation to reschedule."
+                          });
+                          setAppointmentModal({ isOpen: false, appointment: null });
+                        } catch (error) {
+                          toast({
+                            title: "Error",
+                            description: "Failed to cancel appointment. Please try again.",
+                            variant: "destructive"
+                          });
                         }
-                      }}
-                    >
-                      <XCircle className="h-4 w-4 mr-2" />
-                      Cancel Appointment
-                    </Button>
-                  </>
+                      }
+                    }}
+                  >
+                    <XCircle className="h-4 w-4 mr-2" />
+                    Cancel Appointment
+                  </Button>
                 )}
               </div>
             </div>
