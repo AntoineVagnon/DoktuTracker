@@ -1368,7 +1368,7 @@ export default function GoogleStyleCalendar({
                   variant="outline" 
                   className="w-full"
                   onClick={() => {
-                    window.location.href = `/patient-records/${appointmentModal.appointment?.patientId}`;
+                    window.location.href = `/doctor-records?patientId=${appointmentModal.appointment?.patientId}`;
                   }}
                 >
                   <UserCheck className="h-4 w-4 mr-2" />
