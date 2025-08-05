@@ -20,6 +20,7 @@ import AuthCallback from "@/pages/AuthCallback";
 import CreateAccount from "@/pages/CreateAccount";
 import PasswordReset from "@/pages/PasswordReset";
 import TestPasswordReset from "@/pages/TestPasswordReset";
+import EmailRecovery from "@/pages/EmailRecovery";
 import DoctorDashboard from "@/pages/DoctorDashboard";
 import DoctorCalendar from "@/pages/DoctorCalendar";
 import DoctorSettings from "@/pages/DoctorSettings";
@@ -52,6 +53,7 @@ function Router() {
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/password-reset" component={PasswordReset} />
       <Route path="/test-password-reset" component={TestPasswordReset} />
+      <Route path="/email-recovery" component={EmailRecovery} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/payment" component={Payment} />
       <Route path="/payment-success" component={PaymentSuccess} />

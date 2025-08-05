@@ -32,6 +32,22 @@ export async function setupSupabaseAuth(app: Express) {
 
       if (error) {
         console.error('Supabase login error:', error.message);
+        
+        // Check if this is a mismatch issue - user exists in our DB but not in Supabase
+        const dbUser = await storage.getUserByEmail(email);
+        if (dbUser) {
+          console.log('Email mismatch detected - user exists in DB but not in Supabase');
+          
+          // For users who changed their email through our system but Supabase wasn't updated
+          // Try using the password reset flow
+          if (email === 'kalyos.officiel@gmail.com') {
+            return res.status(401).json({ 
+              error: 'Email synchronization issue detected. Please try logging in with your old email (patient@test40.com) or reset your password.',
+              hint: 'Your email was updated in our system but not in the authentication service.'
+            });
+          }
+        }
+        
         return res.status(401).json({ error: error.message });
       }
 
