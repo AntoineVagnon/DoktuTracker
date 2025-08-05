@@ -776,6 +776,7 @@ export class PostgresStorage implements IStorage {
     const endDateTime = new Date(`${date}T${endTime}:00`);
     
     console.log(`🗑️ Deleting time slots for doctor ${doctorId} on ${date} between ${startTime} and ${endTime}`);
+    console.log(`🗑️ Start DateTime: ${startDateTime.toISOString()}, End DateTime: ${endDateTime.toISOString()}`);
     
     // Get all slots for the doctor on the specified date
     const slotsToDelete = await db
@@ -786,19 +787,29 @@ export class PostgresStorage implements IStorage {
         eq(doctorTimeSlots.date, date)
       ));
     
+    console.log(`🗑️ Found ${slotsToDelete.length} total slots for doctor ${doctorId} on ${date}`);
+    slotsToDelete.forEach(slot => {
+      console.log(`  - Slot: ${slot.startTime} to ${slot.endTime} (ID: ${slot.id})`);
+    });
+    
     // Filter slots that fall within the time range
     const slotIdsToDelete = slotsToDelete
       .filter(slot => {
         const slotStartTime = new Date(`${date}T${slot.startTime}`);
-        return slotStartTime >= startDateTime && slotStartTime < endDateTime;
+        const isInRange = slotStartTime >= startDateTime && slotStartTime < endDateTime;
+        console.log(`  - Checking ${slot.startTime}: ${isInRange ? '✅ IN RANGE' : '❌ OUT OF RANGE'}`);
+        return isInRange;
       })
       .map(slot => slot.id);
     
     if (slotIdsToDelete.length > 0) {
-      console.log(`🗑️ Deleting ${slotIdsToDelete.length} slots`);
+      console.log(`🗑️ Deleting ${slotIdsToDelete.length} slots that fall within the range`);
       await db
         .delete(doctorTimeSlots)
         .where(inArray(doctorTimeSlots.id, slotIdsToDelete));
+      console.log(`✅ Successfully deleted ${slotIdsToDelete.length} slots`);
+    } else {
+      console.log(`⚠️ No slots found in the specified range to delete`);
     }
   }
 

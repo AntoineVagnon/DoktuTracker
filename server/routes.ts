@@ -1461,8 +1461,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Date, start time, and end time are required" });
       }
 
+      // Get the doctor record for the user
+      const doctor = await storage.getDoctorByUserId(user.id);
+      if (!doctor) {
+        return res.status(404).json({ error: "Doctor profile not found" });
+      }
+
+      console.log(`🗑️ API: Deleting slots for doctor ${doctor.id} on ${date} from ${startTime} to ${endTime}`);
+      
       // Delete all slots in the specified range
-      await storage.deleteTimeSlotsInRange(user.id, date, startTime, endTime);
+      await storage.deleteTimeSlotsInRange(doctor.id.toString(), date, startTime, endTime);
       
       res.json({ message: "Time slots deleted successfully" });
     } catch (error) {
