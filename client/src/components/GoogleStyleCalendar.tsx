@@ -1368,11 +1368,11 @@ export default function GoogleStyleCalendar({
                   variant="outline" 
                   className="w-full"
                   onClick={() => {
-                    window.location.href = `/appointments/${appointmentModal.appointment?.id}`;
+                    window.location.href = `/patient-records/${appointmentModal.appointment?.patientId}`;
                   }}
                 >
                   <UserCheck className="h-4 w-4 mr-2" />
-                  View Full Details
+                  See patient record
                 </Button>
                 
                 {appointmentModal.appointment.status !== 'cancelled' && (
