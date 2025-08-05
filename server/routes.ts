@@ -6,6 +6,7 @@ import {
   ObjectNotFoundError,
 } from "./objectStorage";
 import { ObjectPermission, ObjectAccessGroupType } from "./objectAcl";
+import { createClient } from "@supabase/supabase-js";
 
 // Extend express session type
 declare module 'express-session' {
