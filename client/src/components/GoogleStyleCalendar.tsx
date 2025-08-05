@@ -333,7 +333,7 @@ export default function GoogleStyleCalendar({
   });
 
   const deleteSlotRangeMutation = useMutation({
-    mutationFn: async (data: { date: string; startTime: string; endTime: string }) => {
+    mutationFn: async (data: { date: string; startTime: string; endTime: string; scope?: string }) => {
       const response = await apiRequest('DELETE', '/api/time-slots/range', data);
       return response.json();
     },
@@ -766,7 +766,8 @@ export default function GoogleStyleCalendar({
         deleteSlotRangeMutation.mutate({
           date: slotModal.date,
           startTime: slotModal.startTime,
-          endTime: slotModal.endTime
+          endTime: slotModal.endTime,
+          scope: slotModal.deleteScope // Pass scope for recurring deletion
         });
       } else {
         // Single slot deletion

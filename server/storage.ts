@@ -770,7 +770,7 @@ export class PostgresStorage implements IStorage {
     await db.delete(doctorTimeSlots).where(eq(doctorTimeSlots.id, id));
   }
 
-  async deleteTimeSlotsInRange(doctorId: string, date: string, startTime: string, endTime: string): Promise<void> {
+  async deleteTimeSlotsInRange(doctorId: string, date: string, startTime: string, endTime: string, scope?: string): Promise<void> {
     // Convert time strings to proper date times for comparison
     // Handle both HH:MM and HH:MM:SS formats
     const formattedStartTime = startTime.includes(':') && startTime.split(':').length === 2 
@@ -783,44 +783,82 @@ export class PostgresStorage implements IStorage {
     const startDateTime = new Date(`${date}T${formattedStartTime}`);
     const endDateTime = new Date(`${date}T${formattedEndTime}`);
     
-    console.log(`🗑️ Deleting time slots for doctor ${doctorId} on ${date} between ${startTime} and ${endTime}`);
+    console.log(`🗑️ Deleting time slots for doctor ${doctorId} on ${date} between ${startTime} and ${endTime} (scope: ${scope || 'this'})`);
     console.log(`🗑️ Formatted times: start=${formattedStartTime}, end=${formattedEndTime}`);
-    console.log(`🗑️ Start DateTime: ${startDateTime.toISOString()}, End DateTime: ${endDateTime.toISOString()}`);
     
-    // Get all slots for the doctor on the specified date
-    const slotsToDelete = await db
-      .select()
-      .from(doctorTimeSlots)
-      .where(and(
-        eq(doctorTimeSlots.doctorId, parseInt(doctorId)),
-        eq(doctorTimeSlots.date, date)
-      ));
+    let datesToProcess: string[] = [date];
     
-    console.log(`🗑️ Found ${slotsToDelete.length} total slots for doctor ${doctorId} on ${date}`);
-    slotsToDelete.forEach(slot => {
-      console.log(`  - Slot: ${slot.startTime} to ${slot.endTime} (ID: ${slot.id})`);
-    });
+    // If scope is "forward", find all future dates with the same day of week
+    if (scope === 'forward') {
+      const startDate = new Date(date);
+      const dayOfWeek = startDate.getDay();
+      const maxFutureDate = new Date();
+      maxFutureDate.setMonth(maxFutureDate.getMonth() + 3); // Look up to 3 months ahead
+      
+      // Get all slots for this doctor to find which future dates have slots
+      const allFutureSlots = await db
+        .select()
+        .from(doctorTimeSlots)
+        .where(and(
+          eq(doctorTimeSlots.doctorId, parseInt(doctorId)),
+          gte(doctorTimeSlots.date, date)
+        ));
+      
+      // Find unique dates that match the same day of week
+      const uniqueDates = new Set<string>();
+      allFutureSlots.forEach(slot => {
+        const slotDate = new Date(slot.date);
+        if (slotDate.getDay() === dayOfWeek) {
+          uniqueDates.add(slot.date);
+        }
+      });
+      
+      datesToProcess = Array.from(uniqueDates).sort();
+      console.log(`🗑️ Found ${datesToProcess.length} dates to process for recurring deletion: ${datesToProcess.join(', ')}`);
+    }
     
-    // Filter slots that fall within the time range
-    const slotIdsToDelete = slotsToDelete
-      .filter(slot => {
-        // Handle both HH:MM and HH:MM:SS formats for slot times
-        const formattedSlotTime = slot.startTime.includes(':') && slot.startTime.split(':').length === 2 
-          ? `${slot.startTime}:00` 
-          : slot.startTime;
-        const slotStartTime = new Date(`${date}T${formattedSlotTime}`);
-        const isInRange = slotStartTime >= startDateTime && slotStartTime < endDateTime;
-        console.log(`  - Checking ${slot.startTime} (${formattedSlotTime}): ${isInRange ? '✅ IN RANGE' : '❌ OUT OF RANGE'}`);
-        return isInRange;
-      })
-      .map(slot => slot.id);
+    // Process each date
+    let totalDeleted = 0;
+    for (const dateToProcess of datesToProcess) {
+      // Get all slots for the doctor on the specified date
+      const slotsToDelete = await db
+        .select()
+        .from(doctorTimeSlots)
+        .where(and(
+          eq(doctorTimeSlots.doctorId, parseInt(doctorId)),
+          eq(doctorTimeSlots.date, dateToProcess)
+        ));
+      
+      console.log(`🗑️ Processing ${dateToProcess}: Found ${slotsToDelete.length} total slots`);
+      
+      // Filter slots that fall within the time range
+      const slotIdsToDelete = slotsToDelete
+        .filter(slot => {
+          // Handle both HH:MM and HH:MM:SS formats for slot times
+          const formattedSlotTime = slot.startTime.includes(':') && slot.startTime.split(':').length === 2 
+            ? `${slot.startTime}:00` 
+            : slot.startTime;
+          const slotStartTime = new Date(`${dateToProcess}T${formattedSlotTime}`);
+          const slotStartDateTime = new Date(`${date}T${formattedSlotTime}`); // Use original date for time comparison
+          const isInRange = slotStartDateTime >= startDateTime && slotStartDateTime < endDateTime;
+          if (isInRange) {
+            console.log(`  - ${dateToProcess} ${slot.startTime}: ✅ IN RANGE`);
+          }
+          return isInRange;
+        })
+        .map(slot => slot.id);
+      
+      if (slotIdsToDelete.length > 0) {
+        console.log(`🗑️ Deleting ${slotIdsToDelete.length} slots on ${dateToProcess}`);
+        await db
+          .delete(doctorTimeSlots)
+          .where(inArray(doctorTimeSlots.id, slotIdsToDelete));
+        totalDeleted += slotIdsToDelete.length;
+      }
+    }
     
-    if (slotIdsToDelete.length > 0) {
-      console.log(`🗑️ Deleting ${slotIdsToDelete.length} slots that fall within the range`);
-      await db
-        .delete(doctorTimeSlots)
-        .where(inArray(doctorTimeSlots.id, slotIdsToDelete));
-      console.log(`✅ Successfully deleted ${slotIdsToDelete.length} slots`);
+    if (totalDeleted > 0) {
+      console.log(`✅ Successfully deleted ${totalDeleted} total slots across ${datesToProcess.length} dates`);
     } else {
       console.log(`⚠️ No slots found in the specified range to delete`);
     }
