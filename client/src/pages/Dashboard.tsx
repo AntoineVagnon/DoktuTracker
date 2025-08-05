@@ -717,7 +717,7 @@ export default function Dashboard() {
                             <div className="h-4 bg-gray-200 rounded w-1/3"></div>
                             <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                           </div>
-                        ) : !healthProfile ? (
+                        ) : !healthProfile || calculateHealthProfileCompletion(healthProfile) < 100 ? (
                           <div className="text-center py-8">
                             <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Complete Your Health Profile</h3>
@@ -731,29 +731,29 @@ export default function Dashboard() {
                           <div className="space-y-6">
                             {/* Profile Status */}
                             <div className={`flex items-center justify-between p-4 rounded-lg border ${
-                              calculateHealthProfileCompletion(healthProfile) >= 80 
+                              calculateHealthProfileCompletion(healthProfile) === 100 
                                 ? 'bg-green-50 border-green-200' 
                                 : 'bg-yellow-50 border-yellow-200'
                             }`}>
                               <div className="flex items-center space-x-2">
                                 <Heart className={`h-5 w-5 ${
-                                  calculateHealthProfileCompletion(healthProfile) >= 80 
+                                  calculateHealthProfileCompletion(healthProfile) === 100 
                                     ? 'text-green-600' 
                                     : 'text-yellow-600'
                                 }`} />
                                 <span className={`font-medium ${
-                                  calculateHealthProfileCompletion(healthProfile) >= 80 
+                                  calculateHealthProfileCompletion(healthProfile) === 100 
                                     ? 'text-green-900' 
                                     : 'text-yellow-900'
                                 }`}>
-                                  {calculateHealthProfileCompletion(healthProfile) >= 80 
+                                  {calculateHealthProfileCompletion(healthProfile) === 100 
                                     ? 'Health Profile Complete' 
                                     : 'Health Profile In Progress'
                                   }
                                 </span>
                               </div>
                               <Badge variant="secondary" className={
-                                calculateHealthProfileCompletion(healthProfile) >= 80 
+                                calculateHealthProfileCompletion(healthProfile) === 100 
                                   ? 'bg-green-100 text-green-800' 
                                   : 'bg-yellow-100 text-yellow-800'
                               }>
