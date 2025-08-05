@@ -44,6 +44,12 @@ export default function Dashboard() {
   const [appointmentAction, setAppointmentAction] = useState<"reschedule" | "cancel" | null>(null);
   const [showPostCallSurvey, setShowPostCallSurvey] = useState(false);
   const [surveyAppointment, setSurveyAppointment] = useState<any>(null);
+  const [showEmailChange, setShowEmailChange] = useState(false);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     // Check if user just completed verification or booking
@@ -112,6 +118,52 @@ export default function Dashboard() {
 
   // All appointments (past, present, future) 
   const allAppointments = appointments || [];
+
+  // Change email mutation
+  const changeEmailMutation = useMutation({
+    mutationFn: async (email: string) => {
+      return apiRequest('PUT', '/api/auth/change-email', { email });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Email Change Requested",
+        description: "Please check your new email address for a confirmation link.",
+      });
+      setShowEmailChange(false);
+      setNewEmail('');
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to change email",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Change password mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
+      return apiRequest('PUT', '/api/auth/change-password', data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password Changed",
+        description: "Your password has been updated successfully.",
+      });
+      setShowPasswordChange(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to change password",
+        variant: "destructive",
+      });
+    }
+  });
 
   // Fetch document counts for appointments
   const { data: documentCounts = {} } = useQuery({
@@ -925,28 +977,148 @@ export default function Dashboard() {
                           <h3 className="text-lg font-medium">Security Settings</h3>
                           
                           <div className="space-y-4">
+                            {/* Email Section */}
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Primary Email
                               </label>
-                              <div className="flex items-center justify-between p-3 border rounded-lg">
-                                <span className="text-gray-900">{user?.email}</span>
-                                <Button variant="outline" size="sm">
-                                  Change Email
-                                </Button>
-                              </div>
+                              {!showEmailChange ? (
+                                <div className="flex items-center justify-between p-3 border rounded-lg">
+                                  <span className="text-gray-900">{user?.email}</span>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => setShowEmailChange(true)}
+                                  >
+                                    Change Email
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="space-y-3 p-3 border rounded-lg bg-gray-50">
+                                  <div>
+                                    <Label htmlFor="newEmail">New Email Address</Label>
+                                    <Input
+                                      id="newEmail"
+                                      type="email"
+                                      value={newEmail}
+                                      onChange={(e) => setNewEmail(e.target.value)}
+                                      placeholder="Enter new email address"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        if (newEmail && newEmail !== user?.email) {
+                                          changeEmailMutation.mutate(newEmail);
+                                        }
+                                      }}
+                                      disabled={changeEmailMutation.isPending || !newEmail || newEmail === user?.email}
+                                    >
+                                      {changeEmailMutation.isPending ? 'Updating...' : 'Update Email'}
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        setShowEmailChange(false);
+                                        setNewEmail('');
+                                      }}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
 
+                            {/* Password Section */}
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Password
                               </label>
-                              <div className="flex items-center justify-between p-3 border rounded-lg">
-                                <span className="text-gray-500">••••••••••••</span>
-                                <Button variant="outline" size="sm">
-                                  Change Password
-                                </Button>
-                              </div>
+                              {!showPasswordChange ? (
+                                <div className="flex items-center justify-between p-3 border rounded-lg">
+                                  <span className="text-gray-500">••••••••••••</span>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => setShowPasswordChange(true)}
+                                  >
+                                    Change Password
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="space-y-3 p-3 border rounded-lg bg-gray-50">
+                                  <div>
+                                    <Label htmlFor="currentPassword">Current Password</Label>
+                                    <Input
+                                      id="currentPassword"
+                                      type="password"
+                                      value={currentPassword}
+                                      onChange={(e) => setCurrentPassword(e.target.value)}
+                                      placeholder="Enter current password"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="newPassword">New Password</Label>
+                                    <Input
+                                      id="newPassword"
+                                      type="password"
+                                      value={newPassword}
+                                      onChange={(e) => setNewPassword(e.target.value)}
+                                      placeholder="Enter new password"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                                    <Input
+                                      id="confirmPassword"
+                                      type="password"
+                                      value={confirmPassword}
+                                      onChange={(e) => setConfirmPassword(e.target.value)}
+                                      placeholder="Confirm new password"
+                                    />
+                                  </div>
+                                  {newPassword && confirmPassword && newPassword !== confirmPassword && (
+                                    <p className="text-sm text-red-600">Passwords do not match</p>
+                                  )}
+                                  <div className="flex gap-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        if (currentPassword && newPassword && newPassword === confirmPassword) {
+                                          changePasswordMutation.mutate({
+                                            currentPassword,
+                                            newPassword
+                                          });
+                                        }
+                                      }}
+                                      disabled={
+                                        changePasswordMutation.isPending || 
+                                        !currentPassword || 
+                                        !newPassword || 
+                                        !confirmPassword ||
+                                        newPassword !== confirmPassword
+                                      }
+                                    >
+                                      {changePasswordMutation.isPending ? 'Updating...' : 'Update Password'}
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        setShowPasswordChange(false);
+                                        setCurrentPassword('');
+                                        setNewPassword('');
+                                        setConfirmPassword('');
+                                      }}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

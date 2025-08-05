@@ -995,6 +995,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Change email endpoint
+  app.put("/api/auth/change-email", isAuthenticated, async (req, res) => {
+    try {
+      const { email } = req.body;
+      const session = req.session.supabaseSession;
+
+      if (!email) {
+        return res.status(400).json({ error: "New email is required" });
+      }
+
+      if (!session || !session.access_token) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      // Update email in Supabase
+      const { data, error } = await supabase.auth.admin.updateUserById(
+        session.user.id,
+        { email: email }
+      );
+
+      if (error) {
+        console.error("Supabase email change error:", error);
+        return res.status(400).json({ error: error.message });
+      }
+
+      // Update user in database
+      await storage.updateUser(session.user.id, { email });
+
+      console.log("Email change requested for user:", session.user.id);
+      res.json({ 
+        success: true, 
+        message: "Email change confirmation sent to new address" 
+      });
+    } catch (error: any) {
+      console.error("Change email error:", error);
+      res.status(500).json({ error: "Failed to change email" });
+    }
+  });
+
+  // Change password endpoint
+  app.put("/api/auth/change-password", isAuthenticated, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const session = req.session.supabaseSession;
+
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: "Current and new passwords are required" });
+      }
+
+      if (!session || !session.access_token) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      // Verify current password by attempting to sign in
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: session.user.email,
+        password: currentPassword
+      });
+
+      if (verifyError) {
+        return res.status(400).json({ error: "Current password is incorrect" });
+      }
+
+      // Update password in Supabase
+      const { data, error } = await supabase.auth.admin.updateUserById(
+        session.user.id,
+        { password: newPassword }
+      );
+
+      if (error) {
+        console.error("Supabase password change error:", error);
+        return res.status(400).json({ error: error.message });
+      }
+
+      console.log("Password changed for user:", session.user.id);
+      res.json({ 
+        success: true, 
+        message: "Password updated successfully" 
+      });
+    } catch (error: any) {
+      console.error("Change password error:", error);
+      res.status(500).json({ error: "Failed to change password" });
+    }
+  });
+
   // Slot holding routes for booking flow - simplified version without database dependency
   app.post('/api/slots/hold', async (req, res) => {
     try {
