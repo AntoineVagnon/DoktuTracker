@@ -141,6 +141,17 @@ export default function PatientRecords() {
 
   // If a specific patient is selected, show patient detail view
   if (selectedPatientId) {
+    // If appointments are still loading, show loading state
+    if (isLoading) {
+      return (
+        <DoctorLayout>
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+          </div>
+        </DoctorLayout>
+      );
+    }
+
     const selectedPatient = uniquePatients.find((p: any) => p.id.toString() === selectedPatientId);
     const patientAppointments = (appointments as any[]).filter((apt: any) => apt.patient?.id.toString() === selectedPatientId);
 
