@@ -138,6 +138,11 @@ export default function GoogleStyleCalendar({
     isOpen: false,
     appointment: null
   });
+  
+  const [cancelConfirmDialog, setCancelConfirmDialog] = useState({
+    isOpen: false,
+    appointmentId: null as string | null
+  });
 
   const [weeklyTemplate, setWeeklyTemplate] = useState<WeeklyTemplateData>({
     Monday: { enabled: true, blocks: [{ startTime: '09:00', endTime: '17:00', id: '1' }] },
@@ -1510,28 +1515,11 @@ export default function GoogleStyleCalendar({
                   <Button 
                     variant="destructive" 
                     className="w-full"
-                    onClick={async () => {
-                      const confirmMessage = 
-                        'Are you sure you want to cancel this appointment?\n\n' +
-                        'The patient will be notified and invited to reschedule.';
-                      
-                      if (confirm(confirmMessage)) {
-                        try {
-                          await apiRequest('POST', `/api/appointments/${appointmentModal.appointment?.id}/cancel`);
-                          queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
-                          toast({
-                            title: "Appointment cancelled",
-                            description: "The patient will receive an invitation to reschedule."
-                          });
-                          setAppointmentModal({ isOpen: false, appointment: null });
-                        } catch (error) {
-                          toast({
-                            title: "Error",
-                            description: "Failed to cancel appointment. Please try again.",
-                            variant: "destructive"
-                          });
-                        }
-                      }
+                    onClick={() => {
+                      setCancelConfirmDialog({
+                        isOpen: true,
+                        appointmentId: appointmentModal.appointment?.id
+                      });
                     }}
                   >
                     <XCircle className="h-4 w-4 mr-2" />
@@ -1541,6 +1529,61 @@ export default function GoogleStyleCalendar({
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+      
+      {/* Cancel Confirmation Dialog */}
+      <Dialog open={cancelConfirmDialog.isOpen} onOpenChange={(open) => {
+        if (!open) {
+          setCancelConfirmDialog({ isOpen: false, appointmentId: null });
+        }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Cancel Appointment</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to cancel this appointment?
+            </p>
+            <p className="text-sm text-muted-foreground font-medium">
+              The patient will be notified and invited to reschedule.
+            </p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline"
+              onClick={() => setCancelConfirmDialog({ isOpen: false, appointmentId: null })}
+            >
+              Keep Appointment
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={async () => {
+                if (cancelConfirmDialog.appointmentId) {
+                  try {
+                    await apiRequest('POST', `/api/appointments/${cancelConfirmDialog.appointmentId}/cancel`);
+                    queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+                    toast({
+                      title: "Appointment cancelled",
+                      description: "The patient will receive an invitation to reschedule."
+                    });
+                    setAppointmentModal({ isOpen: false, appointment: null });
+                    setCancelConfirmDialog({ isOpen: false, appointmentId: null });
+                  } catch (error) {
+                    toast({
+                      title: "Error",
+                      description: "Failed to cancel appointment. Please try again.",
+                      variant: "destructive"
+                    });
+                  }
+                }
+              }}
+            >
+              <XCircle className="h-4 w-4 mr-2" />
+              Confirm Cancellation
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
