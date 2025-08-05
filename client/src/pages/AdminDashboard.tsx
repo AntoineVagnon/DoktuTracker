@@ -147,7 +147,8 @@ const navigationItems = [
   { id: 'feedback', label: 'Feedback', icon: MessageSquare },
   { id: 'operational', label: 'Operational', icon: Settings },
   { id: 'predictive', label: 'Predictive Analytics', icon: Brain },
-  { id: 'meetings', label: 'Live & Planned Meetings', icon: Video }
+  { id: 'meetings', label: 'Live & Planned Meetings', icon: Video },
+  { id: 'notifications', label: 'Notifications', icon: Mail }
 ];
 
 // Chart colors
@@ -1339,6 +1340,317 @@ export default function AdminDashboard() {
     );
   };
 
+  // NotificationsSection Component
+  const NotificationsSection = () => {
+    const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [selectedNotification, setSelectedNotification] = useState<any>(null);
+    
+    // Fetch notifications
+    const { data: notifications, isLoading: notificationsLoading, refetch } = useQuery({
+      queryKey: ['/api/admin/notifications', statusFilter],
+      queryFn: async () => {
+        const params = statusFilter !== 'all' ? `?status=${statusFilter}` : '';
+        const response = await apiRequest('GET', `/api/admin/notifications${params}`);
+        return await response.json();
+      },
+      refetchInterval: 30000, // Refresh every 30 seconds
+    });
+
+    const handleRetry = async (notificationId: string) => {
+      try {
+        await apiRequest('POST', '/api/admin/notifications/retry', { notificationId });
+        toast({
+          title: "Notification Retry",
+          description: "Notification has been queued for retry",
+        });
+        refetch();
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to retry notification",
+          variant: "destructive",
+        });
+      }
+    };
+
+    const getStatusBadge = (status: string) => {
+      switch (status) {
+        case 'sent':
+          return <Badge className="bg-green-100 text-green-800">Sent</Badge>;
+        case 'pending':
+          return <Badge className="bg-blue-100 text-blue-800">Pending</Badge>;
+        case 'failed':
+          return <Badge className="bg-red-100 text-red-800">Failed</Badge>;
+        default:
+          return <Badge>{status}</Badge>;
+      }
+    };
+
+    const getTriggerLabel = (triggerCode: string) => {
+      const triggers: Record<string, string> = {
+        'APPOINTMENT_CONFIRMED': 'Appointment Confirmed',
+        'APPOINTMENT_REMINDER_24H': '24h Reminder',
+        'APPOINTMENT_REMINDER_2H': '2h Reminder',
+        'APPOINTMENT_CANCELLED': 'Appointment Cancelled',
+        'APPOINTMENT_RESCHEDULED': 'Appointment Rescheduled',
+        'REVIEW_REQUEST': 'Review Request',
+        'DOCTOR_UNAVAILABLE': 'Doctor Unavailable',
+        'PAYMENT_CONFIRMATION': 'Payment Confirmation',
+        'PASSWORD_RESET': 'Password Reset',
+        'WELCOME': 'Welcome Email'
+      };
+      return triggers[triggerCode] || triggerCode;
+    };
+
+    if (notificationsLoading) {
+      return (
+        <div className="flex items-center justify-center h-96">
+          <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {/* Summary Stats */}
+        <div className="grid grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Total Sent</p>
+                  <p className="text-2xl font-bold">
+                    {notifications?.filter((n: any) => n.status === 'sent').length || 0}
+                  </p>
+                </div>
+                <Send className="h-8 w-8 text-green-500" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Pending</p>
+                  <p className="text-2xl font-bold">
+                    {notifications?.filter((n: any) => n.status === 'pending').length || 0}
+                  </p>
+                </div>
+                <Clock className="h-8 w-8 text-blue-500" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Failed</p>
+                  <p className="text-2xl font-bold">
+                    {notifications?.filter((n: any) => n.status === 'failed').length || 0}
+                  </p>
+                </div>
+                <AlertCircle className="h-8 w-8 text-red-500" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Success Rate</p>
+                  <p className="text-2xl font-bold">
+                    {notifications?.length > 0 
+                      ? Math.round((notifications.filter((n: any) => n.status === 'sent').length / notifications.length) * 100)
+                      : 0}%
+                  </p>
+                </div>
+                <Target className="h-8 w-8 text-indigo-500" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters and Actions */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Email Notifications</CardTitle>
+              <div className="flex items-center gap-2">
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="sent">Sent</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button 
+                  onClick={() => refetch()} 
+                  variant="outline" 
+                  size="sm"
+                  className="gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Refresh
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {notifications?.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">No notifications found</p>
+              ) : (
+                <div className="space-y-2">
+                  {notifications?.map((notification: any) => (
+                    <div
+                      key={notification.id}
+                      className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer"
+                      onClick={() => setSelectedNotification(notification)}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {getTriggerLabel(notification.triggerCode)}
+                            </span>
+                            {getStatusBadge(notification.status)}
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            To: {notification.user?.email || 'Unknown'}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Scheduled: {format(new Date(notification.scheduledFor), 'PPp')}
+                          </p>
+                          {notification.sentAt && (
+                            <p className="text-sm text-gray-500">
+                              Sent: {format(new Date(notification.sentAt), 'PPp')}
+                            </p>
+                          )}
+                          {notification.errorMessage && (
+                            <p className="text-sm text-red-600">
+                              Error: {notification.errorMessage}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {notification.retryCount > 0 && (
+                            <Badge variant="outline">
+                              Retries: {notification.retryCount}
+                            </Badge>
+                          )}
+                          {notification.status === 'failed' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRetry(notification.id);
+                              }}
+                              className="gap-1"
+                            >
+                              <RefreshCw className="h-3 w-3" />
+                              Retry
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Notification Details Modal */}
+        {selectedNotification && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Notification Details</CardTitle>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setSelectedNotification(null)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Type</p>
+                    <p>{getTriggerLabel(selectedNotification.triggerCode)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Status</p>
+                    <div className="mt-1">{getStatusBadge(selectedNotification.status)}</div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Recipient</p>
+                    <p>{selectedNotification.user?.email || 'Unknown'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Template</p>
+                    <p>{selectedNotification.templateKey}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Scheduled For</p>
+                    <p>{format(new Date(selectedNotification.scheduledFor), 'PPp')}</p>
+                  </div>
+                  {selectedNotification.sentAt && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Sent At</p>
+                      <p>{format(new Date(selectedNotification.sentAt), 'PPp')}</p>
+                    </div>
+                  )}
+                  {selectedNotification.appointmentId && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Appointment ID</p>
+                      <p>{selectedNotification.appointmentId}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Retry Count</p>
+                    <p>{selectedNotification.retryCount || 0}</p>
+                  </div>
+                </div>
+                
+                {selectedNotification.errorMessage && (
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Error Message</p>
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{selectedNotification.errorMessage}</AlertDescription>
+                    </Alert>
+                  </div>
+                )}
+                
+                {selectedNotification.mergeData && (
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Merge Data</p>
+                    <pre className="bg-gray-100 p-3 rounded-md text-xs overflow-x-auto">
+                      {JSON.stringify(selectedNotification.mergeData, null, 2)}
+                    </pre>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Loading state
   if (isLoading) {
     return (
@@ -1437,6 +1749,7 @@ export default function AdminDashboard() {
             {activeSection === 'operational' && <OperationalSection />}
             {activeSection === 'predictive' && <PredictiveSection />}
             {activeSection === 'meetings' && <MeetingsSection />}
+            {activeSection === 'notifications' && <NotificationsSection />}
           </div>
         </div>
       </div>

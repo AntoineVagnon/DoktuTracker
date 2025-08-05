@@ -30,6 +30,7 @@ import { z } from "zod";
 import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+import { notificationService, TriggerCode } from "./services/notificationService";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -1400,6 +1401,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             price: appointment.price,
             status: appointment.status
           };
+          
+          // Trigger appointment confirmation notification
+          await notificationService.trigger(
+            TriggerCode.APPOINTMENT_CONFIRMED,
+            appointment.patientId,
+            appointment.id
+          );
         }
 
         res.json({ 
@@ -1507,6 +1515,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               await storage.updateTimeSlot(matchingSlot.id, { isAvailable: false });
               console.log(`🔒 Webhook: Marked slot ${matchingSlot.id} as unavailable`);
             }
+            
+            // Trigger appointment confirmation notification
+            await notificationService.trigger(
+              TriggerCode.APPOINTMENT_CONFIRMED,
+              appointment.patientId,
+              appointment.id
+            );
           }
           
           console.log(`✅ Payment succeeded for appointment ${appointmentId}`);
@@ -1910,6 +1925,65 @@ Please upload the document again through the secure upload system.`;
     } catch (error) {
       console.error("Error creating banner dismissal:", error);
       res.status(500).json({ message: "Failed to create banner dismissal" });
+    }
+  });
+
+  // Notification Routes
+  app.get("/api/admin/notifications", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const notifications = await storage.getNotifications({
+        status: req.query.status as string,
+        limit: parseInt(req.query.limit as string) || 50
+      });
+      
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.post("/api/admin/notifications/retry", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { notificationId } = req.body;
+      await storage.retryNotification(notificationId);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error retrying notification:", error);
+      res.status(500).json({ message: "Failed to retry notification" });
+    }
+  });
+
+  app.get("/api/user/notification-preferences", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const preferences = await storage.getNotificationPreferences(user.id);
+      res.json(preferences);
+    } catch (error) {
+      console.error("Error fetching notification preferences:", error);
+      res.status(500).json({ message: "Failed to fetch preferences" });
+    }
+  });
+
+  app.put("/api/user/notification-preferences", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const preferences = await storage.updateNotificationPreferences(user.id, req.body);
+      res.json(preferences);
+    } catch (error) {
+      console.error("Error updating notification preferences:", error);
+      res.status(500).json({ message: "Failed to update preferences" });
     }
   });
 

@@ -1,0 +1,128 @@
+﻿System Email Templates 
+1. Patient Welcome Email (Post-Registration)
+Subject: Welcome to DokTu – Your Health Advisory Platform
+Dear [First Name],
+
+Welcome to DokTu! We’re excited to have you join our health advisory platform.
+
+You can now book consultations with trusted doctors from various specialties – anytime, from anywhere.
+
+To get the most out of your experience:
+- Complete your health profile now (takes less than 5 minutes).
+- Upload any relevant medical records.
+- Choose your preferred doctor and consultation time.
+
+[Complete My Health Profile]
+
+Need help getting started? Our support team is here for you.
+
+Thank you for trusting DokTu.
+
+Warm regards,
+DokTu Team[a]
+2. Doctor Welcome Email (Post-Onboarding)
+Subject: Welcome to DokTu – Let’s Start Helping Patients
+Dear Dr. [Last Name],
+
+We’re pleased to welcome you to the DokTu platform. Thank you for joining our network of healthcare professionals.
+
+What’s next?
+- Log in and review your profile.
+- Set your availability.
+- Review the guidelines and documentation for consultations.
+
+Your profile is now live, and patients can begin scheduling appointments with you.
+
+[Go to My Dashboard]
+
+If you have any questions or need assistance, our support team is ready to help.
+
+Thank you for being part of DokTu.
+
+Best regards,
+DokTu Team
+3. Patient Profile Reminder (If Not Completed)
+Subject: Complete Your DokTu Health Profile Before Your First Consultation
+Hi [First Name],
+
+We noticed that you haven’t completed your health profile yet.
+
+Completing it helps doctors better understand your needs and offer more personalized advice.
+
+It only takes a few minutes, and it can make a big difference in the quality of your session.
+
+[Complete My Health Profile]
+
+If you’ve already completed your profile or uploaded documents, feel free to ignore this message.
+
+See you soon on DokTu!
+
+DokTu Support Team
+
+
+4. Booking Confirmation Email
+Subject: Your Consultation is Confirmed – DokTu
+Dear [Patient First Name],
+
+Your consultation has been successfully booked.
+
+📅 Date & Time: [Date and Time][b]
+👨‍⚕️ Doctor: Dr. [Doctor Name] ([Specialization])
+🔗 Join Link: [Secure Consultation Link][c]
+
+Please log in 2–5 minutes before the scheduled time and ensure your audio/video is working properly.
+
+To ensure the consultation is successful, please read our [LINK: Consultation Gudielines
+
+If you need to reschedule or cancel, please log in to your profile at [LINK to appointment in patient profile] and use the buttons below. If you need any support, please contact us at support@doctu.co..
+
+Thank you for choosing DokTu.
+
+DokTu Support Team[d]
+5. Appointment Reminder Email
+Subject: Reminder – Your DokTu Consultation is Coming Up
+Hi [Patient First Name],
+
+This is a friendly reminder that your consultation is scheduled for:
+
+📅 [Date and Time]
+👨‍⚕️ Dr. [Doctor Name]
+🔗 Join here: [Secure Link]
+
+Please ensure you're in a quiet space with a stable internet connection.
+If you need to make changes, use the patient dashboard or contact us.
+
+Thank you,
+DokTu Support
+6. Cancellation Confirmation Email
+Subject: Your Consultation Has Been Cancelled
+Dear [Patient First Name],
+
+We confirm that your consultation with Dr. [Doctor Name] scheduled for [Date and Time] has been cancelled.
+
+If this was a mistake, you may reschedule directly from your dashboard.
+
+Refunds or credits (if applicable) will be processed in accordance with our cancellation policy.
+
+We're here if you need further assistance.
+
+DokTu Team
+7. Rescheduling Confirmation Email
+Subject: Your Consultation Has Been Rescheduled
+Hi [Patient First Name],
+
+Your consultation has been successfully rescheduled.
+
+📅 New Date & Time: [New Date and Time]
+👨‍⚕️ Doctor: Dr. [Doctor Name]
+🔗 Updated Join Link: [Link]
+
+If you have any supporting documents or updates to share with the doctor, you may upload them to your profile.
+
+We look forward to seeing you online.
+
+DokTu Support Team
+[a]Ili Dr Miralem Jasarevic, direktor (mozda je bolje tako, zvuci pristupaticnije).
+[b]Use of icons is just there to make it less bland, I am not wedded to it, we can remove or change them
+[c]These must be in a format recognized by Gmail + Outlook to prompt the user to add the appointment to their calendar with 1 click.
+[d]Same as others - should this be signed by a doctor? Maybe @miralem in the beginning.

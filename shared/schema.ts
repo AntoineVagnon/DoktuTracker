@@ -374,6 +374,72 @@ export const auditEvents = pgTable("audit_events", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Email notification queue and logs
+export const emailNotifications = pgTable("email_notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  triggerCode: varchar("trigger_code").notNull(), // BOOK_CONF, REM_24H, etc.
+  templateKey: varchar("template_key").notNull(), // booking_confirmation, etc.
+  status: varchar("status").notNull().default("pending"), // pending, sent, failed, bounced
+  priority: integer("priority").notNull().default(50),
+  scheduledFor: timestamp("scheduled_for").notNull(),
+  sentAt: timestamp("sent_at"),
+  retryCount: integer("retry_count").default(0),
+  errorMessage: text("error_message"),
+  mergeData: jsonb("merge_data"), // Variables to merge into template
+  metadata: jsonb("metadata"), // Additional data like .ics attachment info
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// SMS notification queue
+export const smsNotifications = pgTable("sms_notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  triggerCode: varchar("trigger_code").notNull(),
+  templateKey: varchar("template_key").notNull(),
+  phoneNumber: varchar("phone_number").notNull(),
+  status: varchar("status").notNull().default("pending"),
+  scheduledFor: timestamp("scheduled_for").notNull(),
+  sentAt: timestamp("sent_at"),
+  retryCount: integer("retry_count").default(0),
+  errorMessage: text("error_message"),
+  mergeData: jsonb("merge_data"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Push notification queue
+export const pushNotifications = pgTable("push_notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  triggerCode: varchar("trigger_code").notNull(),
+  templateKey: varchar("template_key").notNull(),
+  status: varchar("status").notNull().default("pending"),
+  scheduledFor: timestamp("scheduled_for").notNull(),
+  sentAt: timestamp("sent_at"),
+  errorMessage: text("error_message"),
+  mergeData: jsonb("merge_data"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User notification preferences
+export const notificationPreferences = pgTable("notification_preferences", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  emailEnabled: boolean("email_enabled").default(true),
+  smsEnabled: boolean("sms_enabled").default(false),
+  pushEnabled: boolean("push_enabled").default(false),
+  marketingEmailsEnabled: boolean("marketing_emails_enabled").default(true),
+  reminderTiming: jsonb("reminder_timing"), // Custom reminder preferences
+  locale: varchar("locale").default("en"), // Language preference
+  timezone: varchar("timezone").default("Europe/Paris"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Schema exports and types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;

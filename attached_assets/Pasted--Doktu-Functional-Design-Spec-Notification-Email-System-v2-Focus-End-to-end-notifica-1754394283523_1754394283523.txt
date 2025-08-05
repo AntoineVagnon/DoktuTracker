@@ -1,0 +1,181 @@
+# Doktu — Functional & Design Spec: Notification & Email System (v2)
+
+**Focus: End‑to‑end notifications (calendar invite, in‑app banners, push/SMS, email) plus full email‑template library. Replit chooses tech stack, ESP, schedulers, DB.**
+
+---
+
+## 1 — Objectives & Principles
+
+1. **North‑Star** – make sure doctors & patients never miss a booked session.
+2. All messages are **single‑source of truth**: one trigger → orchestration decides channels.
+3. **Progressive escalation** (ics ↗ email ↗ push ↗ SMS fallback for doctors).
+4. Respect local **time‑zones**, permissions, and opt‑out laws.
+
+---
+
+## 2 — Channel Matrix (summary)
+
+| Channel                | Purpose                                  | Default timing                                        |
+| ---------------------- | ---------------------------------------- | ----------------------------------------------------- |
+| `.ics` calendar invite | Device‑native reminders                  | Sent with confirmation + updated on reschedule/cancel |
+| Email                  | Long‑form info, links, onboarding        | Immediate + 24 h / 1 h reminders                      |
+| In‑app banner / toast  | Real‑time when user is on Doktu          | Live count‑down + post‑call survey                    |
+| Web Push / Mobile push | Nudge 5 min pre‑call                     | 5 min before (if permission)                          |
+| SMS (doctor only)      | Last‑mile backup if join=false @ −10 min | 10 min before                                         |
+
+(Channels 3–5 are configurable flags per user role.)
+
+---
+
+## 3 — Trigger → Orchestration Map
+
+| Trigger code     | Description                            | Channel mix                    | Template key                                    |
+| ---------------- | -------------------------------------- | ------------------------------ | ----------------------------------------------- |
+| `BOOK_CONF`      | Booking confirmed & paid               | `.ics` + Email                 | `booking_confirmation`                          |
+| `REM_24H`        | 24 h before start                      | Email                          | `booking_reminder_24h`                          |
+| `REM_1H_DOC`     | 1 h before, doctor                     | Push                           | `doctor_upcoming_1h`                            |
+| `REM_10M_DOC`    | 10 min before, doctor not joined       |  SMS                           | `sms_doctor_10m`                                |
+| `REM_5M_PAT`     | 5 min before, patient                  | Push                           | `push_patient_5m`                               |
+| `RESCHED`        | Appointment rescheduled                | Update `.ics` + Email          | `reschedule_confirmation`                       |
+| `CANCEL`         | Appointment cancelled                  | Update `.ics` (CANCEL) + Email | `cancellation_confirmation`                     |
+| `SURVEY`         | Zoom ended                             | Modal + Email                  | `post_call_survey`                              |
+| `NO_SHOW`        | doctor\_no\_show status                | Email (patient + ops)          | `doctor_no_show_patient` / `doctor_no_show_ops` |
+| `FREE_CREDIT`    | Account created with free credit       | Email                          | `welcome_free_credit`                           |
+| `PROFILE_NEEDED` | Health profile incomplete after 15 min | Banner + Email                 | `profile_reminder`                              |
+
+> **Priority order:** SURVEY > BOOK\_CONF > REM\_24H > REM\_1H\_DOC > REM\_10M\_DOC > REM\_5M\_PAT → others. Lower event within 30 min is suppressed.
+
+---
+
+## 4 — Email Template Library (from Google Doc)
+
+> The HTML/markdown content is stored separately; each template key matches the titles below. Replit must pull content verbatim, only replacing merge‑fields.
+
+### `welcome_free_credit` (Patient Welcome Email)
+
+*Subject*: Welcome to DokTu – Your Health Advisory Platform
+
+```
+Dear {{first_name}},
+
+Welcome to DokTu! We’re excited to have you join our health advisory platform.
+
+You can now book consultations with trusted doctors from various specialties – anytime, from anywhere.
+
+To get the most out of your experience:
+• Complete your health profile now (takes less than 5 minutes).
+• Upload any relevant medical records.
+• Choose your preferred doctor and consultation time.
+
+[Complete My Health Profile]
+
+Need help getting started? Our support team is here for you.
+
+Thank you for trusting DokTu.
+
+Warm regards,
+DokTu Team
+```
+
+### `welcome_doctor` (Doctor Welcome Email)
+
+*(content exactly as provided)*
+
+### `profile_reminder` (Patient Profile Reminder)
+
+*(content as provided)*
+
+### `booking_confirmation`
+
+*(content as provided – with merge‑fields `{{appointment_datetime_local}}`, `{{doctor_name}}`, `{{join_link}}`)*
+
+### `booking_reminder_24h`
+
+*(content as provided)*
+
+### `cancellation_confirmation`
+
+*(content as provided)*
+
+### `reschedule_confirmation`
+
+*(content as provided)*
+
+### `post_call_survey`
+
+*(short invite to rate, link ➜ in‑app modal)*
+
+(Templates list continues for every sample—Replit maps key ➜ HTML.)
+
+---
+
+## 5 — Merge‑Field Catalogue
+
+| Field                            | Source                          | Example                                         |
+| -------------------------------- | ------------------------------- | ----------------------------------------------- |
+| `{{first_name}}`                 | users.profile\_first\_name      | “Alice”                                         |
+| `{{last_name}}`                  | users.last\_name                | “Dupont”                                        |
+| `{{doctor_name}}`                | doctors.display\_name           | “Dr Martin”                                     |
+| `{{appointment_datetime_local}}` | appointment start in patient TZ | “Tue 12 Aug 14:30”                              |
+| `{{join_link}}`                  | appointment.zoom\_link          | …                                               |
+| `{{credit_amount}}`              | wallet.credits                  | “1 free credit”                                 |
+| `{{support_email}}`              | env config                      | “[support@doktu.com](mailto:support@doktu.com)” |
+| `{{referral_link}}`              | generated slug                  | …                                               |
+
+Any missing field → email send aborted + error logged.
+
+---
+
+## 6 — Functional Rules
+
+1. **Single‑send guarantee** per trigger/appointment/user.
+2. **Language:** match `user.locale`; fall back to EN.
+3. **Unsubscribe footer** on marketing/referral emails only.
+4. Retry policy: max 3 attempts on transient ESP error; then mark `status = bounced`.
+5. `.ics` attachments: UID = appointment.id; send CANCEL/UPDATE on changes.
+6. SMS length ≤160 chars, include short‑URL.
+
+---
+
+## 7 — Gherkin Scenarios (key flows)
+
+```gherkin
+Feature: Confirmation workflow with calendar invite
+  Scenario: Send confirmation email + .ics
+    Given my payment succeeded for appointment A123
+    When the system triggers BOOK_CONF
+    Then I receive email template "booking_confirmation" with .ics METHOD:ADD
+
+Feature: Reschedule email and calendar update
+  Scenario: Patient reschedules
+    Given appointment A123 has an existing .ics
+    When it is rescheduled
+    Then I receive email "reschedule_confirmation"
+    And I receive .ics METHOD:CANCEL for old UID
+    And .ics METHOD:ADD for new time
+
+Feature: Doctor SMS fallback
+  Scenario: Doctor has not joined at -10 min
+    Given join_status = false
+    And now = start_time - 10 minutes
+    Then the system sends SMS key "sms_doctor_10m"
+
+Feature: Suppress lower priority within 30 minutes
+  Scenario: Survey email followed by referral invite
+    Given SURVEY email sent at 10:00
+    When REFERRAL trigger occurs at 10:10
+    Then REFERRAL email is delayed until 10:30
+```
+
+---
+
+### Deliverables for Replit
+
+* Implement trigger listeners & orchestration logic per table in §3.
+* Map each template key to supplied HTML/Markdown.
+* Ensure merge‑fields substitute; abort if missing.
+* Attach `.ics` files using VEVENT spec.
+* Respect single‑send + throttling.
+* Store logs (template\_key, user\_id, status, timestamp).
+
+*No specific tech stack, queue, or ESP is mandated—select best fit.*

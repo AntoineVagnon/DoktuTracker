@@ -12,6 +12,10 @@ import {
   healthProfiles,
   documentUploads,
   appointmentDocuments,
+  emailNotifications,
+  smsNotifications,
+  pushNotifications,
+  notificationPreferences,
   type UpsertUser,
   type User,
   type Doctor,
@@ -229,6 +233,12 @@ export interface IStorage {
       alertDetails?: string;
     }>;
   }>;
+  
+  // Notification operations
+  getNotifications(filters: { status?: string; limit?: number }): Promise<any[]>;
+  retryNotification(notificationId: string): Promise<void>;
+  getNotificationPreferences(userId: number): Promise<any>;
+  updateNotificationPreferences(userId: number, updates: any): Promise<any>;
 }
 
 // PostgreSQL Storage Implementation
@@ -2658,6 +2668,101 @@ export class PostgresStorage implements IStorage {
         conversion: Math.round(avgConversion * 1.3)
       }
     ];
+  }
+
+  // Notification operations
+  async getNotifications(filters: { status?: string; limit?: number }): Promise<any[]> {
+    try {
+      let query = db.select({
+        id: emailNotifications.id,
+        userId: emailNotifications.userId,
+        appointmentId: emailNotifications.appointmentId,
+        triggerCode: emailNotifications.triggerCode,
+        templateKey: emailNotifications.templateKey,
+        status: emailNotifications.status,
+        scheduledFor: emailNotifications.scheduledFor,
+        sentAt: emailNotifications.sentAt,
+        retryCount: emailNotifications.retryCount,
+        errorMessage: emailNotifications.errorMessage,
+        createdAt: emailNotifications.createdAt,
+        user: {
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName
+        }
+      })
+      .from(emailNotifications)
+      .leftJoin(users, eq(emailNotifications.userId, users.id))
+      .orderBy(desc(emailNotifications.createdAt));
+
+      if (filters.status) {
+        query = query.where(eq(emailNotifications.status, filters.status)) as any;
+      }
+
+      if (filters.limit) {
+        query = query.limit(filters.limit) as any;
+      }
+
+      return await query;
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      return [];
+    }
+  }
+
+  async retryNotification(notificationId: string): Promise<void> {
+    await db
+      .update(emailNotifications)
+      .set({ 
+        status: 'pending',
+        retryCount: sql`${emailNotifications.retryCount} + 1`,
+        scheduledFor: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(emailNotifications.id, notificationId));
+  }
+
+  async getNotificationPreferences(userId: number): Promise<any> {
+    const [prefs] = await db
+      .select()
+      .from(notificationPreferences)
+      .where(eq(notificationPreferences.userId, userId));
+
+    if (!prefs) {
+      // Create default preferences
+      const [newPrefs] = await db
+        .insert(notificationPreferences)
+        .values({
+          userId,
+          emailEnabled: true,
+          smsEnabled: false,
+          pushEnabled: false,
+          marketingEmailsEnabled: true,
+          reminderTiming: { 
+            hours: [24, 2], 
+            minutes: [0, 0] 
+          },
+          locale: 'en',
+          timezone: 'Europe/Paris'
+        })
+        .returning();
+      return newPrefs;
+    }
+
+    return prefs;
+  }
+
+  async updateNotificationPreferences(userId: number, updates: any): Promise<any> {
+    const [updated] = await db
+      .update(notificationPreferences)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(notificationPreferences.userId, userId))
+      .returning();
+
+    return updated;
   }
 }
 
