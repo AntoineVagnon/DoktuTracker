@@ -147,7 +147,14 @@ export default function DoctorDashboard() {
                         <span className="hidden sm:inline">Documents</span>
                         <span className="sm:hidden">Docs</span>
                       </Button>
-                      <Button size="sm" variant="outline" className="h-9 px-3">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="h-9 px-3"
+                        onClick={() => {
+                          window.location.href = `/doctor-records?patientId=${appointment.patientId}`;
+                        }}
+                      >
                         <Eye className="h-4 w-4 mr-2 sm:mr-0" />
                         <span className="sm:hidden">View</span>
                       </Button>
