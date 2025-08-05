@@ -1274,53 +1274,48 @@ export default function GoogleStyleCalendar({
             </div>
           )}
 
-          <DialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0">
-            <div className="order-2 sm:order-1">
-              {slotModal.mode === 'edit' && (
-                <Button 
-                  variant="destructive" 
-                  onClick={handleDeleteSlot}
-                  disabled={deleteSlotMutation.isPending}
-                  className="w-full sm:w-auto h-10"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </Button>
-              )}
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2 order-1 sm:order-2">
+          <DialogFooter className="flex flex-row gap-2 justify-end">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setSelectedBlocks([]);
+                setSlotModal(prev => ({ ...prev, isOpen: false }));
+                console.log("Cancel clicked - selection cleared");
+              }}
+              className="h-10"
+            >
+              Cancel
+            </Button>
+            {slotModal.mode === 'create' ? (
               <Button 
-                variant="outline" 
-                onClick={() => {
-                  setSelectedBlocks([]);
-                  setSlotModal(prev => ({ ...prev, isOpen: false }));
-                  console.log("Cancel clicked - selection cleared");
-                }}
-                className="w-full sm:w-auto h-10"
+                onClick={handleSaveSlot}
+                disabled={createSlotMutation.isPending}
+                className="h-10"
               >
-                Cancel
+                <Save className="h-4 w-4 mr-2" />
+                Create
               </Button>
-              {slotModal.mode !== 'delete' ? (
-                <Button 
-                  onClick={handleSaveSlot}
-                  disabled={createSlotMutation.isPending || updateSlotMutation.isPending}
-                  className="w-full sm:w-auto h-10"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {slotModal.mode === 'create' ? 'Create' : 'Update'}
-                </Button>
-              ) : (
-                <Button 
-                  variant="destructive"
-                  onClick={handleDeleteSlot}
-                  disabled={deleteSlotMutation.isPending || !slotModal.deleteScope}
-                  className="w-full sm:w-auto h-10"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Confirm Delete
-                </Button>
-              )}
-            </div>
+            ) : slotModal.mode === 'edit' ? (
+              <Button 
+                variant="destructive" 
+                onClick={handleDeleteSlot}
+                disabled={deleteSlotMutation.isPending}
+                className="h-10"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            ) : (
+              <Button 
+                variant="destructive"
+                onClick={handleDeleteSlot}
+                disabled={deleteSlotMutation.isPending || !slotModal.deleteScope}
+                className="h-10"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Confirm Delete
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
