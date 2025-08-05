@@ -1562,9 +1562,12 @@ export default function GoogleStyleCalendar({
               onClick={async () => {
                 if (cancelConfirmDialog.appointmentId) {
                   try {
-                    await apiRequest('PUT', `/api/appointments/${cancelConfirmDialog.appointmentId}/cancel`, {
+                    console.log('Cancelling appointment:', cancelConfirmDialog.appointmentId);
+                    const response = await apiRequest('PUT', `/api/appointments/${cancelConfirmDialog.appointmentId}/cancel`, {
                       reason: "Doctor cancelled the appointment"
                     });
+                    console.log('Cancel response:', response);
+                    
                     queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
                     queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
                     toast({
@@ -1573,10 +1576,11 @@ export default function GoogleStyleCalendar({
                     });
                     setAppointmentModal({ isOpen: false, appointment: null });
                     setCancelConfirmDialog({ isOpen: false, appointmentId: null });
-                  } catch (error) {
+                  } catch (error: any) {
+                    console.error('Cancel error:', error);
                     toast({
                       title: "Error",
-                      description: "Failed to cancel appointment. Please try again.",
+                      description: error.message || "Failed to cancel appointment. Please try again.",
                       variant: "destructive"
                     });
                   }
