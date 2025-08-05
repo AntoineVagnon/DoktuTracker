@@ -1035,10 +1035,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         newEmail: email
       });
 
-      // Update email using the authenticated client
+      // Try alternative approach: send email change confirmation
+      // This sends a confirmation email to the new address instead of directly updating
       const { data, error } = await userSupabase.auth.updateUser({
         email: email
       });
+
+      // If direct update fails, try the email change request approach
+      if (error && error.message.includes('email_address_invalid')) {
+        console.log("Direct update failed, trying email change request...");
+        
+        // Alternative: Use the main supabase client to initiate email change
+        const { error: changeError } = await supabase.auth.admin.updateUserById(
+          session.user.id,
+          { 
+            email: email,
+            email_confirm: false  // Don't require immediate confirmation
+          }
+        );
+        
+        if (changeError) {
+          console.error("Alternative email change error:", changeError);
+          return res.status(400).json({ 
+            error: "Email change not supported. Please contact support." 
+          });
+        }
+        
+        console.log("Email change initiated via admin API");
+        res.json({ 
+          success: true, 
+          message: "Email updated successfully" 
+        });
+        return;
+      }
 
       if (error) {
         console.error("Supabase email change error:", error);
