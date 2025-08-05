@@ -550,9 +550,8 @@ export default function Landing() {
               </a>
             </Button>
             <Button
-              variant="outline"
               size="lg"
-              className="border-2 border-white text-white hover:bg-white hover:text-[hsl(207,100%,52%)] hover:border-[hsl(207,100%,52%)] text-lg px-8 py-4 transition-all duration-200"
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[hsl(207,100%,52%)] hover:border-[hsl(207,100%,52%)] text-lg px-8 py-4 transition-all duration-200"
               asChild
             >
               <a href="tel:+33123456789">
