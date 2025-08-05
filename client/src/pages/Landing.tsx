@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Star, Search, Calendar, Video, Shield, Clock, UserCheck, Pill, Smartphone, History, CheckCircle, Phone, ArrowRight, Play } from "lucide-react";
+import { Star, Search, Calendar, Video, Shield, Clock, UserCheck, Smartphone, History, CheckCircle, Phone, ArrowRight, Play } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DoctorCard from "@/components/DoctorCard";
@@ -113,12 +113,6 @@ export default function Landing() {
       title: "Verified Doctors",
       description: "All our healthcare providers are licensed, certified, and regularly reviewed by our medical board.",
       color: "purple",
-    },
-    {
-      icon: Pill,
-      title: "Digital Prescriptions",
-      description: "Receive digital prescriptions that can be sent directly to your preferred pharmacy.",
-      color: "red",
     },
     {
       icon: Smartphone,
