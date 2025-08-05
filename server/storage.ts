@@ -435,7 +435,7 @@ export class PostgresStorage implements IStorage {
     await db.delete(users).where(eq(users.id, userId));
   }
 
-  async getDoctors(): Promise<(Doctor & { user: User })[]> {
+  async getDoctors(): Promise<(Doctor & { user: User, availableSlots?: number })[]> {
     const result = await db
       .select({
         // Doctor fields
@@ -471,7 +471,52 @@ export class PostgresStorage implements IStorage {
       .from(doctors)
       .innerJoin(users, eq(doctors.userId, users.id));
 
-    return result;
+    // Get availability count for each doctor
+    const doctorsWithAvailability = await Promise.all(
+      result.map(async (doctor) => {
+        try {
+          // Get available slots count for this doctor
+          const slots = await this.getDoctorTimeSlots(doctor.id.toString());
+          const availableSlots = slots.filter(slot => slot.isAvailable).length;
+          
+          return {
+            ...doctor,
+            availableSlots
+          };
+        } catch (error) {
+          console.error(`Error fetching slots for doctor ${doctor.id}:`, error);
+          return {
+            ...doctor,
+            availableSlots: 0
+          };
+        }
+      })
+    );
+
+    // Sort doctors by:
+    // 1. Availability (those with slots first)
+    // 2. Rating (highest first)
+    // 3. Review count (most reviews first)
+    const sortedDoctors = doctorsWithAvailability.sort((a, b) => {
+      // First priority: availability
+      if (a.availableSlots > 0 && b.availableSlots === 0) return -1;
+      if (a.availableSlots === 0 && b.availableSlots > 0) return 1;
+      
+      // Second priority: rating (handle null/undefined values)
+      const ratingA = parseFloat(a.rating || '0');
+      const ratingB = parseFloat(b.rating || '0');
+      if (ratingA !== ratingB) {
+        return ratingB - ratingA; // Higher rating first
+      }
+      
+      // Third priority: review count
+      const reviewA = a.reviewCount || 0;
+      const reviewB = b.reviewCount || 0;
+      return reviewB - reviewA; // More reviews first
+    });
+
+    console.log(`🏥 Returning ${sortedDoctors.length} doctors sorted by availability and rating`);
+    return sortedDoctors;
   }
 
   async getDoctorByUserId(userId: number): Promise<Doctor | undefined> {

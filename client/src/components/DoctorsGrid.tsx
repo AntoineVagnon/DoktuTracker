@@ -16,6 +16,15 @@ interface Doctor {
   avatarUrl: string | null;
   avgRating: number | null;
   nextAvailableSlots: string[];
+  availableSlots?: number;
+  rating?: string;
+  reviewCount?: number;
+  user?: {
+    firstName: string;
+    lastName: string;
+    title?: string;
+    profileImageUrl?: string | null;
+  };
 }
 
 const fetcher = async (url: string) => {
@@ -82,56 +91,95 @@ export function DoctorsGrid() {
     ));
   };
 
-  const renderDoctorCard = (doctor: Doctor) => (
-    <Link key={doctor.id} href={`/doctor/${doctor.id}`}>
-      <Card 
-        className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-sm hover:shadow-xl doctor-card"
-        role="button"
-        tabIndex={0}
-        aria-label={`View Dr ${doctor.lastName} profile`}
-      >
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            {/* Avatar */}
-            <Avatar className="h-16 w-16">
-              <AvatarImage 
-                src={doctor.avatarUrl || undefined} 
-                alt={`Photo of Dr. ${doctor.lastName}`}
-              />
-              <AvatarFallback className="text-lg font-semibold">
-                {doctor.firstName[0]}{doctor.lastName[0]}
-              </AvatarFallback>
-            </Avatar>
-            
-            {/* Name */}
-            <div>
-              <h3 className="font-semibold text-gray-900 text-lg">
-                Dr. {doctor.firstName} {doctor.lastName}
-              </h3>
-              <p className="text-sm text-gray-600">{doctor.specialty}</p>
-            </div>
-            
-            {/* Rating */}
-            <div className="flex items-center space-x-1">
-              {typeof doctor.avgRating === 'number' && !isNaN(doctor.avgRating) ? (
-                <>
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-medium">{doctor.avgRating.toFixed(1)}</span>
-                </>
+  const renderDoctorCard = (doctor: Doctor) => {
+    // Use user data if available, otherwise fallback to direct properties
+    const firstName = doctor.user?.firstName || doctor.firstName;
+    const lastName = doctor.user?.lastName || doctor.lastName;
+    const profileImageUrl = doctor.user?.profileImageUrl || doctor.avatarUrl;
+    const rating = doctor.rating ? parseFloat(doctor.rating) : doctor.avgRating;
+    
+    return (
+      <Link key={doctor.id} href={`/doctor/${doctor.id}`}>
+        <Card 
+          className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-sm hover:shadow-xl doctor-card"
+          role="button"
+          tabIndex={0}
+          aria-label={`View Dr ${lastName} profile`}
+        >
+          <CardContent className="p-6">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              {/* Avatar */}
+              <Avatar className="h-16 w-16">
+                <AvatarImage 
+                  src={profileImageUrl || undefined} 
+                  alt={`Photo of Dr. ${lastName}`}
+                />
+                <AvatarFallback className="text-lg font-semibold">
+                  {firstName?.[0]}{lastName?.[0]}
+                </AvatarFallback>
+              </Avatar>
+              
+              {/* Name */}
+              <div>
+                <h3 className="font-semibold text-gray-900 text-lg">
+                  Dr. {firstName} {lastName}
+                </h3>
+                <p className="text-sm text-gray-600">{doctor.specialty}</p>
+              </div>
+              
+              {/* Rating with review count */}
+              <div className="flex items-center space-x-1">
+                {typeof rating === 'number' && !isNaN(rating) ? (
+                  <>
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star 
+                          key={i} 
+                          className={`h-3 w-3 ${i < Math.round(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm font-medium">{rating.toFixed(1)}</span>
+                    {doctor.reviewCount && doctor.reviewCount > 0 && (
+                      <span className="text-xs text-gray-500">({doctor.reviewCount})</span>
+                    )}
+                  </>
+                ) : (
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                    New
+                  </Badge>
+                )}
+              </div>
+              
+              {/* Availability with count if available */}
+              {doctor.availableSlots !== undefined ? (
+                <div className="space-y-1 w-full">
+                  {doctor.availableSlots > 0 ? (
+                    <>
+                      <div className="flex items-center justify-center space-x-1 text-xs text-green-600 font-medium">
+                        <Clock className="h-3 w-3" />
+                        <span>{doctor.availableSlots} slots available</span>
+                      </div>
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                        Available
+                      </Badge>
+                    </>
+                  ) : (
+                    <div className="flex items-center justify-center space-x-1 text-xs text-gray-500">
+                      <Clock className="h-3 w-3" />
+                      <span>No availability</span>
+                    </div>
+                  )}
+                </div>
               ) : (
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                  New
-                </Badge>
+                <AvailabilityDisplay doctorId={doctor.id} />
               )}
             </div>
-            
-            {/* Availability - Using real-time data */}
-            <AvailabilityDisplay doctorId={doctor.id} />
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
+          </CardContent>
+        </Card>
+      </Link>
+    );
+  };
 
   // Always render the section with either doctor cards or skeletons
   return (
