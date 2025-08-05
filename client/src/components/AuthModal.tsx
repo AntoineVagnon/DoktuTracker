@@ -36,6 +36,7 @@ interface AuthModalProps {
 export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const loginForm = useForm<LoginForm>({
@@ -66,6 +67,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       return await response.json();
     },
     onSuccess: (data) => {
+      setAuthError(null);
       toast({
         title: "Login Successful",
         description: "Welcome back!",
@@ -90,6 +92,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         errorMessage = "Incorrect email or password";
       }
       
+      setAuthError(errorMessage);
       toast({
         title: "Login Failed",
         description: errorMessage,
@@ -108,6 +111,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       return await response.json();
     },
     onSuccess: (data) => {
+      setAuthError(null);
       toast({
         title: "Account Created",
         description: data.message || "Your account has been created successfully!",
@@ -118,6 +122,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       window.location.href = '/dashboard';
     },
     onError: (error: Error) => {
+      setAuthError(error.message || "An error occurred during signup");
       toast({
         title: "Signup Failed",
         description: error.message || "An error occurred during signup",
@@ -189,6 +194,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     loginForm.reset();
     signupForm.reset();
     setIsResettingPassword(false);
+    setAuthError(null);
     onClose();
   };
 
@@ -220,7 +226,19 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "signup")}>
+        {/* Error message at the top */}
+        {authError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-sm text-red-600 font-medium text-center">
+              {authError}
+            </p>
+          </div>
+        )}
+
+        <Tabs value={activeTab} onValueChange={(value) => {
+          setActiveTab(value as "login" | "signup");
+          setAuthError(null); // Clear error when switching tabs
+        }}>
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
