@@ -650,7 +650,7 @@ export default function Dashboard() {
                                 <Button 
                                   variant="outline" 
                                   size="sm"
-                                  onClick={() => setLocation(`/doctors/${doctor.id}`)}
+                                  onClick={() => setLocation(`/doctor/${doctor.id}`)}
                                   className="h-9 px-3"
                                 >
                                   <span className="hidden sm:inline">View Profile</span>
