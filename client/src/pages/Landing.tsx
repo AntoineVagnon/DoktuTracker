@@ -294,17 +294,6 @@ export default function Landing() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Connect with certified specialists across various medical fields. All our doctors are verified and highly rated by patients.
             </p>
-            <div className="mt-6 flex justify-center">
-              <Button 
-                variant="ghost"
-                className="text-[hsl(207,100%,52%)] font-semibold hover:text-[hsl(225,99%,52%)] transition-colors"
-                asChild
-              >
-                <a href="/doctors">
-                  See All Doctors <ArrowRight className="ml-2 h-4 w-4 inline" />
-                </a>
-              </Button>
-            </div>
           </div>
 
           {isLoading ? (
@@ -336,6 +325,18 @@ export default function Landing() {
               ))}
             </div>
           )}
+
+          <div className="mt-8 flex justify-center">
+            <Button 
+              variant="ghost"
+              className="text-[hsl(207,100%,52%)] font-semibold hover:text-[hsl(225,99%,52%)] transition-colors"
+              asChild
+            >
+              <a href="/doctors">
+                See All Doctors <ArrowRight className="ml-2 h-4 w-4 inline" />
+              </a>
+            </Button>
+          </div>
         </div>
       </section>
 
