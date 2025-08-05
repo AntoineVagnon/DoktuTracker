@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 import DoctorCard from "@/components/DoctorCard";
 import AuthModal from "@/components/AuthModal";
 import { analytics } from "@/lib/analytics";
-import telemedicineImage from "@assets/generated_images/Telemedicine_consultation_scene_2b4068e3.png";
+import telemedicineImage from "@assets/generated_images/Patient_telehealth_consultation_97dad641.png";
 
 export default function Landing() {
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
