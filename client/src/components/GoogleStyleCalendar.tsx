@@ -1568,8 +1568,15 @@ export default function GoogleStyleCalendar({
                     });
                     console.log('Cancel response:', response);
                     
+                    // Invalidate all appointment-related queries
                     queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/appointments', 'doctor'] });
                     queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+                    
+                    // Force immediate refetch
+                    queryClient.refetchQueries({ queryKey: ['/api/appointments'] });
+                    queryClient.refetchQueries({ queryKey: ['/api/appointments', 'doctor'] });
+                    
                     toast({
                       title: "Appointment cancelled",
                       description: "The patient will receive an invitation to reschedule."
