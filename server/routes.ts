@@ -2150,6 +2150,74 @@ Please upload the document again through the secure upload system.`;
     }
   });
 
+  // Test account fix endpoint for email mismatches
+  app.post('/api/test/fix-email-mismatch', async (req, res) => {
+    try {
+      console.log('🔧 Test email mismatch fix requested');
+      
+      // For this specific test case, recreate the user with matching credentials
+      const supabaseAdmin = createClient(
+        process.env.VITE_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
+        }
+      );
+
+      // List all users to find the old test account
+      const { data: users } = await supabaseAdmin.auth.admin.listUsers();
+      const oldUser = users?.users.find(u => 
+        u.email === 'patient@test40.com' || 
+        u.email === 'kalyos.officiel@gmail.com'
+      );
+
+      if (oldUser) {
+        // Delete the old user
+        await supabaseAdmin.auth.admin.deleteUser(oldUser.id);
+        console.log('✅ Deleted old test user:', oldUser.email);
+      }
+
+      // Create new user with correct email
+      const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email: 'kalyos.officiel@gmail.com',
+        password: 'Test123456!', // Default test password
+        email_confirm: true, // Auto-confirm since it's a test account
+        user_metadata: {
+          role: 'patient',
+          firstName: 'Test',
+          lastName: 'Patient'
+        }
+      });
+
+      if (createError) {
+        console.error('Error creating new user:', createError);
+        return res.status(500).json({ error: 'Failed to create new test user' });
+      }
+
+      console.log('✅ Created new test user with synchronized email');
+
+      res.json({
+        success: true,
+        message: 'Test account fixed successfully!',
+        credentials: {
+          email: 'kalyos.officiel@gmail.com',
+          password: 'Test123456!',
+          note: 'You can now login with these credentials'
+        }
+      });
+
+    } catch (error: any) {
+      console.error('❌ Test fix error:', error);
+      res.status(500).json({ 
+        success: false,
+        error: error.message || 'Internal server error' 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

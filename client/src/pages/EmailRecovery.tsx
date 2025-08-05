@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { InfoIcon, MailIcon } from 'lucide-react';
+import { InfoIcon, MailIcon, TestTube } from 'lucide-react';
 
 export default function EmailRecovery() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [credentials, setCredentials] = useState<{ email: string; password: string } | null>(null);
 
   const handlePasswordReset = async () => {
     setLoading(true);
@@ -30,6 +31,34 @@ export default function EmailRecovery() {
       }
 
       setMessage('Password reset email sent to patient@test40.com. Please check your inbox.');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTestAccountFix = async () => {
+    setLoading(true);
+    setError('');
+    setMessage('');
+    setCredentials(null);
+
+    try {
+      const response = await fetch('/api/test/fix-email-mismatch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fix test account');
+      }
+
+      setMessage(data.message);
+      setCredentials(data.credentials);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -87,6 +116,37 @@ export default function EmailRecovery() {
           <div className="text-sm text-muted-foreground text-center">
             <p>Don't have access to patient@test40.com?</p>
             <p className="mt-1">Please contact support for assistance.</p>
+          </div>
+
+          {/* Test Account Section */}
+          <div className="mt-6 pt-6 border-t">
+            <Alert className="bg-blue-50 border-blue-200">
+              <TestTube className="h-4 w-4 text-blue-600" />
+              <AlertTitle className="text-blue-800">Test Account Fix</AlertTitle>
+              <AlertDescription className="text-blue-700">
+                <p>If this is a test account with a fake email, click below to recreate it with synchronized credentials.</p>
+              </AlertDescription>
+            </Alert>
+
+            <Button 
+              onClick={handleTestAccountFix} 
+              disabled={loading}
+              variant="outline"
+              className="w-full mt-4"
+            >
+              {loading ? 'Fixing...' : 'Fix Test Account (Fake Email)'}
+            </Button>
+
+            {credentials && (
+              <Alert className="mt-4 bg-green-50 border-green-200">
+                <AlertTitle className="text-green-800">Success! New Credentials:</AlertTitle>
+                <AlertDescription className="text-green-700 space-y-2">
+                  <p><strong>Email:</strong> {credentials.email}</p>
+                  <p><strong>Password:</strong> {credentials.password}</p>
+                  <p className="text-sm italic mt-2">{credentials.note || 'You can now login with these credentials'}</p>
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </CardContent>
       </Card>
