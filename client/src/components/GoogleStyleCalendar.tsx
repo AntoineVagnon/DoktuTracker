@@ -1568,14 +1568,16 @@ export default function GoogleStyleCalendar({
                     });
                     console.log('Cancel response:', response);
                     
-                    // Invalidate all appointment-related queries
-                    queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
-                    queryClient.invalidateQueries({ queryKey: ['/api/appointments', 'doctor'] });
-                    queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
-                    
-                    // Force immediate refetch
-                    queryClient.refetchQueries({ queryKey: ['/api/appointments'] });
-                    queryClient.refetchQueries({ queryKey: ['/api/appointments', 'doctor'] });
+                    // Wait a moment for database to update, then invalidate cache
+                    setTimeout(() => {
+                      queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+                      queryClient.invalidateQueries({ queryKey: ['/api/appointments', 'doctor'] });
+                      queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+                      
+                      // Force immediate refetch
+                      queryClient.refetchQueries({ queryKey: ['/api/appointments'] });
+                      queryClient.refetchQueries({ queryKey: ['/api/appointments', 'doctor'] });
+                    }, 500);
                     
                     toast({
                       title: "Appointment cancelled",

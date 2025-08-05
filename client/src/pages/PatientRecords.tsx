@@ -461,10 +461,7 @@ export default function PatientRecords() {
               Manage your patients' medical records and consultation history
             </p>
           </div>
-          <Button className="h-11">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Patient
-          </Button>
+
         </div>
 
         {/* Search Bar */}
