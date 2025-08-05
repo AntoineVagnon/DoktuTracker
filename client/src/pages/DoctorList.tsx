@@ -176,11 +176,6 @@ export default function DoctorList() {
               </SelectContent>
             </Select>
           </div>
-          <div className="mt-4 flex justify-end">
-            <Button className="px-8">
-              Search Doctors
-            </Button>
-          </div>
         </div>
       </div>
 
