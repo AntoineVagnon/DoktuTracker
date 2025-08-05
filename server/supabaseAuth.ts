@@ -449,8 +449,9 @@ export async function setupSupabaseAuth(app: Express) {
     try {
       const { newEmail } = req.body;
       const userId = req.user?.id;
+      const session = (req.session as any)?.supabaseSession;
       
-      if (!userId) {
+      if (!userId || !session) {
         return res.status(401).json({ error: 'Unauthorized' });
       }
       
@@ -460,17 +461,34 @@ export async function setupSupabaseAuth(app: Express) {
       
       // Check if the new email is already in use
       const existingUser = await storage.getUserByEmail(newEmail);
-      if (existingUser) {
+      if (existingUser && existingUser.id !== userId) {
         return res.status(400).json({ error: 'This email is already in use' });
       }
       
-      // For now, we'll just update the email directly in the database
-      // In production, you would send a verification email first
+      console.log(`Attempting to change email from ${req.user?.email} to ${newEmail}`);
+      
+      // First, update the email in Supabase Auth
+      // This will send a confirmation email to both old and new addresses
+      const { data: authData, error: authError } = await supabase.auth.updateUser({
+        email: newEmail
+      });
+      
+      if (authError) {
+        console.error('Supabase email update error:', authError);
+        
+        // If Supabase update fails, don't update local database
+        return res.status(400).json({ 
+          error: authError.message || 'Failed to update email in authentication system' 
+        });
+      }
+      
+      // If Supabase update succeeded, update local database
       const updatedUser = await storage.updateUser(userId, {
         email: newEmail
       });
       
       if (!updatedUser) {
+        console.error('Failed to update local user record');
         return res.status(404).json({ error: 'User not found' });
       }
       
@@ -479,9 +497,15 @@ export async function setupSupabaseAuth(app: Express) {
         req.user.email = newEmail;
       }
       
+      // Note: Email confirmation may be required depending on Supabase settings
+      const requiresConfirmation = authData.user?.new_email === newEmail;
+      
       res.json({ 
-        message: 'Email updated successfully',
-        user: updatedUser
+        message: requiresConfirmation 
+          ? 'Confirmation emails sent. Please check both your old and new email addresses.'
+          : 'Email updated successfully',
+        user: updatedUser,
+        requiresConfirmation
       });
       
     } catch (error: any) {
