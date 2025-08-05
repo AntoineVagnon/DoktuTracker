@@ -296,9 +296,9 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
               <h3 className="text-lg font-medium">Medical Information</h3>
               
               <ArrayInput
-                field="allergies"
-                label="Allergies"
-                placeholder="Enter an allergy (e.g., Peanuts, Penicillin)"
+                field="medicalHistory"
+                label="Medical History"
+                placeholder="Enter a condition (e.g., Hypertension, Diabetes)"
               />
               
               <ArrayInput
@@ -308,9 +308,9 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
               />
               
               <ArrayInput
-                field="medicalHistory"
-                label="Medical History"
-                placeholder="Enter a condition (e.g., Hypertension, Diabetes)"
+                field="allergies"
+                label="Allergies"
+                placeholder="Enter an allergy (e.g., Peanuts, Penicillin)"
               />
             </div>
 

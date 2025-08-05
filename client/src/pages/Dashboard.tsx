@@ -820,15 +820,15 @@ export default function Dashboard() {
                                 <div className="space-y-4">
                                   <h4 className="font-medium text-gray-900">Medical Information</h4>
                                   
-                                  {(healthProfile as any).allergies?.length > 0 && (
+                                  {(healthProfile as any).medicalHistory?.length > 0 && (
                                     <div>
                                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Allergies
+                                        Medical History
                                       </label>
                                       <div className="p-2 bg-gray-50 rounded">
-                                        {(healthProfile as any).allergies.map((allergy: string, index: number) => (
-                                          <span key={index} className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded mr-2 mb-1">
-                                            {allergy}
+                                        {(healthProfile as any).medicalHistory.map((history: string, index: number) => (
+                                          <span key={index} className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-2 mb-1">
+                                            {history}
                                           </span>
                                         ))}
                                       </div>
@@ -849,15 +849,17 @@ export default function Dashboard() {
                                       </div>
                                     </div>
                                   )}
-
-                                  {(healthProfile as any).medicalHistory?.length > 0 && (
+                                  
+                                  {(healthProfile as any).allergies?.length > 0 && (
                                     <div>
                                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Medical History
+                                        Allergies
                                       </label>
                                       <div className="p-2 bg-gray-50 rounded">
-                                        {(healthProfile as any).medicalHistory.map((history: string, index: number) => (
-                                          <div key={index} className="text-gray-900 mb-1">• {history}</div>
+                                        {(healthProfile as any).allergies.map((allergy: string, index: number) => (
+                                          <span key={index} className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded mr-2 mb-1">
+                                            {allergy}
+                                          </span>
                                         ))}
                                       </div>
                                     </div>
