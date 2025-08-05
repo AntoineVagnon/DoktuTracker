@@ -232,18 +232,36 @@ export default function Dashboard() {
       email: user?.email || ''
     });
 
+    // Keep form data in sync with user prop changes
+    useEffect(() => {
+      if (!isEditing) {
+        setFormData({
+          title: user?.title || '',
+          firstName: user?.firstName || '',
+          lastName: user?.lastName || '',
+          email: user?.email || ''
+        });
+      }
+    }, [user, isEditing]);
+
     const updateProfileMutation = useMutation({
       mutationFn: async (data: any) => {
         const response = await apiRequest("PATCH", "/api/auth/user", data);
         return response.json();
       },
-      onSuccess: () => {
+      onSuccess: (updatedUser) => {
+        // Optimistic update: immediately update the cache with new data
+        queryClient.setQueryData(["/api/auth/user"], updatedUser);
+        
         toast({
           title: "Profile Updated",
           description: "Your profile has been successfully updated.",
         });
-        setIsEditing(false);
-        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        
+        // Set editing to false after a brief delay to prevent double-click issue
+        setTimeout(() => {
+          setIsEditing(false);
+        }, 50);
       },
       onError: (error: any) => {
         toast({
