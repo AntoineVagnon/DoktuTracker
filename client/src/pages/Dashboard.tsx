@@ -717,7 +717,7 @@ export default function Dashboard() {
                             <div className="h-4 bg-gray-200 rounded w-1/3"></div>
                             <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                           </div>
-                        ) : !healthProfile || calculateHealthProfileCompletion(healthProfile) < 80 ? (
+                        ) : !healthProfile ? (
                           <div className="text-center py-8">
                             <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Complete Your Health Profile</h3>
