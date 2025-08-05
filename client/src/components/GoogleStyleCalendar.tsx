@@ -332,6 +332,23 @@ export default function GoogleStyleCalendar({
     }
   });
 
+  const deleteSlotRangeMutation = useMutation({
+    mutationFn: async (data: { date: string; startTime: string; endTime: string }) => {
+      const response = await apiRequest('DELETE', '/api/time-slots/range', data);
+      return response.json();
+    },
+    onSuccess: () => {
+      // Sync availability across all surfaces when deleted
+      syncAvailability(user?.id);
+      queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+      toast({ title: "Time slots deleted successfully" });
+      setSlotModal(prev => ({ ...prev, isOpen: false }));
+    },
+    onError: () => {
+      toast({ title: "Failed to delete time slots", variant: "destructive" });
+    }
+  });
+
   // Create multiple slots from template
   const createTemplateSlotsMutation = useMutation({
     mutationFn: async (timeBlocks: Array<{ startTime: string; endTime: string; isRecurring: boolean; recurringEndDate?: string }>) => {
@@ -740,13 +757,24 @@ export default function GoogleStyleCalendar({
   };
 
   const handleDeleteSlot = () => {
-    if (!slotModal.slotId) return;
+    if (!slotModal.slotId && slotModal.mode !== 'edit') return;
 
     if (slotModal.mode === 'delete') {
-      deleteSlotMutation.mutate({ 
-        slotId: slotModal.slotId, 
-        scope: slotModal.deleteScope 
-      });
+      // Check if this is a time range deletion (startTime != endTime)
+      if (slotModal.startTime && slotModal.endTime && slotModal.startTime !== slotModal.endTime) {
+        // Delete all slots in the time range
+        deleteSlotRangeMutation.mutate({
+          date: slotModal.date,
+          startTime: slotModal.startTime,
+          endTime: slotModal.endTime
+        });
+      } else {
+        // Single slot deletion
+        deleteSlotMutation.mutate({ 
+          slotId: slotModal.slotId, 
+          scope: slotModal.deleteScope 
+        });
+      }
     } else {
       // Switch to delete mode
       setSlotModal(prev => ({ ...prev, mode: 'delete' }));
@@ -1200,14 +1228,16 @@ export default function GoogleStyleCalendar({
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="recurring"
-                  checked={slotModal.isRecurring}
-                  onCheckedChange={(checked) => setSlotModal(prev => ({ ...prev, isRecurring: checked }))}
-                />
-                <Label htmlFor="recurring">Weekly recurring</Label>
-              </div>
+              {slotModal.mode === 'create' && (
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="recurring"
+                    checked={slotModal.isRecurring}
+                    onCheckedChange={(checked) => setSlotModal(prev => ({ ...prev, isRecurring: checked }))}
+                  />
+                  <Label htmlFor="recurring">Weekly recurring</Label>
+                </div>
+              )}
               
               {slotModal.isRecurring && (
                 <div className="space-y-2">

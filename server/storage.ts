@@ -67,6 +67,7 @@ export interface IStorage {
   getTimeSlots(): Promise<TimeSlot[]>;
   createTimeSlot(slot: InsertTimeSlot): Promise<TimeSlot>;
   deleteTimeSlot(id: string): Promise<void>;
+  deleteTimeSlotsInRange(doctorId: string, date: string, startTime: string, endTime: string): Promise<void>;
   lockTimeSlot(id: string, lockedBy: string, durationMinutes: number): Promise<void>;
   unlockTimeSlot(id: string): Promise<void>;
   unlockExpiredSlots(): Promise<void>;
@@ -767,6 +768,38 @@ export class PostgresStorage implements IStorage {
 
   async deleteTimeSlot(id: string): Promise<void> {
     await db.delete(doctorTimeSlots).where(eq(doctorTimeSlots.id, id));
+  }
+
+  async deleteTimeSlotsInRange(doctorId: string, date: string, startTime: string, endTime: string): Promise<void> {
+    // Convert time strings to proper date times for comparison
+    const startDateTime = new Date(`${date}T${startTime}:00`);
+    const endDateTime = new Date(`${date}T${endTime}:00`);
+    
+    console.log(`🗑️ Deleting time slots for doctor ${doctorId} on ${date} between ${startTime} and ${endTime}`);
+    
+    // Get all slots for the doctor on the specified date
+    const slotsToDelete = await db
+      .select()
+      .from(doctorTimeSlots)
+      .where(and(
+        eq(doctorTimeSlots.doctorId, parseInt(doctorId)),
+        eq(doctorTimeSlots.date, date)
+      ));
+    
+    // Filter slots that fall within the time range
+    const slotIdsToDelete = slotsToDelete
+      .filter(slot => {
+        const slotStartTime = new Date(`${date}T${slot.startTime}`);
+        return slotStartTime >= startDateTime && slotStartTime < endDateTime;
+      })
+      .map(slot => slot.id);
+    
+    if (slotIdsToDelete.length > 0) {
+      console.log(`🗑️ Deleting ${slotIdsToDelete.length} slots`);
+      await db
+        .delete(doctorTimeSlots)
+        .where(inArray(doctorTimeSlots.id, slotIdsToDelete));
+    }
   }
 
   async lockTimeSlot(id: string, lockedBy: string, durationMinutes: number): Promise<void> {

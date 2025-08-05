@@ -1448,6 +1448,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete multiple time slots in a range
+  app.delete("/api/time-slots/range", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user?.id || user.role !== 'doctor') {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const { date, startTime, endTime } = req.body;
+      if (!date || !startTime || !endTime) {
+        return res.status(400).json({ error: "Date, start time, and end time are required" });
+      }
+
+      // Delete all slots in the specified range
+      await storage.deleteTimeSlotsInRange(user.id, date, startTime, endTime);
+      
+      res.json({ message: "Time slots deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting time slots in range:", error);
+      res.status(500).json({ message: "Failed to delete time slots" });
+    }
+  });
+
   app.delete("/api/time-slots/:id", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
