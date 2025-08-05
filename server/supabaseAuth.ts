@@ -68,7 +68,6 @@ export async function setupSupabaseAuth(app: Express) {
         // For new users, determine role from user metadata or default to patient
         const userRole = data.user.user_metadata?.role || 'patient';
         user = await storage.upsertUser({
-          id: data.user.id,
           email: data.user.email || email,
           role: userRole,
           username: (data.user.email || email).split('@')[0]
@@ -374,7 +373,6 @@ export async function setupSupabaseAuth(app: Express) {
       
       if (!profile) {
         profile = await storage.upsertUser({
-          id: sessionData.user?.id || '',
           email: sessionData.user?.email || '',
           role: 'patient'
         });
@@ -443,6 +441,52 @@ export async function setupSupabaseAuth(app: Express) {
     } catch (error: any) {
       console.error('Update user error:', error);
       res.status(500).json({ message: 'Failed to update user profile' });
+    }
+  });
+
+  // Email change endpoint
+  app.post('/api/auth/change-email', isAuthenticated, async (req, res) => {
+    try {
+      const { newEmail } = req.body;
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      
+      if (!newEmail) {
+        return res.status(400).json({ error: 'New email is required' });
+      }
+      
+      // Check if the new email is already in use
+      const existingUser = await storage.getUserByEmail(newEmail);
+      if (existingUser) {
+        return res.status(400).json({ error: 'This email is already in use' });
+      }
+      
+      // For now, we'll just update the email directly in the database
+      // In production, you would send a verification email first
+      const updatedUser = await storage.updateUser(userId, {
+        email: newEmail
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // Update the session with the new email
+      if (req.user) {
+        req.user.email = newEmail;
+      }
+      
+      res.json({ 
+        message: 'Email updated successfully',
+        user: updatedUser
+      });
+      
+    } catch (error: any) {
+      console.error('Email change error:', error);
+      res.status(500).json({ error: 'Failed to change email' });
     }
   });
 

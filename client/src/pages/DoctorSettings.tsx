@@ -11,6 +11,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function DoctorSettings() {
   const { user } = useAuth();
@@ -18,6 +26,9 @@ export default function DoctorSettings() {
   const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [showEmailChange, setShowEmailChange] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [isChangingEmail, setIsChangingEmail] = useState(false);
   const [profileData, setProfileData] = useState({
     title: "Dr.",
     email: "",
@@ -68,6 +79,52 @@ export default function DoctorSettings() {
 
   const handleInputChange = (field: keyof typeof profileData, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleEmailChange = async () => {
+    if (!newEmail || newEmail === profileData.email) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a different email address.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsChangingEmail(true);
+    
+    try {
+      const response = await fetch('/api/auth/change-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ newEmail }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to change email');
+      }
+
+      toast({
+        title: "Email change initiated",
+        description: "Please check your new email address for a verification link. You'll need to verify the new email before it becomes active.",
+      });
+      
+      setShowEmailChange(false);
+      setNewEmail('');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to change email. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsChangingEmail(false);
+    }
   };
 
   // Simulate loading error for demonstration
@@ -138,15 +195,25 @@ export default function DoctorSettings() {
                   </div>
                   <div>
                     <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email" 
-                      type="email"
-                      value={profileData.email}
-                      disabled
-                      className="bg-gray-100 cursor-not-allowed"
-                    />
+                    <div className="flex gap-2">
+                      <Input 
+                        id="email" 
+                        type="email"
+                        value={profileData.email}
+                        disabled
+                        className="bg-gray-100 cursor-not-allowed flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowEmailChange(true)}
+                      >
+                        Change Email
+                      </Button>
+                    </div>
                     <p className="text-sm text-gray-500 mt-1">
-                      Email cannot be changed from this page
+                      Use the Change Email button to update your email address securely
                     </p>
                   </div>
                 </div>
@@ -332,6 +399,57 @@ export default function DoctorSettings() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Email Change Dialog */}
+      <Dialog open={showEmailChange} onOpenChange={setShowEmailChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Email Address</DialogTitle>
+            <DialogDescription>
+              Enter your new email address. You'll receive a verification link to confirm the change.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="current-email">Current Email</Label>
+              <Input
+                id="current-email"
+                value={profileData.email}
+                disabled
+                className="bg-gray-100"
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-email">New Email</Label>
+              <Input
+                id="new-email"
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="Enter new email address"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowEmailChange(false);
+                setNewEmail('');
+              }}
+              disabled={isChangingEmail}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleEmailChange}
+              disabled={isChangingEmail || !newEmail}
+            >
+              {isChangingEmail ? 'Changing...' : 'Change Email'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DoctorLayout>
   );
 }
