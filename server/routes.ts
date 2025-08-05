@@ -246,6 +246,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get current doctor's professional information
+  app.get('/api/doctors/current', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      // Find doctor record for this user
+      const doctor = await storage.getDoctorByUserId(userId);
+      if (!doctor) {
+        return res.status(404).json({ message: 'Doctor profile not found' });
+      }
+
+      res.json(doctor);
+    } catch (error: any) {
+      console.error('Error fetching current doctor:', error);
+      res.status(500).json({ message: 'Failed to fetch doctor information' });
+    }
+  });
+
+  // Update current doctor's professional information
+  app.patch('/api/doctors/current', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      // Find doctor record for this user
+      const doctor = await storage.getDoctorByUserId(userId);
+      if (!doctor) {
+        return res.status(404).json({ message: 'Doctor profile not found' });
+      }
+
+      // Update doctor professional info
+      const updatedDoctor = await storage.updateDoctor(doctor.id, req.body);
+      res.json(updatedDoctor);
+    } catch (error: any) {
+      console.error('Error updating doctor professional info:', error);
+      res.status(500).json({ message: 'Failed to update doctor information' });
+    }
+  });
+
   app.get("/api/doctors/:id", async (req, res) => {
     try {
       const doctor = await storage.getDoctor(req.params.id);

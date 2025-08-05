@@ -9,7 +9,7 @@ import DoctorLayout from "@/components/DoctorLayout";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
   Dialog,
@@ -36,6 +36,22 @@ export default function DoctorSettings() {
     lastName: "",
     phone: ""
   });
+  
+  const [professionalData, setProfessionalData] = useState({
+    specialty: "",
+    bio: "",
+    education: "",
+    experience: "",
+    languages: [] as string[],
+    rppsNumber: ""
+  });
+
+  // Fetch doctor professional information
+  const { data: doctorInfo } = useQuery({
+    queryKey: ['/api/doctors/current'],
+    enabled: !!user?.id && user?.role === 'doctor',
+    retry: false
+  });
 
   // Update profile data when user data loads
   useEffect(() => {
@@ -49,6 +65,20 @@ export default function DoctorSettings() {
       });
     }
   }, [user]);
+  
+  // Update professional data when doctor info loads
+  useEffect(() => {
+    if (doctorInfo) {
+      setProfessionalData({
+        specialty: doctorInfo.specialty || "",
+        bio: doctorInfo.bio || "",
+        education: doctorInfo.education || "",
+        experience: doctorInfo.experience || "",
+        languages: doctorInfo.languages || [],
+        rppsNumber: doctorInfo.rppsNumber || ""
+      });
+    }
+  }, [doctorInfo]);
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
@@ -79,6 +109,35 @@ export default function DoctorSettings() {
 
   const handleInputChange = (field: keyof typeof profileData, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }));
+  };
+  
+  const handleProfessionalChange = (field: keyof typeof professionalData, value: string | string[]) => {
+    setProfessionalData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Update professional info mutation
+  const updateProfessionalMutation = useMutation({
+    mutationFn: async (data: typeof professionalData) => {
+      return await apiRequest('PATCH', '/api/doctors/current', data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Professional information updated",
+        description: "Your professional information has been successfully updated."
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/doctors/current'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update professional information.",
+        variant: "destructive"
+      });
+    }
+  });
+  
+  const handleSaveProfessional = () => {
+    updateProfessionalMutation.mutate(professionalData);
   };
 
   const handleEmailChange = async () => {
@@ -261,27 +320,65 @@ export default function DoctorSettings() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="expertise">Fields of Expertise</Label>
-                  <Input id="expertise" placeholder="Rechercher une expertise (min. 3 caractères)" />
-                  <div className="text-sm text-gray-500 mt-1">0/10 expertise - Tous de moins 7 caractères ajoutées</div>
+                  <Label htmlFor="specialty">Specialty</Label>
+                  <Input 
+                    id="specialty" 
+                    placeholder="e.g., Pediatrics, Cardiology, General Medicine..."
+                    value={professionalData.specialty}
+                    onChange={(e) => handleProfessionalChange('specialty', e.target.value)}
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="degrees">Degrees and Qualifications</Label>
-                  <Textarea id="degrees" placeholder="List your degrees and certifications..." />
+                  <Label htmlFor="education">Degrees and Qualifications</Label>
+                  <Textarea 
+                    id="education" 
+                    placeholder="List your degrees and certifications..."
+                    value={professionalData.education}
+                    onChange={(e) => handleProfessionalChange('education', e.target.value)}
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="presentation">Professional Presentation</Label>
-                  <Textarea id="presentation" placeholder="Introduce yourself to future patients: your experience, approach, specialties..." />
+                  <Label htmlFor="bio">Professional Presentation</Label>
+                  <Textarea 
+                    id="bio" 
+                    placeholder="Introduce yourself to future patients: your experience, approach, specialties..."
+                    value={professionalData.bio}
+                    onChange={(e) => handleProfessionalChange('bio', e.target.value)}
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="awards">Awards and Distinctions</Label>
-                  <Textarea id="awards" placeholder="Awards, distinctions, publications..." />
+                  <Label htmlFor="experience">Experience and Awards</Label>
+                  <Textarea 
+                    id="experience" 
+                    placeholder="Awards, distinctions, publications, work experience..."
+                    value={professionalData.experience}
+                    onChange={(e) => handleProfessionalChange('experience', e.target.value)}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="languages">Languages Spoken</Label>
-                  <Input id="languages" placeholder="Ex: French, English, Spanish..." />
+                  <Input 
+                    id="languages" 
+                    placeholder="Ex: French, English, Spanish..."
+                    value={professionalData.languages.join(', ')}
+                    onChange={(e) => handleProfessionalChange('languages', e.target.value.split(',').map(lang => lang.trim()).filter(lang => lang))}
+                  />
                 </div>
-                <Button>Save Professional Information</Button>
+                <div>
+                  <Label htmlFor="rppsNumber">RPPS Number</Label>
+                  <Input 
+                    id="rppsNumber" 
+                    placeholder="Your professional registration number"
+                    value={professionalData.rppsNumber}
+                    onChange={(e) => handleProfessionalChange('rppsNumber', e.target.value)}
+                  />
+                </div>
+                <Button 
+                  onClick={handleSaveProfessional}
+                  disabled={updateProfessionalMutation.isPending}
+                >
+                  {updateProfessionalMutation.isPending ? "Saving..." : "Save Professional Information"}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>

@@ -474,6 +474,23 @@ export class PostgresStorage implements IStorage {
     return result;
   }
 
+  async getDoctorByUserId(userId: number): Promise<Doctor | undefined> {
+    const [doctor] = await db.select().from(doctors).where(eq(doctors.userId, userId));
+    return doctor;
+  }
+
+  async updateDoctor(doctorId: number, data: Partial<Doctor>): Promise<Doctor | undefined> {
+    const [updatedDoctor] = await db
+      .update(doctors)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(eq(doctors.id, doctorId))
+      .returning();
+    return updatedDoctor;
+  }
+
   async getDoctor(id: string | number): Promise<(Doctor & { user: User }) | undefined> {
     try {
       const doctorId = typeof id === 'string' ? parseInt(id) : id;
