@@ -1009,11 +1009,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Not authenticated" });
       }
 
-      // Update email in Supabase
-      const { data, error } = await supabase.auth.admin.updateUserById(
-        session.user.id,
-        { email: email }
+      // Create a Supabase client with the user's session
+      const { createClient } = await import('@supabase/supabase-js');
+      const userSupabase = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_KEY!,
+        {
+          global: {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`
+            }
+          }
+        }
       );
+
+      // Update email using the user's session
+      const { data, error } = await userSupabase.auth.updateUser({
+        email: email
+      });
 
       if (error) {
         console.error("Supabase email change error:", error);
@@ -1058,11 +1071,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Current password is incorrect" });
       }
 
-      // Update password in Supabase
-      const { data, error } = await supabase.auth.admin.updateUserById(
-        session.user.id,
-        { password: newPassword }
+      // Create a Supabase client with the user's session
+      const { createClient } = await import('@supabase/supabase-js');
+      const userSupabase = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_KEY!,
+        {
+          global: {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`
+            }
+          }
+        }
       );
+
+      // Update password using the user's session
+      const { data, error } = await userSupabase.auth.updateUser({
+        password: newPassword
+      });
 
       if (error) {
         console.error("Supabase password change error:", error);
