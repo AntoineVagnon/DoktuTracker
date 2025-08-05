@@ -14,6 +14,25 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import Header from "@/components/Header";
 import { analytics } from "@/lib/analytics";
+import { convertSlotTimeToLocal } from "@/lib/dateUtils";
+
+// Helper function to translate French specialties to English
+function translateSpecialty(specialty: string): string {
+  const translations: Record<string, string> = {
+    'Médecine Générale': 'General Medicine',
+    'Pédiatrie': 'Pediatrics',
+    'Cardiologie': 'Cardiology',
+    'Dermatologie': 'Dermatology',
+    'Gynécologie': 'Gynecology',
+    'Psychiatrie': 'Psychiatry',
+    'Ophtalmologie': 'Ophthalmology',
+    'Orthopédie': 'Orthopedics',
+    'Radiologie': 'Radiology',
+    'Neurologie': 'Neurology'
+  };
+  
+  return translations[specialty] || specialty;
+}
 
 interface Doctor {
   id: string;
@@ -168,6 +187,16 @@ export default function DoctorProfile() {
     });
   };
   
+  // Get all future available slots sorted by date and time
+  const allFutureSlots = filterFutureSlots(availableSlots).sort((a: TimeSlot, b: TimeSlot) => {
+    const dateCompare = a.date.localeCompare(b.date);
+    if (dateCompare !== 0) return dateCompare;
+    return a.startTime.localeCompare(b.startTime);
+  });
+  
+  // Get the next available slot
+  const nextSlot = allFutureSlots[0];
+  
   const selectedDateSlots = filterFutureSlots(
     availableSlots.filter((slot: TimeSlot) => 
       isSameDay(new Date(slot.date), selectedDate)
@@ -208,7 +237,7 @@ export default function DoctorProfile() {
             </Avatar>
             <div>
               <h1 className="text-4xl font-bold mb-2">{doctorName}</h1>
-              <p className="text-xl text-blue-100 mb-3">{doctor.specialty}</p>
+              <p className="text-xl text-blue-100 mb-3">{translateSpecialty(doctor.specialty)}</p>
               
               <div className="flex items-center space-x-6">
                 <div className="flex items-center">
@@ -217,14 +246,70 @@ export default function DoctorProfile() {
                 </div>
                 
                 <div className="flex items-center">
-                  <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                  <span>{doctor.rating} ({doctor.reviewCount} reviews)</span>
+                  {doctor.reviewCount > 0 ? (
+                    <>
+                      <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
+                      <span>{doctor.rating} ({doctor.reviewCount} reviews)</span>
+                    </>
+                  ) : (
+                    <span>No ratings yet</span>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Next Available Slot Bar */}
+      {!slotsLoading && nextSlot && (
+        <div className="bg-green-50 border-b border-green-200">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Clock className="h-5 w-5 text-green-600" />
+                <span className="text-green-800 font-medium">
+                  Next available: {format(new Date(`${nextSlot.date}T00:00:00`), 'EEEE, MMMM d')} at {convertSlotTimeToLocal(nextSlot.date, nextSlot.startTime)}
+                </span>
+              </div>
+              <Button
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={async () => {
+                  const fullSlotDateTime = `${nextSlot.date}T${nextSlot.startTime}`;
+                  try {
+                    const response = await fetch('/api/slots/hold', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ 
+                        slotId: nextSlot.id,
+                        sessionId: undefined
+                      })
+                    });
+                    
+                    if (response.ok) {
+                      if (user) {
+                        window.location.href = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                      } else {
+                        window.location.href = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                      }
+                    } else {
+                      const error = await response.json();
+                      alert(error.error || 'This slot is no longer available. Please select another time.');
+                      window.location.reload();
+                    }
+                  } catch (error) {
+                    console.error('Failed to hold slot:', error);
+                    alert('Unable to reserve this slot. Please try again.');
+                  }
+                }}
+              >
+                Book This Slot
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -256,7 +341,7 @@ export default function DoctorProfile() {
                   </li>
                   <li className="flex items-start">
                     <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
-                    <span>Specialized certification in {doctor.specialty}</span>
+                    <span>Specialized certification in {translateSpecialty(doctor.specialty)}</span>
                   </li>
                   <li className="flex items-start">
                     <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
@@ -293,9 +378,9 @@ export default function DoctorProfile() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-4">
-                  <span className="flex items-center">🇫🇷 French (Native)</span>
-                  <span className="flex items-center">🇬🇧 English (Fluent)</span>
-                  <span className="flex items-center">🇪🇸 Spanish (Intermediate)</span>
+                  <span className="flex items-center">🇬🇧 English (Native)</span>
+                  <span className="flex items-center">🇫🇷 French (Fluent)</span>
+                  <span className="flex items-center">🇪🇸 Spanish (Conversational)</span>
                 </div>
               </CardContent>
             </Card>
@@ -323,7 +408,7 @@ export default function DoctorProfile() {
                   </Avatar>
                   <div>
                     <p className="font-semibold">{doctorName}</p>
-                    <p className="text-sm text-gray-600">{doctor.specialty}</p>
+                    <p className="text-sm text-gray-600">{translateSpecialty(doctor.specialty)}</p>
                     <p className="text-sm text-gray-500">Medical ID: DOC-{doctor.id}</p>
                   </div>
                 </div>
