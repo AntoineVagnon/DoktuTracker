@@ -6,13 +6,67 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { User, Briefcase, CreditCard, Shield, Eye, EyeOff } from "lucide-react";
 import DoctorLayout from "@/components/DoctorLayout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function DoctorSettings() {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [profileData, setProfileData] = useState({
+    title: "Dr.",
+    email: "",
+    firstName: "",
+    lastName: "",
+    phone: ""
+  });
+
+  // Update profile data when user data loads
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        title: user.title || "Dr.",
+        email: user.email || "",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        phone: user.phone || ""
+      });
+    }
+  }, [user]);
+
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: typeof profileData) => {
+      return await apiRequest('PATCH', '/api/auth/user', data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been successfully updated."
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleSaveProfile = () => {
+    updateProfileMutation.mutate(profileData);
+  };
+
+  const handleInputChange = (field: keyof typeof profileData, value: string) => {
+    setProfileData(prev => ({ ...prev, [field]: value }));
+  };
 
   // Simulate loading error for demonstration
   const handleRetry = () => {
@@ -74,28 +128,55 @@ export default function DoctorSettings() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="title">Title</Label>
-                    <Input id="title" defaultValue={user?.title || "Dr."} />
+                    <Input 
+                      id="title" 
+                      value={profileData.title}
+                      onChange={(e) => handleInputChange('title', e.target.value)}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" defaultValue={user?.email} disabled />
+                    <Input 
+                      id="email" 
+                      type="email"
+                      value={profileData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" defaultValue={user?.firstName || ""} />
+                    <Input 
+                      id="firstName" 
+                      value={profileData.firstName}
+                      onChange={(e) => handleInputChange('firstName', e.target.value)}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" defaultValue={user?.lastName || ""} />
+                    <Input 
+                      id="lastName" 
+                      value={profileData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    />
                   </div>
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" placeholder="+33 1 23 45 67 89" />
+                  <Input 
+                    id="phone" 
+                    placeholder="+33 1 23 45 67 89"
+                    value={profileData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                  />
                 </div>
-                <Button>Save Profile</Button>
+                <Button 
+                  onClick={handleSaveProfile}
+                  disabled={updateProfileMutation.isPending}
+                >
+                  {updateProfileMutation.isPending ? "Saving..." : "Save Profile"}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
