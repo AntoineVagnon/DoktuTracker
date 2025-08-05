@@ -740,29 +740,9 @@ export default function Dashboard() {
                             </div>
 
                             {/* Key Information */}
-                            <div className="space-y-4">
-                              <h3 className="text-lg font-medium">Key Information</h3>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Date of Birth
-                                  </label>
-                                  <p className="text-gray-900">
-                                    {(healthProfile as any).dateOfBirth ? 
-                                      new Date((healthProfile as any).dateOfBirth).toLocaleDateString() : 
-                                      'Not specified'
-                                    }
-                                  </p>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Gender
-                                  </label>
-                                  <p className="text-gray-900">{(healthProfile as any).gender || 'Not specified'}</p>
-                                </div>
-                              </div>
-
-                              <div>
+                            <div className="space-y-6">
+                              <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-medium">Health Information</h3>
                                 <Button 
                                   variant="outline" 
                                   onClick={() => setHealthProfileOpen(true)}
@@ -770,6 +750,119 @@ export default function Dashboard() {
                                   Edit Health Profile
                                 </Button>
                               </div>
+
+                              {/* Basic Information */}
+                              <div className="space-y-4">
+                                <h4 className="font-medium text-gray-900">Basic Information</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Date of Birth
+                                    </label>
+                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">
+                                      {(healthProfile as any).dateOfBirth ? 
+                                        new Date((healthProfile as any).dateOfBirth).toLocaleDateString() : 
+                                        'Not specified'
+                                      }
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Gender
+                                    </label>
+                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).gender || 'Not specified'}</p>
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Height
+                                    </label>
+                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).height || 'Not specified'}</p>
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Weight
+                                    </label>
+                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).weight || 'Not specified'}</p>
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Blood Type
+                                    </label>
+                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).bloodType || 'Not specified'}</p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Medical Information */}
+                              {((healthProfile as any).allergies?.length || (healthProfile as any).medications?.length || (healthProfile as any).medicalHistory?.length) && (
+                                <div className="space-y-4">
+                                  <h4 className="font-medium text-gray-900">Medical Information</h4>
+                                  
+                                  {(healthProfile as any).allergies?.length > 0 && (
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Allergies
+                                      </label>
+                                      <div className="p-2 bg-gray-50 rounded">
+                                        {(healthProfile as any).allergies.map((allergy: string, index: number) => (
+                                          <span key={index} className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded mr-2 mb-1">
+                                            {allergy}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {(healthProfile as any).medications?.length > 0 && (
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Current Medications
+                                      </label>
+                                      <div className="p-2 bg-gray-50 rounded">
+                                        {(healthProfile as any).medications.map((medication: string, index: number) => (
+                                          <span key={index} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-2 mb-1">
+                                            {medication}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {(healthProfile as any).medicalHistory?.length > 0 && (
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Medical History
+                                      </label>
+                                      <div className="p-2 bg-gray-50 rounded">
+                                        {(healthProfile as any).medicalHistory.map((history: string, index: number) => (
+                                          <div key={index} className="text-gray-900 mb-1">• {history}</div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Emergency Contact */}
+                              {((healthProfile as any).emergencyContactName || (healthProfile as any).emergencyContactPhone) && (
+                                <div className="space-y-4">
+                                  <h4 className="font-medium text-gray-900">Emergency Contact</h4>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Contact Name
+                                      </label>
+                                      <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).emergencyContactName || 'Not specified'}</p>
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Contact Phone
+                                      </label>
+                                      <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).emergencyContactPhone || 'Not specified'}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
 
                             {/* Last Updated */}

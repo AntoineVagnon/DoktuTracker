@@ -63,16 +63,32 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
 
   // Calculate completion score
   useEffect(() => {
-    const fields = [
+    const basicFields = [
       watchedValues.dateOfBirth,
       watchedValues.gender,
       watchedValues.height,
       watchedValues.weight,
+      watchedValues.bloodType,
       watchedValues.emergencyContactName,
+      watchedValues.emergencyContactPhone,
     ];
     
-    const filledFields = fields.filter(field => field && field.trim() !== '').length;
-    const score = Math.round((filledFields / fields.length) * 100);
+    const arrayFields = [
+      watchedValues.allergies,
+      watchedValues.medications,
+      watchedValues.medicalHistory,
+    ];
+    
+    // Count filled basic fields (strings)
+    const filledBasicFields = basicFields.filter(field => field && field.trim() !== '').length;
+    
+    // Count filled array fields (arrays with at least one item)
+    const filledArrayFields = arrayFields.filter(field => field && Array.isArray(field) && field.length > 0).length;
+    
+    const totalFields = basicFields.length + arrayFields.length;
+    const totalFilledFields = filledBasicFields + filledArrayFields;
+    
+    const score = Math.round((totalFilledFields / totalFields) * 100);
     setCompletionScore(score);
   }, [watchedValues]);
 
