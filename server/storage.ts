@@ -246,6 +246,7 @@ export interface IStorage {
 export class PostgresStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, parseInt(id)));
+    console.log('📱 getUser result:', { id, user });
     return user;
   }
 
@@ -404,6 +405,8 @@ export class PostgresStorage implements IStorage {
       throw new Error('Invalid user ID');
     }
 
+    console.log('📱 updateUser input:', { userId, updates });
+
     const updateData = {
       ...updates,
       updatedAt: new Date()
@@ -419,6 +422,7 @@ export class PostgresStorage implements IStorage {
       throw new Error('User not found');
     }
 
+    console.log('📱 updateUser result:', updatedUser);
     return updatedUser;
   }
 

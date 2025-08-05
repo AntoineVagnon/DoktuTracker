@@ -420,6 +420,8 @@ export async function setupSupabaseAuth(app: Express) {
       }
 
       const { title, firstName, lastName, email, phone } = req.body;
+      
+      console.log('📱 Profile update request:', { userId, title, firstName, lastName, email, phone });
 
       // Update user profile in storage
       const updatedUser = await storage.updateUser(userId, {
@@ -429,6 +431,8 @@ export async function setupSupabaseAuth(app: Express) {
         email,
         phone
       });
+      
+      console.log('✅ Profile updated:', updatedUser);
 
       if (!updatedUser) {
         return res.status(404).json({ message: 'User not found' });
