@@ -1562,8 +1562,11 @@ export default function GoogleStyleCalendar({
               onClick={async () => {
                 if (cancelConfirmDialog.appointmentId) {
                   try {
-                    await apiRequest('POST', `/api/appointments/${cancelConfirmDialog.appointmentId}/cancel`);
+                    await apiRequest('PUT', `/api/appointments/${cancelConfirmDialog.appointmentId}/cancel`, {
+                      reason: "Doctor cancelled the appointment"
+                    });
                     queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
                     toast({
                       title: "Appointment cancelled",
                       description: "The patient will receive an invitation to reschedule."
