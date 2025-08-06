@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AdminHeader from "@/components/AdminHeader";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
   ArrowUp, ArrowDown, Target, Zap, Heart, TrendingDown,
   BarChart3, PieChart, ArrowUpRight, ArrowDownRight,
   FileText, User, DollarSign, Percent, Check, ExternalLink, Info,
-  Menu
+  Menu, LogIn
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays } from "date-fns";
@@ -30,6 +30,8 @@ import { InfoIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 import {
   ResponsiveContainer,
   LineChart,
@@ -164,12 +166,34 @@ const CHART_COLORS = {
 
 export default function AdminDashboard() {
   const { toast } = useToast();
+  const [, navigate] = useLocation();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [activeSection, setActiveSection] = useState('overview');
   const [timeRange, setTimeRange] = useState('7d');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+  // Check authentication and admin role
+  useEffect(() => {
+    if (!authLoading && (!isAuthenticated || user?.role !== 'admin')) {
+      // Only redirect if authentication is complete and user is not admin
+      if (!isAuthenticated) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to access the admin dashboard.",
+          variant: "destructive",
+        });
+      } else if (user?.role !== 'admin') {
+        toast({
+          title: "Access Denied",
+          description: "You need admin privileges to access this page.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [authLoading, isAuthenticated, user, navigate, toast]);
+
   // Fetch comprehensive dashboard metrics
-  const { data: metrics, isLoading, error } = useQuery({
+  const { data: metrics, isLoading: metricsLoading, error } = useQuery({
     queryKey: ['/api/admin/metrics', timeRange],
     queryFn: async () => {
       const endDate = new Date();
@@ -179,8 +203,12 @@ export default function AdminDashboard() {
       const response = await apiRequest('GET', `/api/admin/metrics?start=${startDate.toISOString()}&end=${endDate.toISOString()}`);
       return await response.json() as DashboardMetrics;
     },
+    enabled: isAuthenticated && user?.role === 'admin', // Only fetch if authenticated as admin
     refetchInterval: 60000, // Refresh every minute
   });
+
+  // Combined loading state
+  const isLoading = authLoading || metricsLoading;
 
   // Helper function for metric change indicators
   const MetricChange = ({ current, previous }: { current: number; previous: number }) => {
@@ -1667,8 +1695,58 @@ export default function AdminDashboard() {
     );
   }
 
-  // Error state
-  if (error) {
+  // Authentication error state
+  if (!isAuthenticated && !authLoading) {
+    return (
+      <>
+        <AdminHeader />
+        <div className="container mx-auto p-4 max-w-7xl">
+          <div className="flex flex-col items-center justify-center h-96 space-y-6">
+            <div className="text-center space-y-2">
+              <LogIn className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h2 className="text-2xl font-semibold text-gray-900">Authentication Required</h2>
+              <p className="text-gray-600">Please log in to access the admin dashboard.</p>
+            </div>
+            <Button 
+              onClick={() => navigate('/login')}
+              className="flex items-center gap-2"
+            >
+              <LogIn className="h-4 w-4" />
+              Log In
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Access denied state (logged in but not admin)
+  if (isAuthenticated && user?.role !== 'admin' && !authLoading) {
+    return (
+      <>
+        <AdminHeader />
+        <div className="container mx-auto p-4 max-w-7xl">
+          <div className="flex flex-col items-center justify-center h-96 space-y-6">
+            <div className="text-center space-y-2">
+              <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h2 className="text-2xl font-semibold text-gray-900">Access Denied</h2>
+              <p className="text-gray-600">You need admin privileges to access this page.</p>
+              <p className="text-sm text-gray-500">Current role: {user?.role || 'Unknown'}</p>
+            </div>
+            <Button 
+              onClick={() => navigate('/')}
+              variant="outline"
+            >
+              Return to Home
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // API error state
+  if (error && isAuthenticated && user?.role === 'admin') {
     return (
       <>
         <AdminHeader />
