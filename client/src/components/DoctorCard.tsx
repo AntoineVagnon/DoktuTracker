@@ -10,6 +10,14 @@ import { format } from "date-fns";
 import { convertSlotTimeToLocal } from "@/lib/dateUtils";
 import { analytics } from "@/lib/analytics";
 
+// Import doctor profile images
+import doctorPhoto1 from "@assets/generated_images/Male_doctor_professional_headshot_cea73805.png";
+import doctorPhoto2 from "@assets/generated_images/Female_doctor_professional_headshot_6aeb3693.png";
+import doctorPhoto3 from "@assets/generated_images/Medical_specialist_doctor_headshot_97855c74.png";
+import doctorPhoto4 from "@assets/generated_images/Female_medical_specialist_headshot_8ccb39fa.png";
+import doctorPhoto5 from "@assets/generated_images/Young_male_doctor_headshot_b7940384.png";
+import doctorPhoto6 from "@assets/generated_images/Senior_male_doctor_headshot_141d1840.png";
+
 interface Doctor {
   id: string;
   user: {
@@ -39,6 +47,16 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
   
   // Get real-time next available slot
   const { nextSlot, hasAvailability, isLoading } = useNextAvailableSlot(doctor.id);
+  
+  // Array of doctor profile photos
+  const doctorPhotos = [
+    doctorPhoto1, doctorPhoto2, doctorPhoto3, 
+    doctorPhoto4, doctorPhoto5, doctorPhoto6
+  ];
+  
+  // Get a consistent photo for each doctor based on their ID
+  const doctorPhotoIndex = parseInt(String(doctor.id).slice(-1), 16) % doctorPhotos.length;
+  const doctorPhoto = doctorPhotos[doctorPhotoIndex];
   
   const gradientColors = [
     "from-blue-500 to-blue-600",
@@ -77,6 +95,11 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
           {/* Avatar */}
           <div className="mx-auto mb-4">
             <Avatar className="h-16 w-16">
+              <AvatarImage 
+                src={doctorPhoto} 
+                alt={`Dr. ${doctorName}`}
+                className="object-cover"
+              />
               <AvatarFallback className={`bg-gradient-to-br ${gradientClass} text-white font-bold text-xl`}>
                 {initials}
               </AvatarFallback>
