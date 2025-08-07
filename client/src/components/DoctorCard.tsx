@@ -54,8 +54,13 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
     doctorPhoto4, doctorPhoto5, doctorPhoto6
   ];
   
-  // Get a consistent photo for each doctor based on their ID
-  const doctorPhotoIndex = parseInt(String(doctor.id).slice(-1), 16) % doctorPhotos.length;
+  // Get a consistent photo for each doctor based on their ID with better distribution
+  // Use multiple characters from ID to reduce collisions
+  const doctorId = String(doctor.id);
+  const hashSum = doctorId.split('').reduce((sum, char, index) => 
+    sum + char.charCodeAt(0) * (index + 1), 0
+  );
+  const doctorPhotoIndex = hashSum % doctorPhotos.length;
   const doctorPhoto = doctorPhotos[doctorPhotoIndex];
   
   const gradientColors = [
@@ -93,8 +98,8 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
       <CardContent className="p-6">
         <div className="text-center">
           {/* Avatar */}
-          <div className="mx-auto mb-4">
-            <Avatar className="h-16 w-16">
+          <div className="flex justify-center mb-4">
+            <Avatar className="h-20 w-20">
               <AvatarImage 
                 src={doctorPhoto} 
                 alt={`Dr. ${doctorName}`}
