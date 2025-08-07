@@ -12,6 +12,9 @@ import DoctorCard from "@/components/DoctorCard";
 import AuthModal from "@/components/AuthModal";
 import { analytics } from "@/lib/analytics";
 import telemedicineImage from "@assets/generated_images/Patient_telehealth_consultation_97dad641.png";
+import patientPhoto1 from "@assets/generated_images/Professional_woman_headshot_cb8ff331.png";
+import patientPhoto2 from "@assets/generated_images/Professional_man_headshot_541d0770.png";
+import patientPhoto3 from "@assets/generated_images/Young_professional_woman_headshot_5d562695.png";
 
 export default function Landing() {
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
@@ -245,9 +248,21 @@ export default function Landing() {
               <div className="mt-8 flex items-center space-x-6">
                 <div className="flex items-center">
                   <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"></div>
-                    <div className="w-8 h-8 rounded-full bg-gray-400 border-2 border-white"></div>
-                    <div className="w-8 h-8 rounded-full bg-gray-500 border-2 border-white"></div>
+                    <img 
+                      src={patientPhoto1} 
+                      alt="Patient testimonial" 
+                      className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                    />
+                    <img 
+                      src={patientPhoto2} 
+                      alt="Patient testimonial" 
+                      className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                    />
+                    <img 
+                      src={patientPhoto3} 
+                      alt="Patient testimonial" 
+                      className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                    />
                   </div>
                   <span className="ml-3 text-sm text-gray-600">
                     <span className="font-semibold text-gray-900">50,000+</span> patients treated
