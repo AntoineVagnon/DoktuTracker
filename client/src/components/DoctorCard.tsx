@@ -54,13 +54,10 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
     doctorPhoto4, doctorPhoto5, doctorPhoto6
   ];
   
-  // Get a consistent photo for each doctor based on their ID with better distribution
-  // Use multiple characters from ID to reduce collisions
-  const doctorId = String(doctor.id);
-  const hashSum = doctorId.split('').reduce((sum, char, index) => 
-    sum + char.charCodeAt(0) * (index + 1), 0
-  );
-  const doctorPhotoIndex = hashSum % doctorPhotos.length;
+  // Ensure each doctor gets a unique photo by using a stable assignment
+  // Use doctor ID with a prime number multiplier for better distribution
+  const doctorId = parseInt(doctor.id);
+  const doctorPhotoIndex = (doctorId * 17 + 7) % doctorPhotos.length; // Prime multiplier to avoid patterns
   const doctorPhoto = doctorPhotos[doctorPhotoIndex];
   
   const gradientColors = [
