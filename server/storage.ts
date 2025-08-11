@@ -81,6 +81,7 @@ export interface IStorage {
   // Appointment operations
   getAppointments(patientId?: string, doctorId?: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User })[]>;
   getAppointment(id: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User }) | undefined>;
+  getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User })[]>;
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
   updateAppointmentStatus(id: string, status: string, paymentIntentId?: string): Promise<void>;
   updateAppointmentPayment(id: string, paymentIntentId: string): Promise<void>;
@@ -1097,6 +1098,57 @@ export class PostgresStorage implements IStorage {
     } catch (error) {
       console.error("Error in getAppointment:", error);
       return undefined;
+    }
+  }
+
+  async getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<any[]> {
+    try {
+      const appointmentResults = await db
+        .select()
+        .from(appointments)
+        .where(
+          and(
+            gte(appointments.appointmentDate, startDate),
+            lte(appointments.appointmentDate, endDate)
+          )
+        )
+        .orderBy(asc(appointments.appointmentDate));
+      
+      console.log(`📋 Found ${appointmentResults.length} appointments in date range ${startDate.toISOString()} to ${endDate.toISOString()}`);
+      
+      // For each appointment, fetch doctor and patient details
+      const enhancedAppointments = await Promise.all(
+        appointmentResults.map(async (appointment) => {
+          try {
+            // Get doctor details
+            const doctor = await this.getDoctor(appointment.doctorId);
+            
+            // Get patient details
+            const [patientResult] = await db
+              .select()
+              .from(users)
+              .where(eq(users.id, appointment.patientId));
+              
+            return {
+              ...appointment,
+              doctor: doctor || { specialty: "Unknown", user: { firstName: "Unknown", lastName: "Doctor" } },
+              patient: patientResult || { firstName: "Unknown", lastName: "Patient" }
+            };
+          } catch (innerError) {
+            console.error(`Error enhancing appointment ${appointment.id}:`, innerError);
+            return {
+              ...appointment,
+              doctor: { specialty: "Unknown", user: { firstName: "Unknown", lastName: "Doctor" } },
+              patient: { firstName: "Unknown", lastName: "Patient" }
+            };
+          }
+        })
+      );
+      
+      return enhancedAppointments;
+    } catch (error) {
+      console.error("Error in getAppointmentsByDateRange:", error);
+      return [];
     }
   }
 

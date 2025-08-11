@@ -32,6 +32,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
+import EmailManagement from "./EmailManagement";
 import {
   ResponsiveContainer,
   LineChart,
@@ -151,7 +152,8 @@ const navigationItems = [
   { id: 'operational', label: 'Operational', icon: Settings },
   { id: 'predictive', label: 'Predictive Analytics', icon: Brain },
   { id: 'meetings', label: 'Live & Planned Meetings', icon: Video },
-  { id: 'notifications', label: 'Notifications', icon: Mail }
+  { id: 'notifications', label: 'Notifications', icon: Mail },
+  { id: 'emails', label: 'Email Management', icon: Send }
 ];
 
 // Chart colors
@@ -1870,6 +1872,7 @@ export default function AdminDashboard() {
             {activeSection === 'predictive' && <PredictiveSection />}
             {activeSection === 'meetings' && <MeetingsSection />}
             {activeSection === 'notifications' && <NotificationsSection />}
+            {activeSection === 'emails' && <EmailManagement />}
           </div>
         </div>
       </div>

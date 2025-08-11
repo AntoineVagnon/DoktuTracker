@@ -32,6 +32,7 @@ import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { notificationService, TriggerCode } from "./services/notificationService";
+import { emailService } from "./emailService";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -504,6 +505,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         zoomPassword: req.body.zoomPassword || null
       });
       const appointment = await storage.createAppointment(appointmentData);
+      
+      // Send email notifications after appointment creation
+      try {
+        // Get patient and doctor details for email notifications
+        const patient = await storage.getUser(appointmentData.patientId.toString());
+        const doctor = await storage.getDoctor(appointmentData.doctorId);
+        
+        if (patient && doctor && doctor.user) {
+          const appointmentDate = appointmentData.appointmentDate.toISOString().split('T')[0];
+          const appointmentTime = appointmentData.appointmentDate.toTimeString().split(' ')[0];
+          
+          // Send confirmation email to patient
+          emailService.sendAppointmentConfirmation({
+            patientEmail: patient.email!,
+            patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+            doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+            specialty: doctor.specialty,
+            appointmentDate,
+            appointmentTime,
+            consultationPrice: doctor.consultationPrice,
+            appointmentId: appointment.id.toString()
+          });
+          
+          // Send notification email to doctor
+          emailService.sendDoctorNewAppointmentNotification({
+            doctorEmail: doctor.user.email!,
+            doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+            patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+            appointmentDate,
+            appointmentTime,
+            consultationPrice: doctor.consultationPrice,
+            appointmentId: appointment.id.toString()
+          });
+          
+          console.log(`📧 Email notifications sent for appointment ${appointment.id}`);
+        }
+      } catch (emailError) {
+        console.error('📧 Failed to send email notifications:', emailError);
+        // Don't fail the appointment creation if email fails
+      }
+      
       res.json(appointment);
     } catch (error) {
       console.error("Error creating appointment:", error);
@@ -654,6 +696,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Determine refund eligibility
       const refundEligible = appointment.status === 'paid' && timeDiffMinutes >= 60;
+      
+      // Send cancellation email notification
+      try {
+        if (appointment.patient?.email) {
+          const appointmentDate = appointment.appointmentDate.toISOString().split('T')[0];
+          const appointmentTime = appointment.appointmentDate.toTimeString().split(' ')[0];
+          
+          await emailService.sendAppointmentCancellation({
+            patientEmail: appointment.patient.email,
+            patientName: `${appointment.patient.firstName || ''} ${appointment.patient.lastName || ''}`.trim() || 'Patient',
+            doctorName: `${appointment.doctor.user?.firstName || ''} ${appointment.doctor.user?.lastName || ''}`.trim() || 'Doctor',
+            appointmentDate,
+            appointmentTime,
+            refundAmount: refundEligible ? appointment.doctor.consultationPrice : undefined,
+            appointmentId: appointment.id.toString()
+          });
+          
+          console.log(`📧 Cancellation email sent for appointment ${appointment.id}`);
+        }
+      } catch (emailError) {
+        console.error('📧 Failed to send cancellation email:', emailError);
+      }
       
       res.json({ 
         success: true, 
@@ -2168,6 +2232,90 @@ Please upload the document again through the secure upload system.`;
   });
 
   // Notification Routes
+  // Email notification endpoints
+  app.post("/api/emails/test", async (req, res) => {
+    try {
+      const { email, type = 'welcome' } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: "Email address is required" });
+      }
+      
+      let result = false;
+      
+      if (type === 'welcome') {
+        result = await emailService.sendWelcomeEmail({
+          email,
+          firstName: 'Test User',
+          userType: 'patient'
+        });
+      }
+      
+      res.json({ 
+        success: result, 
+        message: result ? "Test email sent successfully" : "Failed to send test email" 
+      });
+    } catch (error) {
+      console.error("Error sending test email:", error);
+      res.status(500).json({ error: "Failed to send test email" });
+    }
+  });
+
+  // Send appointment reminders for appointments in the next 24 hours
+  app.post("/api/emails/send-reminders", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (user.role !== 'admin') {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      
+      // Get upcoming appointments (next 24-48 hours for reminders)
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      
+      const dayAfter = new Date(tomorrow);
+      dayAfter.setDate(dayAfter.getDate() + 1);
+      
+      const upcomingAppointments = await storage.getAppointmentsByDateRange(tomorrow, dayAfter);
+      
+      let remindersSent = 0;
+      
+      for (const appointment of upcomingAppointments) {
+        if (appointment.status === 'paid' && appointment.patient?.email) {
+          try {
+            const appointmentDate = appointment.appointmentDate.toISOString().split('T')[0];
+            const appointmentTime = appointment.appointmentDate.toTimeString().split(' ')[0];
+            
+            await emailService.sendAppointmentReminder({
+              patientEmail: appointment.patient.email,
+              patientName: `${appointment.patient.firstName || ''} ${appointment.patient.lastName || ''}`.trim() || 'Patient',
+              doctorName: `${appointment.doctor.user?.firstName || ''} ${appointment.doctor.user?.lastName || ''}`.trim() || 'Doctor',
+              specialty: appointment.doctor.specialty,
+              appointmentDate,
+              appointmentTime,
+              appointmentId: appointment.id.toString()
+            });
+            
+            remindersSent++;
+          } catch (emailError) {
+            console.error(`Failed to send reminder for appointment ${appointment.id}:`, emailError);
+          }
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        remindersSent,
+        totalAppointments: upcomingAppointments.length,
+        message: `${remindersSent} reminder emails sent successfully` 
+      });
+    } catch (error) {
+      console.error("Error sending reminder emails:", error);
+      res.status(500).json({ error: "Failed to send reminder emails" });
+    }
+  });
+
   app.get("/api/admin/notifications", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
