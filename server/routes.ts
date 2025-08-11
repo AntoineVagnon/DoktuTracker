@@ -504,6 +504,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Appointment routes
+  // Get single appointment by ID
+  app.get("/api/appointments/:id", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user?.id;
+      const appointmentId = req.params.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Fetch the appointment
+      const appointment = await storage.getAppointment(appointmentId);
+      
+      if (!appointment) {
+        return res.status(404).json({ message: "Appointment not found" });
+      }
+
+      // Check if user has permission to view this appointment
+      let hasPermission = false;
+      
+      if (user.role === 'doctor') {
+        // For doctors, check if they're the doctor for this appointment
+        const doctor = await storage.getDoctorByEmail(user.email);
+        if (doctor && appointment.doctorId === doctor.id) {
+          hasPermission = true;
+        }
+      } else if (user.role === 'admin') {
+        // Admins can view all appointments
+        hasPermission = true;
+      } else {
+        // For patients, check if they're the patient for this appointment
+        if (appointment.patientId === parseInt(userId)) {
+          hasPermission = true;
+        }
+      }
+
+      if (!hasPermission) {
+        return res.status(403).json({ message: "You don't have permission to view this appointment" });
+      }
+
+      res.json(appointment);
+    } catch (error) {
+      console.error("Error fetching appointment:", error);
+      res.status(500).json({ message: "Failed to fetch appointment" });
+    }
+  });
+
   app.get("/api/appointments", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
