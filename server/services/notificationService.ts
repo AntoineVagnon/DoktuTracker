@@ -8,7 +8,7 @@ import {
   users,
   doctors
 } from "@shared/schema";
-import { eq, and, lte, or, isNull } from "drizzle-orm";
+import { eq, and, lte, or, isNull, desc } from "drizzle-orm";
 import { format, addHours, addMinutes, subHours, subMinutes } from "date-fns";
 import { sendEmail } from "./emailService";
 import { createICSAttachment } from "./calendarService";
@@ -179,7 +179,7 @@ export class NotificationService {
       if (doctor) {
         // Schedule 1h reminder for doctor
         await this.scheduleNotification({
-          userId: parseInt(doctor.userId),
+          userId: doctor.userId,
           appointmentId,
           triggerCode: TriggerCode.REM_1H_DOC,
           scheduledFor: subHours(appointmentTime, 1)
@@ -219,7 +219,7 @@ export class NotificationService {
             isNull(emailNotifications.retryCount)
           )
         ))
-        .orderBy(emailNotifications.priority, 'desc');
+        .orderBy(desc(emailNotifications.priority));
 
       for (const notification of pendingEmails) {
         await this.sendEmailNotification(notification);

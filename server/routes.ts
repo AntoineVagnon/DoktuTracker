@@ -1706,11 +1706,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
           
           // Trigger appointment confirmation notification
-          await notificationService.trigger(
-            TriggerCode.APPOINTMENT_CONFIRMED,
-            appointment.patientId,
-            appointment.id
-          );
+          await notificationService.scheduleNotification({
+            userId: appointment.patientId,
+            appointmentId: appointment.id,
+            triggerCode: TriggerCode.BOOK_CONF,
+            scheduledFor: new Date()
+          });
         }
 
         res.json({ 
@@ -1820,11 +1821,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
             
             // Trigger appointment confirmation notification
-            await notificationService.trigger(
-              TriggerCode.APPOINTMENT_CONFIRMED,
-              appointment.patientId,
-              appointment.id
-            );
+            await notificationService.scheduleNotification({
+              userId: appointment.patientId,
+              appointmentId: appointment.id,
+              triggerCode: TriggerCode.BOOK_CONF,
+              scheduledFor: new Date()
+            });
           }
           
           console.log(`✅ Payment succeeded for appointment ${appointmentId}`);
