@@ -23,7 +23,7 @@ const mailService = new MailService();
 mailService.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Email templates configuration
-const FROM_EMAIL = 'noreply@doktu.com';
+const FROM_EMAIL = 'doktu@doktu.co';
 const FROM_NAME = 'Doktu Medical Platform';
 
 export interface EmailParams {
