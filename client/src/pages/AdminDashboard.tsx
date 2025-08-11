@@ -108,12 +108,26 @@ interface DashboardMetrics {
   doctorUtilizationThreshold: number;
   averageSessionDuration: number;
   platformUptime: number;
+  avgResponseTime?: number;
+  supportTickets?: number;
   
   // Satisfaction
   npsScore: number;
   npsScorePrev: number;
   csat: number;
   reviewRating: number;
+  satisfactionTrends?: Array<{
+    week: string;
+    nps: number;
+    csat: number;
+  }>;
+  recentReviews?: Array<{
+    patient: string;
+    rating: number;
+    comment: string;
+    date: string;
+    doctor: string;
+  }>;
   
   // Predictive
   churnRiskPatients: number;
@@ -775,52 +789,37 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {[
-              {
-                patient: 'Marie L.',
-                rating: 5,
-                comment: 'Excellent service! The doctor was very professional and the platform is easy to use.',
-                date: '2 hours ago',
-                doctor: 'Dr. Smith'
-              },
-              {
-                patient: 'Jean P.',
-                rating: 4,
-                comment: 'Good experience overall. Would appreciate more appointment slots.',
-                date: '5 hours ago',
-                doctor: 'Dr. Johnson'
-              },
-              {
-                patient: 'Sophie M.',
-                rating: 5,
-                comment: 'Very convenient for busy schedules. Highly recommend!',
-                date: '1 day ago',
-                doctor: 'Dr. Brown'
-              },
-            ].map((review, idx) => (
-              <div key={idx} className="border rounded-lg p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{review.patient}</span>
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={cn(
-                              "h-4 w-4",
-                              i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                            )}
-                          />
-                        ))}
+            {metrics?.recentReviews && metrics.recentReviews.length > 0 ? (
+              metrics.recentReviews.map((review: any, idx: number) => (
+                <div key={idx} className="border rounded-lg p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{review.patient}</span>
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={cn(
+                                "h-4 w-4",
+                                i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                              )}
+                            />
+                          ))}
+                        </div>
                       </div>
+                      <p className="text-sm text-gray-500">{review.doctor} • {review.date}</p>
                     </div>
-                    <p className="text-sm text-gray-500">{review.doctor} • {review.date}</p>
                   </div>
+                  <p className="text-sm">{review.comment}</p>
                 </div>
-                <p className="text-sm">{review.comment}</p>
+              ))
+            ) : (
+              <div className="text-center text-gray-400 py-8">
+                <p>No reviews yet</p>
+                <p className="text-sm mt-2">Patient feedback will appear here once reviews are submitted</p>
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>
@@ -831,24 +830,23 @@ export default function AdminDashboard() {
           <CardTitle>Satisfaction Trends</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart
-              data={[
-                { week: 'W1', nps: 42, csat: 85, reviews: 4.2 },
-                { week: 'W2', nps: 45, csat: 87, reviews: 4.3 },
-                { week: 'W3', nps: 48, csat: 88, reviews: 4.4 },
-                { week: 'W4', nps: 51, csat: 90, reviews: 4.5 },
-              ]}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" />
-              <YAxis />
-              <RechartsTooltip />
-              <Legend />
-              <Line type="monotone" dataKey="nps" stroke={CHART_COLORS.primary} name="NPS Score" />
-              <Line type="monotone" dataKey="csat" stroke={CHART_COLORS.success} name="CSAT %" />
-            </LineChart>
-          </ResponsiveContainer>
+          {metrics?.satisfactionTrends ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={metrics.satisfactionTrends}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="week" />
+                <YAxis />
+                <RechartsTooltip />
+                <Legend />
+                <Line type="monotone" dataKey="nps" stroke={CHART_COLORS.primary} name="NPS Score" />
+                <Line type="monotone" dataKey="csat" stroke={CHART_COLORS.success} name="CSAT %" />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-gray-400">
+              <p>No satisfaction data available yet</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
@@ -867,19 +865,20 @@ export default function AdminDashboard() {
         />
         <KPICard
           title="Platform Uptime"
-          value={metrics?.platformUptime || 99.9}
+          value={metrics?.platformUptime || 100}
           format={(v) => `${v}%`}
           icon={Shield}
         />
         <KPICard
           title="Avg Response Time"
-          value={250}
-          format={(v) => `${v}ms`}
+          value={metrics?.avgResponseTime || 0}
+          format={(v) => v > 0 ? `${v}ms` : 'N/A'}
           icon={Zap}
+          description={metrics?.avgResponseTime ? undefined : "Monitoring not configured"}
         />
         <KPICard
           title="Support Tickets"
-          value={12}
+          value={metrics?.supportTickets || 0}
           icon={Ticket}
           description="Open tickets"
         />

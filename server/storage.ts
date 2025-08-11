@@ -1755,6 +1755,18 @@ export class PostgresStorage implements IStorage {
       .groupBy(sql`DATE(${appointments.appointmentDate})`)
       .orderBy(sql`DATE(${appointments.appointmentDate})`);
 
+    // Calculate satisfaction trends (weekly breakdown)
+    const satisfactionTrends = await this.calculateSatisfactionTrends(startDate, endDate);
+    
+    // Get recent reviews for display
+    const recentReviews = await this.getRecentReviews();
+    
+    // Support tickets (currently not tracked, would need ticketing system)
+    const supportTickets = 0; // TODO: Implement when support ticket system is added
+    
+    // Avg response time (would need API monitoring)
+    const avgResponseTime = undefined; // Will show as N/A in frontend
+
     return {
       appointmentsBooked: currentMetrics.appointmentsBooked,
       appointmentsBookedPrev: prevMetrics.appointmentsBooked,
@@ -1788,8 +1800,12 @@ export class PostgresStorage implements IStorage {
       customerAcquisitionCost,
       averageSessionDuration,
       platformUptime,
+      avgResponseTime,
+      supportTickets,
       csat,
       reviewRating,
+      satisfactionTrends,
+      recentReviews,
       projectedRevenue,
       demandForecast,
       cohortAnalysis: await this.getCohortRetention(startDate, endDate),
@@ -1798,6 +1814,94 @@ export class PostgresStorage implements IStorage {
       userGrowthData: await this.getUserGrowthData(startDate, endDate),
       acquisitionChannels: await this.getAcquisitionChannels(startDate, endDate)
     };
+  }
+
+  async calculateSatisfactionTrends(startDate: Date, endDate: Date): Promise<any> {
+    // Calculate weekly NPS and CSAT scores based on actual reviews
+    const weeks = [];
+    const weekCount = Math.ceil((endDate.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
+    
+    for (let i = 0; i < Math.min(weekCount, 4); i++) {
+      const weekStart = new Date(endDate.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
+      const weekEnd = new Date(endDate.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+      
+      // Get reviews for this week
+      const weekReviews = await db
+        .select({
+          rating: reviews.rating
+        })
+        .from(reviews)
+        .where(and(
+          gte(reviews.createdAt, weekStart),
+          lt(reviews.createdAt, weekEnd)
+        ));
+      
+      if (weekReviews.length > 0) {
+        // Calculate NPS
+        const promoters = weekReviews.filter(r => r.rating >= 4.5).length;
+        const detractors = weekReviews.filter(r => r.rating < 3.5).length;
+        const nps = Math.round(((promoters - detractors) / weekReviews.length) * 100);
+        
+        // Calculate CSAT (% with 4+ stars)
+        const satisfied = weekReviews.filter(r => r.rating >= 4).length;
+        const csat = Math.round((satisfied / weekReviews.length) * 100);
+        
+        weeks.unshift({
+          week: `W${weeks.length + 1}`,
+          nps,
+          csat
+        });
+      }
+    }
+    
+    return weeks.length > 0 ? weeks : undefined;
+  }
+
+  async getRecentReviews(): Promise<any> {
+    // Get the most recent reviews with patient and doctor names
+    const recentReviews = await db
+      .select({
+        rating: reviews.rating,
+        comment: reviews.comment,
+        createdAt: reviews.createdAt,
+        patientFirstName: sql<string>`COALESCE(patient.first_name, 'Anonymous')`,
+        patientLastName: sql<string>`COALESCE(SUBSTRING(patient.last_name FROM 1 FOR 1), '')`,
+        doctorTitle: sql<string>`COALESCE(doctor.title, 'Dr.')`,
+        doctorLastName: sql<string>`COALESCE(doctor.last_name, 'Doctor')`
+      })
+      .from(reviews)
+      .leftJoin(sql`${users} AS patient`, sql`patient.id = ${reviews.patientId}`)
+      .leftJoin(sql`${users} AS doctor`, sql`doctor.id = ${reviews.doctorId}`)
+      .orderBy(desc(reviews.createdAt))
+      .limit(5);
+    
+    if (recentReviews.length === 0) {
+      return undefined;
+    }
+    
+    return recentReviews.map(review => {
+      const hoursAgo = Math.floor((Date.now() - new Date(review.createdAt).getTime()) / (1000 * 60 * 60));
+      const daysAgo = Math.floor(hoursAgo / 24);
+      
+      let timeAgo = '';
+      if (hoursAgo < 1) {
+        timeAgo = 'Just now';
+      } else if (hoursAgo < 24) {
+        timeAgo = `${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
+      } else if (daysAgo < 7) {
+        timeAgo = `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`;
+      } else {
+        timeAgo = new Date(review.createdAt).toLocaleDateString();
+      }
+      
+      return {
+        patient: `${review.patientFirstName} ${review.patientLastName}.`,
+        rating: review.rating,
+        comment: review.comment || 'No comment provided',
+        date: timeAgo,
+        doctor: `${review.doctorTitle} ${review.doctorLastName}`
+      };
+    });
   }
 
   async getCohortRetention(startDate: Date, endDate: Date): Promise<any> {
