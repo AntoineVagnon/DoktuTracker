@@ -74,16 +74,17 @@ export default function TestLogin() {
         description: `Welcome back ${data.user?.email || 'User'}`,
       });
 
-      // Handle redirect after successful login
+      // Handle redirect after successful login - use window.location for full page refresh
+      // This ensures the session is properly established before navigating
       setTimeout(() => {
         if (doctorId && slot && price) {
           // Redirect to checkout with booking parameters
-          setLocation(`/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`);
+          window.location.href = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
         } else {
           // No booking context, go to dashboard
-          setLocation('/dashboard');
+          window.location.href = '/dashboard';
         }
-      }, 1000);
+      }, 500);
 
     } catch (error) {
       console.error('Login error:', error);

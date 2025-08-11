@@ -1027,6 +1027,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Email confirmation endpoint for post-signup
+  // Login endpoint for email/password authentication
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required" });
+      }
+
+      // Sign in with Supabase
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error || !data.user) {
+        console.error("Login error:", error);
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      // Store session in Express session
+      req.session.supabaseSession = {
+        access_token: data.session?.access_token || '',
+        refresh_token: data.session?.refresh_token || '',
+        user: data.user
+      };
+
+      // Get or create user in database
+      let dbUser = await storage.getUserByEmail(email);
+      
+      if (!dbUser) {
+        // Create user if doesn't exist (edge case for users created outside the app)
+        dbUser = await storage.upsertUser({
+          email: email,
+          role: 'patient' // Default role
+        });
+      }
+
+      // Save session explicitly
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ error: "Failed to save session" });
+        }
+
+        console.log("Login successful for user:", email);
+        res.json({ 
+          success: true, 
+          user: dbUser,
+          session: {
+            access_token: data.session?.access_token,
+            refresh_token: data.session?.refresh_token
+          }
+        });
+      });
+    } catch (error: any) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
   app.post("/api/auth/confirm", async (req, res) => {
     try {
       const { access_token, refresh_token } = req.body;
