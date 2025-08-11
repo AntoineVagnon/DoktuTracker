@@ -2827,8 +2827,8 @@ export class PostgresStorage implements IStorage {
   }
 
   async getAcquisitionChannels(startDate: Date, endDate: Date): Promise<Array<{channel: string, users: number, conversion: number}>> {
-    // Since we don't have actual acquisition channel tracking, we'll estimate based on common patterns
-    // In a real implementation, this would track UTM parameters, referrers, etc.
+    // Return real data only - no fake channel estimations
+    // TODO: Implement real channel tracking with UTM parameters, referrers, etc.
     
     const [totalUsers] = await db
       .select({ count: count() })
@@ -2850,35 +2850,36 @@ export class PostgresStorage implements IStorage {
         sql`${appointments.status} IN ('paid', 'completed')`
       ));
     
-    const total = totalUsers.count || 1;
-    const avgConversion = convertedUsers.count / total * 100;
+    const total = totalUsers.count || 0;
+    const avgConversion = total > 0 ? (convertedUsers.count / total * 100) : 0;
     
-    // Estimated channel distribution based on typical healthcare platforms
+    // Return only actual data - all traffic is currently organic/direct
+    // When real tracking is implemented, this will show real channel data
     return [
       {
         channel: 'Organic',
-        users: Math.round(total * 0.35),
-        conversion: Math.round(avgConversion * 1.2) // Organic typically converts better
+        users: total,
+        conversion: Math.round(avgConversion)
       },
       {
         channel: 'Paid Search',
-        users: Math.round(total * 0.25),
-        conversion: Math.round(avgConversion * 0.9)
+        users: 0, // No paid search campaigns active
+        conversion: 0
       },
       {
         channel: 'Social',
-        users: Math.round(total * 0.15),
-        conversion: Math.round(avgConversion * 0.7)
+        users: 0, // No social tracking implemented yet
+        conversion: 0
       },
       {
         channel: 'Referral',
-        users: Math.round(total * 0.15),
-        conversion: Math.round(avgConversion * 1.5) // Referrals typically convert best
+        users: 0, // No referral tracking implemented yet
+        conversion: 0
       },
       {
         channel: 'Direct',
-        users: Math.round(total * 0.10),
-        conversion: Math.round(avgConversion * 1.3)
+        users: 0, // Cannot differentiate from organic without tracking
+        conversion: 0
       }
     ];
   }
