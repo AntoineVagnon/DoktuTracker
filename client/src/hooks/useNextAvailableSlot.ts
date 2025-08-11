@@ -6,10 +6,10 @@ import { useQuery } from "@tanstack/react-query";
  */
 export function useNextAvailableSlot(doctorId: string) {
   const { data: timeSlots, isLoading } = useQuery({
-    queryKey: ["/api/time-slots", doctorId],
+    queryKey: ["/api/time-slots", doctorId, "nextOnly"],
     queryFn: async () => {
       try {
-        const response = await fetch(`/api/doctors/${doctorId}/slots`);
+        const response = await fetch(`/api/doctors/${doctorId}/slots?nextOnly=true`);
         if (!response.ok) return [];
         return response.json();
       } catch (error) {
@@ -26,30 +26,10 @@ export function useNextAvailableSlot(doctorId: string) {
   // Calculate next available slot from the fetched time slots
   const getNextAvailable = () => {
     if (!timeSlots || !Array.isArray(timeSlots)) return null;
-
-    const now = new Date();
     
-    // Remove duplicate slots by date+startTime, keeping the most restrictive availability
-    const uniqueSlots = timeSlots.reduce((acc: any[], current: any) => {
-      const key = `${current.date}_${current.startTime}`;
-      const existingIndex = acc.findIndex(slot => `${slot.date}_${slot.startTime}` === key);
-      
-      if (existingIndex === -1) {
-        acc.push(current);
-      } else {
-        // Keep the slot that is NOT available (more restrictive) if one exists
-        if (!current.isAvailable && acc[existingIndex].isAvailable) {
-          acc[existingIndex] = current;
-        }
-      }
-      return acc;
-    }, []);
-
-    const availableSlots = uniqueSlots
-      .filter((slot: any) => slot.isAvailable && new Date(`${slot.date}T${slot.startTime}`) > now)
-      .sort((a: any, b: any) => new Date(`${a.date}T${a.startTime}`).getTime() - new Date(`${b.date}T${b.startTime}`).getTime());
-
-    return availableSlots.length > 0 ? availableSlots[0] : null;
+    // Backend now returns only the next available slot with 60-minute buffer applied
+    // So we just need to return the first (and only) slot if it exists
+    return timeSlots.length > 0 ? timeSlots[0] : null;
   };
 
   const nextSlot = getNextAvailable();
