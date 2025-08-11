@@ -1702,8 +1702,6 @@ export class PostgresStorage implements IStorage {
     const activationRatePrev = activationPrevious.total > 0 ? Number(((activationPrevious.activated / activationPrevious.total) * 100).toFixed(1)) : 0;
     const retentionRate = totalPatientsCurrent.count > 0 ? (retentionCurrent.returning / totalPatientsCurrent.count) * 100 : 0;
     const retentionRatePrev = 0; // Would need previous period calculation
-    const npsScore = calculateNPS(currentReviews);
-    const npsScorePrev = calculateNPS(prevReviews);
     const productQualifiedLeads = pqlCurrent.count;
     const productQualifiedLeadsPrev = pqlPrevious.count;
     const conversionRate = homepageVisits.count > 0 ? (bookingsInPeriod.count / homepageVisits.count) * 100 : 0;
@@ -1726,9 +1724,16 @@ export class PostgresStorage implements IStorage {
     // Real platform uptime - would need monitoring service integration
     const platformUptime = 100; // Assume 100% unless monitoring shows otherwise
     
-    // CSAT from real reviews
-    const csat = currentReviews.length >= 3 ? (currentReviews.filter(r => r.rating >= 4).length / currentReviews.length) * 100 : 0;
+    // Only include NPS and CSAT if we have enough reviews in the selected timeframe to make them meaningful
+    const includeNpsCsat = currentReviews.length >= 5;
+    
+    // CSAT from real reviews - only calculate if we have enough reviews
+    const csat = includeNpsCsat ? (currentReviews.filter(r => r.rating >= 4).length / currentReviews.length) * 100 : undefined;
     const reviewRating = Number(reviewStats.avgRating) || 0;
+    
+    // NPS Score - only calculate if we have enough reviews
+    const npsScoreCalculated = includeNpsCsat ? calculateNPS(currentReviews) : undefined;
+    const npsScorePrevCalculated = includeNpsCsat ? calculateNPS(prevReviews) : undefined;
     
     // Projected revenue based on actual growth trend
     const growthMultiplier = growthRate > 0 ? (1 + (growthRate / 100)) : 1;
@@ -1756,7 +1761,7 @@ export class PostgresStorage implements IStorage {
       .orderBy(sql`DATE(${appointments.appointmentDate})`);
 
     // Calculate satisfaction trends (weekly breakdown) - only if enough reviews
-    const satisfactionTrends = currentReviews.length >= 5 ? await this.calculateSatisfactionTrends(startDate, endDate) : undefined;
+    const satisfactionTrends = includeNpsCsat ? await this.calculateSatisfactionTrends(startDate, endDate) : undefined;
     
     // Get recent reviews for display - only if reviews exist
     const recentReviews = currentReviews.length > 0 ? await this.getRecentReviews() : undefined;
@@ -1766,9 +1771,6 @@ export class PostgresStorage implements IStorage {
     
     // Avg response time (would need API monitoring)
     const avgResponseTime = undefined; // Will show as N/A in frontend
-
-    // Only include NPS and CSAT if we have enough reviews to make them meaningful
-    const includeNpsCsat = currentReviews.length >= 5;
 
     return {
       appointmentsBooked: currentMetrics.appointmentsBooked,
@@ -1782,8 +1784,8 @@ export class PostgresStorage implements IStorage {
       retentionRatePrev,
       uniqueActivePatients: currentMetrics.uniquePatients,
       uniqueActivePatientsPrev: prevMetrics.uniquePatients,
-      npsScore: includeNpsCsat ? npsScore : undefined,
-      npsScorePrev: includeNpsCsat ? npsScorePrev : undefined,
+      npsScore: npsScoreCalculated,
+      npsScorePrev: npsScorePrevCalculated,
       productQualifiedLeads,
       productQualifiedLeadsPrev,
       bookingsPerPatient,
@@ -1805,7 +1807,7 @@ export class PostgresStorage implements IStorage {
       platformUptime,
       avgResponseTime,
       supportTickets,
-      csat: includeNpsCsat ? csat : undefined,
+      csat,
       reviewRating,
       satisfactionTrends,
       recentReviews,
