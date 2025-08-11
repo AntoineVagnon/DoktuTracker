@@ -600,6 +600,20 @@ export default function Dashboard() {
                               </div>
 
                               <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+                                {/* Video Consultation Button for paid appointments */}
+                                {appointment.status === 'paid' && appointment.zoomMeetingId && (
+                                  <Button 
+                                    variant="default" 
+                                    size="sm" 
+                                    className="h-9 flex-1 sm:flex-none bg-green-600 hover:bg-green-700"
+                                    onClick={() => setLocation(`/video-consultation/${appointment.id}`)}
+                                  >
+                                    <Video className="h-4 w-4 mr-2" />
+                                    <span className="hidden sm:inline">Join Video Call</span>
+                                    <span className="sm:hidden">Video</span>
+                                  </Button>
+                                )}
+
                                 {/* Pre-consultation actions */}
                                 <Button 
                                   variant="outline" 

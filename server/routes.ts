@@ -33,6 +33,7 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { notificationService, TriggerCode } from "./services/notificationService";
 import { emailService } from "./emailService";
+import { zoomService } from "./services/zoomService";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -48,6 +49,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register document library routes
   registerDocumentLibraryRoutes(app);
+  
+  // Zoom meeting endpoints
+  app.get("/api/zoom/status", async (req, res) => {
+    res.json({
+      configured: zoomService.isConfigured(),
+      message: zoomService.isConfigured() 
+        ? "Zoom integration is configured and ready"
+        : "Zoom credentials not configured. Please set ZOOM_CLIENT_ID, ZOOM_CLIENT_SECRET, and ZOOM_ACCOUNT_ID environment variables"
+    });
+  });
+
+  // Get Zoom meeting details for an appointment
+  app.get("/api/appointments/:id/zoom", isAuthenticated, async (req, res) => {
+    try {
+      const appointmentId = parseInt(req.params.id);
+      const appointment = await storage.getAppointment(appointmentId);
+      
+      if (!appointment) {
+        return res.status(404).json({ error: "Appointment not found" });
+      }
+      
+      // Check if user has access to this appointment
+      const userId = req.user?.id;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      
+      // Allow access if user is the patient or a doctor
+      if (appointment.patientId !== user.id && user.role !== 'doctor' && user.role !== 'admin') {
+        return res.status(403).json({ error: "Access denied" });
+      }
+      
+      if (!appointment.zoomMeetingId) {
+        return res.status(404).json({ error: "No Zoom meeting found for this appointment" });
+      }
+      
+      // Get current meeting details from Zoom API
+      const meeting = await zoomService.getMeeting(appointment.zoomMeetingId);
+      
+      res.json({
+        meetingId: appointment.zoomMeetingId,
+        joinUrl: appointment.zoomJoinUrl,
+        startUrl: appointment.zoomStartUrl,
+        password: appointment.zoomPassword,
+        status: meeting ? "active" : "expired"
+      });
+    } catch (error) {
+      console.error("Error getting Zoom meeting details:", error);
+      res.status(500).json({ error: "Failed to get meeting details" });
+    }
+  });
 
   // API endpoint to fix database table constraints
   app.get("/api/fix-database", async (req, res) => {
@@ -1726,6 +1780,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         // Get appointment details to mark the corresponding slot as unavailable
         const appointment = await storage.getAppointment(appointmentId);
+        
+        // Create Zoom meeting for the paid appointment
+        if (appointment && zoomService.isConfigured()) {
+          console.log(`🎥 Creating Zoom meeting for appointment ${appointmentId}`);
+          await zoomService.createMeeting(Number(appointmentId));
+        }
         
         if (appointment) {
           // Find and mark the corresponding time slot as unavailable

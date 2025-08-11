@@ -35,6 +35,7 @@ import BookAppointmentChoice from "@/pages/BookAppointmentChoice";
 import PatientLogin from "@/pages/PatientLogin";
 import PatientRegistration from "@/pages/PatientRegistration";
 import PaymentSuccess from "@/pages/PaymentSuccess";
+import VideoConsultation from "@/pages/VideoConsultation";
 
 
 function Router() {
@@ -73,6 +74,7 @@ function Router() {
       <Route path="/patient-calendar" component={PatientCalendar} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/video-consultation/:id" component={VideoConsultation} />
       <Route component={NotFound} />
     </Switch>
   );
