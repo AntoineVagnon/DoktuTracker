@@ -1,0 +1,338 @@
+Replit Spec v4 — Doktu Notification & Email System
+1 — Elevator pitch
+A reliable, low-noise notification system that gets patients and doctors to the right session at the right time, mirrors bookings into personal calendars via .ics, and confirms all lifecycle events (welcome, confirmation, reminders, reschedule, cancel, survey). Replit chooses all technical details (ESP, queues, schedulers, storage).
+
+2 — Primary user roles
+Patient: Receives welcomes, confirmations, reminders, reschedule/cancel, survey; optional profile reminder.
+
+Doctor: Receives welcome; optional last-mile reminder (email/SMS) when not joined.
+
+Admin/Support: No end-user emails; may receive internal alerts (out of scope here).
+
+3 — Key user flows
+Booking confirmed → send confirmation email + .ics (METHOD:ADD).
+
+24h before start → reminder email (−24h).
+
+(Optional) 1h before → reminder email (−1h).
+
+Reschedule → send reschedule email + .ics CANCEL (old) + ADD (new).
+
+Cancel → send cancellation email + .ics CANCEL.
+
+Post-call → send survey email.
+
+Post-registration → send welcome (patient or doctor).
+
+Profile incomplete (patient) → send profile reminder ~15 min after signup if still incomplete.
+
+Doctor not joined by −10 min → (optional) last-mile nudge (email/SMS).
+
+4 — Non-functional must-haves
+Single orchestration brain: one trigger → channel decision → dedupe.
+
+Timezone correctness: all human-readable times in recipient’s local TZ.
+
+Single-send guarantee: per user × appointment × trigger code.
+
+Throttling: if a higher-priority email was sent in the last 30 min, defer lower-priority by 30 min.
+
+Deliverability: must support MIME .ics attachments.
+
+Accessibility: templates legible, clear CTA button, <125 words when possible.
+
+5 — Tech-stack decisions
+Replit decides (ESP, job runners, queues, rate limits, link tracking, SMS vendor).
+
+6 — Secrets already present in Replit
+Replit decides (API keys, webhooks, signing secrets).
+
+7 — Database schema
+Replit decides. Functional expectation: ability to log sends (template key, recipient, appointment id, timestamp, state) and to compute recipient locale and local time.
+
+8 — UI references
+No banner specs here (already implemented).
+
+Appointment cards should expose “Join” and deep links used in emails.
+
+“Add to calendar” button may download the same .ics that is emailed.
+
+9 — “Don’t break these” rules
+Always attach .ics to confirmation; always issue CANCEL on reschedule/cancel.
+
+Never send time that doesn’t match the booked UTC time converted to recipient TZ.
+
+Never send survey before call end.
+
+Do not send profile reminder once profile marked complete.
+
+10 — Membership plans (new)
+Not in scope.
+
+11 — Rate limits
+Replit decides; minimum: protect against duplicate sends on the same trigger within a 2-minute window.
+
+12 — Webhooks
+Replit decides; functional events available (payment succeeded, appointment rescheduled/cancelled, meeting ended).
+
+13 — Testing & CI
+Functional tests must cover each trigger, merge-field substitution, .ics presence and CANCEL/ADD pairing, throttling, single-send, locale fallback.
+
+14 — Deployment
+No constraints; ensure templates can be edited without code deploy (via ESP or CMS).
+
+15 — Open questions
+See Gap-Analysis table.
+
+Orchestration & Priorities
+Trigger codes & priority (high → low):
+
+BOOK_CONF (confirmation)
+
+RESCHED
+
+CANCEL
+
+REM_24H
+
+REM_1H (optional)
+
+SURVEY
+
+WELCOME_PAT / WELCOME_DOC
+
+PROFILE_NEEDED
+
+DOC_NOT_JOINED_10M (optional doctor only)
+
+Deduping rules
+
+Per trigger & appointment: send once.
+
+If two triggers fire within 30 min, send only the higher-priority now; queue the other to +30 min (unless obsolete).
+
+Merge-field catalogue (must be supported)
+{{first_name}}, {{last_name}}, {{doctor_name}}, {{specialization}},
+{{appointment_datetime_local}}, {{join_link}}, {{appointment_link}},
+{{guidelines_link}}, {{support_email}}.
+
+If any required field is missing → do not send; log error.
+
+iCalendar (.ics) rules
+Confirmation attaches .ics VEVENT (METHOD:ADD) with UID = appointment id.
+
+Reschedule emits CANCEL for old UID + ADD for new time.
+
+Cancellation emits CANCEL for the appointment UID.
+
+Email Template Library (use exactly this copy; merge-fields in braces)
+1) Patient Welcome — welcome_patient
+Subject: Welcome to DokTu – Your Health Advisory Platform
+
+Dear {{first_name}},
+
+Welcome to DokTu! We’re excited to have you join our health advisory platform.
+
+You can now book consultations with trusted doctors from various specialties – anytime, from anywhere.
+
+To get the most out of your experience:
+
+Complete your health profile now (takes less than 5 minutes).
+
+Upload any relevant medical records.
+
+Choose your preferred doctor and consultation time.
+
+[Complete My Health Profile]
+
+Need help getting started? Our support team is here for you.
+
+Thank you for trusting DokTu.
+
+Warm regards,
+DokTu Team
+
+2) Doctor Welcome — welcome_doctor
+Subject: Welcome to DokTu – Let’s Start Helping Patients
+
+Dear Dr. {{last_name}},
+
+We’re pleased to welcome you to the DokTu platform. Thank you for joining our network of healthcare professionals.
+
+What’s next?
+
+Log in and review your profile.
+
+Set your availability.
+
+Review the guidelines and documentation for consultations.
+
+Your profile is now live, and patients can begin scheduling appointments with you.
+
+[Go to My Dashboard]
+
+If you have any questions or need assistance, our support team is ready to help.
+
+Thank you for being part of DokTu.
+
+Best regards,
+DokTu Team
+
+3) Patient Profile Reminder — patient_profile_reminder
+Subject: Complete Your DokTu Health Profile Before Your First Consultation
+
+Hi {{first_name}},
+
+We noticed that you haven’t completed your health profile yet.
+
+Completing it helps doctors better understand your needs and offer more personalized advice.
+
+It only takes a few minutes, and it can make a big difference in the quality of your session.
+
+[Complete My Health Profile]
+
+If you’ve already completed your profile or uploaded documents, feel free to ignore this message.
+
+See you soon on DokTu!
+
+DokTu Support Team
+
+4) Booking Confirmation — booking_confirmation
+Subject: Your Consultation is Confirmed – DokTu
+
+Dear {{first_name}},
+
+Your consultation has been successfully booked.
+
+📅 Date & Time: {{appointment_datetime_local}}
+👨‍⚕️ Doctor: {{doctor_name}} ({{specialization}})
+🔗 Join Link: {{join_link}}
+
+Please log in 2–5 minutes before the scheduled time and ensure your audio/video is working properly.
+
+To ensure the consultation is successful, please read our Consultation Guidelines: {{guidelines_link}}
+
+If you need to reschedule or cancel, please log in to your profile here: {{appointment_link}} and use the appropriate option. If you need any support, please contact us at {{support_email}}.
+
+Thank you for choosing DokTu.
+
+DokTu Support Team
+
+5) Appointment Reminder (−24h) — appointment_reminder_24h
+Subject: Reminder – Your DokTu Consultation is Coming Up
+
+Hi {{first_name}},
+
+This is a friendly reminder that your consultation is scheduled for:
+
+📅 {{appointment_datetime_local}}
+👨‍⚕️ {{doctor_name}}
+🔗 Join here: {{join_link}}
+
+Please ensure you're in a quiet space with a stable internet connection.
+If you need to make changes, use the patient dashboard or contact us.
+
+Thank you,
+DokTu Support
+
+6) Cancellation Confirmation — cancellation_confirmation
+Subject: Your Consultation Has Been Cancelled
+
+Dear {{first_name}},
+
+We confirm that your consultation with {{doctor_name}} scheduled for {{appointment_datetime_local}} has been cancelled.
+
+If this was a mistake, you may reschedule directly from your dashboard.
+
+Refunds or credits (if applicable) will be processed in accordance with our cancellation policy.
+
+We're here if you need further assistance.
+
+DokTu Team
+
+7) Rescheduling Confirmation — reschedule_confirmation
+Subject: Your Consultation Has Been Rescheduled
+
+Hi {{first_name}},
+
+Your consultation has been successfully rescheduled.
+
+📅 New Date & Time: {{appointment_datetime_local}}
+👨‍⚕️ Doctor: {{doctor_name}}
+🔗 Updated Join Link: {{join_link}}
+
+If you have any supporting documents or updates to share with the doctor, you may upload them to your profile.
+
+We look forward to seeing you online.
+
+DokTu Support Team
+
+8) (Optional) Appointment Reminder (−1h) — appointment_reminder_1h
+Subject: Your DokTu Consultation Starts in 1 Hour
+
+Hi {{first_name}},
+
+A quick reminder: your consultation with {{doctor_name}} starts in 1 hour at {{appointment_datetime_local}}.
+
+Join link: {{join_link}}
+
+If you have any issues, reply to this email or contact {{support_email}}.
+
+— DokTu
+
+9) (Optional) Post-Consultation Survey — post_call_survey
+Subject: How was your DokTu consultation?
+
+Hi {{first_name}},
+
+Thanks for meeting with {{doctor_name}}. We’d love your feedback to improve the experience.
+
+[Rate your consultation]
+
+This takes less than 30 seconds. Thank you!
+
+— DokTu Team
+
+Gherkin User Stories
+gherkin
+Copier
+Modifier
+Feature: Booking confirmation with calendar invite
+  Scenario: Send confirmation email and .ics
+    Given a payment has been confirmed for Appointment A1
+    When the notification system processes trigger BOOK_CONF
+    Then the recipient receives template "booking_confirmation"
+    And the email includes a .ics attachment with METHOD:ADD and UID=A1
+
+Feature: 24-hour reminder
+  Scenario: Send reminder the day before
+    Given Appointment A1 starts tomorrow at 10:00 local time
+    When REM_24H fires
+    Then the patient receives "appointment_reminder_24h" with {{appointment_datetime_local}} = 10:00
+
+Feature: Reschedule updates calendar
+  Scenario: Cancel old invite and add new
+    Given an invite for Appointment A1 was already sent
+    When the appointment is rescheduled to a new time
+    Then the recipient receives template "reschedule_confirmation"
+    And a .ics with METHOD:CANCEL for old UID
+    And a .ics with METHOD:ADD for the new time
+
+Feature: Cancellation confirmation
+  Scenario: Cancel and notify
+    When an appointment is cancelled
+    Then the patient receives "cancellation_confirmation"
+    And a .ics with METHOD:CANCEL is attached
+
+Feature: Profile completion nudge
+  Scenario: Prompt incomplete profile after signup
+    Given a user registered 15 minutes ago and profile is incomplete
+    When PROFILE_NEEDED fires
+    Then the user receives "patient_profile_reminder"
+
+Feature: Throttling and single-send
+  Scenario: Suppress lower-priority emails
+    Given SURVEY was sent at 10:00
+    And PROFILE_NEEDED is scheduled for 10:10
+    Then PROFILE_NEEDED is deferred until at least 10:30
+    And no duplicate SURVEY emails are sent
