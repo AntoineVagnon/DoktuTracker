@@ -118,21 +118,24 @@ class ZoomService {
         start_time: startTime,
         duration: 30, // 30 minutes default
         timezone: 'Europe/Paris',
-        password: this.generatePassword(),
+        // No password required - removed for easier access
         agenda: `Video consultation with ${patient.firstName || 'Patient'} ${patient.lastName || ''}`,
         settings: {
           host_video: true,
           participant_video: true,
-          join_before_host: false,
+          join_before_host: true, // Allow patients to join early
+          jbh_time: 10, // Allow joining 10 minutes before
           mute_upon_entry: false,
           watermark: false,
           use_pmi: false,
           approval_type: 0, // Automatically approve
           audio: 'both', // Both telephony and VoIP
           auto_recording: 'none', // No recording for privacy
-          waiting_room: true, // Enable waiting room for security
+          waiting_room: false, // Disabled for easier access
           meeting_authentication: false,
-          email_notification: false // We handle notifications ourselves
+          email_notification: false, // We handle notifications ourselves
+          authentication_exception: [], // No authentication exceptions
+          registrants_confirmation_email: false
         }
       };
 

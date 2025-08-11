@@ -61,6 +61,7 @@ async function createZoomMeeting(topic: string, startTime: Date, duration: numbe
       start_time: startTime.toISOString(),
       duration,
       timezone: 'Europe/Paris',
+      // No password field - meetings will be created without passwords
       settings: {
         host_video: true,
         participant_video: true,
@@ -69,10 +70,13 @@ async function createZoomMeeting(topic: string, startTime: Date, duration: numbe
         mute_upon_entry: false,
         watermark: false,
         use_pmi: false,
-        waiting_room: false,
+        waiting_room: false, // Disabled for easier access
         approval_type: 0, // Automatically approve
         audio: 'both',
-        auto_recording: 'none'
+        auto_recording: 'none',
+        meeting_authentication: false,
+        authentication_exception: [],
+        registrants_confirmation_email: false
       }
     },
     {

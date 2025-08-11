@@ -236,6 +236,9 @@ export default function VideoConsultation() {
                         Meeting Password
                       </div>
                       <code className="text-sm font-mono">{zoomDetails.password}</code>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Note: New meetings no longer require passwords
+                      </p>
                     </div>
                   )}
 
