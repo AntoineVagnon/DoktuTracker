@@ -333,14 +333,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .filter(slot => {
             if (!slot.isAvailable) return false;
             // Slots are stored in local European time, so we need to interpret them correctly
-            // Add timezone offset to ensure proper comparison
-            const slotDateTime = new Date(`${slot.date}T${slot.startTime}+02:00`); // CEST (UTC+2)
+            // Determine if we're in CET (winter) or CEST (summer) time
+            const slotDate = new Date(`${slot.date}T${slot.startTime}`);
+            const month = slotDate.getMonth();
+            // Rough approximation: CEST is from last Sunday of March to last Sunday of October
+            // For now, use CET (UTC+1) for Nov-Mar and CEST (UTC+2) for Apr-Oct
+            const isWinterTime = month >= 10 || month <= 2; // November(10) through March(2)
+            const timezoneOffset = isWinterTime ? '+01:00' : '+02:00';
+            
+            const slotDateTime = new Date(`${slot.date}T${slot.startTime}${timezoneOffset}`);
             const diffMinutes = (slotDateTime.getTime() - now.getTime()) / (1000 * 60);
+            console.log(`⏰ Slot ${slot.date} ${slot.startTime} with offset ${timezoneOffset}: ${diffMinutes.toFixed(0)} minutes from now`);
             return diffMinutes >= leadTimeMinutes; // Only show slots at least 60 minutes in the future
           })
           .sort((a, b) => {
-            const aTime = new Date(`${a.date}T${a.startTime}+02:00`).getTime();
-            const bTime = new Date(`${b.date}T${b.startTime}+02:00`).getTime();
+            const aDate = new Date(`${a.date}T${a.startTime}`);
+            const bDate = new Date(`${b.date}T${b.startTime}`);
+            const aMonth = aDate.getMonth();
+            const bMonth = bDate.getMonth();
+            const aOffset = (aMonth >= 10 || aMonth <= 2) ? '+01:00' : '+02:00';
+            const bOffset = (bMonth >= 10 || bMonth <= 2) ? '+01:00' : '+02:00';
+            const aTime = new Date(`${a.date}T${a.startTime}${aOffset}`).getTime();
+            const bTime = new Date(`${b.date}T${b.startTime}${bOffset}`).getTime();
             return aTime - bTime;
           })[0];
         
