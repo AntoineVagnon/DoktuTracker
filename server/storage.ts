@@ -2771,7 +2771,7 @@ export class PostgresStorage implements IStorage {
   }> {
     const now = new Date();
     const fifteenMinutesAgo = new Date(now.getTime() - 15 * 60 * 1000);
-    const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+    const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Show next 7 days of appointments
 
     // Get all appointments with their related data
     const appointmentsData = await db
@@ -2798,11 +2798,11 @@ export class PostgresStorage implements IStorage {
             gte(appointments.appointmentDate, fifteenMinutesAgo),
             lte(appointments.appointmentDate, now)
           ),
-          // Planned meetings: upcoming appointments within next hour
+          // Planned meetings: upcoming appointments within next 7 days
           and(
             eq(appointments.status, 'paid'),
             gte(appointments.appointmentDate, now),
-            lte(appointments.appointmentDate, oneHourFromNow)
+            lte(appointments.appointmentDate, sevenDaysFromNow)
           ),
           // Recent completed/cancelled appointments (last 24 hours)
           and(
