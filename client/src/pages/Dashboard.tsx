@@ -29,6 +29,16 @@ import { CalendarView } from "@/components/CalendarView";
 import { PatientCalendar } from "@/pages/PatientCalendar";
 import { calculateHealthProfileCompletion } from "@/lib/healthProfileUtils";
 
+// Function to check if appointment is currently joinable (within 10 minutes of start time)
+function isAppointmentJoinable(appointmentDate: string): boolean {
+  const now = new Date();
+  const appointmentTime = new Date(appointmentDate);
+  const minutesUntilStart = (appointmentTime.getTime() - now.getTime()) / (1000 * 60);
+  
+  // Allow joining 10 minutes before appointment until 60 minutes after (for consultation duration)
+  return minutesUntilStart <= 10 && minutesUntilStart >= -60;
+}
+
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
@@ -600,8 +610,8 @@ export default function Dashboard() {
                               </div>
 
                               <div className="flex flex-col sm:flex-row flex-wrap gap-2">
-                                {/* Video Consultation Button for paid appointments */}
-                                {appointment.status === 'paid' && appointment.zoomMeetingId && (
+                                {/* Video Consultation Button - only show when appointment is live/joinable */}
+                                {appointment.status === 'paid' && appointment.zoomMeetingId && isAppointmentJoinable(appointment.appointmentDate) && (
                                   <Button 
                                     variant="default" 
                                     size="sm" 
@@ -612,6 +622,14 @@ export default function Dashboard() {
                                     <span className="hidden sm:inline">Join Video Call</span>
                                     <span className="sm:hidden">Video</span>
                                   </Button>
+                                )}
+                                
+                                {/* Show meeting info for future appointments */}
+                                {appointment.status === 'paid' && appointment.zoomMeetingId && !isAppointmentJoinable(appointment.appointmentDate) && (
+                                  <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-md">
+                                    <Video className="h-4 w-4 mr-2" />
+                                    <span>Video call available 10 min before appointment</span>
+                                  </div>
                                 )}
 
                                 {/* Pre-consultation actions */}
