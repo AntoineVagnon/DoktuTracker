@@ -3,13 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Eye, Clock, Video } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import DoctorLayout from "@/components/DoctorLayout";
 import { formatUserFullName } from "@/lib/nameUtils";
 import { formatAppointmentDateTime, categorizeAppointmentsByTiming, getTimeUntilAppointment } from "@/lib/dateUtils";
 
 export default function DoctorDashboard() {
   const { user, isLoading } = useAuth();
+  const [, setLocation] = useLocation();
 
   const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<any[]>({
     queryKey: ["/api/appointments", "doctor"],
@@ -78,7 +79,11 @@ export default function DoctorDashboard() {
                       <span className="text-sm sm:text-base text-green-600 font-medium">
                         €{appointment.price}
                       </span>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 h-9 px-3">
+                      <Button 
+                        size="sm" 
+                        className="bg-green-600 hover:bg-green-700 h-9 px-3"
+                        onClick={() => setLocation(`/video-consultation/${appointment.id}`)}
+                      >
                         <Video className="h-4 w-4 mr-2 sm:mr-0" />
                         <span className="sm:hidden">Join</span>
                         <span className="hidden sm:inline">Join Call</span>
