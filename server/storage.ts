@@ -1755,17 +1755,20 @@ export class PostgresStorage implements IStorage {
       .groupBy(sql`DATE(${appointments.appointmentDate})`)
       .orderBy(sql`DATE(${appointments.appointmentDate})`);
 
-    // Calculate satisfaction trends (weekly breakdown)
-    const satisfactionTrends = await this.calculateSatisfactionTrends(startDate, endDate);
+    // Calculate satisfaction trends (weekly breakdown) - only if enough reviews
+    const satisfactionTrends = currentReviews.length >= 5 ? await this.calculateSatisfactionTrends(startDate, endDate) : undefined;
     
-    // Get recent reviews for display
-    const recentReviews = await this.getRecentReviews();
+    // Get recent reviews for display - only if reviews exist
+    const recentReviews = currentReviews.length > 0 ? await this.getRecentReviews() : undefined;
     
     // Support tickets (currently not tracked, would need ticketing system)
     const supportTickets = 0; // TODO: Implement when support ticket system is added
     
     // Avg response time (would need API monitoring)
     const avgResponseTime = undefined; // Will show as N/A in frontend
+
+    // Only include NPS and CSAT if we have enough reviews to make them meaningful
+    const includeNpsCsat = currentReviews.length >= 5;
 
     return {
       appointmentsBooked: currentMetrics.appointmentsBooked,
@@ -1779,8 +1782,8 @@ export class PostgresStorage implements IStorage {
       retentionRatePrev,
       uniqueActivePatients: currentMetrics.uniquePatients,
       uniqueActivePatientsPrev: prevMetrics.uniquePatients,
-      npsScore,
-      npsScorePrev,
+      npsScore: includeNpsCsat ? npsScore : undefined,
+      npsScorePrev: includeNpsCsat ? npsScorePrev : undefined,
       productQualifiedLeads,
       productQualifiedLeadsPrev,
       bookingsPerPatient,
@@ -1802,7 +1805,7 @@ export class PostgresStorage implements IStorage {
       platformUptime,
       avgResponseTime,
       supportTickets,
-      csat,
+      csat: includeNpsCsat ? csat : undefined,
       reviewRating,
       satisfactionTrends,
       recentReviews,

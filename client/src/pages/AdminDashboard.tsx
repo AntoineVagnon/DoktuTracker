@@ -759,26 +759,35 @@ export default function AdminDashboard() {
   const FeedbackSection = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <KPICard
-          title="NPS Score"
-          value={metrics?.npsScore || 0}
-          previousValue={metrics?.npsScorePrev}
-          icon={Star}
-          format={(v) => `+${v}`}
-          target={50}
-        />
-        <KPICard
-          title="CSAT"
-          value={metrics?.csat || 0}
-          format={(v) => `${v}%`}
-          icon={Heart}
-          target={90}
-        />
+        {/* Only show NPS Score if we have enough reviews */}
+        {metrics?.npsScore !== undefined && (
+          <KPICard
+            title="NPS Score"
+            value={metrics.npsScore}
+            previousValue={metrics.npsScorePrev}
+            icon={Star}
+            format={(v) => `+${v}`}
+            target={50}
+            tooltip="Net Promoter Score based on patient ratings. Calculated from reviews with 4.5+ stars as promoters and <3.5 stars as detractors. Requires at least 5 reviews to display."
+          />
+        )}
+        {/* Only show CSAT if we have enough reviews */}
+        {metrics?.csat !== undefined && (
+          <KPICard
+            title="CSAT"
+            value={metrics.csat}
+            format={(v) => `${v}%`}
+            icon={Heart}
+            target={90}
+            tooltip="Customer Satisfaction score - percentage of patients who rated 4+ stars. Requires at least 5 reviews to display."
+          />
+        )}
         <KPICard
           title="Avg Review Rating"
           value={metrics?.reviewRating || 0}
           format={(v) => `${v.toFixed(1)}/5`}
           icon={Star}
+          tooltip="Average star rating from all patient reviews. Shows 0.0 when no reviews exist."
         />
       </div>
 
@@ -824,13 +833,13 @@ export default function AdminDashboard() {
         </CardContent>
       </Card>
 
-      {/* Satisfaction Trends */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Satisfaction Trends</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {metrics?.satisfactionTrends ? (
+      {/* Satisfaction Trends - only show if we have trend data */}
+      {metrics?.satisfactionTrends && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Satisfaction Trends</CardTitle>
+          </CardHeader>
+          <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={metrics.satisfactionTrends}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -842,13 +851,9 @@ export default function AdminDashboard() {
                 <Line type="monotone" dataKey="csat" stroke={CHART_COLORS.success} name="CSAT %" />
               </LineChart>
             </ResponsiveContainer>
-          ) : (
-            <div className="h-[300px] flex items-center justify-center text-gray-400">
-              <p>No satisfaction data available yet</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 
