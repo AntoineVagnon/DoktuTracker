@@ -13,11 +13,20 @@ export default function TestLogin() {
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
   
-  // Get URL parameters for booking context
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Get URL parameters for booking context - use window.location.search
+  const urlParams = new URLSearchParams(window.location.search);
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
+
+  // Debug logging
+  console.log('TestLogin - URL params:', {
+    fullUrl: window.location.href,
+    search: window.location.search,
+    doctorId,
+    slot,
+    price
+  });
 
   const [formData, setFormData] = useState({
     email: '', 
@@ -76,12 +85,22 @@ export default function TestLogin() {
 
       // Handle redirect after successful login - use window.location for full page refresh
       // This ensures the session is properly established before navigating
+      console.log('Login successful - preparing redirect:', {
+        hasBookingContext: !!(doctorId && slot && price),
+        doctorId,
+        slot,
+        price
+      });
+      
       setTimeout(() => {
         if (doctorId && slot && price) {
           // Redirect to checkout with booking parameters
-          window.location.href = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
+          const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
+          console.log('Redirecting to checkout:', checkoutUrl);
+          window.location.href = checkoutUrl;
         } else {
           // No booking context, go to dashboard
+          console.log('No booking context - redirecting to dashboard');
           window.location.href = '/dashboard';
         }
       }, 500);
