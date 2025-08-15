@@ -617,7 +617,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (patient && doctor && doctor.user) {
           const appointmentDate = appointmentData.appointmentDate.toISOString().split('T')[0];
-          const appointmentTime = appointmentData.appointmentDate.toTimeString().split(' ')[0];
+          const appointmentTime = appointmentData.appointmentDate.toISOString().split('T')[1].substring(0, 5); // Get HH:MM format
           
           // Send confirmation email to patient
           emailService.sendAppointmentConfirmation({

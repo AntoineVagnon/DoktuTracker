@@ -147,7 +147,7 @@ export class EmailService {
         <li>Please prepare any relevant medical documents or questions</li>
       </ul>
 
-      <a href="https://doktu.com/appointments" class="button">View My Appointments</a>
+      <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}" class="button">View My Appointments</a>
 
       <p>If you need to reschedule or cancel, please do so at least 2 hours before your appointment time.</p>
     `;
