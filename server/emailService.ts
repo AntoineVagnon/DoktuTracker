@@ -19,6 +19,43 @@ function convertSlotTimeToLocal(date: string, time: string): string {
   }
 }
 
+// Helper function to generate ICS calendar file content
+function generateICSContent({
+  title,
+  description,
+  startDate,
+  endDate,
+  location
+}: {
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  location?: string;
+}): string {
+  const formatDate = (date: Date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Doktu//Telemedicine Platform//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:REQUEST',
+    'BEGIN:VEVENT',
+    `UID:appointment-${Date.now()}@doktu.com`,
+    `DTSTART:${formatDate(startDate)}`,
+    `DTEND:${formatDate(endDate)}`,
+    `SUMMARY:${title}`,
+    `DESCRIPTION:${description}`,
+    location ? `LOCATION:${location}` : '',
+    'STATUS:CONFIRMED',
+    'SEQUENCE:0',
+    `DTSTAMP:${formatDate(new Date())}`,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].filter(line => line !== '').join('\r\n');
+}
+
 const mailService = new MailService();
 mailService.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -31,12 +68,17 @@ export interface EmailParams {
   subject: string;
   html: string;
   text?: string;
+  attachments?: Array<{
+    filename: string;
+    content: string;
+    type?: string;
+  }>;
 }
 
 export class EmailService {
   private async sendEmail(params: EmailParams): Promise<boolean> {
     try {
-      await mailService.send({
+      const emailData: any = {
         to: params.to,
         from: {
           email: FROM_EMAIL,
@@ -45,7 +87,19 @@ export class EmailService {
         subject: params.subject,
         html: params.html,
         text: params.text || this.stripHtml(params.html),
-      });
+      };
+
+      // Add attachments if provided
+      if (params.attachments && params.attachments.length > 0) {
+        emailData.attachments = params.attachments.map(attachment => ({
+          content: Buffer.from(attachment.content).toString('base64'),
+          filename: attachment.filename,
+          type: attachment.type || 'text/calendar',
+          disposition: 'attachment'
+        }));
+      }
+
+      await mailService.send(emailData);
       console.log(`✅ Email sent successfully to ${params.to}: ${params.subject}`);
       return true;
     } catch (error) {
@@ -120,6 +174,18 @@ export class EmailService {
     const localTime = convertSlotTimeToLocal(appointmentDate, appointmentTime);
     const formattedDate = format(parseISO(appointmentDate), 'EEEE, MMMM d, yyyy');
     
+    // Generate ICS calendar file
+    const startDate = new Date(`${appointmentDate}T${appointmentTime}:00`);
+    const endDate = new Date(startDate.getTime() + 30 * 60 * 1000); // 30 minutes duration
+    
+    const icsContent = generateICSContent({
+      title: `Telemedicine Consultation - Dr. ${doctorName}`,
+      description: `Video consultation with Dr. ${doctorName}, ${specialty}. Appointment ID: #${appointmentId}. Join through your Doktu dashboard 15 minutes before the session.`,
+      startDate,
+      endDate,
+      location: 'Video Consultation - Doktu Platform'
+    });
+    
     const content = `
       <h2>✅ Appointment Confirmed</h2>
       <p>Dear ${patientName},</p>
@@ -142,6 +208,7 @@ export class EmailService {
 
       <p><strong>What's Next?</strong></p>
       <ul>
+        <li>Save the attached calendar file (.ics) to add this appointment to your calendar</li>
         <li>You'll receive a reminder email 24 hours before your appointment</li>
         <li>A video consultation link will be provided 15 minutes before your session</li>
         <li>Please prepare any relevant medical documents or questions</li>
@@ -155,7 +222,12 @@ export class EmailService {
     return this.sendEmail({
       to: patientEmail,
       subject: `Appointment Confirmed - Dr. ${doctorName} on ${formattedDate}`,
-      html: this.getEmailTemplate(content)
+      html: this.getEmailTemplate(content),
+      attachments: [{
+        filename: `appointment-${appointmentId}.ics`,
+        content: icsContent,
+        type: 'text/calendar'
+      }]
     });
   }
 
@@ -179,6 +251,18 @@ export class EmailService {
   }): Promise<boolean> {
     const localTime = convertSlotTimeToLocal(appointmentDate, appointmentTime);
     const formattedDate = format(parseISO(appointmentDate), 'EEEE, MMMM d, yyyy');
+    
+    // Generate ICS calendar file for doctor
+    const startDate = new Date(`${appointmentDate}T${appointmentTime}:00`);
+    const endDate = new Date(startDate.getTime() + 30 * 60 * 1000); // 30 minutes duration
+    
+    const icsContent = generateICSContent({
+      title: `Patient Consultation - ${patientName}`,
+      description: `Video consultation with patient ${patientName}. Appointment ID: #${appointmentId}. Join through your Doktu doctor dashboard.`,
+      startDate,
+      endDate,
+      location: 'Video Consultation - Doktu Platform'
+    });
 
     const content = `
       <h2>🔔 New Appointment Booked</h2>
@@ -197,18 +281,24 @@ export class EmailService {
 
       <p><strong>Preparation:</strong></p>
       <ul>
+        <li>Save the attached calendar file (.ics) to add this appointment to your calendar</li>
         <li>Review the patient's health profile before the consultation</li>
         <li>The video consultation link will be available 15 minutes before the session</li>
         <li>All appointment details are available in your doctor dashboard</li>
       </ul>
 
-      <a href="https://doktu.com/doctor-dashboard" class="button">View Dashboard</a>
+      <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}" class="button">View Dashboard</a>
     `;
 
     return this.sendEmail({
       to: doctorEmail,
       subject: `New Appointment - ${patientName} on ${formattedDate}`,
-      html: this.getEmailTemplate(content)
+      html: this.getEmailTemplate(content),
+      attachments: [{
+        filename: `appointment-${appointmentId}.ics`,
+        content: icsContent,
+        type: 'text/calendar'
+      }]
     });
   }
 
@@ -255,7 +345,7 @@ export class EmailService {
         <li>Find a quiet, private space for the consultation</li>
       </ul>
 
-      <a href="https://doktu.com/appointments" class="button">Join Video Call (Available 15 min before)</a>
+      <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}" class="button">Join Video Call (Available 15 min before)</a>
 
       <p>Need to reschedule? Please do so at least 2 hours before your appointment.</p>
     `;
