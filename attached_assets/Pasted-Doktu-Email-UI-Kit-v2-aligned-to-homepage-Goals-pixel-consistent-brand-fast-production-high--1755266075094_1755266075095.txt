@@ -1,0 +1,206 @@
+Doktu Email UI Kit — v2 (aligned to homepage)
+
+Goals: pixel-consistent brand, fast production, high inbox placement, perfect readability on mobile, and minimal image dependency.
+
+1) Brand tokens (email-safe)
+
+These mirror your homepage but are tuned for email legibility and dark-mode. If any color feels off once you set the final palette, just replace the HEX in one place.
+
+Token	Purpose	Default (Light)	Dark-mode
+--brand-primary	Buttons/links	#2563EB (blue-600)	#7AB5FF
+--brand-primary-strong	Emphasis accents	#1D4ED8 (blue-700)	#9CC7FF
+--brand-gradient-start	Optional hero stripe	#2B6AFB	same as primary
+--brand-gradient-end	Optional hero stripe	#1E40AF	lighten 20%
+--accent-success	Success chips/icons	#16A34A	#68D391
+--accent-warning	Time-sensitive notices	#F59E0B	#F6C453
+--accent-danger	Payment/critical	#EF4444	#F87171
+--text-primary	Body copy	#0B1220	#F4F6FA
+--text-secondary	Muted copy	#556070	#B8C0CC
+--bg-surface	Card/body	#FFFFFF	#0E1116
+--bg-muted	Section rows	#F6F7FB	#151A22
+--border-soft	Dividers/keys	#E7EBF0	#2A3340
+--focus-ring	Focus halo	#93C5FD	#60A5FA
+
+If you later confirm your official HEX values, we’ll swap them 1:1 here.
+
+Type & layout
+
+Font: system stack (-apple-system, Segoe UI, Roboto, Arial, sans-serif)
+
+Container: max 600px, fluid on mobile
+
+Heading scale: H1 22/28, H2 18/24, body 16/24, small 14/20
+
+Radius: 12px cards, 10px buttons
+
+Shadow: very soft 0 1px 2px rgba(16,24,40,.06)
+
+2) Components (email-safe, image-light)
+
+All components render clean even with images off and in dark mode.
+
+Header
+
+Left-aligned logo (PNG/SVG light & dark)
+
+Optional preheader hidden line for preview text
+
+Hero stripe (marketing only)
+
+Email prefers solid color; gradients are fine but keep live text, no big hero images
+
+Use a single CTA
+
+Section title
+
+H1/H2 + short one-line lead
+
+Blue underline 24px (CSS border) for visual echo of site
+
+Key-facts row (transactional workhorse)
+
+Inline emoji + label:
+📅 Tue, 1 Oct · 10:00 CET | 👨‍⚕️ Dr. Rodriguez (Pediatrics) | 🔗 Join
+
+Stacks to 3 lines on mobile
+
+Primary CTA (bulletproof button)
+
+Filled, --brand-primary, white text, 16px padding, 10px radius
+
+Max one per email; everything else becomes text links
+
+Secondary links row
+
+Muted text links (e.g., Reschedule · Cancel · View in dashboard)
+
+Info card
+
+Soft gray background --bg-muted, border --border-soft, small icon (optional), 12px radius
+
+Use for Guidelines, Refund policy, Security note
+
+Doctor mini-card (marketing/newsletter only)
+
+Initials circle (no image dependency), name, specialty, “View profile” link
+
+Pricing bullets (marketing)
+
+3-5 bullet rows with emoji checkmarks; no full pricing tables in transactional
+
+Footer
+
+Support email, minimal legal links, postal address
+
+Unsubscribe for marketing; no unsubscribe on transactional
+
+3) Patterns that match the homepage
+
+Tone: warm, confident, succinct; one clear action per email.
+
+Iconography: email-safe emoji (📅, 👨‍⚕️, 💳, 🔒) rather than inline SVG.
+
+Cards & pills: subtle shadows, rounded corners (12px), generous whitespace.
+
+Gradient look: emulate with solid branding + thin accent borders (deliverability-friendly).
+
+4) Accessibility & deliverability guardrails
+
+Live text for all critical info; alt text for any icon
+
+Contrast ≥ 4.5:1 in both modes
+
+HTML size < 100KB; minimal inline CSS; compress assets
+
+Limit link count; 1 primary CTA
+
+Always ship plain-text alternative
+
+Attach .ics only for confirm/reschedule/cancel (ADD/UPDATE/CANCEL)
+
+DKIM/SPF/DMARC aligned (handled by infra), consistent From/Sender
+
+Avoid all-image hero; avoid tracking pixels outside ESP defaults
+
+Localize times explicitly (e.g., Tue, 1 Oct 2025 · 10:00 CET)
+
+5) Template blueprints (map to your notifications)
+
+Each uses the same Master Frame: Header → Title/Lead → Key-Facts (if relevant) → CTA → Secondary Links → Info Card (optional) → Footer.
+
+Welcome (patient/doctor)
+Title + lead, one CTA (Complete Profile / Go to Dashboard)
+
+Booking confirmation
+Key-facts row (date, doctor, join), CTA Join Consultation, Info card “Read guidelines”; .ics attached
+
+Reminders (24h / 1h)
+Key-facts, CTA Join, secondary Reschedule/Cancel; .ics refresh
+
+Reschedule/Cancel confirmation
+Plain title (“Your consultation was rescheduled/cancelled”), 1 supportive link (Rebook), .ics add/remove
+
+Profile/documents nudges
+Short copy + CTA Complete Health Profile or Upload Documents
+
+Post-call survey
+Stars row (accessible labels) + CTA Rate your consultation
+
+(These remain consistent with your earlier notification matrix.)
+
+6) Dark-mode specifics
+
+Invert logo automatically; swap --text-primary/secondary to light
+
+Borders become deeper (--border-soft → #2A3340)
+
+Buttons lighten text & focus ring for clarity
+
+7) Gherkin checks (design acceptance)
+Feature: Email Master Frame parity with homepage brand
+
+Scenario: Visual parity without images
+  Given images are blocked by the client
+  When any Doktu email is opened
+  Then the brand color, spacing, and typography remain consistent
+  And all critical details (date, time, doctor, CTA) are visible as live text
+
+Scenario: Mobile readability
+  When viewing at 320px width
+  Then headings wrap without clipping
+  And the Key-Facts row stacks to 3 readable lines
+  And the primary CTA remains at least 44px tap-height
+
+Scenario: Single action focus
+  When rendering transactional emails
+  Then there is exactly one primary CTA
+  And all other actions are plain text links
+
+Scenario: Dark-mode compliance
+  When a client forces dark mode
+  Then contrast is ≥ 4.5:1 for text vs background
+  And the dark logo variant is displayed
+
+Scenario: ICS correctness
+  When sending confirmation, reschedule, or cancellation emails
+  Then an appropriate ICS file is attached
+  And the ICS method matches the action (ADD/REQUEST, REPLY/UPDATE, CANCEL)
+
+8) What I still need from you (we’ll ship with safe defaults until then)
+
+Brand HEX (if you want exact homepage blue/gradient)
+
+Legal footer: company name + postal address + links (Privacy, Terms)
+
+Locales: confirm if/when you want RTL (ar/he). The kit supports it; we’ll flip layout and icons spacing.
+
+9) Quick visual cues for copywriters (email-ready, homepage aligned)
+
+Use short, confident headlines:
+“Book in under 2 minutes.”
+“Your consultation is confirmed.”
+“One step left: complete your health profile.”
+
+Prefer 3-bullet value lists with emoji, not dense paragraphs.
+
+Keep to one primary action per message.

@@ -112,7 +112,7 @@ export class EmailService {
     return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
   }
 
-  private getEmailTemplate(content: string): string {
+  private getEmailTemplate(content: string, preheader?: string): string {
     return `
     <!DOCTYPE html>
     <html>
@@ -120,30 +120,199 @@ export class EmailService {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Doktu - Telemedicine Platform</title>
+        <meta name="color-scheme" content="light dark">
+        <meta name="supported-color-schemes" content="light dark">
         <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8fafc; }
-            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); color: white; padding: 30px; text-align: center; }
-            .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
-            .content { padding: 40px 30px; }
-            .button { display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); color: white; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
-            .appointment-details { background: #f1f5f9; padding: 20px; border-radius: 6px; margin: 20px 0; }
-            .footer { background: #f8fafc; padding: 20px 30px; text-align: center; color: #64748b; font-size: 14px; }
-            .doctor-info { background: #ecfdf5; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #10b981; }
+            :root {
+                --brand-primary: #2563EB;
+                --brand-primary-strong: #1D4ED8;
+                --accent-success: #16A34A;
+                --accent-warning: #F59E0B;
+                --accent-danger: #EF4444;
+                --text-primary: #0B1220;
+                --text-secondary: #556070;
+                --bg-surface: #FFFFFF;
+                --bg-muted: #F6F7FB;
+                --border-soft: #E7EBF0;
+                --focus-ring: #93C5FD;
+            }
+            
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --brand-primary: #7AB5FF;
+                    --brand-primary-strong: #9CC7FF;
+                    --accent-success: #68D391;
+                    --accent-warning: #F6C453;
+                    --accent-danger: #F87171;
+                    --text-primary: #F4F6FA;
+                    --text-secondary: #B8C0CC;
+                    --bg-surface: #0E1116;
+                    --bg-muted: #151A22;
+                    --border-soft: #2A3340;
+                    --focus-ring: #60A5FA;
+                }
+            }
+            
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                line-height: 1.5;
+                color: var(--text-primary);
+                margin: 0;
+                padding: 0;
+                background-color: var(--bg-muted);
+                -webkit-text-size-adjust: 100%;
+                -ms-text-size-adjust: 100%;
+            }
+            
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: var(--bg-surface);
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+            }
+            
+            .preheader {
+                display: none;
+                max-height: 0;
+                overflow: hidden;
+                font-size: 1px;
+                line-height: 1px;
+                color: transparent;
+            }
+            
+            .header {
+                background: var(--brand-primary);
+                color: white;
+                padding: 24px 32px;
+                text-align: left;
+            }
+            
+            .logo {
+                font-size: 22px;
+                font-weight: 600;
+                margin: 0;
+                line-height: 28px;
+            }
+            
+            .content {
+                padding: 32px;
+            }
+            
+            .section-title {
+                margin: 0 0 8px 0;
+                font-size: 18px;
+                font-weight: 600;
+                line-height: 24px;
+                color: var(--text-primary);
+                border-bottom: 2px solid var(--brand-primary);
+                padding-bottom: 8px;
+                display: inline-block;
+            }
+            
+            .lead-text {
+                margin: 0 0 24px 0;
+                color: var(--text-secondary);
+                font-size: 16px;
+                line-height: 24px;
+            }
+            
+            .key-facts {
+                background: var(--bg-muted);
+                border: 1px solid var(--border-soft);
+                border-radius: 12px;
+                padding: 20px;
+                margin: 24px 0;
+                font-size: 16px;
+                line-height: 24px;
+            }
+            
+            .key-facts-row {
+                margin: 8px 0;
+                display: block;
+            }
+            
+            .primary-button {
+                display: inline-block;
+                padding: 16px 24px;
+                background: var(--brand-primary);
+                color: white !important;
+                text-decoration: none;
+                border-radius: 10px;
+                font-weight: 600;
+                font-size: 16px;
+                line-height: 20px;
+                margin: 24px 0;
+                min-height: 44px;
+                box-sizing: border-box;
+            }
+            
+            .secondary-links {
+                margin: 16px 0;
+                font-size: 14px;
+                line-height: 20px;
+            }
+            
+            .secondary-links a {
+                color: var(--text-secondary);
+                text-decoration: none;
+                margin-right: 16px;
+            }
+            
+            .info-card {
+                background: var(--bg-muted);
+                border: 1px solid var(--border-soft);
+                border-radius: 12px;
+                padding: 16px;
+                margin: 24px 0;
+                font-size: 14px;
+                line-height: 20px;
+                color: var(--text-secondary);
+            }
+            
+            .footer {
+                background: var(--bg-muted);
+                padding: 24px 32px;
+                text-align: center;
+                color: var(--text-secondary);
+                font-size: 14px;
+                line-height: 20px;
+                border-top: 1px solid var(--border-soft);
+            }
+            
+            .footer a {
+                color: var(--text-secondary);
+                text-decoration: none;
+                margin: 0 8px;
+            }
+            
+            /* Mobile responsiveness */
+            @media only screen and (max-width: 600px) {
+                .container { margin: 0; border-radius: 0; }
+                .content { padding: 24px 20px; }
+                .header { padding: 20px; }
+                .key-facts-row { display: block; margin: 12px 0; }
+                .secondary-links a { display: block; margin: 8px 0; }
+            }
         </style>
     </head>
     <body>
+        ${preheader ? `<div class="preheader">${preheader}</div>` : ''}
         <div class="container">
             <div class="header">
-                <h1>🏥 Doktu</h1>
-                <p>Your trusted telemedicine platform</p>
+                <h1 class="logo">🏥 Doktu</h1>
             </div>
             <div class="content">
                 ${content}
             </div>
             <div class="footer">
-                <p>© 2025 Doktu Medical Platform. Secure • Professional • Convenient</p>
-                <p>Questions? Contact us at support@doktu.com</p>
+                <p>© 2025 Doktu Medical Platform</p>
+                <p>
+                    <a href="mailto:support@doktu.com">Support</a> •
+                    <a href="#privacy">Privacy</a> •
+                    <a href="#terms">Terms</a>
+                </p>
             </div>
         </div>
     </body>
@@ -187,42 +356,36 @@ export class EmailService {
     });
     
     const content = `
-      <h2>✅ Appointment Confirmed</h2>
-      <p>Dear ${patientName},</p>
-      <p>Your telemedicine consultation has been successfully booked and confirmed.</p>
+      <h1 class="section-title">Your consultation is confirmed</h1>
+      <p class="lead-text">Book in under 2 minutes. Your telemedicine consultation is ready, ${patientName}.</p>
       
-      <div class="appointment-details">
-        <h3>📅 Appointment Details</h3>
-        <p><strong>Date:</strong> ${formattedDate}</p>
-        <p><strong>Time:</strong> ${localTime}</p>
-        <p><strong>Duration:</strong> 30 minutes</p>
-        <p><strong>Consultation Fee:</strong> €${consultationPrice}</p>
-        <p><strong>Appointment ID:</strong> #${appointmentId}</p>
+      <div class="key-facts">
+        <div class="key-facts-row">📅 ${formattedDate} · ${localTime} CET</div>
+        <div class="key-facts-row">👨‍⚕️ Dr. ${doctorName} (${specialty})</div>
+        <div class="key-facts-row">💳 €${consultationPrice} · 30 minutes · #${appointmentId}</div>
       </div>
 
-      <div class="doctor-info">
-        <h3>👨‍⚕️ Your Doctor</h3>
-        <p><strong>Dr. ${doctorName}</strong></p>
-        <p>Specialty: ${specialty}</p>
+      <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}" class="primary-button">Join Video Consultation</a>
+
+      <div class="secondary-links">
+        <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}">Reschedule</a>
+        <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}">Cancel</a>
+        <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}">View in dashboard</a>
       </div>
 
-      <p><strong>What's Next?</strong></p>
-      <ul>
-        <li>Save the attached calendar file (.ics) to add this appointment to your calendar</li>
-        <li>You'll receive a reminder email 24 hours before your appointment</li>
-        <li>A video consultation link will be provided 15 minutes before your session</li>
-        <li>Please prepare any relevant medical documents or questions</li>
-      </ul>
-
-      <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}" class="button">View My Appointments</a>
-
-      <p>If you need to reschedule or cancel, please do so at least 2 hours before your appointment time.</p>
+      <div class="info-card">
+        <strong>📋 Before your consultation:</strong><br>
+        • Test your camera and microphone<br>
+        • Prepare medical documents and questions<br>
+        • Find a quiet, private space<br>
+        • Save the attached calendar file (.ics) to your calendar
+      </div>
     `;
 
     return this.sendEmail({
       to: patientEmail,
       subject: `Appointment Confirmed - Dr. ${doctorName} on ${formattedDate}`,
-      html: this.getEmailTemplate(content),
+      html: this.getEmailTemplate(content, `Your consultation with Dr. ${doctorName} is confirmed for ${formattedDate} at ${localTime}`),
       attachments: [{
         filename: `appointment-${appointmentId}.ics`,
         content: icsContent,
@@ -265,35 +428,34 @@ export class EmailService {
     });
 
     const content = `
-      <h2>🔔 New Appointment Booked</h2>
-      <p>Dear Dr. ${doctorName},</p>
-      <p>You have a new telemedicine consultation appointment.</p>
+      <h1 class="section-title">New appointment booked</h1>
+      <p class="lead-text">You have a new consultation scheduled, Dr. ${doctorName}.</p>
       
-      <div class="appointment-details">
-        <h3>📅 Appointment Details</h3>
-        <p><strong>Patient:</strong> ${patientName}</p>
-        <p><strong>Date:</strong> ${formattedDate}</p>
-        <p><strong>Time:</strong> ${localTime}</p>
-        <p><strong>Duration:</strong> 30 minutes</p>
-        <p><strong>Consultation Fee:</strong> €${consultationPrice}</p>
-        <p><strong>Appointment ID:</strong> #${appointmentId}</p>
+      <div class="key-facts">
+        <div class="key-facts-row">📅 ${formattedDate} · ${localTime} CET</div>
+        <div class="key-facts-row">👤 ${patientName}</div>
+        <div class="key-facts-row">💳 €${consultationPrice} · 30 minutes · #${appointmentId}</div>
       </div>
 
-      <p><strong>Preparation:</strong></p>
-      <ul>
-        <li>Save the attached calendar file (.ics) to add this appointment to your calendar</li>
-        <li>Review the patient's health profile before the consultation</li>
-        <li>The video consultation link will be available 15 minutes before the session</li>
-        <li>All appointment details are available in your doctor dashboard</li>
-      </ul>
+      <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}" class="primary-button">Go to Dashboard</a>
 
-      <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}" class="button">View Dashboard</a>
+      <div class="secondary-links">
+        <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}">View patient profile</a>
+        <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}">Review appointments</a>
+      </div>
+
+      <div class="info-card">
+        <strong>📋 Preparation checklist:</strong><br>
+        • Save the attached calendar file (.ics) to your calendar<br>
+        • Review the patient's health profile beforehand<br>
+        • Video link available 15 minutes before session
+      </div>
     `;
 
     return this.sendEmail({
       to: doctorEmail,
       subject: `New Appointment - ${patientName} on ${formattedDate}`,
-      html: this.getEmailTemplate(content),
+      html: this.getEmailTemplate(content, `New consultation scheduled with ${patientName} on ${formattedDate} at ${localTime}`),
       attachments: [{
         filename: `appointment-${appointmentId}.ics`,
         content: icsContent,
@@ -324,36 +486,36 @@ export class EmailService {
     const formattedDate = format(parseISO(appointmentDate), 'EEEE, MMMM d, yyyy');
 
     const content = `
-      <h2>⏰ Appointment Reminder</h2>
-      <p>Dear ${patientName},</p>
-      <p>This is a friendly reminder about your upcoming telemedicine consultation.</p>
+      <h1 class="section-title">Your consultation is tomorrow</h1>
+      <p class="lead-text">Ready for your telemedicine appointment, ${patientName}? Here's everything you need.</p>
       
-      <div class="appointment-details">
-        <h3>📅 Your Appointment Tomorrow</h3>
-        <p><strong>Date:</strong> ${formattedDate}</p>
-        <p><strong>Time:</strong> ${localTime}</p>
-        <p><strong>Doctor:</strong> Dr. ${doctorName}</p>
-        <p><strong>Specialty:</strong> ${specialty}</p>
-        <p><strong>Appointment ID:</strong> #${appointmentId}</p>
+      <div class="key-facts">
+        <div class="key-facts-row">📅 ${formattedDate} · ${localTime} CET</div>
+        <div class="key-facts-row">👨‍⚕️ Dr. ${doctorName} (${specialty})</div>
+        <div class="key-facts-row">🔗 Join link available 15 minutes before · #${appointmentId}</div>
       </div>
 
-      <p><strong>Before Your Consultation:</strong></p>
-      <ul>
-        <li>Test your camera and microphone</li>
-        <li>Ensure you have a stable internet connection</li>
-        <li>Prepare any questions or medical documents</li>
-        <li>Find a quiet, private space for the consultation</li>
-      </ul>
+      <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}" class="primary-button">Join Video Consultation</a>
 
-      <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}" class="button">Join Video Call (Available 15 min before)</a>
+      <div class="secondary-links">
+        <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}">Reschedule</a>
+        <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}">Cancel</a>
+        <a href="${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}/dashboard` : '#'}">View in dashboard</a>
+      </div>
 
-      <p>Need to reschedule? Please do so at least 2 hours before your appointment.</p>
+      <div class="info-card">
+        <strong>⚡ Final preparation:</strong><br>
+        • Test your camera and microphone<br>
+        • Ensure stable internet connection<br>
+        • Prepare questions and medical documents<br>
+        • Find a quiet, private space
+      </div>
     `;
 
     return this.sendEmail({
       to: patientEmail,
       subject: `Reminder: Consultation with Dr. ${doctorName} Tomorrow`,
-      html: this.getEmailTemplate(content)
+      html: this.getEmailTemplate(content, `Don't forget your consultation tomorrow with Dr. ${doctorName} at ${localTime}`)
     });
   }
 
