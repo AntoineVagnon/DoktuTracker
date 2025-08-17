@@ -2,8 +2,17 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://hzmrkvooqjbxptqjqxii.supabase.co';
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6bXJrdm9vcWpieHB0cWpxeGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzMTQ0NjksImV4cCI6MjA2Njg5MDQ2OX0.1n6R5ELssn9g2aZGPU0TZN8eVPkW2sLFAYzoHKb34tU';
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+
+// Validate required environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Missing required environment variables:');
+  if (!supabaseUrl) console.error('  - VITE_SUPABASE_URL');
+  if (!supabaseAnonKey) console.error('  - VITE_SUPABASE_ANON_KEY');
+  console.error('Please set these in your Replit secrets.');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
