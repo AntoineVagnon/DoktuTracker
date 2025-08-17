@@ -150,7 +150,10 @@ export default function CalendarAvailabilityManager({ doctorId }: DoctorAvailabi
       setIsEditing(true);
     } else {
       // Start creating new availability
-      setSelectedRange({ start: time, end: `${hour + 1}:00`, day });
+      // Handle edge case where hour + 1 might be 24 (midnight)
+      const endHour = hour + 1 > 23 ? 23 : hour + 1;
+      const endTime = hour + 1 > 23 ? "23:59" : `${(hour + 1).toString().padStart(2, '0')}:00`;
+      setSelectedRange({ start: time, end: endTime, day });
       setIsCreating(true);
     }
   };
@@ -354,8 +357,36 @@ export default function CalendarAvailabilityManager({ doctorId }: DoctorAvailabi
           <div className="space-y-4">
             {selectedRange && (
               <div className="p-3 bg-gray-50 rounded-lg">
-                <p><strong>Time:</strong> {selectedRange.start} - {selectedRange.end}</p>
-                <p><strong>Day:</strong> {days[selectedRange.day]}</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium">Start Time:</label>
+                    <input
+                      type="time"
+                      value={selectedRange.start}
+                      onChange={(e) => setSelectedRange({...selectedRange, start: e.target.value})}
+                      className="px-2 py-1 border rounded"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium">End Time:</label>
+                    <input
+                      type="time"
+                      value={selectedRange.end}
+                      onChange={(e) => {
+                        // Validate end time doesn't exceed 23:59
+                        const [hours, minutes] = e.target.value.split(':').map(Number);
+                        if (hours > 23 || (hours === 23 && minutes > 59)) {
+                          setSelectedRange({...selectedRange, end: "23:59"});
+                        } else {
+                          setSelectedRange({...selectedRange, end: e.target.value});
+                        }
+                      }}
+                      max="23:59"
+                      className="px-2 py-1 border rounded"
+                    />
+                  </div>
+                  <p><strong>Day:</strong> {days[selectedRange.day]}</p>
+                </div>
               </div>
             )}
 
