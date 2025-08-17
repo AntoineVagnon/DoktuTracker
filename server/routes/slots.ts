@@ -102,7 +102,13 @@ export function setupSlotRoutes(app: Express) {
   // Create time slots in batch
   app.post('/api/time-slots/batch', async (req, res) => {
     try {
-      console.log('🚀 Batch creating availability blocks:', req.body);
+      console.log('🚀 Batch creating availability blocks - Raw body:', req.body);
+      console.log('📥 Request headers:', req.headers);
+      console.log('📥 Body type:', typeof req.body);
+      
+      if (!req.body) {
+        return res.status(400).json({ error: 'Request body is missing' });
+      }
       
       const validatedData = createTimeSlotBatchSchema.parse(req.body);
       const { doctorId, slots } = validatedData;

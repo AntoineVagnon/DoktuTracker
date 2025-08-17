@@ -67,7 +67,8 @@ export default function CalendarAvailabilityManager({ doctorId }: DoctorAvailabi
   // Mutations for API calls
   const createAvailabilityMutation = useMutation({
     mutationFn: async (data: { doctorId: number; slots: Array<{ date: string; startTime: string; endTime: string; isRecurring?: boolean; recurringUntil?: string }> }) => {
-      console.log('🚀 Batch creating availability blocks:', data.slots);
+      console.log('🚀 Batch creating availability blocks:', data);
+      console.log('📤 Sending data to backend:', JSON.stringify(data));
       const response = await apiRequest('POST', '/api/time-slots/batch', data);
       return await response.json();
     },
