@@ -5,6 +5,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Clock, Plus, Edit3, Trash2, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface TimeSlot {
   id: string;
@@ -20,7 +23,11 @@ interface SelectedRange {
   day: number; // 0-6 (Sunday-Saturday)
 }
 
-export default function CalendarAvailabilityManager() {
+interface DoctorAvailabilityManagerProps {
+  doctorId?: number;
+}
+
+export default function CalendarAvailabilityManager({ doctorId }: DoctorAvailabilityManagerProps) {
   const [availabilities, setAvailabilities] = useState<TimeSlot[]>([]);
   const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -31,9 +38,83 @@ export default function CalendarAvailabilityManager() {
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteScope, setDeleteScope] = useState<"this-week" | "future" | "all">("this-week");
+  
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const hours = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+
+  // Get current doctor ID from user or passed prop
+  const getCurrentDoctorId = async () => {
+    if (doctorId) return doctorId;
+    
+    // Get current user and doctor info
+    try {
+      const response = await fetch('/api/user/profile');
+      const user = await response.json();
+      if (user.role === 'doctor') {
+        const doctorResponse = await fetch(`/api/doctors?userId=${user.id}`);
+        const doctors = await doctorResponse.json();
+        return doctors[0]?.id;
+      }
+    } catch (error) {
+      console.error('Error getting doctor ID:', error);
+    }
+    return null;
+  };
+
+  // Mutations for API calls
+  const createAvailabilityMutation = useMutation({
+    mutationFn: async (data: { doctorId: number; slots: Array<{ date: string; startTime: string; endTime: string; isRecurring?: boolean; recurringUntil?: string }> }) => {
+      console.log('🚀 Batch creating availability blocks:', data.slots);
+      const response = await apiRequest('POST', '/api/time-slots/batch', data);
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      console.log('✅ Successfully created availability slots:', data);
+      toast({
+        title: "Success",
+        description: `Created ${data.slots?.length || 1} availability slots`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['time-slots'] });
+      setIsCreating(false);
+      setSelectedRange(null);
+      setIsRecurring(false);
+      setRecurringUntil("");
+    },
+    onError: (error: any) => {
+      console.error('Error creating blocks:', error);
+      toast({
+        title: "Error creating availability",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteAvailabilityMutation = useMutation({
+    mutationFn: async (slotId: string) => {
+      const response = await apiRequest('DELETE', `/api/time-slots/${slotId}`);
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Availability slot deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['time-slots'] });
+      setDeleteModal(false);
+      setSelectedSlot(null);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error deleting availability",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Generate time slots for a week view
   const generateWeekView = () => {
@@ -73,22 +154,44 @@ export default function CalendarAvailabilityManager() {
     }
   };
 
-  const handleCreateAvailability = () => {
+  const handleCreateAvailability = async () => {
     if (!selectedRange) return;
 
-    const newAvailability: TimeSlot = {
-      id: Math.random().toString(36).substr(2, 9),
-      startTime: selectedRange.start,
-      endTime: selectedRange.end,
-      isRecurring,
-      recurringUntil: isRecurring ? recurringUntil : undefined
-    };
+    try {
+      const currentDoctorId = await getCurrentDoctorId();
+      if (!currentDoctorId) {
+        toast({
+          title: "Error",
+          description: "Unable to identify doctor. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    setAvailabilities([...availabilities, newAvailability]);
-    setIsCreating(false);
-    setSelectedRange(null);
-    setIsRecurring(false);
-    setRecurringUntil("");
+      const today = new Date();
+      const slotDate = new Date(today);
+      slotDate.setDate(today.getDate() + selectedRange.day - today.getDay());
+
+      const slotData = {
+        date: slotDate.toISOString().split('T')[0],
+        startTime: selectedRange.start,
+        endTime: selectedRange.end,
+        isRecurring,
+        recurringUntil: isRecurring ? recurringUntil : undefined
+      };
+
+      createAvailabilityMutation.mutate({
+        doctorId: currentDoctorId,
+        slots: [slotData]
+      });
+    } catch (error) {
+      console.error('Error in handleCreateAvailability:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create availability. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleEditAvailability = () => {
@@ -115,9 +218,7 @@ export default function CalendarAvailabilityManager() {
       console.log(`Deleting ${deleteScope} for slot ${selectedSlot.id}`);
     }
 
-    setAvailabilities(availabilities.filter(av => av.id !== selectedSlot.id));
-    setDeleteModal(false);
-    setSelectedSlot(null);
+    deleteAvailabilityMutation.mutate(selectedSlot.id);
   };
 
   const openDeleteModal = (slot: TimeSlot) => {
@@ -285,9 +386,12 @@ export default function CalendarAvailabilityManager() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
-            <Button onClick={handleCreateAvailability}>
+            <Button 
+              onClick={handleCreateAvailability}
+              disabled={createAvailabilityMutation.isPending}
+            >
               <Save className="h-4 w-4 mr-2" />
-              Create Availability
+              {createAvailabilityMutation.isPending ? 'Creating...' : 'Create Availability'}
             </Button>
           </DialogFooter>
         </DialogContent>

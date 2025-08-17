@@ -29,6 +29,7 @@ import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
 import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema, doctorTimeSlots } from "@shared/schema";
 import { z } from "zod";
 import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
+import { setupSlotRoutes } from "./routes/slots";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { notificationService, TriggerCode } from "./services/notificationService";
@@ -49,6 +50,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register document library routes
   registerDocumentLibraryRoutes(app);
+  
+  // Register slot management routes
+  setupSlotRoutes(app);
   
   // Zoom meeting endpoints
   app.get("/api/zoom/status", async (req, res) => {

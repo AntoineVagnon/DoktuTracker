@@ -1,10 +1,23 @@
 import { Express } from 'express';
 import { storage } from '../storage';
 import { z } from 'zod';
+import { insertTimeSlotSchema } from '@shared/schema';
+import { isAuthenticated } from '../supabaseAuth';
 
 const holdSlotSchema = z.object({
   slotId: z.string(),
   sessionId: z.string().optional(),
+});
+
+const createTimeSlotBatchSchema = z.object({
+  doctorId: z.number(),
+  slots: z.array(z.object({
+    date: z.string(),
+    startTime: z.string(),
+    endTime: z.string(),
+    isRecurring: z.boolean().optional(),
+    recurringUntil: z.string().optional()
+  }))
 });
 
 export function setupSlotRoutes(app: Express) {
@@ -66,6 +79,185 @@ export function setupSlotRoutes(app: Express) {
     } catch (error: any) {
       console.error('Cleanup slots error:', error);
       res.status(500).json({ error: 'Failed to cleanup slots' });
+    }
+  });
+
+  // Get doctor time slots
+  app.get('/api/time-slots', async (req, res) => {
+    try {
+      const { doctorId, date } = req.query;
+      
+      if (!doctorId) {
+        return res.status(400).json({ error: 'Doctor ID is required' });
+      }
+
+      const slots = await storage.getDoctorTimeSlots(doctorId as string, date as string);
+      res.json(slots);
+    } catch (error: any) {
+      console.error('Get time slots error:', error);
+      res.status(500).json({ error: 'Failed to get time slots' });
+    }
+  });
+
+  // Create time slots in batch
+  app.post('/api/time-slots/batch', isAuthenticated, async (req, res) => {
+    try {
+      console.log('🚀 Batch creating availability blocks:', req.body);
+      
+      const validatedData = createTimeSlotBatchSchema.parse(req.body);
+      const { doctorId, slots } = validatedData;
+      
+      // Check if user is the doctor or has permission
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+      const user = await storage.getUser(userId.toString());
+      
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      // For doctors, check if they're creating slots for themselves
+      if (user.role === 'doctor') {
+        const doctor = await storage.getDoctorByUserId(user.id);
+        if (!doctor || doctor.id !== doctorId) {
+          return res.status(403).json({ error: 'You can only create availability for yourself' });
+        }
+      } else if (user.role !== 'admin') {
+        return res.status(403).json({ error: 'Insufficient permissions' });
+      }
+
+      const createdSlots = [];
+      for (const slot of slots) {
+        // Generate time slots based on recurring pattern
+        const timeSlotsToCreate = [];
+        
+        if (slot.isRecurring && slot.recurringUntil) {
+          // Create recurring slots
+          const startDate = new Date(slot.date);
+          const endDate = new Date(slot.recurringUntil);
+          
+          for (let currentDate = new Date(startDate); currentDate <= endDate; currentDate.setDate(currentDate.getDate() + 7)) {
+            timeSlotsToCreate.push({
+              doctorId,
+              date: currentDate.toISOString().split('T')[0],
+              startTime: slot.startTime,
+              endTime: slot.endTime,
+              isAvailable: true
+            });
+          }
+        } else {
+          // Create single slot
+          timeSlotsToCreate.push({
+            doctorId,
+            date: slot.date,
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            isAvailable: true
+          });
+        }
+
+        // Create all slots
+        for (const timeSlotData of timeSlotsToCreate) {
+          try {
+            const createdSlot = await storage.createTimeSlot(timeSlotData);
+            createdSlots.push(createdSlot);
+          } catch (error: any) {
+            console.error('Error creating individual slot:', error);
+            // Continue with other slots if one fails
+          }
+        }
+      }
+
+      console.log(`✅ Successfully created ${createdSlots.length} availability slots`);
+      res.json({ 
+        success: true, 
+        message: `Created ${createdSlots.length} availability slots`,
+        slots: createdSlots
+      });
+    } catch (error: any) {
+      console.error('Error creating blocks:', error);
+      res.status(400).json({ error: error.message || 'Failed to create availability blocks' });
+    }
+  });
+
+  // Delete a time slot
+  app.delete('/api/time-slots/:id', isAuthenticated, async (req, res) => {
+    try {
+      const slotId = req.params.id;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+      const user = await storage.getUser(userId.toString());
+      
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      // Get all slots and find the one we want to delete
+      const slots = await storage.getTimeSlots();
+      const slot = slots.find(s => s.id === slotId);
+      if (!slot) {
+        return res.status(404).json({ error: 'Time slot not found' });
+      }
+
+      // Check if user has permission to delete
+      if (user.role === 'doctor') {
+        const doctor = await storage.getDoctorByUserId(user.id);
+        if (!doctor || doctor.id !== slot.doctorId) {
+          return res.status(403).json({ error: 'You can only delete your own availability' });
+        }
+      } else if (user.role !== 'admin') {
+        return res.status(403).json({ error: 'Insufficient permissions' });
+      }
+
+      await storage.deleteTimeSlot(slotId);
+      res.json({ success: true, message: 'Time slot deleted successfully' });
+    } catch (error: any) {
+      console.error('Delete time slot error:', error);
+      res.status(500).json({ error: 'Failed to delete time slot' });
+    }
+  });
+
+  // Update a time slot
+  app.put('/api/time-slots/:id', isAuthenticated, async (req, res) => {
+    try {
+      const slotId = req.params.id;
+      const updates = req.body;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+      const user = await storage.getUser(userId.toString());
+      
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      // Get all slots and find the one we want to update
+      const slots = await storage.getTimeSlots();
+      const slot = slots.find(s => s.id === slotId);
+      if (!slot) {
+        return res.status(404).json({ error: 'Time slot not found' });
+      }
+
+      // Check if user has permission to update
+      if (user.role === 'doctor') {
+        const doctor = await storage.getDoctorByUserId(user.id);
+        if (!doctor || doctor.id !== slot.doctorId) {
+          return res.status(403).json({ error: 'You can only update your own availability' });
+        }
+      } else if (user.role !== 'admin') {
+        return res.status(403).json({ error: 'Insufficient permissions' });
+      }
+
+      const updatedSlot = await storage.updateTimeSlot(slotId, updates);
+      res.json({ success: true, slot: updatedSlot });
+    } catch (error: any) {
+      console.error('Update time slot error:', error);
+      res.status(500).json({ error: 'Failed to update time slot' });
     }
   });
 }
