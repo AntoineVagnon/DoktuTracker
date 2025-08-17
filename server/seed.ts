@@ -186,7 +186,13 @@ export async function seedDatabase() {
     // Create users and doctors
     for (const doctorData of sampleDoctors) {
       const email = `${doctorData.firstName.toLowerCase()}.${doctorData.lastName.toLowerCase()}@doktu.com`;
-      const password = "password123"; // Default password for all doctors
+      // Use environment variable for seeding password, fallback to secure generated password
+      const password = process.env.SEED_DOCTOR_PASSWORD || `TempPass_${nanoid(12)}_2025!`;
+      
+      // Log password for development (remove in production)
+      if (!process.env.SEED_DOCTOR_PASSWORD) {
+        console.log(`🔑 Generated password for ${email}: ${password}`);
+      }
       
       // Create Supabase Auth user first
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
