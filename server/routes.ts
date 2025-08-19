@@ -66,6 +66,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const mdrRouter = (await import("./routes/mdr")).default;
   app.use("/", mdrRouter);
   
+  // Register Professional Qualification routes (Phase 5)
+  const qualificationsRouter = (await import("./routes/qualifications")).default;
+  app.use("/", qualificationsRouter);
+  
   // Zoom meeting endpoints
   app.get("/api/zoom/status", async (req, res) => {
     res.json({

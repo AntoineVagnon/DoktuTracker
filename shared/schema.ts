@@ -182,6 +182,147 @@ export const mdrComplianceRequirements = pgTable("mdr_compliance_requirements", 
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Professional Qualification Verification Tables (Phase 5)
+export const doctorQualifications = pgTable("doctor_qualifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  doctorId: integer("doctor_id").references(() => doctors.id),
+  qualificationType: varchar("qualification_type", { length: 50 }).notNull(),
+  issuingAuthority: varchar("issuing_authority", { length: 255 }).notNull(),
+  qualificationNumber: varchar("qualification_number", { length: 255 }).notNull(),
+  issueDate: date("issue_date"),
+  expiryDate: date("expiry_date"),
+  
+  // Verification Status
+  verificationStatus: varchar("verification_status", { length: 50 }).default('pending'),
+  verificationDate: date("verification_date"),
+  verificationMethod: varchar("verification_method", { length: 255 }),
+  verificationReference: varchar("verification_reference", { length: 255 }),
+  
+  // EU Recognition
+  euRecognitionStatus: varchar("eu_recognition_status", { length: 50 }),
+  homeMemberState: varchar("home_member_state", { length: 100 }),
+  hostMemberStates: text("host_member_states").array(),
+  
+  // Supporting Documents
+  supportingDocuments: jsonb("supporting_documents"),
+  documentUrls: text("document_urls").array(),
+  
+  // Additional Details
+  qualificationCountry: varchar("qualification_country", { length: 100 }),
+  qualificationLanguage: varchar("qualification_language", { length: 50 }),
+  specialization: varchar("specialization", { length: 255 }),
+  institutionName: varchar("institution_name", { length: 255 }),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const professionalInsurance = pgTable("professional_insurance", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  doctorId: integer("doctor_id").references(() => doctors.id),
+  insuranceProvider: varchar("insurance_provider", { length: 255 }).notNull(),
+  policyNumber: varchar("policy_number", { length: 255 }).notNull(),
+  coverageAmount: decimal("coverage_amount", { precision: 12, scale: 2 }),
+  coverageCurrency: varchar("coverage_currency", { length: 10 }).default('EUR'),
+  coverageTerritory: varchar("coverage_territory", { length: 255 }).notNull(),
+  
+  // Coverage Dates
+  effectiveDate: date("effective_date").notNull(),
+  expiryDate: date("expiry_date").notNull(),
+  
+  // Coverage Details
+  coverageType: varchar("coverage_type", { length: 100 }),
+  coverageScope: jsonb("coverage_scope"),
+  exclusions: jsonb("exclusions"),
+  deductible: decimal("deductible", { precision: 10, scale: 2 }),
+  
+  // Verification
+  verificationStatus: varchar("verification_status", { length: 50 }).default('pending'),
+  verificationDate: date("verification_date"),
+  verificationNotes: text("verification_notes"),
+  
+  // Compliance
+  meetsEuRequirements: boolean("meets_eu_requirements").default(false),
+  meetsHostStateRequirements: jsonb("meets_host_state_requirements"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const crossBorderDeclarations = pgTable("cross_border_declarations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  doctorId: integer("doctor_id").references(() => doctors.id),
+  declarationType: varchar("declaration_type", { length: 50 }).notNull(),
+  
+  // Home State Information
+  homeMemberState: varchar("home_member_state", { length: 100 }).notNull(),
+  homeRegistrationNumber: varchar("home_registration_number", { length: 255 }),
+  homeProfessionalBody: varchar("home_professional_body", { length: 255 }),
+  
+  // Host State Information
+  hostMemberState: varchar("host_member_state", { length: 100 }).notNull(),
+  hostRegistrationNumber: varchar("host_registration_number", { length: 255 }),
+  hostProfessionalBody: varchar("host_professional_body", { length: 255 }),
+  
+  // Declaration Details
+  declarationDate: date("declaration_date").notNull(),
+  validityStartDate: date("validity_start_date").notNull(),
+  validityEndDate: date("validity_end_date"),
+  servicesToProvide: text("services_to_provide").array(),
+  
+  // Status
+  status: varchar("status", { length: 50 }).default('pending'),
+  approvalDate: date("approval_date"),
+  rejectionReason: text("rejection_reason"),
+  
+  // Requirements
+  languageCompetencyVerified: boolean("language_competency_verified").default(false),
+  languageCertificateReference: varchar("language_certificate_reference", { length: 255 }),
+  adaptationPeriodRequired: boolean("adaptation_period_required").default(false),
+  adaptationPeriodCompleted: boolean("adaptation_period_completed").default(false),
+  aptitudeTestRequired: boolean("aptitude_test_required").default(false),
+  aptitudeTestPassed: boolean("aptitude_test_passed").default(false),
+  
+  supportingDocuments: jsonb("supporting_documents"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const euProfessionalCards = pgTable("eu_professional_cards", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  doctorId: integer("doctor_id").references(() => doctors.id),
+  epcNumber: varchar("epc_number", { length: 255 }).notNull().unique(),
+  
+  // Card Details
+  issueDate: date("issue_date").notNull(),
+  expiryDate: date("expiry_date").notNull(),
+  issuingAuthority: varchar("issuing_authority", { length: 255 }),
+  issuingCountry: varchar("issuing_country", { length: 100 }),
+  
+  // Professional Information
+  professionalTitle: varchar("professional_title", { length: 255 }),
+  specializations: text("specializations").array(),
+  qualificationsIncluded: jsonb("qualifications_included"),
+  
+  // Recognition Status
+  recognizedInCountries: text("recognized_in_countries").array(),
+  temporaryMobilityDeclaration: boolean("temporary_mobility_declaration").default(false),
+  permanentEstablishment: boolean("permanent_establishment").default(false),
+  
+  // Verification
+  verificationStatus: varchar("verification_status", { length: 50 }).default('pending'),
+  lastVerificationDate: date("last_verification_date"),
+  verificationUrl: varchar("verification_url", { length: 500 }),
+  
+  // Digital Signature
+  digitalSignature: text("digital_signature"),
+  signatureValid: boolean("signature_valid"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // User storage table - normalized with structured name fields only
 export const users = pgTable("users", {
   id: serial("id").primaryKey(), // Use serial for auto-increment
@@ -721,3 +862,35 @@ export const insertMdrComplianceRequirementsSchema = createInsertSchema(mdrCompl
 });
 export type InsertMdrComplianceRequirements = z.infer<typeof insertMdrComplianceRequirementsSchema>;
 export type MdrComplianceRequirements = typeof mdrComplianceRequirements.$inferSelect;
+
+export const insertDoctorQualificationsSchema = createInsertSchema(doctorQualifications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertDoctorQualifications = z.infer<typeof insertDoctorQualificationsSchema>;
+export type DoctorQualifications = typeof doctorQualifications.$inferSelect;
+
+export const insertProfessionalInsuranceSchema = createInsertSchema(professionalInsurance).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertProfessionalInsurance = z.infer<typeof insertProfessionalInsuranceSchema>;
+export type ProfessionalInsurance = typeof professionalInsurance.$inferSelect;
+
+export const insertCrossBorderDeclarationsSchema = createInsertSchema(crossBorderDeclarations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertCrossBorderDeclarations = z.infer<typeof insertCrossBorderDeclarationsSchema>;
+export type CrossBorderDeclarations = typeof crossBorderDeclarations.$inferSelect;
+
+export const insertEuProfessionalCardsSchema = createInsertSchema(euProfessionalCards).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertEuProfessionalCards = z.infer<typeof insertEuProfessionalCardsSchema>;
+export type EuProfessionalCards = typeof euProfessionalCards.$inferSelect;
