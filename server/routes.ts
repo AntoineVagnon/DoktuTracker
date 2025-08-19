@@ -7,6 +7,21 @@ import {
 } from "./objectStorage";
 import { ObjectPermission, ObjectAccessGroupType } from "./objectAcl";
 import { createClient } from "@supabase/supabase-js";
+import {
+  helmetConfig,
+  additionalSecurityHeaders,
+  generalLimiter,
+  authLimiter,
+  speedLimiter,
+  strictLimiter,
+  validateAndSanitizeUser,
+  validateRegistration,
+  handleValidationErrors,
+  errorHandler,
+  securityAudit,
+  sanitizeInput,
+  authenticateToken
+} from "./middleware/security";
 
 // Extend express session type
 declare module 'express-session' {
@@ -45,6 +60,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply security middleware globally
+  app.use(helmetConfig);
+  app.use(additionalSecurityHeaders);
+  app.use(securityAudit);
+  app.use(sanitizeInput);
+  
+  // Apply rate limiting
+  app.use('/api/', generalLimiter);
+  app.use('/api/auth/', authLimiter);
+  app.use('/api/auth/', speedLimiter);
+  
   // Setup Supabase authentication
   await setupSupabaseAuth(app);
 
@@ -314,14 +340,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Doctor-related routes
-  app.get("/api/doctors", async (req, res) => {
+  // Doctor-related routes - SECURED with rate limiting
+  // Public endpoint but with limited data exposure and rate limiting
+  app.get("/api/doctors", strictLimiter, async (req, res) => {
     try {
       const doctors = await storage.getDoctors();
-      res.json(doctors);
+      // Filter out sensitive data before sending
+      const sanitizedDoctors = doctors.map(doctor => ({
+        id: doctor.id,
+        specialty: doctor.specialty,
+        rating: doctor.rating,
+        reviewCount: doctor.reviewCount,
+        consultationPrice: doctor.consultationPrice,
+        availableSlots: doctor.availableSlots,
+        user: doctor.user ? {
+          title: doctor.user.title,
+          firstName: doctor.user.firstName,
+          lastName: doctor.user.lastName,
+          profileImageUrl: doctor.user.profileImageUrl
+          // Explicitly exclude email, id, and other sensitive fields
+        } : undefined
+      }));
+      res.json(sanitizedDoctors);
     } catch (error) {
       console.error("Error fetching doctors:", error);
-      res.status(500).json({ message: "Failed to fetch doctors" });
+      res.status(500).json({ 
+        error: "Failed to fetch doctors",
+        code: "FETCH_ERROR"
+      });
     }
   });
 
@@ -369,16 +415,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/doctors/:id", async (req, res) => {
+  app.get("/api/doctors/:id", strictLimiter, async (req, res) => {
     try {
+      const doctorId = parseInt(req.params.id);
+      
+      if (isNaN(doctorId)) {
+        return res.status(400).json({ 
+          error: 'Invalid doctor ID format',
+          code: 'INVALID_ID_FORMAT'
+        });
+      }
+      
       const doctor = await storage.getDoctor(req.params.id);
       if (!doctor) {
-        return res.status(404).json({ message: "Doctor not found" });
+        return res.status(404).json({ 
+          error: "Doctor not found",
+          code: "DOCTOR_NOT_FOUND"
+        });
       }
-      res.json(doctor);
+      
+      // Return sanitized doctor data
+      const sanitizedDoctor = {
+        id: doctor.id,
+        specialty: doctor.specialty,
+        bio: doctor.bio,
+        education: doctor.education,
+        experience: doctor.experience,
+        languages: doctor.languages,
+        consultationPrice: doctor.consultationPrice,
+        rating: doctor.rating,
+        reviewCount: doctor.reviewCount,
+        user: doctor.user ? {
+          title: doctor.user.title,
+          firstName: doctor.user.firstName,
+          lastName: doctor.user.lastName,
+          profileImageUrl: doctor.user.profileImageUrl
+        } : undefined
+      };
+      
+      res.json(sanitizedDoctor);
     } catch (error) {
       console.error("Error fetching doctor:", error);
-      res.status(500).json({ message: "Failed to fetch doctor" });
+      res.status(500).json({ 
+        error: "Failed to fetch doctor",
+        code: "FETCH_ERROR"
+      });
     }
   });
 
@@ -871,17 +952,120 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe payment routes
-  app.post("/api/create-payment-intent", async (req, res) => {
+  // Stripe payment routes - DEPRECATED and SECURED
+  // This endpoint should not be used - use /api/payment/create-intent instead
+  app.post("/api/create-payment-intent", isAuthenticated, async (req, res) => {
+    console.warn("⚠️ Deprecated payment endpoint called - redirecting to secure endpoint");
+    return res.status(410).json({ 
+      error: "This endpoint is deprecated for security reasons. Use /api/payment/create-intent instead",
+      code: "DEPRECATED_ENDPOINT"
+    });
+  });
+
+  // Secure checkout session endpoint with CSRF protection
+  app.post("/api/checkout/session", isAuthenticated, strictLimiter, async (req, res) => {
     try {
-      const { amount } = req.body;
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
-        currency: "eur", // European market
+      const { doctorId, slotId, appointmentDate } = req.body;
+      const userId = req.user?.id;
+      
+      if (!doctorId || !slotId || !appointmentDate) {
+        return res.status(400).json({ 
+          error: "Missing required fields",
+          code: "MISSING_FIELDS"
+        });
+      }
+      
+      // Validate doctor exists and get real price
+      const doctor = await storage.getDoctor(doctorId);
+      if (!doctor) {
+        return res.status(404).json({ 
+          error: "Doctor not found",
+          code: "DOCTOR_NOT_FOUND"
+        });
+      }
+      
+      // CRITICAL: Use price from database only
+      const realPrice = parseFloat(doctor.consultationPrice);
+      
+      // Validate price range
+      if (realPrice < 1 || realPrice > 500) {
+        console.error(`⚠️ Suspicious price for doctor ${doctorId}: €${realPrice}`);
+        return res.status(400).json({ 
+          error: "Invalid consultation price",
+          code: "INVALID_PRICE"
+        });
+      }
+      
+      // Check slot availability
+      const slot = await storage.getTimeSlot(slotId);
+      if (!slot || !slot.isAvailable) {
+        return res.status(409).json({ 
+          error: "Slot is no longer available",
+          code: "SLOT_UNAVAILABLE"
+        });
+      }
+      
+      // Create appointment
+      const appointmentData = {
+        patientId: parseInt(userId),
+        doctorId: parseInt(doctorId),
+        appointmentDate: new Date(appointmentDate),
+        status: 'pending' as const,
+        paymentIntentId: null,
+        clientSecret: null,
+        zoomMeetingId: null,
+        zoomJoinUrl: null,
+        zoomStartUrl: null,
+        zoomPassword: null
+      };
+      
+      const appointment = await storage.createAppointment(appointmentData);
+      
+      // Create Stripe checkout session with metadata
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: `Consultation with Dr. ${doctor.user?.firstName} ${doctor.user?.lastName}`,
+              description: `${doctor.specialty} - ${appointmentDate}`,
+            },
+            unit_amount: Math.round(realPrice * 100), // Database price in cents
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: `${process.env.APP_URL || 'https://doktu.co'}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.APP_URL || 'https://doktu.co'}/payment/cancel`,
+        metadata: {
+          appointmentId: appointment.id.toString(),
+          patientId: userId.toString(),
+          doctorId: doctorId.toString(),
+          slotId: slotId.toString(),
+          realPrice: realPrice.toString()
+        },
+        customer_email: req.user?.email
       });
-      res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error: any) {
-      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+      
+      // Update appointment with session ID
+      await storage.updateAppointmentStatus(appointment.id, "pending_payment", session.id);
+      
+      console.log(`🔒 Secure checkout session created: ${session.id}, Real price: €${realPrice}`);
+      
+      res.json({
+        sessionId: session.id,
+        url: session.url,
+        appointmentId: appointment.id,
+        amount: realPrice
+      });
+      
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+      res.status(500).json({ 
+        error: "Failed to create checkout session",
+        code: "CHECKOUT_ERROR"
+      });
     }
   });
 
@@ -1794,29 +1978,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Appointment routes (already defined above)
 
-  // Payment routes
+  // Payment routes - SECURED with server-side price validation
   app.post("/api/payment/create-intent", isAuthenticated, async (req, res) => {
     try {
-      const { appointmentId, amount } = req.body;
+      const { appointmentId } = req.body;
       
-      if (!appointmentId || !amount) {
-        return res.status(400).json({ error: "Missing appointmentId or amount" });
+      if (!appointmentId) {
+        return res.status(400).json({ 
+          error: "Missing appointmentId",
+          code: "MISSING_APPOINTMENT_ID"
+        });
       }
 
       // Get appointment details
       const appointment = await storage.getAppointment(appointmentId);
       if (!appointment) {
-        return res.status(404).json({ error: "Appointment not found" });
+        return res.status(404).json({ 
+          error: "Appointment not found",
+          code: "APPOINTMENT_NOT_FOUND"
+        });
       }
 
-      // Create payment intent with Stripe
+      // Get doctor details to retrieve the REAL price from database
+      const doctor = await storage.getDoctor(appointment.doctorId);
+      if (!doctor) {
+        return res.status(404).json({ 
+          error: "Doctor not found",
+          code: "DOCTOR_NOT_FOUND"
+        });
+      }
+
+      // CRITICAL: Use price from database, NEVER from client
+      const realPrice = parseFloat(doctor.consultationPrice);
+      
+      console.log(`💰 Creating payment intent: Doctor ${doctor.id}, Real price: €${realPrice}`);
+      
+      // Validate price is reasonable (between €1 and €500)
+      if (realPrice < 1 || realPrice > 500) {
+        console.error(`⚠️ Suspicious price detected: €${realPrice}`);
+        return res.status(400).json({ 
+          error: "Invalid consultation price",
+          code: "INVALID_PRICE"
+        });
+      }
+
+      // Create payment intent with Stripe using database price
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(parseFloat(amount) * 100), // Convert to cents
+        amount: Math.round(realPrice * 100), // Convert to cents - using DATABASE price
         currency: 'eur',
         metadata: {
           appointmentId,
           patientId: req.user.id.toString(),
           doctorId: appointment.doctorId.toString(),
+          realPrice: realPrice.toString() // Store the real price for audit
         },
       });
 
@@ -1826,10 +2040,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         clientSecret: paymentIntent.client_secret,
         paymentIntentId: paymentIntent.id,
+        amount: realPrice // Return the real price to client for display
       });
     } catch (error) {
       console.error("Error creating payment intent:", error);
-      res.status(500).json({ error: "Failed to create payment intent" });
+      res.status(500).json({ 
+        error: "Failed to create payment intent",
+        code: "PAYMENT_INTENT_ERROR"
+      });
     }
   });
 
@@ -2687,6 +2905,9 @@ Please upload the document again through the secure upload system.`;
     }
   });
 
+  // Apply global error handler (must be last)
+  app.use(errorHandler);
+  
   const httpServer = createServer(app);
   return httpServer;
 }
