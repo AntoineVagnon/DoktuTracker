@@ -85,6 +85,103 @@ export const gdprDataProcessingRecords = pgTable("gdpr_data_processing_records",
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Medical Device Regulation (MDR) Assessment Tables
+export const medicalDeviceAssessments = pgTable("medical_device_assessments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  assessmentDate: timestamp("assessment_date").notNull().defaultNow(),
+  assessmentVersion: varchar("assessment_version", { length: 50 }).notNull(),
+  assessmentType: varchar("assessment_type", { length: 100 }).notNull(),
+  softwareName: varchar("software_name", { length: 255 }).notNull().default('Doktu Platform'),
+  softwareVersion: varchar("software_version", { length: 50 }).notNull(),
+  
+  // MDCG 2019-11 Decision Tree
+  isSoftware: boolean("is_software").notNull().default(true),
+  isAccessory: boolean("is_accessory"),
+  processesData: boolean("processes_data"),
+  benefitIndividualPatients: boolean("benefit_individual_patients"),
+  
+  // Risk Classification
+  medicalDeviceClass: varchar("medical_device_class", { length: 50 }),
+  riskLevel: varchar("risk_level", { length: 50 }),
+  
+  // Assessment Details
+  assessmentRationale: text("assessment_rationale"),
+  regulatoryFramework: varchar("regulatory_framework", { length: 100 }).default('MDR 2017/745'),
+  notifiedBodyRequired: boolean("notified_body_required").default(false),
+  ceMarkingRequired: boolean("ce_marking_required").default(false),
+  
+  // Clinical Functions
+  diagnosticFeatures: jsonb("diagnostic_features"),
+  treatmentFeatures: jsonb("treatment_features"),
+  monitoringFeatures: jsonb("monitoring_features"),
+  calculationFeatures: jsonb("calculation_features"),
+  
+  // Compliance Status
+  complianceStatus: varchar("compliance_status", { length: 50 }).default('assessment_pending'),
+  complianceGaps: jsonb("compliance_gaps"),
+  remediationPlan: jsonb("remediation_plan"),
+  
+  // Metadata
+  assessedBy: integer("assessed_by").references(() => users.id),
+  reviewedBy: integer("reviewed_by").references(() => users.id),
+  approvedBy: integer("approved_by").references(() => users.id),
+  nextReviewDate: date("next_review_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const medicalDeviceFunctions = pgTable("medical_device_functions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  assessmentId: uuid("assessment_id").references(() => medicalDeviceAssessments.id),
+  functionCategory: varchar("function_category", { length: 100 }).notNull(),
+  functionName: varchar("function_name", { length: 255 }).notNull(),
+  functionDescription: text("function_description").notNull(),
+  
+  // Risk Assessment
+  potentialHarm: varchar("potential_harm", { length: 100 }),
+  likelihoodOfHarm: varchar("likelihood_of_harm", { length: 100 }),
+  riskMitigation: text("risk_mitigation"),
+  
+  // Medical Purpose
+  medicalPurpose: text("medical_purpose"),
+  intendedUsers: varchar("intended_users", { length: 255 }),
+  clinicalBenefit: text("clinical_benefit"),
+  
+  // Regulatory Impact
+  affectsClassification: boolean("affects_classification").default(false),
+  requiresClinicalEvidence: boolean("requires_clinical_evidence").default(false),
+  requiresPerformanceValidation: boolean("requires_performance_validation").default(false),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const mdrComplianceRequirements = pgTable("mdr_compliance_requirements", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  assessmentId: uuid("assessment_id").references(() => medicalDeviceAssessments.id),
+  requirementCategory: varchar("requirement_category", { length: 100 }).notNull(),
+  requirementName: varchar("requirement_name", { length: 255 }).notNull(),
+  requirementDescription: text("requirement_description"),
+  
+  // Regulatory Reference
+  regulationReference: varchar("regulation_reference", { length: 100 }),
+  standardReference: varchar("standard_reference", { length: 100 }),
+  
+  // Compliance Status
+  complianceStatus: varchar("compliance_status", { length: 50 }).default('not_assessed'),
+  evidenceProvided: text("evidence_provided"),
+  gapsIdentified: text("gaps_identified"),
+  remediationActions: text("remediation_actions"),
+  targetCompletionDate: date("target_completion_date"),
+  
+  // Priority and Risk
+  priority: varchar("priority", { length: 50 }).default('medium'),
+  riskIfNonCompliant: text("risk_if_non_compliant"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // User storage table - normalized with structured name fields only
 export const users = pgTable("users", {
   id: serial("id").primaryKey(), // Use serial for auto-increment
@@ -600,3 +697,27 @@ export const insertLegalDocumentsSchema = createInsertSchema(legalDocuments).omi
 });
 export type InsertLegalDocuments = z.infer<typeof insertLegalDocumentsSchema>;
 export type LegalDocuments = typeof legalDocuments.$inferSelect;
+
+export const insertMedicalDeviceAssessmentsSchema = createInsertSchema(medicalDeviceAssessments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertMedicalDeviceAssessments = z.infer<typeof insertMedicalDeviceAssessmentsSchema>;
+export type MedicalDeviceAssessments = typeof medicalDeviceAssessments.$inferSelect;
+
+export const insertMedicalDeviceFunctionsSchema = createInsertSchema(medicalDeviceFunctions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertMedicalDeviceFunctions = z.infer<typeof insertMedicalDeviceFunctionsSchema>;
+export type MedicalDeviceFunctions = typeof medicalDeviceFunctions.$inferSelect;
+
+export const insertMdrComplianceRequirementsSchema = createInsertSchema(mdrComplianceRequirements).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertMdrComplianceRequirements = z.infer<typeof insertMdrComplianceRequirementsSchema>;
+export type MdrComplianceRequirements = typeof mdrComplianceRequirements.$inferSelect;

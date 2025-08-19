@@ -62,6 +62,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const gdprRouter = (await import("./routes/gdpr")).default;
   app.use("/", gdprRouter);
   
+  // Register MDR compliance routes (Phase 4)
+  const mdrRouter = (await import("./routes/mdr")).default;
+  app.use("/", mdrRouter);
+  
   // Zoom meeting endpoints
   app.get("/api/zoom/status", async (req, res) => {
     res.json({
