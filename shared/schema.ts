@@ -894,3 +894,160 @@ export const insertEuProfessionalCardsSchema = createInsertSchema(euProfessional
 });
 export type InsertEuProfessionalCards = z.infer<typeof insertEuProfessionalCardsSchema>;
 export type EuProfessionalCards = typeof euProfessionalCards.$inferSelect;
+
+// Phase 6: Data Security Enhancements Tables
+
+export const encryptionKeys = pgTable('encryption_keys', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  keyName: varchar('key_name', { length: 255 }).notNull().unique(),
+  keyType: varchar('key_type', { length: 50 }).notNull(), // 'data_at_rest', 'data_in_transit', 'video'
+  algorithm: varchar('algorithm', { length: 100 }).notNull(),
+  keyVersion: integer('key_version').default(1),
+  keyMaterial: text('key_material'), // Encrypted key material
+  rotationPeriodDays: integer('rotation_period_days').default(90),
+  lastRotatedAt: timestamp('last_rotated_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+  isActive: boolean('is_active').default(true)
+});
+
+export const accessControlRoles = pgTable('access_control_roles', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  roleName: varchar('role_name', { length: 50 }).notNull().unique(),
+  description: text('description'),
+  healthDataAccess: varchar('health_data_access', { length: 100 }), // 'own', 'assigned', 'none', 'audit'
+  adminFunctions: varchar('admin_functions', { length: 100 }), // 'full', 'user_management', 'none'
+  patientDataAccess: varchar('patient_data_access', { length: 100 }), // 'own', 'assigned', 'anonymized', 'pseudonymized'
+  auditLogAccess: varchar('audit_log_access', { length: 100 }), // 'own', 'all', 'support', 'none'
+  permissions: jsonb('permissions').$default(() => ({})),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const userRoleAssignments = pgTable('user_role_assignments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  roleId: uuid('role_id').notNull().references(() => accessControlRoles.id, { onDelete: 'cascade' }),
+  assignedBy: uuid('assigned_by').references(() => users.id),
+  assignedAt: timestamp('assigned_at').defaultNow(),
+  expiresAt: timestamp('expires_at'),
+  isActive: boolean('is_active').default(true)
+});
+
+export const dataAccessAuditLog = pgTable('data_access_audit_log', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id),
+  resourceType: varchar('resource_type', { length: 100 }).notNull(), // 'health_data', 'patient_record', etc.
+  resourceId: uuid('resource_id'),
+  action: varchar('action', { length: 50 }).notNull(), // 'view', 'create', 'update', 'delete', 'export'
+  accessGranted: boolean('access_granted').notNull(),
+  denialReason: text('denial_reason'),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  sessionId: varchar('session_id', { length: 255 }),
+  requestMetadata: jsonb('request_metadata').$default(() => ({})),
+  timestamp: timestamp('timestamp').defaultNow()
+});
+
+export const encryptedColumns = pgTable('encrypted_columns', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tableName: varchar('table_name', { length: 255 }).notNull(),
+  columnName: varchar('column_name', { length: 255 }).notNull(),
+  encryptionAlgorithm: varchar('encryption_algorithm', { length: 100 }).default('AES-256-GCM'),
+  keyId: uuid('key_id').references(() => encryptionKeys.id),
+  isEncrypted: boolean('is_encrypted').default(false),
+  encryptedAt: timestamp('encrypted_at'),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+export const secureSessions = pgTable('secure_sessions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  sessionToken: varchar('session_token', { length: 500 }).notNull().unique(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  roleId: uuid('role_id').references(() => accessControlRoles.id),
+  jwtClaims: jsonb('jwt_claims').$default(() => ({})),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  createdAt: timestamp('created_at').defaultNow(),
+  expiresAt: timestamp('expires_at').notNull(),
+  lastActivity: timestamp('last_activity').defaultNow(),
+  revokedAt: timestamp('revoked_at'),
+  revokeReason: text('revoke_reason'),
+  isActive: boolean('is_active').default(true)
+});
+
+export const dataBreachIncidents = pgTable('data_breach_incidents', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  incidentDate: timestamp('incident_date').notNull(),
+  detectedDate: timestamp('detected_date').notNull(),
+  reportedDate: timestamp('reported_date'),
+  incidentType: varchar('incident_type', { length: 100 }).notNull(), // 'unauthorized_access', 'data_leak', 'system_breach'
+  severity: varchar('severity', { length: 50 }).notNull(), // 'critical', 'high', 'medium', 'low'
+  affectedRecords: integer('affected_records'),
+  affectedUsers: uuid('affected_users').array().$default(() => []),
+  description: text('description').notNull(),
+  rootCause: text('root_cause'),
+  remediationActions: text('remediation_actions'),
+  notificationSent: boolean('notification_sent').default(false),
+  notificationDate: timestamp('notification_date'),
+  reportedToAuthority: boolean('reported_to_authority').default(false),
+  authorityReportDate: timestamp('authority_report_date'),
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+// Export types for Phase 6 tables
+export const insertEncryptionKeysSchema = createInsertSchema(encryptionKeys).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastRotatedAt: true
+});
+export type InsertEncryptionKeys = z.infer<typeof insertEncryptionKeysSchema>;
+export type EncryptionKeys = typeof encryptionKeys.$inferSelect;
+
+export const insertAccessControlRolesSchema = createInsertSchema(accessControlRoles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+export type InsertAccessControlRoles = z.infer<typeof insertAccessControlRolesSchema>;
+export type AccessControlRoles = typeof accessControlRoles.$inferSelect;
+
+export const insertUserRoleAssignmentsSchema = createInsertSchema(userRoleAssignments).omit({
+  id: true,
+  assignedAt: true
+});
+export type InsertUserRoleAssignments = z.infer<typeof insertUserRoleAssignmentsSchema>;
+export type UserRoleAssignments = typeof userRoleAssignments.$inferSelect;
+
+export const insertDataAccessAuditLogSchema = createInsertSchema(dataAccessAuditLog).omit({
+  id: true,
+  timestamp: true
+});
+export type InsertDataAccessAuditLog = z.infer<typeof insertDataAccessAuditLogSchema>;
+export type DataAccessAuditLog = typeof dataAccessAuditLog.$inferSelect;
+
+export const insertEncryptedColumnsSchema = createInsertSchema(encryptedColumns).omit({
+  id: true,
+  createdAt: true
+});
+export type InsertEncryptedColumns = z.infer<typeof insertEncryptedColumnsSchema>;
+export type EncryptedColumns = typeof encryptedColumns.$inferSelect;
+
+export const insertSecureSessionsSchema = createInsertSchema(secureSessions).omit({
+  id: true,
+  createdAt: true,
+  lastActivity: true
+});
+export type InsertSecureSessions = z.infer<typeof insertSecureSessionsSchema>;
+export type SecureSessions = typeof secureSessions.$inferSelect;
+
+export const insertDataBreachIncidentsSchema = createInsertSchema(dataBreachIncidents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+export type InsertDataBreachIncidents = z.infer<typeof insertDataBreachIncidentsSchema>;
+export type DataBreachIncidents = typeof dataBreachIncidents.$inferSelect;
