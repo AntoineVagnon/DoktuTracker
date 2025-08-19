@@ -40,6 +40,14 @@ interface Assessment {
   complianceStatus: string;
 }
 
+interface CurrentAssessmentResponse {
+  hasAssessment: boolean;
+  assessment?: Assessment;
+  requiresCeMark: boolean;
+  requiresNotifiedBody: boolean;
+  message?: string;
+}
+
 export default function MedicalDeviceAssessment() {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [formData, setFormData] = useState({
@@ -54,24 +62,23 @@ export default function MedicalDeviceAssessment() {
   });
 
   // Fetch current assessment
-  const { data: currentAssessment, isLoading } = useQuery({
+  const { data: currentAssessment, isLoading } = useQuery<CurrentAssessmentResponse>({
     queryKey: ['/api/mdr/current'],
     enabled: true
   });
 
   // Fetch all assessments
-  const { data: assessments } = useQuery({
+  const { data: assessments } = useQuery<Assessment[]>({
     queryKey: ['/api/mdr/assessments'],
     enabled: true
   });
 
   // Evaluate MDR classification
   const evaluateMutation = useMutation({
-    mutationFn: (data: typeof formData) => 
-      apiRequest('/api/mdr/evaluate', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      }),
+    mutationFn: async (data: typeof formData) => {
+      const response = await apiRequest('POST', '/api/mdr/evaluate', data);
+      return response.json();
+    },
     onSuccess: () => {
       setIsEvaluating(false);
     },
@@ -83,11 +90,10 @@ export default function MedicalDeviceAssessment() {
 
   // Create new assessment
   const createAssessmentMutation = useMutation({
-    mutationFn: (data: any) => 
-      apiRequest('/api/mdr/assessments', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      }),
+    mutationFn: async (data: any) => {
+      const response = await apiRequest('POST', '/api/mdr/assessments', data);
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/mdr/assessments'] });
       queryClient.invalidateQueries({ queryKey: ['/api/mdr/current'] });

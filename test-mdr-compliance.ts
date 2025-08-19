@@ -128,7 +128,51 @@ async function runMDRComplianceTests() {
     return updated && updated.medicalDeviceClass === 'class_iia';
   });
 
-  console.log('\n🔬 CATEGORY 2: DECISION TREE LOGIC');
+  console.log('\n🖱️ CATEGORY 2: UI INTERACTION TESTS');
+  console.log('----------------------------------------');
+
+  await runTest("UI1: Evaluate button click functionality", async () => {
+    // Test the API endpoint directly to simulate button click
+    const testData = {
+      isSoftware: true,
+      isAccessory: false,
+      processesData: true,
+      benefitIndividualPatients: true,
+      diagnosticFeatures: [],
+      treatmentFeatures: [],
+      monitoringFeatures: [],
+      calculationFeatures: []
+    };
+    
+    const response = await fetch('http://localhost:5000/api/mdr/evaluate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(testData)
+    });
+    
+    if (!response.ok) {
+      console.log(`   Response status: ${response.status}`);
+      return false;
+    }
+    
+    const result = await response.json();
+    return result.classification === 'not_md' && !result.ceMarkingRequired;
+  });
+
+  await runTest("UI2: Button error recovery", async () => {
+    // Test with minimal data to ensure error handling works
+    const response = await fetch('http://localhost:5000/api/mdr/evaluate', {
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isSoftware: false })
+    });
+    
+    const result = await response.json();
+    // Should still return a classification even with minimal data
+    return result.hasOwnProperty('classification');
+  });
+
+  console.log('\n🔬 CATEGORY 3: DECISION TREE LOGIC');
   console.log('----------------------------------------');
 
   await runTest("DT1: Non-software classification", async () => {
