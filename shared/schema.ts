@@ -27,6 +27,43 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
+// Legal Documents table for GDPR compliance
+export const legalDocuments = pgTable("legal_documents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  documentType: varchar("document_type").notNull(), // privacy_policy, terms_of_service, gdpr_compliance, medical_disclaimer, cookie_policy
+  version: varchar("version").notNull(),
+  content: text("content").notNull(),
+  effectiveDate: timestamp("effective_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  isActive: boolean("is_active").default(true),
+});
+
+// User Consents table for GDPR Article 9 compliance
+export const userConsents = pgTable("user_consents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  consentType: varchar("consent_type").notNull(), // health_data_processing, marketing, cookies, data_sharing
+  legalBasis: varchar("legal_basis").notNull(), // article_9_2_h, article_9_2_a, article_6_1_a, article_6_1_b
+  consentGiven: boolean("consent_given").notNull(),
+  consentDate: timestamp("consent_date").notNull(),
+  consentWithdrawnDate: timestamp("consent_withdrawn_date"),
+  documentVersion: varchar("document_version").notNull(),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+});
+
+// GDPR Data Processing Records
+export const gdprDataProcessingRecords = pgTable("gdpr_data_processing_records", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  processingPurpose: varchar("processing_purpose").notNull(),
+  legalBasis: varchar("legal_basis").notNull(),
+  dataCategories: jsonb("data_categories").notNull(),
+  retentionPeriod: varchar("retention_period").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // User storage table - normalized with structured name fields only
 export const users = pgTable("users", {
   id: serial("id").primaryKey(), // Use serial for auto-increment

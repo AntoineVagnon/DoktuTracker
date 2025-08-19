@@ -36,6 +36,10 @@ import PatientLogin from "@/pages/PatientLogin";
 import PatientRegistration from "@/pages/PatientRegistration";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import VideoConsultation from "@/pages/VideoConsultation";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TermsOfService from "@/pages/TermsOfService";
+import GDPRCompliance from "@/pages/GDPRCompliance";
+import MedicalDisclaimer from "@/pages/MedicalDisclaimer";
 
 
 function Router() {
@@ -75,6 +79,13 @@ function Router() {
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/video-consultation/:id" component={VideoConsultation} />
+      
+      {/* Legal and Compliance Pages */}
+      <Route path="/privacy" component={PrivacyPolicy} />
+      <Route path="/terms" component={TermsOfService} />
+      <Route path="/gdpr" component={GDPRCompliance} />
+      <Route path="/disclaimer" component={MedicalDisclaimer} />
+      
       <Route component={NotFound} />
     </Switch>
   );

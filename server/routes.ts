@@ -54,6 +54,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register slot management routes
   setupSlotRoutes(app);
   
+  // Register consent management routes (GDPR compliance)
+  const consentsRouter = (await import("./routes/consents")).default;
+  app.use("/api", consentsRouter);
+  
   // Zoom meeting endpoints
   app.get("/api/zoom/status", async (req, res) => {
     res.json({
