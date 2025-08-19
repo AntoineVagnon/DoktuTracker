@@ -45,6 +45,7 @@ import ConsentManagement from "@/pages/ConsentManagement";
 import DataProcessingRecords from "@/pages/DataProcessingRecords";
 import MedicalDeviceAssessment from "@/pages/MedicalDeviceAssessment";
 import DoctorQualifications from "@/pages/DoctorQualifications";
+import DataSecurity from "@/pages/DataSecurity";
 
 
 function Router() {
@@ -94,6 +95,7 @@ function Router() {
       <Route path="/data-processing-records" component={DataProcessingRecords} />
       <Route path="/mdr-assessment" component={MedicalDeviceAssessment} />
       <Route path="/doctor/:doctorId/qualifications" component={DoctorQualifications} />
+      <Route path="/data-security" component={DataSecurity} />
       
       <Route component={NotFound} />
     </Switch>

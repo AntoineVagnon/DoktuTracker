@@ -284,19 +284,19 @@ export default function DataSecurity() {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Health Records</span>
-                      <Badge variant="success">AES-256-GCM</Badge>
+                      <Badge className="bg-green-100 text-green-800">AES-256-GCM</Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Personal Data</span>
-                      <Badge variant="success">AES-256-GCM</Badge>
+                      <Badge className="bg-green-100 text-green-800">AES-256-GCM</Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Video Consultations</span>
-                      <Badge variant="success">WebRTC-DTLS-SRTP</Badge>
+                      <Badge className="bg-green-100 text-green-800">WebRTC-DTLS-SRTP</Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Data in Transit</span>
-                      <Badge variant="success">TLS 1.3</Badge>
+                      <Badge className="bg-green-100 text-green-800">TLS 1.3</Badge>
                     </div>
                   </div>
                 </div>
@@ -363,7 +363,7 @@ export default function DataSecurity() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant={key.isActive ? "success" : "secondary"}>
+                        <Badge className={key.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
                           {key.isActive ? "Active" : "Inactive"}
                         </Badge>
                         <Button variant="outline" size="sm">
@@ -507,7 +507,7 @@ export default function DataSecurity() {
                               )}
                             </div>
                           </div>
-                          <Badge variant={log.accessGranted ? "success" : "destructive"}>
+                          <Badge className={log.accessGranted ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
                             {log.accessGranted ? "Granted" : "Denied"}
                           </Badge>
                         </div>

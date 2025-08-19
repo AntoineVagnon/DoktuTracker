@@ -70,6 +70,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const qualificationsRouter = (await import("./routes/qualifications")).default;
   app.use("/", qualificationsRouter);
   
+  // Register Data Security routes (Phase 6)
+  const securityRouter = (await import("./routes/security")).default;
+  app.use("/api/security", securityRouter);
+  
   // Zoom meeting endpoints
   app.get("/api/zoom/status", async (req, res) => {
     res.json({
