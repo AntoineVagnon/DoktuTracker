@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { CookieBanner } from "@/components/CookieBanner";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
@@ -40,6 +41,7 @@ import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
 import GDPRCompliance from "@/pages/GDPRCompliance";
 import MedicalDisclaimer from "@/pages/MedicalDisclaimer";
+import ConsentManagement from "@/pages/ConsentManagement";
 
 
 function Router() {
@@ -85,6 +87,7 @@ function Router() {
       <Route path="/terms" component={TermsOfService} />
       <Route path="/gdpr" component={GDPRCompliance} />
       <Route path="/disclaimer" component={MedicalDisclaimer} />
+      <Route path="/consent-management" component={ConsentManagement} />
       
       <Route component={NotFound} />
     </Switch>
@@ -95,6 +98,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <CookieBanner />
         <Toaster />
         <Router />
       </TooltipProvider>

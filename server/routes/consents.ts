@@ -1,167 +1,167 @@
-import { Router, Request, Response } from "express";
-import { db } from "../db";
-import { userConsents, gdprDataProcessingRecords } from "@shared/schema";
-import { eq, and, desc } from "drizzle-orm";
-import { isAuthenticated } from "../supabaseAuth";
+import { Router } from 'express';
+import { db } from '../db';
+import { userConsents, gdprDataProcessingRecords } from '@shared/schema';
+import { eq, and, isNull, desc } from 'drizzle-orm';
+import { z } from 'zod';
 
 const router = Router();
 
-// Get user's current consents
-router.get("/users/:userId/consents", isAuthenticated, async (req: Request, res: Response) => {
+// Schema for consent submission
+const consentSubmissionSchema = z.object({
+  consentType: z.enum(['health_data_processing', 'marketing', 'cookies', 'data_sharing']),
+  legalBasis: z.enum(['article_9_2_h', 'article_9_2_a', 'article_6_1_a', 'article_6_1_b']),
+  consentGiven: z.boolean(),
+  documentVersion: z.string(),
+  purposes: z.array(z.string()).optional(),
+});
+
+// Get current consents for a user
+router.get('/api/consents/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const sessionUserId = (req as any).user?.id;
     
-    // Ensure users can only access their own consents
-    if (parseInt(userId) !== sessionUserId) {
-      return res.status(403).json({ error: "Unauthorized access" });
-    }
-
+    // Get latest consent for each type
     const consents = await db
       .select()
       .from(userConsents)
-      .where(eq(userConsents.userId, parseInt(userId)))
+      .where(
+        and(
+          eq(userConsents.userId, parseInt(userId)),
+          isNull(userConsents.consentWithdrawnDate)
+        )
+      )
       .orderBy(desc(userConsents.consentDate));
-
+    
     res.json(consents);
   } catch (error) {
-    console.error("Error fetching consents:", error);
-    res.status(500).json({ error: "Failed to fetch consent records" });
+    console.error('Error fetching consents:', error);
+    res.status(500).json({ error: 'Failed to fetch consents' });
   }
 });
 
-// Update user's consents
-router.post("/users/:userId/consents", isAuthenticated, async (req: Request, res: Response) => {
+// Submit new consent
+router.post('/api/consents/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const { consents } = req.body;
-    const sessionUserId = (req as any).user?.id;
+    const validatedData = consentSubmissionSchema.parse(req.body);
     
-    // Ensure users can only update their own consents
-    if (parseInt(userId) !== sessionUserId) {
-      return res.status(403).json({ error: "Unauthorized access" });
-    }
-
+    // Get user's IP and user agent for audit trail
+    const ipAddress = req.headers['x-forwarded-for'] as string || req.connection.remoteAddress || '';
     const userAgent = req.headers['user-agent'] || '';
-    const ipAddress = req.ip || req.socket.remoteAddress || '';
     
-    // Process each consent
-    for (const consent of consents) {
-      // Check if consent exists
-      const existing = await db
-        .select()
-        .from(userConsents)
-        .where(
-          and(
-            eq(userConsents.userId, parseInt(userId)),
-            eq(userConsents.consentType, consent.consentType)
-          )
+    // Insert new consent record
+    const [newConsent] = await db
+      .insert(userConsents)
+      .values({
+        userId: parseInt(userId),
+        ...validatedData,
+        ipAddress,
+        userAgent,
+        consentDate: new Date(),
+      })
+      .returning();
+    
+    // If this is health data processing consent, create GDPR processing record
+    if (validatedData.consentType === 'health_data_processing' && validatedData.consentGiven) {
+      await db.insert(gdprDataProcessingRecords).values({
+        userId: parseInt(userId),
+        processingPurpose: 'Healthcare provision and medical consultation',
+        legalBasis: validatedData.legalBasis,
+        dataCategories: {
+          special: ['health_data', 'medical_history'],
+          personal: ['name', 'contact_details', 'date_of_birth'],
+        },
+        retentionPeriod: '10 years after last consultation',
+        recipients: {
+          internal: ['healthcare_professionals', 'support_staff'],
+          external: ['payment_processors', 'video_platform'],
+        },
+        securityMeasures: {
+          technical: ['encryption', 'access_control', 'audit_logging'],
+          organizational: ['staff_training', 'confidentiality_agreements'],
+        },
+      });
+    }
+    
+    res.json({ success: true, consent: newConsent });
+  } catch (error) {
+    console.error('Error submitting consent:', error);
+    res.status(500).json({ error: 'Failed to submit consent' });
+  }
+});
+
+// Withdraw consent
+router.post('/api/consents/:userId/withdraw', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { consentType } = req.body;
+    
+    // Find the active consent
+    const [activeConsent] = await db
+      .select()
+      .from(userConsents)
+      .where(
+        and(
+          eq(userConsents.userId, parseInt(userId)),
+          eq(userConsents.consentType, consentType),
+          isNull(userConsents.consentWithdrawnDate)
         )
-        .limit(1);
-
-      if (existing.length > 0) {
-        // Update existing consent
-        if (existing[0].consentGiven !== consent.consentGiven) {
-          // Insert new record for audit trail
-          await db.insert(userConsents).values({
-            userId: parseInt(userId),
-            consentType: consent.consentType,
-            legalBasis: consent.legalBasis,
-            consentGiven: consent.consentGiven,
-            consentDate: new Date(),
-            consentWithdrawnDate: consent.consentGiven ? null : new Date(),
-            documentVersion: '1.0',
-            ipAddress,
-            userAgent,
-          });
-        }
-      } else {
-        // Insert new consent
-        await db.insert(userConsents).values({
-          userId: parseInt(userId),
-          consentType: consent.consentType,
-          legalBasis: consent.legalBasis,
-          consentGiven: consent.consentGiven,
-          consentDate: new Date(),
-          documentVersion: '1.0',
-          ipAddress,
-          userAgent,
-        });
-      }
-    }
-
-    // Record data processing activity
-    await db.insert(gdprDataProcessingRecords).values({
-      userId: parseInt(userId),
-      processingPurpose: 'consent_management',
-      legalBasis: 'article_6_1_a',
-      dataCategories: { consents: consents.map((c: any) => c.consentType) },
-      retentionPeriod: '3_years_after_withdrawal',
-    });
-
-    res.json({ success: true, message: "Consents updated successfully" });
-  } catch (error) {
-    console.error("Error updating consents:", error);
-    res.status(500).json({ error: "Failed to update consent records" });
-  }
-});
-
-// Withdraw specific consent
-router.delete("/users/:userId/consents/:consentType", isAuthenticated, async (req: Request, res: Response) => {
-  try {
-    const { userId, consentType } = req.params;
-    const sessionUserId = (req as any).user?.id;
+      )
+      .limit(1);
     
-    // Ensure users can only withdraw their own consents
-    if (parseInt(userId) !== sessionUserId) {
-      return res.status(403).json({ error: "Unauthorized access" });
+    if (!activeConsent) {
+      return res.status(404).json({ error: 'No active consent found' });
     }
-
-    const userAgent = req.headers['user-agent'] || '';
-    const ipAddress = req.ip || req.socket.remoteAddress || '';
-
-    // Record consent withdrawal
-    await db.insert(userConsents).values({
-      userId: parseInt(userId),
-      consentType,
-      legalBasis: 'withdrawn',
-      consentGiven: false,
-      consentDate: new Date(),
-      consentWithdrawnDate: new Date(),
-      documentVersion: '1.0',
-      ipAddress,
-      userAgent,
-    });
-
-    res.json({ success: true, message: "Consent withdrawn successfully" });
+    
+    // Update consent with withdrawal date
+    await db
+      .update(userConsents)
+      .set({ 
+        consentWithdrawnDate: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(userConsents.id, activeConsent.id));
+    
+    res.json({ success: true, message: 'Consent withdrawn successfully' });
   } catch (error) {
-    console.error("Error withdrawing consent:", error);
-    res.status(500).json({ error: "Failed to withdraw consent" });
+    console.error('Error withdrawing consent:', error);
+    res.status(500).json({ error: 'Failed to withdraw consent' });
   }
 });
 
-// Get consent history for audit purposes
-router.get("/users/:userId/consents/history", isAuthenticated, async (req: Request, res: Response) => {
+// Get consent history for a user
+router.get('/api/consents/:userId/history', async (req, res) => {
   try {
     const { userId } = req.params;
-    const sessionUserId = (req as any).user?.id;
-    const sessionUserRole = (req as any).user?.role;
     
-    // Allow users to access their own history or admins to access any
-    if (parseInt(userId) !== sessionUserId && sessionUserRole !== 'admin') {
-      return res.status(403).json({ error: "Unauthorized access" });
-    }
-
     const history = await db
       .select()
       .from(userConsents)
       .where(eq(userConsents.userId, parseInt(userId)))
       .orderBy(desc(userConsents.consentDate));
-
+    
     res.json(history);
   } catch (error) {
-    console.error("Error fetching consent history:", error);
-    res.status(500).json({ error: "Failed to fetch consent history" });
+    console.error('Error fetching consent history:', error);
+    res.status(500).json({ error: 'Failed to fetch consent history' });
+  }
+});
+
+// Get GDPR processing records
+router.get('/api/gdpr/processing-records/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    const records = await db
+      .select()
+      .from(gdprDataProcessingRecords)
+      .where(eq(gdprDataProcessingRecords.userId, parseInt(userId)))
+      .orderBy(desc(gdprDataProcessingRecords.createdAt));
+    
+    res.json(records);
+  } catch (error) {
+    console.error('Error fetching GDPR records:', error);
+    res.status(500).json({ error: 'Failed to fetch GDPR records' });
   }
 });
 

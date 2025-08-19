@@ -1,184 +1,158 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Shield, Info, AlertTriangle, CheckCircle } from "lucide-react";
-import { queryClient } from "@/lib/queryClient";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Shield, Cookie, Heart, Share2, AlertCircle } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface ConsentType {
   id: string;
   type: 'health_data_processing' | 'marketing' | 'cookies' | 'data_sharing';
   title: string;
   description: string;
-  legalBasis: 'article_9_2_h' | 'article_9_2_a' | 'article_6_1_a' | 'article_6_1_b';
-  required: boolean;
-  granular: boolean;
-  purposes: string[];
-}
-
-interface ConsentRecord {
-  consentType: string;
-  consentGiven: boolean;
-  consentDate: string;
   legalBasis: string;
+  required: boolean;
+  purposes: string[];
+  consentGiven: boolean;
+  documentVersion: string;
 }
 
 interface ConsentManagerProps {
   userId: number;
-  onConsentUpdate?: (consents: ConsentRecord[]) => void;
-  context?: 'registration' | 'settings' | 'consultation';
+  onConsentUpdate?: (consents: ConsentType[]) => void;
 }
 
-const consentTypes: ConsentType[] = [
+const consentConfig: ConsentType[] = [
   {
-    id: 'health_data_essential',
+    id: 'health_data',
     type: 'health_data_processing',
-    title: 'Essential Health Data Processing',
-    description: 'Processing of your health data for medical consultations and healthcare provision.',
+    title: 'Health Data Processing',
+    description: 'Allow us to process your health data for medical consultations and healthcare services.',
     legalBasis: 'article_9_2_h',
     required: true,
-    granular: false,
-    purposes: [
-      'Medical diagnosis and treatment',
-      'Healthcare service provision',
-      'Communication with healthcare professionals',
-      'Medical record management'
-    ]
-  },
-  {
-    id: 'health_data_enhanced',
-    type: 'health_data_processing',
-    title: 'Enhanced Health Services',
-    description: 'Additional processing for improved healthcare services and continuity of care.',
-    legalBasis: 'article_9_2_a',
-    required: false,
-    granular: true,
-    purposes: [
-      'Sharing with specialist doctors for referrals',
-      'Long-term medical history storage',
-      'Treatment outcome tracking',
-      'Healthcare quality improvement'
-    ]
+    purposes: ['Medical diagnosis', 'Treatment provision', 'Healthcare management'],
+    consentGiven: false,
+    documentVersion: '1.0',
   },
   {
     id: 'marketing',
     type: 'marketing',
     title: 'Marketing Communications',
-    description: 'Receive updates about new services, health tips, and promotional offers.',
+    description: 'Receive updates about our services, health tips, and promotional offers.',
     legalBasis: 'article_6_1_a',
     required: false,
-    granular: true,
-    purposes: [
-      'Service updates and newsletters',
-      'Health and wellness tips',
-      'Promotional offers',
-      'Survey invitations'
-    ]
+    purposes: ['Service updates', 'Health newsletters', 'Promotional offers'],
+    consentGiven: false,
+    documentVersion: '1.0',
+  },
+  {
+    id: 'cookies',
+    type: 'cookies',
+    title: 'Analytics & Performance Cookies',
+    description: 'Help us improve our services by allowing analytics and performance tracking.',
+    legalBasis: 'article_6_1_a',
+    required: false,
+    purposes: ['Service improvement', 'Usage analytics', 'Performance monitoring'],
+    consentGiven: false,
+    documentVersion: '1.0',
   },
   {
     id: 'data_sharing',
     type: 'data_sharing',
-    title: 'Anonymized Data for Research',
-    description: 'Use of anonymized health data for medical research and service improvement.',
+    title: 'Data Sharing with Specialists',
+    description: 'Share your medical data with specialist doctors for referrals when needed.',
     legalBasis: 'article_9_2_a',
     required: false,
-    granular: true,
-    purposes: [
-      'Medical research',
-      'Service quality improvement',
-      'Statistical analysis',
-      'Healthcare trend analysis'
-    ]
-  }
+    purposes: ['Specialist referrals', 'Second opinions', 'Collaborative care'],
+    consentGiven: false,
+    documentVersion: '1.0',
+  },
 ];
 
-export default function ConsentManager({ userId, onConsentUpdate, context = 'settings' }: ConsentManagerProps) {
-  const [consents, setConsents] = useState<Record<string, boolean>>({});
-  const [showDetails, setShowDetails] = useState<Record<string, boolean>>({});
+export function ConsentManager({ userId, onConsentUpdate }: ConsentManagerProps) {
+  const [consents, setConsents] = useState<ConsentType[]>(consentConfig);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Fetch existing consents
-  const { data: existingConsents, isLoading } = useQuery({
-    queryKey: [`/api/users/${userId}/consents`],
+  // Fetch current consents
+  const { data: userConsents, isLoading } = useQuery({
+    queryKey: [`/api/consents/${userId}`],
     enabled: !!userId,
   });
 
-  // Update consents mutation
-  const updateConsentsMutation = useMutation({
-    mutationFn: async (consentData: ConsentRecord[]) => {
-      const response = await fetch(`/api/users/${userId}/consents`, {
+  // Update consent mutation
+  const updateConsentMutation = useMutation({
+    mutationFn: async (consent: ConsentType) => {
+      return apiRequest(`/api/consents/${userId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ consents: consentData }),
+        body: JSON.stringify({
+          consentType: consent.type,
+          legalBasis: consent.legalBasis,
+          consentGiven: consent.consentGiven,
+          documentVersion: consent.documentVersion,
+          purposes: consent.purposes,
+        }),
       });
-      if (!response.ok) throw new Error('Failed to update consents');
-      return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/consents`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/consents/${userId}`] });
       toast({
-        title: "Consent Preferences Updated",
-        description: "Your consent preferences have been saved successfully.",
+        title: "Consent Updated",
+        description: "Your privacy preferences have been saved.",
       });
-      
-      // Prepare consent records for parent component
-      const consentRecords = Object.entries(consents).map(([id, given]) => {
-        const consentType = consentTypes.find(ct => ct.id === id);
-        return {
-          consentType: id,
-          consentGiven: given,
-          consentDate: new Date().toISOString(),
-          legalBasis: consentType?.legalBasis || '',
-        };
-      });
-      
-      onConsentUpdate?.(consentRecords);
     },
-    onError: (error) => {
+    onError: () => {
       toast({
-        title: "Update Failed",
-        description: "Failed to update consent preferences. Please try again.",
+        title: "Error",
+        description: "Failed to update consent. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  // Initialize consents from existing data
-  useEffect(() => {
-    if (existingConsents) {
-      const consentMap: Record<string, boolean> = {};
-      existingConsents.forEach((consent: any) => {
-        consentMap[consent.consentType] = consent.consentGiven;
+  // Withdraw consent mutation
+  const withdrawConsentMutation = useMutation({
+    mutationFn: async (consentType: string) => {
+      return apiRequest(`/api/consents/${userId}/withdraw`, {
+        method: 'POST',
+        body: JSON.stringify({ consentType }),
       });
-      
-      // Set required consents to true by default
-      consentTypes.forEach(ct => {
-        if (ct.required && !(ct.id in consentMap)) {
-          consentMap[ct.id] = true;
-        }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/consents/${userId}`] });
+      toast({
+        title: "Consent Withdrawn",
+        description: "Your consent has been withdrawn successfully.",
       });
-      
-      setConsents(consentMap);
-    } else {
-      // Initialize with default values for new users
-      const defaultConsents: Record<string, boolean> = {};
-      consentTypes.forEach(ct => {
-        defaultConsents[ct.id] = ct.required;
-      });
-      setConsents(defaultConsents);
-    }
-  }, [existingConsents]);
+    },
+  });
 
-  const handleConsentChange = (consentId: string, checked: boolean) => {
-    const consentType = consentTypes.find(ct => ct.id === consentId);
-    
-    // Don't allow unchecking required consents
-    if (consentType?.required && !checked) {
+  // Update local state when user consents are fetched
+  useEffect(() => {
+    if (userConsents && Array.isArray(userConsents)) {
+      const updatedConsents = consentConfig.map(config => {
+        const userConsent = userConsents.find(
+          (uc: any) => uc.consentType === config.type
+        );
+        return {
+          ...config,
+          consentGiven: userConsent?.consentGiven || false,
+        };
+      });
+      setConsents(updatedConsents);
+      onConsentUpdate?.(updatedConsents);
+    }
+  }, [userConsents, onConsentUpdate]);
+
+  const handleConsentToggle = async (consentId: string) => {
+    const consent = consents.find(c => c.id === consentId);
+    if (!consent) return;
+
+    // Don't allow disabling required consents
+    if (consent.required && consent.consentGiven) {
       toast({
         title: "Required Consent",
         description: "This consent is required to use our healthcare services.",
@@ -186,160 +160,120 @@ export default function ConsentManager({ userId, onConsentUpdate, context = 'set
       });
       return;
     }
-    
-    setConsents(prev => ({ ...prev, [consentId]: checked }));
+
+    const updatedConsent = {
+      ...consent,
+      consentGiven: !consent.consentGiven,
+    };
+
+    // Update local state immediately for better UX
+    setConsents(prev =>
+      prev.map(c => (c.id === consentId ? updatedConsent : c))
+    );
+
+    // Send update to server
+    if (updatedConsent.consentGiven) {
+      await updateConsentMutation.mutateAsync(updatedConsent);
+    } else {
+      await withdrawConsentMutation.mutateAsync(consent.type);
+    }
   };
 
-  const handleSaveConsents = () => {
-    const consentRecords = Object.entries(consents).map(([id, given]) => {
-      const consentType = consentTypes.find(ct => ct.id === id);
-      return {
-        consentType: id,
-        consentGiven: given,
-        consentDate: new Date().toISOString(),
-        legalBasis: consentType?.legalBasis || '',
-      };
-    });
-    
-    updateConsentsMutation.mutate(consentRecords);
-  };
-
-  const getLegalBasisLabel = (basis: string) => {
-    switch (basis) {
-      case 'article_9_2_h':
-        return 'GDPR Article 9(2)(h) - Healthcare Provision';
-      case 'article_9_2_a':
-        return 'GDPR Article 9(2)(a) - Explicit Consent';
-      case 'article_6_1_a':
-        return 'GDPR Article 6(1)(a) - Consent';
-      case 'article_6_1_b':
-        return 'GDPR Article 6(1)(b) - Contract Performance';
+  const getIcon = (type: string) => {
+    switch (type) {
+      case 'health_data_processing':
+        return <Heart className="h-5 w-5" />;
+      case 'marketing':
+        return <Share2 className="h-5 w-5" />;
+      case 'cookies':
+        return <Cookie className="h-5 w-5" />;
+      case 'data_sharing':
+        return <Shield className="h-5 w-5" />;
       default:
-        return basis;
+        return <AlertCircle className="h-5 w-5" />;
     }
   };
 
   if (isLoading) {
-    return <div className="p-4 text-center">Loading consent preferences...</div>;
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-center text-muted-foreground">Loading privacy preferences...</p>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      {context === 'registration' && (
-        <Alert>
-          <Shield className="h-4 w-4" />
-          <AlertDescription>
-            We take your privacy seriously. Please review and accept our data processing 
-            agreements to proceed with registration.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      <div className="space-y-4">
-        {consentTypes.map(consentType => (
-          <Card key={consentType.id} className={consentType.required ? 'border-blue-200' : ''}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    {consentType.title}
-                    {consentType.required && (
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+    <Card>
+      <CardHeader>
+        <CardTitle>Privacy & Consent Management</CardTitle>
+        <CardDescription>
+          Manage how we use your data in compliance with GDPR
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {consents.map(consent => (
+          <div key={consent.id} className="space-y-4 pb-4 border-b last:border-0">
+            <div className="flex items-start justify-between">
+              <div className="space-y-2 flex-1">
+                <div className="flex items-center gap-2">
+                  {getIcon(consent.type)}
+                  <Label htmlFor={consent.id} className="text-base font-medium">
+                    {consent.title}
+                    {consent.required && (
+                      <span className="ml-2 text-xs bg-primary/10 text-primary px-2 py-1 rounded">
                         Required
                       </span>
                     )}
-                  </CardTitle>
-                  <CardDescription className="text-sm mt-1">
-                    {consentType.description}
-                  </CardDescription>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Legal Basis: {getLegalBasisLabel(consentType.legalBasis)}
-                  </p>
+                  </Label>
                 </div>
-                <Checkbox
-                  checked={consents[consentType.id] || false}
-                  onCheckedChange={(checked) => 
-                    handleConsentChange(consentType.id, checked as boolean)
-                  }
-                  disabled={consentType.required}
-                  className="mt-1"
-                />
-              </div>
-            </CardHeader>
-            
-            <CardContent>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="mb-2">
-                    <Info className="h-3 w-3 mr-1" />
-                    View Details
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>{consentType.title}</DialogTitle>
-                    <DialogDescription>
-                      Detailed information about this data processing activity
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold mb-2">Purposes:</h4>
-                      <ul className="list-disc pl-5 space-y-1">
-                        {consentType.purposes.map((purpose, index) => (
-                          <li key={index} className="text-sm">{purpose}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-2">Legal Information:</h4>
-                      <p className="text-sm text-gray-600">
-                        This processing is conducted under {getLegalBasisLabel(consentType.legalBasis)}.
-                        {!consentType.required && ' You can withdraw this consent at any time without affecting the lawfulness of processing based on consent before its withdrawal.'}
-                      </p>
-                    </div>
-                    {consentType.type === 'health_data_processing' && (
-                      <Alert>
-                        <AlertTriangle className="h-4 w-4" />
-                        <AlertDescription>
-                          Health data is special category data under GDPR. We implement enhanced 
-                          security measures to protect this sensitive information.
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
-              
-              {consentType.granular && consents[consentType.id] && (
-                <div className="mt-2 pl-4 border-l-2 border-gray-200">
-                  <p className="text-xs text-gray-500 mb-2">Specific purposes you consent to:</p>
-                  <ul className="text-sm space-y-1">
-                    {consentType.purposes.map((purpose, index) => (
-                      <li key={index} className="flex items-center gap-2">
-                        <CheckCircle className="h-3 w-3 text-green-600" />
-                        <span className="text-xs">{purpose}</span>
-                      </li>
+                <p className="text-sm text-muted-foreground">
+                  {consent.description}
+                </p>
+                <div className="text-xs text-muted-foreground">
+                  <p className="font-medium">Legal Basis: {consent.legalBasis}</p>
+                  <p className="mt-1">Purposes:</p>
+                  <ul className="list-disc list-inside ml-2">
+                    {consent.purposes.map((purpose, idx) => (
+                      <li key={idx}>{purpose}</li>
                     ))}
                   </ul>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+              <Switch
+                id={consent.id}
+                checked={consent.consentGiven}
+                onCheckedChange={() => handleConsentToggle(consent.id)}
+                disabled={consent.required && consent.consentGiven}
+              />
+            </div>
+          </div>
         ))}
-      </div>
 
-      <div className="flex justify-between items-center pt-4 border-t">
-        <p className="text-sm text-gray-600">
-          You can update your consent preferences at any time in your account settings.
-        </p>
-        <Button 
-          onClick={handleSaveConsents}
-          disabled={updateConsentsMutation.isPending}
-        >
-          {updateConsentsMutation.isPending ? 'Saving...' : 'Save Preferences'}
-        </Button>
-      </div>
-    </div>
+        <div className="pt-4 border-t">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5" />
+            <div className="text-sm text-muted-foreground">
+              <p>
+                You can withdraw your consent at any time for optional data processing.
+                Required consents are necessary for using our healthcare services.
+              </p>
+              <p className="mt-2">
+                For more information, please read our{' '}
+                <a href="/privacy" className="underline">
+                  Privacy Policy
+                </a>{' '}
+                and{' '}
+                <a href="/gdpr-compliance" className="underline">
+                  GDPR Compliance Statement
+                </a>
+                .
+              </p>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

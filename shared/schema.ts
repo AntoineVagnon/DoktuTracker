@@ -556,3 +556,26 @@ export const insertDashboardMetricSchema = createInsertSchema(dashboardMetrics).
 });
 export type InsertDashboardMetric = z.infer<typeof insertDashboardMetricSchema>;
 export type DashboardMetric = typeof dashboardMetrics.$inferSelect;
+
+export const insertUserConsentsSchema = createInsertSchema(userConsents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertUserConsents = z.infer<typeof insertUserConsentsSchema>;
+export type UserConsents = typeof userConsents.$inferSelect;
+
+export const insertGdprDataProcessingRecordsSchema = createInsertSchema(gdprDataProcessingRecords).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertGdprDataProcessingRecords = z.infer<typeof insertGdprDataProcessingRecordsSchema>;
+export type GdprDataProcessingRecords = typeof gdprDataProcessingRecords.$inferSelect;
+
+export const insertLegalDocumentsSchema = createInsertSchema(legalDocuments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertLegalDocuments = z.infer<typeof insertLegalDocumentsSchema>;
+export type LegalDocuments = typeof legalDocuments.$inferSelect;
