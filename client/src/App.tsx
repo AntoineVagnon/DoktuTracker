@@ -42,6 +42,7 @@ import TermsOfService from "@/pages/TermsOfService";
 import GDPRCompliance from "@/pages/GDPRCompliance";
 import MedicalDisclaimer from "@/pages/MedicalDisclaimer";
 import ConsentManagement from "@/pages/ConsentManagement";
+import DataProcessingRecords from "@/pages/DataProcessingRecords";
 
 
 function Router() {
@@ -88,6 +89,7 @@ function Router() {
       <Route path="/gdpr" component={GDPRCompliance} />
       <Route path="/disclaimer" component={MedicalDisclaimer} />
       <Route path="/consent-management" component={ConsentManagement} />
+      <Route path="/data-processing-records" component={DataProcessingRecords} />
       
       <Route component={NotFound} />
     </Switch>

@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload, Edit2, Save, X, Activity, FileText } from "lucide-react";
+import { Calendar, Clock, User, Heart, Settings, CreditCard, Plus, Video, CalendarCheck, Star, AlertCircle, Upload, Edit2, Save, X, Activity, FileText, Shield } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { formatAppointmentDateTimeUS, categorizeAppointmentsByTiming, getTimeUntilAppointment } from "@/lib/dateUtils";
 import { formatAppointmentTime, utcToLocal } from "@/lib/timezoneUtils";
@@ -1151,6 +1151,36 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                               )}
+                            </div>
+                          </div>
+
+                          {/* GDPR & Privacy Section */}
+                          <div className="space-y-4">
+                            <h3 className="font-medium text-gray-900">Privacy & Data Protection</h3>
+                            <div className="space-y-3">
+                              <div>
+                                <p className="text-sm text-gray-600 mb-3">
+                                  Manage your privacy preferences and access your data rights under GDPR
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setLocation("/consent-management")}
+                                  >
+                                    <Settings className="h-4 w-4 mr-2" />
+                                    Manage Consents
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setLocation("/data-processing-records")}
+                                  >
+                                    <Shield className="h-4 w-4 mr-2" />
+                                    Data Processing Records
+                                  </Button>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>

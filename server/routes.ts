@@ -58,6 +58,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const consentsRouter = (await import("./routes/consents")).default;
   app.use("/api", consentsRouter);
   
+  // Register GDPR data processing routes (Phase 3)
+  const gdprRouter = (await import("./routes/gdpr")).default;
+  app.use("/", gdprRouter);
+  
   // Zoom meeting endpoints
   app.get("/api/zoom/status", async (req, res) => {
     res.json({

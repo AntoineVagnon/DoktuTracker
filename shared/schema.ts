@@ -53,6 +53,19 @@ export const userConsents = pgTable("user_consents", {
   userAgent: text("user_agent"),
 });
 
+// Data Subject Requests (GDPR Article 12-23)
+export const dataSubjectRequests = pgTable("data_subject_requests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  requestType: text("request_type").notNull(), // access, rectification, erasure, portability, restriction, objection
+  status: text("status").notNull().default('pending'), // pending, in_progress, completed, rejected
+  description: text("description").notNull(),
+  response: text("response"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // GDPR Data Processing Records
 export const gdprDataProcessingRecords = pgTable("gdpr_data_processing_records", {
   id: uuid("id").primaryKey().defaultRandom(),
