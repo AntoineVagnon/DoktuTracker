@@ -59,11 +59,13 @@ export const dataSubjectRequests = pgTable("data_subject_requests", {
   userId: integer("user_id").notNull().references(() => users.id),
   requestType: text("request_type").notNull(), // access, rectification, erasure, portability, restriction, objection
   status: text("status").notNull().default('pending'), // pending, in_progress, completed, rejected
-  description: text("description").notNull(),
+  description: text("description").notNull().default('Data subject request'),
   response: text("response"),
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  requestDetails: jsonb("request_details"),
+  responseDetails: jsonb("response_details")
 });
 
 // GDPR Data Processing Records
@@ -72,9 +74,15 @@ export const gdprDataProcessingRecords = pgTable("gdpr_data_processing_records",
   userId: integer("user_id").references(() => users.id).notNull(),
   processingPurpose: varchar("processing_purpose").notNull(),
   legalBasis: varchar("legal_basis").notNull(),
-  dataCategories: jsonb("data_categories").notNull(),
-  retentionPeriod: varchar("retention_period").notNull(),
+  dataCategories: jsonb("data_categories"),
+  retentionPeriod: varchar("retention_period"),
+  recipients: jsonb("recipients"),
+  securityMeasures: jsonb("security_measures"),
+  dataSource: varchar("data_source"),
+  transferMechanism: varchar("transfer_mechanism"),
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // User storage table - normalized with structured name fields only

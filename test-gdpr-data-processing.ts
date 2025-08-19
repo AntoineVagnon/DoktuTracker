@@ -90,7 +90,10 @@ async function testDataProcessingRecords() {
     if (records.length === 0) return false;
     
     const updated = await db.update(gdprDataProcessingRecords)
-      .set({ isActive: false })
+      .set({ 
+        isActive: false,
+        updatedAt: new Date()
+      })
       .where(eq(gdprDataProcessingRecords.id, records[0].id))
       .returning();
     
@@ -266,6 +269,7 @@ async function testDataProcessingRecords() {
       userId: testUser.id,
       requestType: "access",
       status: "pending",
+      description: "Request for access to all personal data",
       requestDetails: { scope: "all personal data" }
     }).returning();
     
@@ -275,15 +279,16 @@ async function testDataProcessingRecords() {
   await runTest("DSR2: Create deletion request", async () => {
     const request = await db.insert(dataSubjectRequests).values({
       userId: testUser.id,
-      requestType: "deletion",
+      requestType: "erasure",
       status: "pending",
+      description: "Request for deletion of account and health records",
       requestDetails: { 
         reason: "No longer using service",
         dataToDelete: ["account", "health_records"]
       }
     }).returning();
     
-    return request[0].requestType === "deletion";
+    return request[0].requestType === "erasure";
   });
 
   await runTest("DSR3: Update request status", async () => {
@@ -298,7 +303,9 @@ async function testDataProcessingRecords() {
       .set({ 
         status: "completed",
         completedAt: new Date(),
-        responseDetails: { providedData: "user_export.json" }
+        response: "Request completed successfully",
+        responseDetails: { providedData: "user_export.json" },
+        updatedAt: new Date()
       })
       .where(eq(dataSubjectRequests.id, requests[0].id))
       .returning();
