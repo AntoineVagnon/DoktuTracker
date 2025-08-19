@@ -23,31 +23,31 @@ import {
   Clock
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 
 export default function DataSecurity() {
   const [selectedTab, setSelectedTab] = useState("overview");
 
   // Fetch security metrics from Supabase
-  const { data: metrics, isLoading: metricsLoading, refetch: refetchMetrics } = useQuery({
+  const { data: metrics, isLoading: metricsLoading, refetch: refetchMetrics } = useQuery<any>({
     queryKey: ['/api/security/metrics'],
     refetchInterval: 30000 // Refresh every 30 seconds
   });
 
   // Fetch encryption keys from Supabase
-  const { data: encryptionKeys, isLoading: keysLoading } = useQuery({
+  const { data: encryptionKeys = [], isLoading: keysLoading } = useQuery<any[]>({
     queryKey: ['/api/security/encryption-keys'],
     enabled: selectedTab === 'encryption'
   });
 
   // Fetch access control roles from Supabase
-  const { data: roles, isLoading: rolesLoading } = useQuery({
+  const { data: roles = [], isLoading: rolesLoading } = useQuery<any[]>({
     queryKey: ['/api/security/roles'],
     enabled: selectedTab === 'access'
   });
 
   // Fetch recent audit logs from Supabase
-  const { data: auditLogs, isLoading: logsLoading } = useQuery({
+  const { data: auditLogs = [], isLoading: logsLoading } = useQuery<any[]>({
     queryKey: ['/api/security/audit-logs/recent'],
     enabled: selectedTab === 'audit',
     refetchInterval: 10000 // Refresh every 10 seconds
