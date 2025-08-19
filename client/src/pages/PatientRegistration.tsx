@@ -16,7 +16,7 @@ const registrationSchema = z.object({
   phoneNumber: z.string().min(10, 'Please enter a valid phone number'),
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  agreeToTerms: z.boolean().refine(val => val === true, 'You must agree to the terms'),
+  agreeToTerms: z.boolean().refine(val => val === true, 'Please accept the platform conditions to proceed'),
 });
 
 type RegistrationFormData = z.infer<typeof registrationSchema>;
@@ -208,8 +208,42 @@ export default function PatientRegistration() {
                       </FormControl>
                       <div className="space-y-1 leading-none">
                         <FormLabel className="text-sm">
-                          I acknowledge that I have read and agree to the HIPAA Privacy Notice
-                          and understand how my health information will be used and disclosed.
+                          I agree to the{' '}
+                          <a 
+                            href="/terms" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-500 underline"
+                          >
+                            Terms of Service
+                          </a>{' '}
+                          and{' '}
+                          <a 
+                            href="/privacy" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-500 underline"
+                          >
+                            Privacy Policy
+                          </a>{' '}
+                          and acknowledge that I have read and understand the{' '}
+                          <a 
+                            href="/gdpr" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-500 underline"
+                          >
+                            GDPR Compliance
+                          </a>{' '}
+                          and{' '}
+                          <a 
+                            href="/disclaimer" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-500 underline"
+                          >
+                            Medical Disclaimer
+                          </a>
                         </FormLabel>
                         <FormMessage />
                       </div>

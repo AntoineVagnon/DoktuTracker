@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 
@@ -26,16 +27,24 @@ export default function CreateAccount() {
     password: '',
     confirmPassword: '',
     firstName: '',
-    lastName: ''
+    lastName: '',
+    agreeToTerms: false
   });
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleTermsChange = (checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      agreeToTerms: checked
     }));
   };
 
@@ -44,12 +53,44 @@ export default function CreateAccount() {
     setIsLoading(true);
     setResult(null);
 
+    // Validate required fields
+    if (!formData.firstName || formData.firstName.length < 2) {
+      toast({
+        title: "Invalid Name",
+        description: "First name must be at least 2 characters",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.lastName || formData.lastName.length < 2) {
+      toast({
+        title: "Invalid Name", 
+        description: "Last name must be at least 2 characters",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast({
         title: "Invalid Email",
-        description: "Please enter a valid email address (e.g., user@example.com)",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password length
+    if (formData.password.length < 6) {
+      toast({
+        title: "Invalid Password",
+        description: "Password must be at least 6 characters",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -60,6 +101,17 @@ export default function CreateAccount() {
       toast({
         title: "Password Mismatch",
         description: "Passwords do not match",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate platform conditions acceptance
+    if (!formData.agreeToTerms) {
+      toast({
+        title: "Terms Required",
+        description: "Please accept the platform conditions to proceed",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -225,6 +277,40 @@ export default function CreateAccount() {
                     required
                     className="w-full"
                   />
+                </div>
+
+                <div className="flex items-start space-x-3 space-y-0">
+                  <Checkbox
+                    id="agreeToTerms"
+                    checked={formData.agreeToTerms}
+                    onCheckedChange={handleTermsChange}
+                    className="mt-1"
+                  />
+                  <div className="space-y-1 leading-none">
+                    <Label 
+                      htmlFor="agreeToTerms"
+                      className="text-sm cursor-pointer"
+                    >
+                      I agree to the{' '}
+                      <a 
+                        href="/terms" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-500 underline"
+                      >
+                        Terms of Service
+                      </a>{' '}
+                      and{' '}
+                      <a 
+                        href="/privacy" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-500 underline"
+                      >
+                        Privacy Policy
+                      </a>
+                    </Label>
+                  </div>
                 </div>
 
                 <Button 
