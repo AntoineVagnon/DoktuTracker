@@ -74,6 +74,10 @@ export default function MedicalDeviceAssessment() {
       }),
     onSuccess: () => {
       setIsEvaluating(false);
+    },
+    onError: (error) => {
+      console.error('Evaluation failed:', error);
+      setIsEvaluating(false);
     }
   });
 
@@ -92,7 +96,12 @@ export default function MedicalDeviceAssessment() {
 
   const handleEvaluate = async () => {
     setIsEvaluating(true);
-    await evaluateMutation.mutateAsync(formData);
+    try {
+      await evaluateMutation.mutateAsync(formData);
+    } catch (error) {
+      console.error('Failed to evaluate:', error);
+      setIsEvaluating(false);
+    }
   };
 
   const handleSaveAssessment = async () => {
@@ -389,11 +398,22 @@ export default function MedicalDeviceAssessment() {
               </div>
 
               <div className="flex gap-4">
-                <Button onClick={handleEvaluate} disabled={isEvaluating}>
+                <Button onClick={handleEvaluate} disabled={isEvaluating || evaluateMutation.isPending}>
                   <Shield className="mr-2 h-4 w-4" />
-                  Evaluate Classification
+                  {isEvaluating || evaluateMutation.isPending ? 'Evaluating...' : 'Evaluate Classification'}
                 </Button>
               </div>
+              
+              {/* Error Display */}
+              {evaluateMutation.isError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Evaluation Error</AlertTitle>
+                  <AlertDescription>
+                    Failed to evaluate MDR classification. Please try again.
+                  </AlertDescription>
+                </Alert>
+              )}
 
               {/* Evaluation Results */}
               {evaluateMutation.data && (
