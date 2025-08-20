@@ -106,10 +106,21 @@ async function sendTestEmailToUser() {
     console.log('');
     console.log('📧 Vérifiez votre boîte: avagnonperso@gmail.com');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Erreur lors de l\'envoi:', error.message);
     
-    if (error.message?.includes('SendGrid') || !process.env.SENDGRID_API_KEY) {
+    // More detailed error information
+    if (error.response && error.response.body) {
+      console.log('🔍 SendGrid error details:', JSON.stringify(error.response.body, null, 2));
+    }
+    
+    if (error.code === 403) {
+      console.log('🚨 API Key Issues - Check:');
+      console.log('   1. API key is valid and not expired');
+      console.log('   2. API key has "Mail Send" permissions');
+      console.log('   3. FROM_EMAIL is verified in SendGrid');
+      console.log('   4. Account is not suspended');
+    } else if (error.message?.includes('SendGrid') || !process.env.SENDGRID_API_KEY) {
       console.log('');
       console.log('ℹ️  Note: Clé API SendGrid non configurée pour ce test');
       console.log('   En production, cet email serait envoyé avec succès');
