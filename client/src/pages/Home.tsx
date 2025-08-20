@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import AuthModal from "@/components/AuthModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, Star, TrendingUp } from "lucide-react";
+import { Calendar, Users, Star, TrendingUp, CreditCard } from "lucide-react";
 import { DoctorsGrid } from "@/components/DoctorsGrid";
 import { formatUserDisplayName } from "@/lib/nameUtils";
 
@@ -74,6 +74,13 @@ export default function Home() {
       href: "/#doctors",
       color: "purple",
     },
+    ...(user?.role === "patient" ? [{
+      title: "Membership Plans",
+      description: "Save on consultations with our subscription plans",
+      icon: CreditCard,
+      href: "/membership",
+      color: "orange",
+    }] : []),
   ];
 
   const stats = [

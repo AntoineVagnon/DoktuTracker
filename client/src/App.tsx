@@ -47,6 +47,8 @@ import MedicalDeviceAssessment from "@/pages/MedicalDeviceAssessment";
 import DoctorQualifications from "@/pages/DoctorQualifications";
 import DataSecurity from "@/pages/DataSecurity";
 import SecurityDashboard from "@/pages/SecurityDashboard";
+import Membership from "@/pages/Membership";
+import MembershipSuccess from "@/pages/MembershipSuccess";
 
 
 function Router() {
@@ -69,6 +71,8 @@ function Router() {
       <Route path="/checkout" component={Checkout} />
       <Route path="/payment" component={Payment} />
       <Route path="/payment-success" component={PaymentSuccess} />
+      <Route path="/membership" component={Membership} />
+      <Route path="/membership/success" component={MembershipSuccess} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       <Route path="/doctors" component={DoctorList} />
       <Route path="/book-appointment-choice" component={BookAppointmentChoice} />

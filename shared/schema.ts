@@ -621,6 +621,104 @@ export const patientProfiles = pgTable("patient_profiles", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Membership Plans (defines available subscription plans)
+export const membershipPlans = pgTable("membership_plans", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name").notNull(), // "Monthly", "6-Month"
+  description: text("description"),
+  priceAmount: decimal("price_amount", { precision: 10, scale: 2 }).notNull(), // 45.00, 219.00
+  currency: varchar("currency").notNull().default("EUR"),
+  billingInterval: varchar("billing_interval").notNull(), // "month", "6_months"
+  intervalCount: integer("interval_count").notNull().default(1), // 1 for monthly, 6 for semi-annual
+  allowancePerCycle: integer("allowance_per_cycle").notNull().default(2), // 2 consultations per month
+  stripePriceId: varchar("stripe_price_id").notNull(), // Stripe price ID
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Membership Subscriptions (links patient to plan)
+export const membershipSubscriptions = pgTable("membership_subscriptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  planId: uuid("plan_id").references(() => membershipPlans.id).notNull(),
+  stripeSubscriptionId: varchar("stripe_subscription_id").unique().notNull(),
+  stripeCustomerId: varchar("stripe_customer_id").notNull(),
+  status: varchar("status").notNull(), // active, suspended, ended, pending_cancel
+  currentPeriodStart: timestamp("current_period_start").notNull(),
+  currentPeriodEnd: timestamp("current_period_end").notNull(),
+  activatedAt: timestamp("activated_at").notNull(),
+  cancelledAt: timestamp("cancelled_at"),
+  endsAt: timestamp("ends_at"), // When subscription actually ends after cancellation
+  trialEnd: timestamp("trial_end"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Membership Cycles (tracks allowance per billing cycle)
+export const membershipCycles = pgTable("membership_cycles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  subscriptionId: uuid("subscription_id").references(() => membershipSubscriptions.id, { onDelete: "cascade" }).notNull(),
+  cycleStart: timestamp("cycle_start").notNull(),
+  cycleEnd: timestamp("cycle_end").notNull(),
+  allowanceGranted: integer("allowance_granted").notNull().default(2),
+  allowanceUsed: integer("allowance_used").notNull().default(0),
+  allowanceRemaining: integer("allowance_remaining").notNull().default(2),
+  resetDate: timestamp("reset_date").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Membership Allowance Events (audit trail for allowance changes)
+export const membershipAllowanceEvents = pgTable("membership_allowance_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  subscriptionId: uuid("subscription_id").references(() => membershipSubscriptions.id, { onDelete: "cascade" }).notNull(),
+  cycleId: uuid("cycle_id").references(() => membershipCycles.id, { onDelete: "cascade" }).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  eventType: varchar("event_type").notNull(), // grant, consume, restore
+  allowanceChange: integer("allowance_change").notNull(), // +2, -1, +1
+  allowanceBefore: integer("allowance_before").notNull(),
+  allowanceAfter: integer("allowance_after").notNull(),
+  reason: varchar("reason"), // cycle_start, booking_confirmed, early_cancel, doctor_cancel
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Appointment Coverage (tracks if appointment is covered by membership)
+export const appointmentCoverage = pgTable("appointment_coverage", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  appointmentId: integer("appointment_id").references(() => appointments.id, { onDelete: "cascade" }).notNull().unique(),
+  subscriptionId: uuid("subscription_id").references(() => membershipSubscriptions.id),
+  cycleId: uuid("cycle_id").references(() => membershipCycles.id),
+  allowanceEventId: uuid("allowance_event_id").references(() => membershipAllowanceEvents.id),
+  coverageType: varchar("coverage_type").notNull(), // covered, pay_per_visit
+  originalPrice: decimal("original_price", { precision: 10, scale: 2 }).notNull(),
+  coveredAmount: decimal("covered_amount", { precision: 10, scale: 2 }).notNull().default("0.00"),
+  patientPaid: decimal("patient_paid", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Billing Attempts (tracks payment attempts and failures)
+export const billingAttempts = pgTable("billing_attempts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  subscriptionId: uuid("subscription_id").references(() => membershipSubscriptions.id, { onDelete: "cascade" }).notNull(),
+  stripeInvoiceId: varchar("stripe_invoice_id"),
+  stripePaymentIntentId: varchar("stripe_payment_intent_id"),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: varchar("currency").notNull().default("EUR"),
+  status: varchar("status").notNull(), // succeeded, failed, pending, requires_action
+  attemptCount: integer("attempt_count").notNull().default(1),
+  failureReason: varchar("failure_reason"),
+  failureCode: varchar("failure_code"),
+  nextRetryAt: timestamp("next_retry_at"),
+  billingReason: varchar("billing_reason").notNull(), // subscription_create, subscription_cycle, subscription_update
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Admin dashboard metrics
 export const dashboardMetrics = pgTable("dashboard_metrics", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -818,8 +916,6 @@ export type DashboardMetric = typeof dashboardMetrics.$inferSelect;
 
 export const insertUserConsentsSchema = createInsertSchema(userConsents).omit({
   id: true,
-  createdAt: true,
-  updatedAt: true,
 });
 export type InsertUserConsents = z.infer<typeof insertUserConsentsSchema>;
 export type UserConsents = typeof userConsents.$inferSelect;
@@ -996,6 +1092,53 @@ export const dataBreachIncidents = pgTable('data_breach_incidents', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow()
 });
+
+// Membership Zod schemas
+export const insertMembershipPlanSchema = createInsertSchema(membershipPlans).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertMembershipPlan = z.infer<typeof insertMembershipPlanSchema>;
+export type MembershipPlan = typeof membershipPlans.$inferSelect;
+
+export const insertMembershipSubscriptionSchema = createInsertSchema(membershipSubscriptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertMembershipSubscription = z.infer<typeof insertMembershipSubscriptionSchema>;
+export type MembershipSubscription = typeof membershipSubscriptions.$inferSelect;
+
+export const insertMembershipCycleSchema = createInsertSchema(membershipCycles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertMembershipCycle = z.infer<typeof insertMembershipCycleSchema>;
+export type MembershipCycle = typeof membershipCycles.$inferSelect;
+
+export const insertMembershipAllowanceEventSchema = createInsertSchema(membershipAllowanceEvents).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertMembershipAllowanceEvent = z.infer<typeof insertMembershipAllowanceEventSchema>;
+export type MembershipAllowanceEvent = typeof membershipAllowanceEvents.$inferSelect;
+
+export const insertAppointmentCoverageSchema = createInsertSchema(appointmentCoverage).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertAppointmentCoverage = z.infer<typeof insertAppointmentCoverageSchema>;
+export type AppointmentCoverage = typeof appointmentCoverage.$inferSelect;
+
+export const insertBillingAttemptSchema = createInsertSchema(billingAttempts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertBillingAttempt = z.infer<typeof insertBillingAttemptSchema>;
+export type BillingAttempt = typeof billingAttempts.$inferSelect;
 
 // Export types for Phase 6 tables
 export const insertEncryptionKeysSchema = createInsertSchema(encryptionKeys).omit({

@@ -2905,6 +2905,256 @@ Please upload the document again through the secure upload system.`;
     }
   });
 
+  // ==========================================
+  // MEMBERSHIP SUBSCRIPTION ROUTES
+  // ==========================================
+
+  // Get available membership plans
+  app.get("/api/membership/plans", async (req, res) => {
+    try {
+      // Return hardcoded plans for now - these match the PRD specification
+      const plans = [
+        {
+          id: "monthly_plan",
+          name: "Monthly Membership",
+          description: "2 consultations per month with our certified doctors",
+          priceAmount: "45.00",
+          currency: "EUR",
+          billingInterval: "month",
+          intervalCount: 1,
+          allowancePerCycle: 2,
+          stripePriceId: process.env.STRIPE_MONTHLY_PRICE_ID || "price_monthly_placeholder",
+          isActive: true,
+          featured: true
+        },
+        {
+          id: "biannual_plan", 
+          name: "6-Month Membership",
+          description: "12 consultations over 6 months (2 per month) with 23% savings",
+          priceAmount: "219.00",
+          currency: "EUR",
+          billingInterval: "6_months",
+          intervalCount: 6,
+          allowancePerCycle: 12, // Total for 6 months
+          stripePriceId: process.env.STRIPE_BIANNUAL_PRICE_ID || "price_biannual_placeholder",
+          isActive: true,
+          featured: false
+        }
+      ];
+
+      res.json({ plans });
+    } catch (error) {
+      console.error("Error fetching membership plans:", error);
+      res.status(500).json({ error: "Failed to fetch membership plans" });
+    }
+  });
+
+  // Get current user's subscription status
+  app.get("/api/membership/subscription", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // For now, return no subscription until database schema is pushed
+      // TODO: Query membershipSubscriptions table once schema is deployed
+      
+      res.json({ 
+        hasSubscription: false,
+        subscription: null,
+        allowanceRemaining: 0
+      });
+    } catch (error) {
+      console.error("Error fetching user subscription:", error);
+      res.status(500).json({ error: "Failed to fetch subscription status" });
+    }
+  });
+
+  // Create a new subscription
+  app.post("/api/membership/subscribe", strictLimiter, isAuthenticated, async (req, res) => {
+    try {
+      const { planId } = req.body;
+      const userId = req.user.id;
+      const userEmail = req.user.email;
+
+      if (!planId) {
+        return res.status(400).json({ error: "Plan ID is required" });
+      }
+
+      // Get plan details (hardcoded for now)
+      const plans = {
+        "monthly_plan": {
+          stripePriceId: process.env.STRIPE_MONTHLY_PRICE_ID || "price_monthly_placeholder",
+          name: "Monthly Membership"
+        },
+        "biannual_plan": {
+          stripePriceId: process.env.STRIPE_BIANNUAL_PRICE_ID || "price_biannual_placeholder", 
+          name: "6-Month Membership"
+        }
+      };
+
+      const selectedPlan = plans[planId];
+      if (!selectedPlan) {
+        return res.status(400).json({ error: "Invalid plan selected" });
+      }
+
+      // Create or retrieve Stripe customer
+      let customer;
+      try {
+        // Check if customer already exists
+        const existingCustomers = await stripe.customers.list({
+          email: userEmail,
+          limit: 1
+        });
+
+        if (existingCustomers.data.length > 0) {
+          customer = existingCustomers.data[0];
+        } else {
+          // Create new customer
+          customer = await stripe.customers.create({
+            email: userEmail,
+            name: `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim(),
+            metadata: {
+              userId: userId.toString(),
+              planId: planId
+            }
+          });
+        }
+      } catch (stripeError) {
+        console.error("Error with Stripe customer:", stripeError);
+        return res.status(500).json({ error: "Failed to process customer information" });
+      }
+
+      // Create subscription
+      try {
+        const subscription = await stripe.subscriptions.create({
+          customer: customer.id,
+          items: [{
+            price: selectedPlan.stripePriceId,
+          }],
+          payment_behavior: 'default_incomplete',
+          payment_settings: { save_default_payment_method: 'on_subscription' },
+          expand: ['latest_invoice.payment_intent'],
+          metadata: {
+            userId: userId.toString(),
+            planId: planId,
+            planName: selectedPlan.name
+          }
+        });
+
+        const paymentIntent = subscription.latest_invoice?.payment_intent;
+
+        res.json({
+          subscriptionId: subscription.id,
+          clientSecret: paymentIntent?.client_secret,
+          customerId: customer.id,
+          status: subscription.status
+        });
+
+      } catch (subscriptionError) {
+        console.error("Error creating subscription:", subscriptionError);
+        return res.status(500).json({ error: "Failed to create subscription" });
+      }
+
+    } catch (error) {
+      console.error("Error in subscription creation:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Cancel subscription
+  app.post("/api/membership/cancel", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // TODO: Query user's subscription from database once schema is deployed
+      // For now, return success message
+      
+      res.json({ 
+        success: true,
+        message: "Subscription cancellation will be processed at the end of current billing period" 
+      });
+    } catch (error) {
+      console.error("Error cancelling subscription:", error);
+      res.status(500).json({ error: "Failed to cancel subscription" });
+    }
+  });
+
+  // Stripe webhook handler for subscription events
+  app.post("/api/webhooks/stripe", async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET || '');
+    } catch (err) {
+      console.error('Webhook signature verification failed:', err);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    console.log(`🔔 Stripe webhook received: ${event.type}`);
+
+    try {
+      switch (event.type) {
+        case 'customer.subscription.created':
+          console.log('📝 Subscription created:', event.data.object.id);
+          // TODO: Save subscription to database once schema is deployed
+          break;
+
+        case 'customer.subscription.updated':
+          console.log('📝 Subscription updated:', event.data.object.id);
+          // TODO: Update subscription in database
+          break;
+
+        case 'customer.subscription.deleted':
+          console.log('📝 Subscription cancelled:', event.data.object.id);
+          // TODO: Mark subscription as cancelled in database
+          break;
+
+        case 'invoice.payment_succeeded':
+          const invoice = event.data.object;
+          console.log('💰 Payment succeeded for invoice:', invoice.id);
+          // TODO: Update billing records and grant allowance for new cycle
+          break;
+
+        case 'invoice.payment_failed':
+          const failedInvoice = event.data.object;
+          console.log('❌ Payment failed for invoice:', failedInvoice.id);
+          // TODO: Handle failed payment, suspend subscription if needed
+          break;
+
+        default:
+          console.log(`Unhandled event type: ${event.type}`);
+      }
+
+      res.json({ received: true });
+    } catch (error) {
+      console.error('Error processing webhook:', error);
+      res.status(500).json({ error: 'Webhook processing failed' });
+    }
+  });
+
+  // Check if appointment should be covered by membership
+  app.post("/api/membership/check-coverage", isAuthenticated, async (req, res) => {
+    try {
+      const { appointmentId } = req.body;
+      const userId = req.user.id;
+
+      // TODO: Implement coverage check logic once database schema is deployed
+      // For now, all appointments are pay-per-visit
+      
+      res.json({
+        isCovered: false,
+        coverageType: "pay_per_visit",
+        originalPrice: "35.00",
+        patientPaid: "35.00",
+        coveredAmount: "0.00",
+        allowanceRemaining: 0
+      });
+    } catch (error) {
+      console.error("Error checking coverage:", error);
+      res.status(500).json({ error: "Failed to check coverage" });
+    }
+  });
+
   // Apply global error handler (must be last)
   app.use(errorHandler);
   
