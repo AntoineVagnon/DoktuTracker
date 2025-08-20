@@ -1,0 +1,256 @@
+# Doktu — Appointment Email UX Fix (Markdown Spec)
+
+> **Goal**
+> Fix three issues in appointment emails:
+>
+> 1. CTAs not reliably clickable
+> 2. Doktu logo missing/inconsistent
+> 3. Time shown in email doesn’t always match the true appointment time (timezone/DST drift)
+
+---
+
+## 1) Bullet-proof CTAs (Clickable Everywhere)
+
+**Objective:** Every CTA works in Gmail (web/mobile), Outlook (Desktop/OWA), Apple Mail, iOS/Android native clients.
+
+### Rules
+
+* Use **anchor-as-button** (no `<button>`).
+
+  * One `<a>` per CTA, **no nested anchors/buttons**.
+  * Style via **table-based** layout for Outlook reliability.
+* All links are **absolute HTTPS URLs** (no relative paths).
+* Minimum hit area: **44×44 px** (padding included).
+* Provide a **focus state** (outline) and visible hover (when supported).
+* **Primary** action in blue, **secondary** in neutral outline.
+
+### Reference Markup (Outlook-safe)
+
+```html
+<!-- Button wrapper table -->
+<table role="presentation" cellspacing="0" cellpadding="0">
+  <tr>
+    <td bgcolor="#2563EB" style="border-radius:8px;">
+      <a href="https://app.doktu.co/appointments/{{id}}"
+         style="display:inline-block; font-family:Inter, Arial, sans-serif; font-size:14px; line-height:20px; color:#ffffff; text-decoration:none; padding:12px 18px; border-radius:8px;"
+         target="_blank">
+        View in Dashboard
+      </a>
+    </td>
+  </tr>
+</table>
+```
+
+*(Duplicate for “Reschedule” and “Cancel” with appropriate color tokens and URLs.)*
+
+---
+
+## 2) Brand Logo Placement & Reliability
+
+**Objective:** Doktu logo always renders, looks sharp, and includes accessible fallback.
+
+### Rules
+
+* Place Doktu logo **top-left** inside a 600px-max email body.
+* Use **hosted PNG/SVG** over HTTPS, with **fixed width** (e.g., 120px) and 2× retina asset.
+* Include `alt="Doktu"` and explicit `width`/`height`.
+* Prefer **remote image** (avoid CID attachments).
+* Add meaningful **preheader** text.
+
+### Example
+
+```html
+<img src="https://assets.doktu.co/email/doktu-logo@2x.png"
+     alt="Doktu" width="120" height="28"
+     style="display:block; border:0; outline:none; text-decoration:none;">
+```
+
+---
+
+## 3) Timezone-Correct Time (and Matching ICS)
+
+**Objective:** Displayed time matches recipient’s local timezone **and** the ICS invite; no DST mismatches.
+
+### Rules
+
+* Persist appointment times in **UTC**.
+* Resolve recipient timezone (in order):
+
+  1. **User account setting** (patient/doctor)
+  2. **Appointment timezone** (if set at booking)
+  3. **Geo/IP fallback** (indicate “(local time)”)
+* Render time line as:
+
+  * **Wednesday, Aug 20, 2025 · 13:00–13:30 (CEST)**
+  * Use locale-aware formatting per recipient.
+* Attach **ICS** with:
+
+  * Start/End in **UTC**
+  * A **stable UID** per appointment
+  * **Reschedule:** send updated ICS with same UID, higher `SEQUENCE`
+  * **Cancel:** send ICS `METHOD:CANCEL` with same UID
+* All CTAs link to a **canonical appointment page** that always shows the **latest** time.
+
+### Edge Cases
+
+* **DST transitions:** verify email time == ICS imported time.
+* **Doctor vs Patient different TZs:** everyone sees their own local time; canonical page can show “other party time” on hover.
+* **Last-minute change post-send:** canonical page is source of truth; resend with ICS update when applicable.
+
+---
+
+## 4) Layout & Accessibility
+
+* Max content width: **600px**.
+* Fonts: Inter > system fallback > Arial.
+* Contrast: **≥ 4.5:1**.
+* Accessible link text (no “click here”), `role="presentation"` on layout tables, logical reading order.
+* Provide a **plain-text** alternative with **full URLs** for all CTAs.
+
+---
+
+## 5) QA Matrix (Must Pass)
+
+Clients to test:
+
+* **Gmail** (web & mobile)
+* **Outlook** (Desktop, OWA/Office 365)
+* **Apple Mail** (macOS/iOS)
+* **Android** native mail apps
+* **Samsung Mail**
+
+Checks:
+
+* CTAs clickable, no overlapping/unresponsive hit areas.
+* Logo renders reliably; not broken/blocked; crisp on retina.
+* Links open in new tab and point to canonical deep page.
+* Email body time equals canonical page time equals ICS-imported time.
+* No Gmail clipping (target **< \~102 KB** inline HTML).
+* Legible in **dark mode**.
+
+---
+
+## 6) Likely Root Causes (Reference)
+
+* `<button>` usage (unsupported behaviors in many clients).
+* Nested `<a>`/`<button>` elements or overlapping positioned blocks.
+* Relative URLs / `#` placeholders.
+* No table-based structure for Outlook.
+* Zero `display:block` or insufficient padding (tiny hit areas).
+
+---
+
+## 7) Optional Copy Tweaks
+
+* Add “**Shown in your local time zone**” under the time row.
+* Keep the Gmail event card by including ICS (ensure times match).
+* Add “**Test your camera and mic**” small link under CTAs.
+
+---
+
+## 8) Test Checklist (Quick)
+
+* [ ] CTAs open correct deep links in all target clients
+* [ ] Logo renders with `alt`, looks sharp on retina
+* [ ] Time == canonical page == ICS import
+* [ ] DST & cross-timezone scenarios validated
+* [ ] Plain-text part includes all CTA URLs
+* [ ] No Gmail clipping (HTML size OK)
+* [ ] Dark mode safe
+
+---
+
+## 9) Gherkin — Acceptance Tests
+
+### 9.1 Clickable CTAs
+
+```gherkin
+Feature: Appointment email CTAs are clickable across email clients
+
+Scenario: CTAs render as anchor-as-button
+  Given an appointment confirmation email is sent
+  When I open it in Gmail, Outlook, Apple Mail, and iOS Mail
+  Then each CTA ("View in Dashboard", "Reschedule", "Cancel") is visible
+  And each CTA is clickable and opens the correct deep link in a new tab
+
+Scenario: No nested anchors or buttons
+  When I inspect the email HTML
+  Then each CTA is a single <a> element styled as a button
+  And there are no nested <a> or <button> elements
+```
+
+### 9.2 Doktu Logo Present & Crisp
+
+```gherkin
+Feature: Doktu logo displays reliably in the header
+
+Scenario: Logo loads via HTTPS with alt text
+  Given a recipient opens the email in a major client
+  Then the Doktu logo appears at the top-left
+  And the <img> has alt="Doktu" and fixed width/height
+  And if images are blocked, the alt text is visible
+
+Scenario: Retina quality
+  Given the device is high-DPI (retina)
+  Then the logo appears sharp (served at 2x scale and sized down to 120px)
+```
+
+### 9.3 Timezone-Correct Display & ICS Consistency
+
+```gherkin
+Feature: Times match the recipient’s local timezone and ICS
+
+Background:
+  Given an appointment stored as UTC "2025-08-20T11:00:00Z" to "2025-08-20T11:30:00Z"
+
+Scenario: Patient in CET sees local time
+  Given the patient’s timezone is Europe/Paris (CET/CEST depending on date)
+  When the confirmation email is sent
+  Then the body shows "Wednesday, Aug 20, 2025 · 13:00–13:30 (CEST)"
+  And the attached ICS shows the same event when imported into Google Calendar and Apple Calendar
+
+Scenario: Doctor in US/Eastern sees local time
+  Given the doctor’s timezone is America/New_York (EDT/EST depending on date)
+  When the confirmation email is sent to the doctor
+  Then the body shows the local US/Eastern wall-clock time for the same UTC
+  And the ICS reflects the same wall-clock time in their calendar
+
+Scenario: DST boundary date
+  Given the appointment falls on a DST transition day
+  When the email is sent
+  Then the time displayed and ICS-imported time remain consistent and correct
+
+Scenario: Reschedule after email sent
+  Given the appointment time changes after the confirmation email
+  When the recipient clicks any CTA in the original email
+  Then the canonical appointment page displays the updated time
+  And a new email is sent with an ICS update (same UID, incremented sequence)
+```
+
+### 9.4 Accessibility & Plain-Text Fallback
+
+```gherkin
+Feature: Accessible and robust email
+
+Scenario: Plain-text version includes action URLs
+  Given the message is viewed in a text-only client
+  Then all primary actions are present as full HTTPS links in the plain-text part
+
+Scenario: Minimum touch target
+  Given I open the email on a mobile device
+  Then each CTA touch target is at least 44x44 px
+```
+
+---
+
+## 10) Deliverables
+
+* Updated shared **email header** with logo and preheader
+* Updated **confirmation/reminder/reschedule/cancel** templates using this spec
+* Plain-text versions for each template
+* QA test results (matrix above) with screenshots from Gmail, Outlook, Apple Mail, iOS/Android
+* Sample ICS files (create, update with sequence, cancel)
+
+---
+
+*This document is ready to hand to your AI coding agent to implement and verify the email fixes end-to-end.*

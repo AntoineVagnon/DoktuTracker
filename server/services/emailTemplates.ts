@@ -1,9 +1,26 @@
 // Email template definitions based on the provided specifications
 import { format } from "date-fns";
+import { 
+  generateEmailHeader,
+  generateEmailFooter,
+  generateAppointmentCard,
+  generateButtonGroup,
+  generatePlainTextContent
+} from './emailComponents';
 
 export interface EmailTemplate {
   subject: string;
   html: string;
+  text?: string;
+}
+
+// Helper function to get template by name
+export function getTemplate(templateName: string, data: any): EmailTemplate {
+  const templateFunction = templates[templateName];
+  if (!templateFunction) {
+    throw new Error(`Template '${templateName}' not found`);
+  }
+  return templateFunction(data);
 }
 
 // Template functions that generate email content with merged data
@@ -102,96 +119,402 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
     `
   }),
 
-  booking_confirmation: (data) => ({
-    subject: "Your Consultation is Confirmed – DokTu",
+  booking_confirmation: (data) => {
+
+    const baseUrl = process.env.VITE_APP_URL || 'https://app.doktu.co';
+    
+    const appointmentData = {
+      appointmentId: data.appointment_id,
+      patientName: data.patient_first_name || 'Patient',
+      doctorName: data.doctor_name,
+      doctorSpecialization: data.doctor_specialization,
+      appointmentDatetimeUtc: data.appointment_datetime_utc,
+      timezone: data.patient_timezone || 'Europe/Paris',
+      joinLink: data.join_link,
+      price: data.price,
+      currency: data.currency || '€'
+    };
+
+    const buttons = [
+      {
+        text: 'View in Dashboard',
+        url: `${baseUrl}/patient/appointments/${data.appointment_id}`,
+        style: 'primary' as const
+      },
+      {
+        text: 'Reschedule',
+        url: `${baseUrl}/patient/appointments/${data.appointment_id}?action=reschedule`,
+        style: 'secondary' as const
+      },
+      {
+        text: 'Cancel',
+        url: `${baseUrl}/patient/appointments/${data.appointment_id}?action=cancel`,
+        style: 'danger' as const
+      }
+    ];
+
+    const html = 
+      generateEmailHeader({ 
+        preheaderText: `Your consultation with Dr. ${data.doctor_name} is confirmed` 
+      }) +
+      `
+        <h1 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 600; color: #1e293b;">
+          Your consultation is confirmed
+        </h1>
+        
+        <p style="margin: 0 0 16px 0; font-size: 16px; color: #475569;">
+          Dear ${data.patient_first_name || 'Patient'},
+        </p>
+        
+        <p style="margin: 0 0 24px 0; font-size: 16px; color: #475569;">
+          Your telemedicine consultation has been successfully booked and confirmed.
+        </p>
+        
+        ${generateAppointmentCard(appointmentData)}
+        
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #92400e;">
+            Before your consultation:
+          </h3>
+          <ul style="margin: 0; padding-left: 20px; color: #92400e;">
+            <li>Join 2–5 minutes before the scheduled time</li>
+            <li>Test your camera and microphone</li>
+            <li>Ensure stable internet connection</li>
+            <li>Find a quiet, private space</li>
+            <li>Prepare any medical documents or questions</li>
+          </ul>
+        </div>
+        
+        <h3 style="margin: 32px 0 16px 0; font-size: 18px; font-weight: 600; color: #1e293b;">
+          Need to make changes?
+        </h3>
+        
+        ${generateButtonGroup(buttons)}
+        
+        <p style="margin: 24px 0 0 0; font-size: 14px; color: #64748b;">
+          For technical support or questions, contact us at 
+          <a href="mailto:support@doktu.co" style="color: #0369a1; text-decoration: underline;">support@doktu.co</a>
+        </p>
+        
+        <p style="margin: 16px 0 0 0; font-size: 14px; color: #64748b;">
+          Thank you for choosing Doktu Medical Platform.
+        </p>
+      ` +
+      generateEmailFooter();
+
+    const plainText = generatePlainTextContent({
+      subject: "Your Consultation is Confirmed – Doktu",
+      mainContent: `Dear ${data.patient_first_name || 'Patient'},\n\nYour telemedicine consultation has been successfully booked and confirmed.\n\nBEFORE YOUR CONSULTATION:\n- Join 2–5 minutes before the scheduled time\n- Test your camera and microphone\n- Ensure stable internet connection\n- Find a quiet, private space\n- Prepare any medical documents or questions\n\nFor technical support or questions, contact us at support@doktu.co\n\nThank you for choosing Doktu Medical Platform.`,
+      buttons,
+      appointmentData
+    });
+
+    return {
+      subject: "Your Consultation is Confirmed – Doktu",
+      html,
+      text: plainText
+    };
+  },
+
+  booking_reminder_24h: (data) => {
+
+    const baseUrl = process.env.VITE_APP_URL || 'https://app.doktu.co';
+    
+    const appointmentData = {
+      appointmentId: data.appointment_id,
+      patientName: data.patient_first_name || 'Patient',
+      doctorName: data.doctor_name,
+      doctorSpecialization: data.doctor_specialization,
+      appointmentDatetimeUtc: data.appointment_datetime_utc,
+      timezone: data.patient_timezone || 'Europe/Paris',
+      joinLink: data.join_link,
+      price: data.price,
+      currency: data.currency || '€'
+    };
+
+    const buttons = [
+      {
+        text: 'Join Video Call',
+        url: data.join_link,
+        style: 'primary' as const
+      },
+      {
+        text: 'View Details',
+        url: `${baseUrl}/patient/appointments/${data.appointment_id}`,
+        style: 'secondary' as const
+      }
+    ];
+
+    const html = 
+      generateEmailHeader({ 
+        preheaderText: `Reminder: Your consultation with Dr. ${data.doctor_name} is tomorrow` 
+      }) +
+      `
+        <h1 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 600; color: #1e293b;">
+          ⏰ Consultation reminder
+        </h1>
+        
+        <p style="margin: 0 0 16px 0; font-size: 16px; color: #475569;">
+          Hi ${data.patient_first_name || 'there'},
+        </p>
+        
+        <p style="margin: 0 0 24px 0; font-size: 16px; color: #475569;">
+          This is a friendly reminder that your consultation is scheduled for tomorrow.
+        </p>
+        
+        ${generateAppointmentCard(appointmentData)}
+        
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #1e40af;">
+            Preparation checklist:
+          </h3>
+          <ul style="margin: 0; padding-left: 20px; color: #1e40af;">
+            <li>✅ Test your camera and microphone in advance</li>
+            <li>✅ Prepare any questions or medical documents</li>
+            <li>✅ Find a quiet, well-lit space</li>
+            <li>✅ Ensure stable internet connection</li>
+            <li>✅ Have a glass of water nearby</li>
+          </ul>
+        </div>
+        
+        ${generateButtonGroup(buttons)}
+        
+        <p style="margin: 24px 0 0 0; font-size: 14px; color: #64748b;">
+          Need to reschedule or cancel? Visit your 
+          <a href="${baseUrl}/patient/appointments" style="color: #0369a1; text-decoration: underline;">appointment dashboard</a>
+          or contact our support team.
+        </p>
+        
+        <p style="margin: 16px 0 0 0; font-size: 14px; color: #64748b;">
+          We look forward to helping you with your healthcare needs.
+        </p>
+      ` +
+      generateEmailFooter();
+
+    const plainText = generatePlainTextContent({
+      subject: "Reminder – Your Doktu Consultation is Tomorrow",
+      mainContent: `Hi ${data.patient_first_name || 'there'},\n\nThis is a friendly reminder that your consultation is scheduled for tomorrow.\n\nPREPARATION CHECKLIST:\n✅ Test your camera and microphone in advance\n✅ Prepare any questions or medical documents\n✅ Find a quiet, well-lit space\n✅ Ensure stable internet connection\n✅ Have a glass of water nearby\n\nNeed to reschedule or cancel? Visit your appointment dashboard or contact our support team.\n\nWe look forward to helping you with your healthcare needs.`,
+      buttons,
+      appointmentData
+    });
+
+    return {
+      subject: "Reminder – Your Doktu Consultation is Tomorrow",
+      html,
+      text: plainText
+    };
+  },
+
+  cancellation_confirmation: (data) => {
+    const baseUrl = process.env.VITE_APP_URL || 'https://app.doktu.co';
+    
+    const buttons = [
+      {
+        text: 'Book New Appointment',
+        url: `${baseUrl}/doctors`,
+        style: 'primary' as const
+      },
+      {
+        text: 'View Dashboard',
+        url: `${baseUrl}/patient/appointments`,
+        style: 'secondary' as const
+      }
+    ];
+
+    const html = 
+      generateEmailHeader({ 
+        preheaderText: `Your consultation with Dr. ${data.doctor_name} has been cancelled` 
+      }) +
+      `
+        <h1 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 600; color: #1e293b;">
+          Consultation cancelled
+        </h1>
+        
+        <p style="margin: 0 0 16px 0; font-size: 16px; color: #475569;">
+          Dear ${data.patient_first_name || 'Patient'},
+        </p>
+        
+        <p style="margin: 0 0 24px 0; font-size: 16px; color: #475569;">
+          Your consultation with Dr. ${data.doctor_name} has been cancelled.
+        </p>
+        
+        <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #991b1b;">
+            Cancellation Details:
+          </h3>
+          <p style="margin: 0; color: #991b1b;">
+            <strong>Original appointment:</strong> ${data.appointment_datetime_local || 'N/A'}<br>
+            <strong>Doctor:</strong> Dr. ${data.doctor_name} (${data.doctor_specialization})<br>
+            <strong>Reason:</strong> ${data.cancellation_reason || 'No reason provided'}
+          </p>
+        </div>
+        
+        <p style="margin: 24px 0; font-size: 16px; color: #475569;">
+          If you paid for this consultation, any applicable refunds will be processed automatically within 3-5 business days.
+        </p>
+        
+        <h3 style="margin: 32px 0 16px 0; font-size: 18px; font-weight: 600; color: #1e293b;">
+          What's next?
+        </h3>
+        
+        ${generateButtonGroup(buttons)}
+        
+        <p style="margin: 24px 0 0 0; font-size: 14px; color: #64748b;">
+          If you have questions about this cancellation, contact us at 
+          <a href="mailto:support@doktu.co" style="color: #0369a1; text-decoration: underline;">support@doktu.co</a>
+        </p>
+      ` +
+      generateEmailFooter();
+
+    const plainText = generatePlainTextContent({
+      subject: "Your Consultation Has Been Cancelled",
+      mainContent: `Dear ${data.patient_first_name || 'Patient'},\n\nYour consultation with Dr. ${data.doctor_name} has been cancelled.\n\nCANCELLATION DETAILS:\nOriginal appointment: ${data.appointment_datetime_local || 'N/A'}\nDoctor: Dr. ${data.doctor_name} (${data.doctor_specialization})\nReason: ${data.cancellation_reason || 'No reason provided'}\n\nIf you paid for this consultation, any applicable refunds will be processed automatically within 3-5 business days.\n\nIf you have questions about this cancellation, contact us at support@doktu.co`,
+      buttons
+    });
+
+    return {
+      subject: "Your Consultation Has Been Cancelled",
+      html,
+      text: plainText
+    };
+  },
+
+  reschedule_confirmation: (data) => {
+    const baseUrl = process.env.VITE_APP_URL || 'https://app.doktu.co';
+    
+    const appointmentData = {
+      appointmentId: data.appointment_id,
+      patientName: data.patient_first_name || 'Patient',
+      doctorName: data.doctor_name,
+      doctorSpecialization: data.doctor_specialization,
+      appointmentDatetimeUtc: data.appointment_datetime_utc,
+      timezone: data.patient_timezone || 'Europe/Paris',
+      joinLink: data.join_link,
+      price: data.price,
+      currency: data.currency || '€'
+    };
+
+    const buttons = [
+      {
+        text: 'View in Dashboard',
+        url: `${baseUrl}/patient/appointments/${data.appointment_id}`,
+        style: 'primary' as const
+      },
+      {
+        text: 'Join Video Call',
+        url: data.join_link,
+        style: 'secondary' as const
+      }
+    ];
+
+    const html = 
+      generateEmailHeader({ 
+        preheaderText: `Your consultation with Dr. ${data.doctor_name} has been rescheduled` 
+      }) +
+      `
+        <h1 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 600; color: #1e293b;">
+          Consultation rescheduled
+        </h1>
+        
+        <p style="margin: 0 0 16px 0; font-size: 16px; color: #475569;">
+          Dear ${data.patient_first_name || 'Patient'},
+        </p>
+        
+        <p style="margin: 0 0 24px 0; font-size: 16px; color: #475569;">
+          Your consultation with Dr. ${data.doctor_name} has been successfully rescheduled.
+        </p>
+        
+        ${data.old_appointment_datetime_utc ? `
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #92400e;">
+            Previous appointment time:
+          </h3>
+          <p style="margin: 0; color: #92400e;">
+            ${data.old_appointment_datetime_local || 'N/A'}
+          </p>
+        </div>
+        ` : ''}
+        
+        ${generateAppointmentCard(appointmentData)}
+        
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #15803d;">
+            Important reminders:
+          </h3>
+          <ul style="margin: 0; padding-left: 20px; color: #15803d;">
+            <li>Your calendar has been automatically updated</li>
+            <li>Join 2–5 minutes before the new scheduled time</li>
+            <li>Test your camera and microphone beforehand</li>
+            <li>All previous preparation instructions still apply</li>
+          </ul>
+        </div>
+        
+        ${generateButtonGroup(buttons)}
+        
+        <p style="margin: 24px 0 0 0; font-size: 14px; color: #64748b;">
+          If you need to make further changes, contact us at 
+          <a href="mailto:support@doktu.co" style="color: #0369a1; text-decoration: underline;">support@doktu.co</a>
+        </p>
+      ` +
+      generateEmailFooter();
+
+    const plainText = generatePlainTextContent({
+      subject: "Your Consultation Has Been Rescheduled",
+      mainContent: `Dear ${data.patient_first_name || 'Patient'},\n\nYour consultation with Dr. ${data.doctor_name} has been successfully rescheduled.\n\n${data.old_appointment_datetime_local ? `Previous appointment time: ${data.old_appointment_datetime_local}\n\n` : ''}IMPORTANT REMINDERS:\n- Your calendar has been automatically updated\n- Join 2–5 minutes before the new scheduled time\n- Test your camera and microphone beforehand\n- All previous preparation instructions still apply\n\nIf you need to make further changes, contact us at support@doktu.co`,
+      buttons,
+      appointmentData
+    });
+
+    return {
+      subject: "Your Consultation Has Been Rescheduled",
+      html,
+      text: plainText
+    };
+  },
+
+  doctor_appointment_booked: (data) => ({
+    subject: `New Appointment Booked - ${data.patient_first_name}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Dear ${data.patient_first_name || 'Patient'},</p>
+        <p>Dear Dr. ${data.doctor_name},</p>
         
-        <p>Your consultation has been successfully booked.</p>
+        <p>A new appointment has been booked with you:</p>
         
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+          <p style="margin: 5px 0;">👤 <strong>Patient:</strong> ${data.patient_first_name}</p>
           <p style="margin: 5px 0;">📅 <strong>Date & Time:</strong> ${data.appointment_datetime_local}</p>
-          <p style="margin: 5px 0;">👨‍⚕️ <strong>Doctor:</strong> ${data.doctor_name} (${data.doctor_specialization})</p>
-          <p style="margin: 5px 0;">🔗 <strong>Join Link:</strong> <a href="${data.join_link}">Secure Consultation Link</a></p>
+          <p style="margin: 5px 0;">🔗 <strong>Join Link:</strong> <a href="${data.join_link}">Secure Link</a></p>
         </div>
         
-        <p>Please log in 2–5 minutes before the scheduled time and ensure your audio/video is working properly.</p>
-        
-        <p>To ensure the consultation is successful, please read our <a href="${process.env.VITE_APP_URL}/consultation-guidelines">Consultation Guidelines</a></p>
-        
-        <p>If you need to reschedule or cancel, please log in to your profile at <a href="${process.env.VITE_APP_URL}/patient/appointments/${data.appointment_id}">${process.env.VITE_APP_URL}/patient/appointments</a> and use the buttons below. If you need any support, please contact us at support@doktu.co.</p>
-        
-        <p>Thank you for choosing DokTu.</p>
+        <p>Please ensure you're available at the scheduled time.</p>
         
         <p>DokTu Support Team</p>
       </div>
     `
   }),
 
-  booking_reminder_24h: (data) => ({
-    subject: "Reminder – Your DokTu Consultation is Coming Up",
+  doctor_appointment_cancelled: (data) => ({
+    subject: `Appointment Cancelled - ${data.patient_first_name}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Hi ${data.patient_first_name || 'there'},</p>
+        <p>Dear Dr. ${data.doctor_name},</p>
         
-        <p>This is a friendly reminder that your consultation is scheduled for:</p>
+        <p>The following appointment has been cancelled:</p>
         
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p style="margin: 5px 0;">📅 ${data.appointment_datetime_local}</p>
-          <p style="margin: 5px 0;">👨‍⚕️ Dr. ${data.doctor_name}</p>
-          <p style="margin: 5px 0;">🔗 Join here: <a href="${data.join_link}">Secure Link</a></p>
+          <p style="margin: 5px 0;">👤 <strong>Patient:</strong> ${data.patient_first_name}</p>
+          <p style="margin: 5px 0;">📅 <strong>Original Date & Time:</strong> ${data.appointment_datetime_local}</p>
+          <p style="margin: 5px 0;">💰 <strong>Price:</strong> €${data.price || '35'}</p>
         </div>
         
-        <p>Please ensure you're in a quiet space with a stable internet connection.</p>
-        <p>If you need to make changes, use the patient dashboard or contact us.</p>
-        
-        <p>Thank you,<br>DokTu Support</p>
-      </div>
-    `
-  }),
-
-  cancellation_confirmation: (data) => ({
-    subject: "Your Consultation Has Been Cancelled",
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Dear ${data.patient_first_name || 'Patient'},</p>
-        
-        <p>We confirm that your consultation with Dr. ${data.doctor_name} scheduled for ${data.appointment_datetime_local} has been cancelled.</p>
-        
-        <p>If this was a mistake, you may reschedule directly from your dashboard.</p>
-        
-        <p>Refunds or credits (if applicable) will be processed in accordance with our cancellation policy.</p>
-        
-        <p>We're here if you need further assistance.</p>
-        
-        <p>DokTu Team</p>
-      </div>
-    `
-  }),
-
-  reschedule_confirmation: (data) => ({
-    subject: "Your Consultation Has Been Rescheduled",
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Hi ${data.patient_first_name || 'there'},</p>
-        
-        <p>Your consultation has been successfully rescheduled.</p>
-        
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p style="margin: 5px 0;">📅 <strong>New Date & Time:</strong> ${data.new_appointment_datetime_local}</p>
-          <p style="margin: 5px 0;">👨‍⚕️ <strong>Doctor:</strong> Dr. ${data.doctor_name}</p>
-          <p style="margin: 5px 0;">🔗 <strong>Updated Join Link:</strong> <a href="${data.join_link}">Link</a></p>
-        </div>
-        
-        <p>If you have any supporting documents or updates to share with the doctor, you may upload them to your profile.</p>
-        
-        <p>We look forward to seeing you online.</p>
+        <p>The time slot is now available for new bookings.</p>
         
         <p>DokTu Support Team</p>
       </div>
     `
   }),
+
+  // SMS templates (shorter)
 
   post_call_survey: (data) => ({
     subject: "How was your consultation with Dr. ${data.doctor_name}?",
