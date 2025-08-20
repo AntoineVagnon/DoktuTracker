@@ -162,41 +162,42 @@ export default function Landing() {
       price: "€35",
       period: "per consultation",
       features: [
-        "30-minute consultation",
-        "Digital prescription",
-        "Medical report",
-        "Follow-up notes",
+        "30-minute video consultation",
+        "Book certified doctors",
+        "Secure, private call",
       ],
       buttonText: "Book Consultation",
       buttonVariant: "outline" as const,
     },
     {
-      name: "Basic Plan",
-      price: "€29",
+      name: "Monthly Membership",
+      price: "€45",
       period: "per month",
       features: [
-        "3 consultations per month",
-        "Priority booking",
-        "Health record access",
-        "Email support",
-        "Digital prescriptions",
+        "2 × 30-minute consultations per month",
+        "Book any eligible doctor",
+        "Upload & share health data",
+        "No per-visit fee while allowance remains",
+        "Auto-renews monthly",
+        "Cancel anytime",
       ],
-      buttonText: "Start Free Trial",
+      buttonText: "Choose Monthly",
       buttonVariant: "default" as const,
       popular: true,
     },
     {
-      name: "Premium Plan",
-      price: "€59",
-      period: "per month",
+      name: "6-Month Membership",
+      price: "€219",
+      period: "per 6 months",
       features: [
-        "Unlimited consultations",
-        "24/7 support",
-        "Family account (4 members)",
-        "Specialist referrals",
-        "Advanced health analytics",
+        "12 consultations (2 per month)",
+        "23% savings vs monthly",
+        "Book any eligible doctor",
+        "Upload & share health data",
+        "No per-visit fee while allowance remains",
+        "Auto-renews every 6 months",
       ],
-      buttonText: "Choose Premium",
+      buttonText: "Choose 6-Month",
       buttonVariant: "outline" as const,
     },
   ];
@@ -439,7 +440,7 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Traditional Healthcare is Berlin
+              What Our Patients Say
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Join thousands of satisfied patients who have experienced quality healthcare through our platform.
@@ -477,7 +478,7 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              What can our say
+              Choose Your Plan
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Transparent pricing with no hidden fees. Choose the plan that works best for you.
@@ -529,6 +530,18 @@ export default function Landing() {
                             ? "border-2 border-[hsl(207,100%,52%)] text-[hsl(207,100%,52%)] hover:bg-[hsl(207,100%,97%)]"
                             : ""
                       }`}
+                      onClick={() => {
+                        if (plan.name === "Pay-per-visit") {
+                          // Scroll to doctors section for booking
+                          const doctorsSection = document.getElementById('doctors');
+                          if (doctorsSection) {
+                            doctorsSection.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        } else {
+                          // Navigate to membership page for subscription plans
+                          setLocation('/membership');
+                        }
+                      }}
                     >
                       {plan.buttonText}
                     </Button>

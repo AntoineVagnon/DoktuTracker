@@ -60,9 +60,9 @@ export default function TermsOfService() {
                   <ul className="list-disc pl-6 space-y-1">
                     <li>Video consultations with verified healthcare professionals</li>
                     <li>Secure messaging with healthcare providers</li>
-                    <li>Digital prescription services (where legally permitted)</li>
                     <li>Medical record storage and management</li>
                     <li>Appointment scheduling and management</li>
+                    <li>Membership subscription plans with consultation allowances</li>
                   </ul>
                 </div>
 
