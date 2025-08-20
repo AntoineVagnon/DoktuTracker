@@ -80,10 +80,10 @@ export function additionalSecurityHeaders(req: Request, res: Response, next: Nex
   next();
 }
 
-// General rate limiter
+// General rate limiter (relaxed for development)
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // 100 requests per IP
+  max: process.env.NODE_ENV === 'development' ? 10000 : 100, // 10000 requests in dev, 100 in production
   message: {
     error: 'Too many requests from this IP',
     code: 'RATE_LIMIT_EXCEEDED',
@@ -93,10 +93,10 @@ export const generalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Strict rate limiter for authentication endpoints
+// Strict rate limiter for authentication endpoints (relaxed for development)
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per IP
+  max: process.env.NODE_ENV === 'development' ? 1000 : 5, // 1000 attempts in dev, 5 in production
   message: {
     error: 'Too many authentication attempts',
     code: 'AUTH_RATE_LIMIT_EXCEEDED',
