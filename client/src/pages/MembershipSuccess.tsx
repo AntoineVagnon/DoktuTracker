@@ -3,10 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from 'lucide-react';
 import { useLocation, useSearch } from 'wouter';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function MembershipSuccess() {
   const [, setLocation] = useLocation();
   const searchParams = useSearch();
+  const { isAuthenticated, isLoading } = useAuth();
   const planParam = new URLSearchParams(searchParams).get('plan') || 'monthly';
   
   const planNames: Record<string, string> = {
@@ -19,13 +21,34 @@ export default function MembershipSuccess() {
   const planName = planNames[planParam] || 'Membership';
   
   useEffect(() => {
-    // Redirect to dashboard after 5 seconds
-    const timer = setTimeout(() => {
-      setLocation('/dashboard');
-    }, 5000);
+    // Don't redirect while auth is loading
+    if (isLoading) return;
     
-    return () => clearTimeout(timer);
-  }, [setLocation]);
+    // Give the auth state more time to settle after payment redirect
+    // Payment redirects can sometimes interrupt auth state temporarily
+    if (!isAuthenticated && !isLoading) {
+      // Wait a bit longer before assuming user is truly logged out
+      const authCheckTimer = setTimeout(() => {
+        // Re-check auth state
+        if (!isAuthenticated && !isLoading) {
+          console.log("MembershipSuccess: User not authenticated after waiting, showing login prompt");
+          // Don't redirect immediately - show success message with login prompt
+          return;
+        }
+      }, 4000); // Wait 4 seconds for auth to settle
+      
+      return () => clearTimeout(authCheckTimer);
+    }
+    
+    // Only redirect to dashboard if definitely authenticated
+    if (isAuthenticated) {
+      const timer = setTimeout(() => {
+        setLocation('/dashboard');
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [setLocation, isAuthenticated, isLoading]);
   
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -50,17 +73,41 @@ export default function MembershipSuccess() {
             </ul>
           </div>
           
-          <Button 
-            onClick={() => setLocation('/dashboard')}
-            className="w-full"
-            size="lg"
-          >
-            Go to Dashboard
-          </Button>
-          
-          <p className="text-xs text-center text-gray-500">
-            You will be redirected to your dashboard in a few seconds...
-          </p>
+          {isAuthenticated ? (
+            <>
+              <Button 
+                onClick={() => setLocation('/dashboard')}
+                className="w-full"
+                size="lg"
+              >
+                Go to Dashboard
+              </Button>
+              
+              <p className="text-xs text-center text-gray-500">
+                You will be redirected to your dashboard in a few seconds...
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="bg-yellow-50 p-3 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  Please log in to access your membership benefits
+                </p>
+              </div>
+              
+              <Button 
+                onClick={() => setLocation('/login-form')}
+                className="w-full"
+                size="lg"
+              >
+                Log In to Continue
+              </Button>
+              
+              <p className="text-xs text-center text-gray-500">
+                Your payment was successful. Log in to start using your membership.
+              </p>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
