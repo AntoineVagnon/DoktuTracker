@@ -3089,8 +3089,8 @@ Please upload the document again through the secure upload system.`;
 
       // Create subscription - simplified approach with manual payment intent
       try {
-        // First, create a payment intent for the initial subscription payment
-        const amountInCents = selectedPlanConfig.amount * 100; // Convert to cents
+        // Use the priceAmount from the plan configuration (already in cents)
+        const amountInCents = selectedPlanConfig.priceAmount;
         
         // Create a payment intent for the subscription amount
         const paymentIntent = await stripe.paymentIntents.create({

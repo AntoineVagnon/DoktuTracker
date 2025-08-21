@@ -1,0 +1,237 @@
+Failed to load resource: net::ERR_BLOCKED_BY_CLIENTUnderstand this error
+event-queue.js:41 Google Analytics Error: Failed to load https://cdn.segment.com/next-integrations/integrations/google-analytics/2.18.6/google-analytics.dynamic.js.gz
+    at o.onerror (load-script.ts:53:24)
+i @ event-queue.js:41Understand this warning
+www.googletagmanager.com/gtag/js?id=AW-11411994397:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENTUnderstand this error
+33The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+33The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+33The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+DoktuTracker:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+DoktuTracker:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+DoktuTracker:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+_app-29ff779c5aa7fb3d.js:13 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-29ff779c5aa7fb3d.js:13 [LaunchDarkly] LaunchDarkly client initialized
+DoktuTracker:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+13Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'battery'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+framework-8d9cbf3304ee1bef.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-8d9cbf3304ee1bef.js:1Understand this warning
+3635-663948310c60ceaf.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSXZ0aVp4UVlTQmdqZDlKbkZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...NlRITmtaazF3VFU1clltbHNlV0ZDZURad1FsbFNWVGxSTVNVeVJqVm5NRmxtUkVNNFZtVnNNSE5DYTBKeWRYaDFVMmRqTTJVMlppVXlSa05ZVGtVMVNFNTJUV1pETlVwQk1EUmljVWxWWmpkUFNqbElkMXB0TmpWU1lVMVJXVTlhUWtaVFExaFNhSEJJZVRrbE1rSnBiMDg0VG1sSmRGaG5iemR3UTFGM0pUSkdKVEpHVkZGME9HeFBORXhOWkdSMVJHTmtKVEpDU1dwTmQzVlVXa0V3Y25sc1FtbENVVGRMZW1ZMWJYZEVibFFsTWtaNVExUmlRa1p0UzJwbWFGWmxjVGszTUdjeVdGSjVSbXhyU2xaRVVTVXpSQ1V6UkE9PcWt5EdQWjHMr9BgUgfYwFaptOvKXGzsbrzKmvmNla2kb3AU4WycnEA4zrRr-FtMvK7bVwNNirWdKj9IAadzEwo.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 3635-663948310c60ceaf.js:1Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+3635-663948310c60ceaf.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSTJjNmR4UVlTQmdqNDZwM0ZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...mxVVTF4ZDIwM1ZWSkljR0kwUkdrME1VTkJUbm94YjA5MlJsRnNRMDVHYkhGU1NtaE5jRXB4ZEZRNFNHUjRWREIyVUV4TmJFdE9NRTFsTkhkeGVIbE9ZMkZGV2xaYVRTVXlRa3RPVTJKclJUUjJiblJ0VGt0RE1XSmtTVlZLWWtJeVJFWkhkMVpqVjFkb2RXdDRjMmhHWkdack1ISmhWMHczYkVaUlVpVXlRa1pCUW14SFRraFlOMmxSYWxaSldXNTRSMHBrZFhWdFRXOVNkVUZhYkV0b0pUSkdRM2RzVUZKbFMwTm1kelYyZEVGYWRuQnBNMFI0Vm00Mk5tZHlTR2hhYmxFMlkzVTNiRzhsTWtZM1VrNXhWazEzSlRORUpUTkU_dSB9zc_b96tDVTX3Cl5-ooLYLgD7SvCuj3VGDOaJ5Ko6mB-yjrStWNRoWrcTebAvLhlJvV6m4mUIBv3KKdAI.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 3635-663948310c60ceaf.js:1Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+3635-663948310c60ceaf.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSXMvbWR4UVlTQmdqU2xaN0ZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...lJVbFJ1TkRVMmJUaHdVRElsTWtaYWNGQWxNa0l6VTJKaWRrTkRSRGQ1WkZWdE1tdEZhRVpuWlhsc1RGSTFSR2RVU0RST1prcElUSFFsTWtKcFNrczNZa2x0YW5nM1NuUTBaVGxLWVV4WlR6TXlOSEpOYUVjd1NWUXlKVEpDZURCdWVtUktPRkpsVG1KUmNIaGxVMk5DVW5ac1RFVnJaREZCWVRFbE1rWnRNR2RIWjNCSmJXdEVaR3QzWTBnMEpUSkNjMkZpTTFsbk1qSlVSSFZZUzBsSmFUSjVhRXBDZEVrbE1rSkVjMGw2TXpkUmRYWTRZMDQ1SlRKR1MwNTNSekptWnpSeFVYSkNVRGw1ZWlVeVJqUTBkeVV6UkNVelJBPT1B6LSyw3MUrYKde2LzD3mLfFJ3BjRv85gYKw7SH3Tw9hIf3ChiiCDaaXeMiW9ElmUXZXnwPWXBHbto1ek33vAE.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 3635-663948310c60ceaf.js:1Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1f7%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+12Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+Understand this error
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Landing page loaded, checking for password reset tokens
+Console.js:61 Current URL hash: 
+Console.js:61 Hash params: [object Object]
+Console.js:61 All hash params: 
+Console.js:61 ❌ No password reset tokens found, loading normal landing page
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)Understand this error
+Console.js:61 Register page loaded with location: /register
+Console.js:61 Window URL search: ?redirect=/membership-start?plan=semiannual
+Console.js:61 Full window URL: https://0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/register?redirect=/membership-start?plan=semiannual
+Console.js:61 Parsed booking params: [object Object]
+Console.js:61 Create Account button clicked
+Console.js:61 Booking params: [object Object]
+Console.js:61 Redirect param: /membership-start?plan=semiannual
+Console.js:61 Stored loginRedirect: /membership-start?plan=semiannual
+Console.js:61 Redirecting to: /create-account?redirect=%2Fmembership-start%3Fplan%3Dsemiannual
+Console.js:61 Failed to send analytics events: TypeError: Failed to fetch
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)Understand this error
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 Registration successful, session data: Object
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 Redirecting to: /membership-start?plan=semiannual
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/membership/subscribe:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+Console.js:61 Error creating subscription: Error: 500: {"error":"Unable to initialize payment. Please contact support."}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+    at async startSubscription (MembershipStart.tsx:224:24)
+    at async checkAuthAndMembership (MembershipStart.tsx:190:15)
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
