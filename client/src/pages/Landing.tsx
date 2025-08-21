@@ -567,9 +567,9 @@ export default function Landing() {
                             doctorsSection.scrollIntoView({ behavior: 'smooth' });
                           }
                         } else {
-                          // Navigate directly to membership checkout flow
+                          // Navigate directly to registration with membership redirect
                           const planParam = plan.name === "Monthly Membership" ? 'monthly' : 'semiannual';
-                          setLocation(`/membership-start?plan=${planParam}`);
+                          setLocation(`/register?redirect=/membership-start?plan=${planParam}`);
                         }
                       }}
                     >
