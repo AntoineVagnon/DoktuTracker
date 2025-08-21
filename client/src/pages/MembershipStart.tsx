@@ -152,42 +152,57 @@ export default function MembershipStart() {
 
   useEffect(() => {
     const checkAuthAndMembership = async () => {
-      if (authLoading) return;
-
-      if (!isAuthenticated) {
-        // Not logged in - show auth step
+      // First check if we have a session directly via API
+      try {
+        const authResponse = await apiRequest("GET", "/api/auth/user");
+        const authData = await authResponse.json();
+        
+        if (authData && authData.id) {
+          // User is authenticated - check for existing membership
+          try {
+            const membershipResponse = await apiRequest("GET", "/api/membership/subscription");
+            const membershipData = await membershipResponse.json();
+            
+            if (membershipData.subscription && membershipData.subscription.status === 'active') {
+              // User already has active membership
+              setExistingMembership(membershipData.subscription);
+              setCurrentStep('guard');
+              analytics.track('membership_guard_shown', {
+                plan_clicked: plan.id
+              });
+            } else {
+              // No active membership - proceed to payment
+              await startSubscription();
+            }
+          } catch (error) {
+            // No membership - proceed to payment
+            await startSubscription();
+          }
+        } else {
+          // Not authenticated - show auth step
+          setCurrentStep('auth');
+          analytics.track('membership_flow_step_viewed', {
+            step: 'auth',
+            plan: plan.id
+          });
+        }
+      } catch (error) {
+        // Not authenticated - show auth step
         setCurrentStep('auth');
         analytics.track('membership_flow_step_viewed', {
           step: 'auth',
           plan: plan.id
         });
-        return;
-      }
-
-      // User is logged in - check for existing membership
-      try {
-        const membershipResponse = await apiRequest("GET", "/api/membership/subscription");
-        const membershipData = await membershipResponse.json();
-        
-        if (membershipData.subscription && membershipData.subscription.status === 'active') {
-          // User already has active membership
-          setExistingMembership(membershipData.subscription);
-          setCurrentStep('guard');
-          analytics.track('membership_guard_shown', {
-            plan_clicked: plan.id
-          });
-        } else {
-          // No active membership - proceed to payment
-          await startSubscription();
-        }
-      } catch (error) {
-        // No membership - proceed to payment
-        await startSubscription();
       }
     };
 
-    checkAuthAndMembership();
-  }, [isAuthenticated, authLoading, plan.id]);
+    // Small delay to ensure session is established after registration redirect
+    const timer = setTimeout(() => {
+      checkAuthAndMembership();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [plan.id]);
 
   const startSubscription = async () => {
     try {
