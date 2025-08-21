@@ -219,7 +219,8 @@ export default function MembershipStart() {
 
   const handleAuthChoice = (choice: 'login' | 'signup') => {
     // Preserve plan selection during auth
-    setLocation(`/${choice}?redirect=/membership-start?plan=${planParam}`);
+    const route = choice === 'login' ? '/login-form' : '/register';
+    setLocation(`${route}?redirect=/membership-start?plan=${planParam}`);
   };
 
   const handlePaymentSuccess = () => {
