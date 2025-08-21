@@ -34,6 +34,26 @@ export default function Landing() {
       source: new URLSearchParams(window.location.search).get('utm_source') || 'direct',
       doctorsShown: doctors.length
     });
+    
+    // Track pricing card impressions when section is visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          ['pay_per_visit', 'monthly', 'six_month'].forEach((card, index) => {
+            analytics.track('pricing_card_impression', {
+              card: card,
+              position: index + 1
+            });
+          });
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    
+    const pricingSection = document.getElementById('pricing');
+    if (pricingSection) {
+      observer.observe(pricingSection);
+    }
 
     console.log('Landing page loaded, checking for password reset tokens');
     console.log('Current URL hash:', window.location.hash);
@@ -165,6 +185,7 @@ export default function Landing() {
         "30-minute video consultation",
         "Book certified doctors",
         "Secure, private call",
+        "No subscription required",
       ],
       buttonText: "Book Consultation",
       buttonVariant: "outline" as const,
@@ -177,9 +198,7 @@ export default function Landing() {
         "2 × 30-minute consultations per month",
         "Book any eligible doctor",
         "Upload & share health data",
-        "No per-visit fee while allowance remains",
-        "Auto-renews monthly",
-        "Cancel anytime",
+        "All Basic plan benefits included",
       ],
       buttonText: "Choose Monthly",
       buttonVariant: "default" as const,
@@ -193,9 +212,7 @@ export default function Landing() {
         "12 consultations (2 per month)",
         "23% savings vs monthly",
         "Book any eligible doctor",
-        "Upload & share health data",
-        "No per-visit fee while allowance remains",
-        "Auto-renews every 6 months",
+        "All Basic plan benefits included",
       ],
       buttonText: "Choose 6-Month",
       buttonVariant: "outline" as const,
@@ -497,7 +514,7 @@ export default function Landing() {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-white text-[hsl(207,100%,52%)] px-3 py-1">Most Popular</Badge>
+                    <Badge className="bg-white text-[hsl(207,100%,52%)] px-3 py-1">Most popular</Badge>
                   </div>
                 )}
                 <CardContent className="p-8">
@@ -515,7 +532,10 @@ export default function Landing() {
                     <ul className="text-left space-y-3 mb-8">
                       {plan.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center">
-                          <CheckCircle className={`mr-3 h-4 w-4 ${plan.popular ? "text-white" : "text-green-500"}`} />
+                          <CheckCircle 
+                            className={`mr-3 h-4 w-4 ${plan.popular ? "text-white" : "text-green-500"}`}
+                            aria-hidden="true"
+                          />
                           <span className={plan.popular ? "text-white" : "text-gray-600"}>{feature}</span>
                         </li>
                       ))}
@@ -530,7 +550,16 @@ export default function Landing() {
                             ? "border-2 border-[hsl(207,100%,52%)] text-[hsl(207,100%,52%)] hover:bg-[hsl(207,100%,97%)]"
                             : ""
                       }`}
+                      aria-label={`${plan.buttonText} – ${plan.price} ${plan.period}`}
                       onClick={() => {
+                        // Track pricing card CTA click
+                        const cardType = plan.name === "Pay-per-visit" ? 'pay_per_visit' : 
+                                        plan.name === "Monthly Membership" ? 'monthly' : 'six_month';
+                        analytics.track('pricing_card_cta_click', {
+                          card: cardType,
+                          price_eur: parseInt(plan.price.replace('€', ''))
+                        });
+                        
                         if (plan.name === "Pay-per-visit") {
                           // Scroll to doctors section for booking
                           const doctorsSection = document.getElementById('doctors');
