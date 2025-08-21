@@ -19,8 +19,10 @@ export default function CreateAccount() {
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
+  const redirect = urlParams.get('redirect'); // Get redirect parameter for membership flow
   
   console.log('CreateAccount page loaded with booking params:', { doctorId, slot, price });
+  console.log('CreateAccount redirect param:', redirect);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -154,11 +156,15 @@ export default function CreateAccount() {
         // User is immediately signed in (no email confirmation required)
         toast({
           title: "Registration Complete!",
-          description: "Redirecting to checkout...",
+          description: redirect ? "Redirecting to complete membership..." : "Redirecting to checkout...",
         });
         
         setTimeout(() => {
-          if (doctorId && slot && price) {
+          if (redirect) {
+            // Redirect to membership flow or other specified redirect
+            console.log('Redirecting to:', redirect);
+            setLocation(redirect);
+          } else if (doctorId && slot && price) {
             // Redirect to checkout with booking parameters
             console.log('Redirecting to checkout with booking params');
             setLocation(`/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`);

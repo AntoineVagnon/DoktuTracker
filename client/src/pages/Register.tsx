@@ -15,6 +15,7 @@ export default function Register() {
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
+  const redirect = urlParams.get('redirect'); // Get the redirect parameter for membership flow
   
   console.log('Register page loaded with location:', location);
   console.log('Window URL search:', window.location.search);
@@ -24,9 +25,15 @@ export default function Register() {
   const handleCreateAccount = () => {
     console.log('Create Account button clicked');
     console.log('Booking params:', { doctorId, slot, price });
+    console.log('Redirect param:', redirect);
     
+    // Handle redirect parameter (for membership flow)
+    if (redirect) {
+      sessionStorage.setItem('loginRedirect', redirect);
+      console.log('Stored loginRedirect:', redirect);
+    }
     // If we have booking parameters, create checkout callback URL
-    if (doctorId && slot && price) {
+    else if (doctorId && slot && price) {
       const callbackUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
       sessionStorage.setItem('loginRedirect', callbackUrl);
       console.log('Stored loginRedirect:', callbackUrl);
@@ -36,8 +43,13 @@ export default function Register() {
       console.log('Stored loginRedirect: /dashboard');
     }
     
-    // Redirect to a signup form instead of OAuth
-    const signupUrl = `/create-account?${doctorId && slot && price ? `doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}` : ''}`;
+    // Redirect to a signup form - include redirect parameter if present
+    let signupUrl = '/create-account?';
+    if (redirect) {
+      signupUrl += `redirect=${encodeURIComponent(redirect)}`;
+    } else if (doctorId && slot && price) {
+      signupUrl += `doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
+    }
     console.log('Redirecting to:', signupUrl);
     window.location.href = signupUrl;
   };
