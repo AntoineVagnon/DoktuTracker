@@ -3104,11 +3104,20 @@ Please upload the document again through the secure upload system.`;
           }
         });
 
-        const paymentIntent = subscription.latest_invoice?.payment_intent;
+        // Access the expanded invoice and payment intent
+        const invoice = subscription.latest_invoice as any;
+        const clientSecret = invoice?.payment_intent?.client_secret;
+
+        console.log("Subscription created:", {
+          subscriptionId: subscription.id,
+          hasInvoice: !!invoice,
+          hasPaymentIntent: !!invoice?.payment_intent,
+          hasClientSecret: !!clientSecret
+        });
 
         res.json({
           subscriptionId: subscription.id,
-          clientSecret: paymentIntent?.client_secret,
+          clientSecret: clientSecret,
           customerId: customer.id,
           status: subscription.status
         });
