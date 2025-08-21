@@ -3087,16 +3087,20 @@ Please upload the document again through the secure upload system.`;
         return res.status(500).json({ error: "Failed to process customer information" });
       }
 
-      // Create subscription with immediate invoice expansion
+      // Create subscription with proper payment intent
       try {
+        // First create the subscription with expand to get payment intent
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
           items: [{
             price: price.id,
           }],
           payment_behavior: 'default_incomplete',
-          payment_settings: { save_default_payment_method: 'on_subscription' },
-          expand: ['latest_invoice.payment_intent'],
+          payment_settings: { 
+            save_default_payment_method: 'on_subscription',
+            payment_method_types: ['card']
+          },
+          expand: ['latest_invoice.payment_intent', 'pending_setup_intent'],
           metadata: {
             userId: userId.toString(),
             planId: planId,
@@ -3104,64 +3108,56 @@ Please upload the document again through the secure upload system.`;
           }
         });
 
-        // Get the client secret directly from the expanded response
+        // Extract client secret from the subscription
         let clientSecret: string | undefined;
+        let paymentType: 'payment' | 'setup' = 'payment';
         
-        // Check if the invoice is already expanded with payment intent
+        // Try to get payment intent from the invoice
         if (subscription.latest_invoice && typeof subscription.latest_invoice === 'object') {
           const invoice = subscription.latest_invoice as any;
-          if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
-            clientSecret = invoice.payment_intent.client_secret;
-          }
-        }
-
-        // If no client secret yet, retrieve the invoice (it's already finalized)
-        if (!clientSecret) {
-          const invoiceId = typeof subscription.latest_invoice === 'string' 
-            ? subscription.latest_invoice 
-            : (subscription.latest_invoice as any)?.id;
-
-          if (invoiceId) {
-            try {
-              // Just retrieve the invoice with expansion (don't finalize, it's already finalized)
-              const invoice = await stripe.invoices.retrieve(invoiceId, {
-                expand: ['payment_intent']
-              });
-              
-              if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
-                clientSecret = (invoice.payment_intent as any).client_secret;
-              }
-            } catch (error) {
-              console.error("Error retrieving invoice:", error);
+          
+          // Check if invoice has a payment_intent
+          if (invoice.payment_intent) {
+            if (typeof invoice.payment_intent === 'string') {
+              // Payment intent is just an ID, we need to retrieve it
+              const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent);
+              clientSecret = paymentIntent.client_secret;
+            } else if (typeof invoice.payment_intent === 'object') {
+              // Payment intent is already expanded
+              clientSecret = invoice.payment_intent.client_secret;
             }
           }
         }
 
-        console.log("Subscription created:", {
+        // If still no client secret, try pending_setup_intent
+        if (!clientSecret && subscription.pending_setup_intent) {
+          const setupIntent = subscription.pending_setup_intent as any;
+          if (typeof setupIntent === 'object' && setupIntent.client_secret) {
+            clientSecret = setupIntent.client_secret;
+            paymentType = 'setup';
+          }
+        }
+
+        console.log("Subscription details:", {
           subscriptionId: subscription.id,
           hasClientSecret: !!clientSecret,
+          paymentType: paymentType,
           invoiceStatus: (subscription.latest_invoice as any)?.status
         });
 
         if (!clientSecret) {
-          // Last resort: create a setup intent for the subscription
-          const setupIntent = await stripe.setupIntents.create({
-            customer: customer.id,
-            payment_method_types: ['card'],
-            metadata: {
-              subscription_id: subscription.id
-            }
+          console.error("Failed to get client secret from subscription");
+          return res.status(500).json({ 
+            error: "Unable to initialize payment. Please contact support." 
           });
-          
-          console.log("Using setup intent as fallback");
-          clientSecret = setupIntent.client_secret;
         }
 
         res.json({
           subscriptionId: subscription.id,
           clientSecret: clientSecret,
           customerId: customer.id,
-          status: subscription.status
+          status: subscription.status,
+          paymentType: paymentType // Let frontend know if it's setup or payment
         });
 
       } catch (subscriptionError) {

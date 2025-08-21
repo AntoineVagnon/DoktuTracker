@@ -55,7 +55,7 @@ interface PaymentFormProps {
   onError: (error: string) => void;
 }
 
-const PaymentForm = ({ plan, clientSecret, onSuccess, onError }: PaymentFormProps) => {
+const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'payment' }: PaymentFormProps & { paymentType?: 'payment' | 'setup' }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
@@ -69,12 +69,26 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError }: PaymentFormProp
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/membership/success?plan=${plan.id}`,
-      },
-    });
+    let error;
+    
+    // Use the appropriate confirmation method based on payment type
+    if (paymentType === 'setup') {
+      const result = await stripe.confirmSetup({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/membership/success?plan=${plan.id}`,
+        },
+      });
+      error = result.error;
+    } else {
+      const result = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/membership/success?plan=${plan.id}`,
+        },
+      });
+      error = result.error;
+    }
 
     if (error) {
       onError(error.message || 'Payment failed');
@@ -137,6 +151,7 @@ export default function MembershipStart() {
   
   const [currentStep, setCurrentStep] = useState<'loading' | 'auth' | 'payment' | 'success' | 'guard'>('loading');
   const [clientSecret, setClientSecret] = useState<string>('');
+  const [paymentType, setPaymentType] = useState<'payment' | 'setup'>('payment');
   const [existingMembership, setExistingMembership] = useState<any>(null);
   const [paymentError, setPaymentError] = useState<string>('');
   
@@ -214,6 +229,7 @@ export default function MembershipStart() {
       
       if (data.clientSecret) {
         setClientSecret(data.clientSecret);
+        setPaymentType(data.paymentType || 'payment'); // Store payment type from backend
         setCurrentStep('payment');
         analytics.track('membership_flow_step_viewed', {
           step: 'review_pay',
@@ -412,6 +428,7 @@ export default function MembershipStart() {
                 <PaymentForm 
                   plan={plan}
                   clientSecret={clientSecret}
+                  paymentType={paymentType}
                   onSuccess={handlePaymentSuccess}
                   onError={setPaymentError}
                 />
