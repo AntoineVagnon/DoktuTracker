@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Elements, useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
+import { Elements, useStripe, useElements, PaymentElement, CardElement } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,10 +15,12 @@ import { analytics } from "@/lib/analytics";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+if (!stripeKey) {
   throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
 }
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+console.log("Loading Stripe with public key:", stripeKey.substring(0, 10) + "...");
+const stripePromise = loadStripe(stripeKey);
 
 interface PlanDetails {
   id: string;
@@ -59,11 +61,24 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
+  const [elementsReady, setElementsReady] = useState(false);
+  const [paymentElementError, setPaymentElementError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (elements && stripe) {
+      console.log("Stripe and Elements loaded");
+      setElementsReady(true);
+    } else {
+      console.log("Waiting for Stripe/Elements:", { stripe: !!stripe, elements: !!elements });
+    }
+  }, [elements, stripe]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!stripe || !elements) {
+      console.error("Stripe or Elements not loaded");
+      onError("Payment system not ready. Please refresh the page.");
       return;
     }
 
@@ -109,7 +124,43 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement />
+      {!stripe || !elements ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="text-center">
+            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+            <p className="text-gray-600">Loading payment form...</p>
+            <p className="text-xs text-gray-500 mt-2">Stripe: {stripe ? '✓' : 'Loading...'} | Elements: {elements ? '✓' : 'Loading...'}</p>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="p-4 border border-gray-200 rounded-lg bg-white">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Card Details
+            </label>
+            <CardElement 
+              options={{
+                style: {
+                  base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    '::placeholder': {
+                      color: '#aab7c4',
+                    },
+                  },
+                  invalid: {
+                    color: '#9e2146',
+                  },
+                },
+              }}
+              className="p-3 border border-gray-300 rounded"
+            />
+          </div>
+          <div className="text-xs text-gray-500">
+            Enter your card details to complete the membership activation.
+          </div>
+        </div>
+      )}
 
       <div className="text-xs text-gray-500 space-y-1">
         <p>By clicking Activate Membership, you agree to our:</p>
@@ -122,7 +173,7 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
 
       <Button 
         type="submit" 
-        disabled={!stripe || isLoading} 
+        disabled={!stripe || !elementsReady || isLoading} 
         className="w-full" 
         size="lg"
       >
