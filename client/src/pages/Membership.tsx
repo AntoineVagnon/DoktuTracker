@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Check, CreditCard, Star, Users, Calendar, Shield } from 'lucide-react';
+import { Check, CreditCard, Star, Users, Calendar, Shield, AlertCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from 'wouter';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
@@ -118,6 +121,8 @@ export default function Membership() {
   const [clientSecret, setClientSecret] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -129,16 +134,23 @@ export default function Membership() {
         const plansData = await plansResponse.json();
         setPlans(plansData.plans || []);
 
-        // Fetch current subscription status
-        const subscriptionResponse = await apiRequest("GET", "/api/membership/subscription");
-        const subscriptionData = await subscriptionResponse.json();
-        setSubscription(subscriptionData.subscription);
+        // Only fetch subscription if authenticated
+        if (isAuthenticated) {
+          try {
+            const subscriptionResponse = await apiRequest("GET", "/api/membership/subscription");
+            const subscriptionData = await subscriptionResponse.json();
+            setSubscription(subscriptionData.subscription);
+          } catch (subError) {
+            // It's okay if subscription fetch fails for authenticated users
+            console.log("No active subscription found");
+          }
+        }
 
       } catch (error) {
         console.error("Error fetching membership data:", error);
         toast({
           title: "Error",
-          description: "Failed to load membership information",
+          description: "Failed to load membership plans",
           variant: "destructive",
         });
       } finally {
@@ -147,9 +159,24 @@ export default function Membership() {
     };
 
     fetchData();
-  }, [toast]);
+  }, [toast, isAuthenticated]);
 
   const handleSubscribe = async (plan: MembershipPlan) => {
+    // Check if user is authenticated first
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to subscribe to a membership plan",
+        variant: "default",
+      });
+      
+      // Redirect to login page with return URL
+      setTimeout(() => {
+        setLocation(`/login?redirect=/membership`);
+      }, 1500);
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await apiRequest("POST", "/api/membership/subscribe", {
@@ -168,7 +195,7 @@ export default function Membership() {
       console.error("Error creating subscription:", error);
       toast({
         title: "Error",
-        description: "Failed to start subscription process",
+        description: "Failed to start subscription process. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -232,6 +259,23 @@ export default function Membership() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
+        {/* Authentication Alert */}
+        {!isAuthenticated && (
+          <Alert className="mb-8 border-amber-200 bg-amber-50">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              <span className="font-medium">Login required:</span> Please log in to subscribe to a membership plan.{' '}
+              <Button 
+                variant="link" 
+                className="p-0 h-auto text-amber-700 underline"
+                onClick={() => setLocation('/login?redirect=/membership')}
+              >
+                Login now
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
