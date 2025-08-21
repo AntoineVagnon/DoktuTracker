@@ -310,16 +310,12 @@ export default function MembershipStart() {
   };
 
   const handlePaymentSuccess = () => {
-    setCurrentStep('success');
+    // Redirect to success page
+    setLocation(`/membership/success?plan=${plan.id}`);
     analytics.track('membership_flow_step_viewed', {
       step: 'success',
       plan: plan.id
     });
-    
-    // Redirect to dashboard after 2 seconds
-    setTimeout(() => {
-      setLocation('/patient-dashboard');
-    }, 2000);
   };
 
   // Loading state

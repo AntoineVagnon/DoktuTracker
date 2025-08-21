@@ -21,7 +21,7 @@ export default function MembershipSuccess() {
   useEffect(() => {
     // Redirect to dashboard after 5 seconds
     const timer = setTimeout(() => {
-      setLocation('/patient-dashboard');
+      setLocation('/dashboard');
     }, 5000);
     
     return () => clearTimeout(timer);
@@ -51,7 +51,7 @@ export default function MembershipSuccess() {
           </div>
           
           <Button 
-            onClick={() => setLocation('/patient-dashboard')}
+            onClick={() => setLocation('/dashboard')}
             className="w-full"
             size="lg"
           >
