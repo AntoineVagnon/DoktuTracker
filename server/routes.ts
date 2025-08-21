@@ -3087,9 +3087,9 @@ Please upload the document again through the secure upload system.`;
         return res.status(500).json({ error: "Failed to process customer information" });
       }
 
-      // Create subscription with proper payment intent
+      // Create subscription and handle payment
       try {
-        // First create the subscription with expand to get payment intent
+        // Create subscription with trial_end set to 'now' to create invoice immediately
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
           items: [{
@@ -3101,6 +3101,7 @@ Please upload the document again through the secure upload system.`;
             payment_method_types: ['card']
           },
           expand: ['latest_invoice.payment_intent'],
+          trial_end: 'now', // This ensures invoice is created immediately
           metadata: {
             userId: userId.toString(),
             planId: planId,
@@ -3108,67 +3109,67 @@ Please upload the document again through the secure upload system.`;
           }
         });
 
-        // Extract client secret from the subscription
         let clientSecret: string | undefined;
-        let paymentIntentId: string | undefined;
         
-        // Get the invoice from the subscription
-        const invoice = subscription.latest_invoice;
-        
-        if (invoice && typeof invoice === 'object') {
-          // Get payment intent ID from invoice
-          paymentIntentId = typeof invoice.payment_intent === 'string' 
-            ? invoice.payment_intent 
-            : invoice.payment_intent?.id;
-            
-          // Try to get client secret from expanded payment intent
-          if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
-            clientSecret = (invoice.payment_intent as any).client_secret;
-          }
-        }
-        
-        // If we have payment intent ID but no client secret, retrieve it
-        if (!clientSecret && paymentIntentId) {
-          try {
-            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-            clientSecret = paymentIntent.client_secret;
-            console.log("Retrieved payment intent separately:", {
-              id: paymentIntent.id,
-              hasClientSecret: !!paymentIntent.client_secret
-            });
-          } catch (error) {
-            console.error("Error retrieving payment intent:", error);
-          }
-        }
-        
-        // If still no client secret, try to retrieve the full subscription with expansion
-        if (!clientSecret) {
-          try {
-            const fullSubscription = await stripe.subscriptions.retrieve(
-              subscription.id,
-              { expand: ['latest_invoice.payment_intent'] }
-            );
-            
-            const fullInvoice = fullSubscription.latest_invoice as any;
-            if (fullInvoice?.payment_intent?.client_secret) {
-              clientSecret = fullInvoice.payment_intent.client_secret;
+        // Check if we got the payment intent from the expanded invoice
+        if (subscription.latest_invoice && typeof subscription.latest_invoice === 'object') {
+          const invoice = subscription.latest_invoice as any;
+          
+          // Payment intent should be on the invoice
+          if (invoice.payment_intent) {
+            if (typeof invoice.payment_intent === 'object') {
+              clientSecret = invoice.payment_intent.client_secret;
+            } else if (typeof invoice.payment_intent === 'string') {
+              // Retrieve the payment intent if we only have the ID
+              const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent);
+              clientSecret = paymentIntent.client_secret;
             }
-          } catch (error) {
-            console.error("Error retrieving full subscription:", error);
+          }
+          
+          // If no payment intent on invoice, the invoice might need to be finalized
+          if (!clientSecret && invoice.status === 'draft') {
+            try {
+              const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+              if (finalizedInvoice.payment_intent) {
+                const paymentIntent = await stripe.paymentIntents.retrieve(
+                  finalizedInvoice.payment_intent as string
+                );
+                clientSecret = paymentIntent.client_secret;
+              }
+            } catch (error) {
+              console.error("Error finalizing invoice:", error);
+            }
           }
         }
 
-        console.log("Subscription created:", {
+        // As a last resort, retrieve the subscription again with full expansion
+        if (!clientSecret) {
+          const updatedSub = await stripe.subscriptions.retrieve(subscription.id, {
+            expand: ['latest_invoice.payment_intent']
+          });
+          
+          const latestInvoice = updatedSub.latest_invoice as any;
+          if (latestInvoice?.payment_intent?.client_secret) {
+            clientSecret = latestInvoice.payment_intent.client_secret;
+          } else if (latestInvoice?.payment_intent) {
+            // One more attempt to get the payment intent
+            const paymentIntent = await stripe.paymentIntents.retrieve(latestInvoice.payment_intent);
+            clientSecret = paymentIntent.client_secret;
+          }
+        }
+
+        console.log("Subscription processing:", {
           subscriptionId: subscription.id,
-          paymentIntentId: paymentIntentId,
           hasClientSecret: !!clientSecret,
-          invoiceStatus: (invoice as any)?.status
+          invoiceStatus: (subscription.latest_invoice as any)?.status
         });
 
         if (!clientSecret) {
-          console.error("Failed to get client secret after all attempts");
+          // Cancel the subscription if we can't get payment set up
+          await stripe.subscriptions.cancel(subscription.id);
+          console.error("Failed to initialize payment for subscription");
           return res.status(500).json({ 
-            error: "Unable to initialize payment. Please try again or contact support." 
+            error: "Unable to set up payment. Please try again." 
           });
         }
 
@@ -3176,8 +3177,7 @@ Please upload the document again through the secure upload system.`;
           subscriptionId: subscription.id,
           clientSecret: clientSecret,
           customerId: customer.id,
-          status: subscription.status,
-          paymentType: 'payment' // Always use payment for subscriptions
+          status: subscription.status
         });
 
       } catch (subscriptionError) {
