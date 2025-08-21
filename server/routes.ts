@@ -2995,7 +2995,7 @@ Please upload the document again through the secure upload system.`;
         }
       };
 
-      const selectedPlanConfig = planConfigs[planId];
+      const selectedPlanConfig = planConfigs[planId as keyof typeof planConfigs];
       if (!selectedPlanConfig) {
         return res.status(400).json({ error: "Invalid plan selected" });
       }
