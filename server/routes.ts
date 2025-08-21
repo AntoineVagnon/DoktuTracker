@@ -3087,7 +3087,7 @@ Please upload the document again through the secure upload system.`;
         return res.status(500).json({ error: "Failed to process customer information" });
       }
 
-      // Create subscription with immediate invoice finalization
+      // Create subscription with immediate invoice expansion
       try {
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
@@ -3115,27 +3115,32 @@ Please upload the document again through the secure upload system.`;
           }
         }
 
-        // If no client secret yet, retrieve and finalize the invoice
+        // If no client secret yet, retrieve the invoice (it's already finalized)
         if (!clientSecret) {
           const invoiceId = typeof subscription.latest_invoice === 'string' 
             ? subscription.latest_invoice 
             : (subscription.latest_invoice as any)?.id;
 
           if (invoiceId) {
-            // Finalize the invoice to ensure payment intent is created
-            const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoiceId, {
-              expand: ['payment_intent']
-            });
-            
-            if (finalizedInvoice.payment_intent && typeof finalizedInvoice.payment_intent === 'object') {
-              clientSecret = (finalizedInvoice.payment_intent as any).client_secret;
+            try {
+              // Just retrieve the invoice with expansion (don't finalize, it's already finalized)
+              const invoice = await stripe.invoices.retrieve(invoiceId, {
+                expand: ['payment_intent']
+              });
+              
+              if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
+                clientSecret = (invoice.payment_intent as any).client_secret;
+              }
+            } catch (error) {
+              console.error("Error retrieving invoice:", error);
             }
           }
         }
 
         console.log("Subscription created:", {
           subscriptionId: subscription.id,
-          hasClientSecret: !!clientSecret
+          hasClientSecret: !!clientSecret,
+          invoiceStatus: (subscription.latest_invoice as any)?.status
         });
 
         if (!clientSecret) {
