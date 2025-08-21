@@ -531,12 +531,12 @@ export default function Landing() {
 
                     <ul className="text-left space-y-3 mb-8">
                       {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center">
+                        <li key={featureIndex} className="flex items-start">
                           <CheckCircle 
-                            className={`mr-3 h-4 w-4 ${plan.popular ? "text-white" : "text-green-500"}`}
+                            className={`mr-3 h-5 w-5 flex-shrink-0 ${plan.popular ? "text-white" : "text-green-500"}`}
                             aria-hidden="true"
                           />
-                          <span className={plan.popular ? "text-white" : "text-gray-600"}>{feature}</span>
+                          <span className={`leading-normal ${plan.popular ? "text-white" : "text-gray-600"}`}>{feature}</span>
                         </li>
                       ))}
                     </ul>
