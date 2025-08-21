@@ -84,42 +84,44 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
 
     setIsLoading(true);
 
-    let error;
-    
-    // Use the appropriate confirmation method based on payment type
-    if (paymentType === 'setup') {
-      const result = await stripe.confirmSetup({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/membership/success?plan=${plan.id}`,
-        },
-      });
-      error = result.error;
-    } else {
-      const result = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/membership/success?plan=${plan.id}`,
-        },
-      });
-      error = result.error;
+    // Get the CardElement
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      onError("Card element not found. Please refresh the page.");
+      setIsLoading(false);
+      return;
     }
 
+    let error;
+    
+    // Use confirmCardPayment for CardElement
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+      }
+    });
+    error = result.error;
+
     if (error) {
+      console.error("Payment error:", error);
       onError(error.message || 'Payment failed');
       analytics.track('membership_payment_failed', {
         plan: plan.id,
         reason: error.message
       });
-    } else {
+      setIsLoading(false);
+    } else if (result.paymentIntent?.status === 'succeeded') {
+      console.log("Payment succeeded!");
       analytics.track('membership_payment_success', {
         plan: plan.id,
         amount: plan.price
       });
       onSuccess();
+    } else {
+      console.log("Payment status:", result.paymentIntent?.status);
+      onError("Payment processing. Please wait...");
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
