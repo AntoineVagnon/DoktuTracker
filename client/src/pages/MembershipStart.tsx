@@ -226,6 +226,7 @@ export default function MembershipStart() {
       });
       
       const data = await response.json();
+      console.log("Subscription response:", data);
       
       if (data.clientSecret) {
         setClientSecret(data.clientSecret);
@@ -236,7 +237,7 @@ export default function MembershipStart() {
           plan: plan.id
         });
       } else {
-        throw new Error("Failed to create subscription");
+        throw new Error("Failed to create subscription - no client secret received");
       }
     } catch (error) {
       console.error("Error creating subscription:", error);
@@ -245,6 +246,7 @@ export default function MembershipStart() {
         description: "Failed to start subscription process. Please try again.",
         variant: "destructive",
       });
+      setCurrentStep('auth');
     }
   };
 
@@ -370,6 +372,19 @@ export default function MembershipStart() {
 
   // Payment step
   if (currentStep === 'payment' && clientSecret) {
+    console.log("Rendering payment form with clientSecret:", clientSecret ? "present" : "missing");
+    
+    // Create Elements options object once
+    const elementsOptions = {
+      clientSecret: clientSecret,
+      appearance: {
+        theme: 'stripe' as const,
+        variables: {
+          colorPrimary: '#0066ff',
+        },
+      },
+    };
+    
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4 max-w-2xl">
@@ -424,7 +439,7 @@ export default function MembershipStart() {
                 </Alert>
               )}
 
-              <Elements stripe={stripePromise} options={{ clientSecret }}>
+              <Elements stripe={stripePromise} options={elementsOptions} key={clientSecret}>
                 <PaymentForm 
                   plan={plan}
                   clientSecret={clientSecret}
