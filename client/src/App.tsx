@@ -49,6 +49,7 @@ import DataSecurity from "@/pages/DataSecurity";
 import SecurityDashboard from "@/pages/SecurityDashboard";
 import Membership from "@/pages/Membership";
 import MembershipSuccess from "@/pages/MembershipSuccess";
+import MembershipStart from "@/pages/MembershipStart";
 
 
 function Router() {
@@ -72,6 +73,7 @@ function Router() {
       <Route path="/payment" component={Payment} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/membership" component={Membership} />
+      <Route path="/membership-start" component={MembershipStart} />
       <Route path="/membership/success" component={MembershipSuccess} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       <Route path="/doctors" component={DoctorList} />
