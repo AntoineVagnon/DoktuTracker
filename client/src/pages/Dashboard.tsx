@@ -89,35 +89,40 @@ export default function Dashboard() {
     }
   }, [user, verificationJustCompleted, toast]);
 
-  // More gentle authentication check - avoid aggressive redirects during navigation
+  // More robust authentication check with better state management
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      // Only redirect if we're sure the user is actually logged out
-      // Add a delay to prevent interrupting navigation or temporary auth states
-      const redirectTimer = setTimeout(() => {
-        // Double-check auth state before redirecting
-        if (!isAuthenticated) {
-          console.log('Dashboard: User authentication lost, redirecting to login');
-          toast({
-            title: "Session Expired", 
-            description: "Please log in again to continue.",
-            variant: "destructive",
-          });
-          window.location.href = "/api/login";
-        }
-      }, 2000); // 2 second delay to prevent interrupting navigation
-      
-      return () => clearTimeout(redirectTimer);
-    }
-
-    // Role-based redirects
-    if (!isLoading && isAuthenticated && user) {
+    // Don't do anything while auth is loading
+    if (isLoading) return;
+    
+    // If authenticated, handle role-based redirects
+    if (isAuthenticated && user) {
       if (user.role === 'doctor') {
         setLocation('/doctor-dashboard');
       } else if (user.role === 'admin') {
         setLocation('/admin-dashboard');
       }
       // Patients stay on the regular dashboard
+      return;
+    }
+    
+    // Only redirect to login if we're definitely not authenticated
+    // and the auth loading is complete
+    if (!isAuthenticated && !isLoading) {
+      // Give extra time for auth state to settle after navigation
+      const redirectTimer = setTimeout(() => {
+        // Re-check one more time before redirecting
+        if (!isAuthenticated && !isLoading) {
+          console.log('Dashboard: User not authenticated, redirecting to login');
+          toast({
+            title: "Please log in", 
+            description: "You need to be logged in to access the dashboard.",
+            variant: "destructive",
+          });
+          setLocation('/login-form');
+        }
+      }, 3000); // 3 second delay to ensure auth state is settled
+      
+      return () => clearTimeout(redirectTimer);
     }
   }, [isAuthenticated, isLoading, toast, user, setLocation]);
 
