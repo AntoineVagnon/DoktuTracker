@@ -3087,7 +3087,7 @@ Please upload the document again through the secure upload system.`;
         return res.status(500).json({ error: "Failed to process customer information" });
       }
 
-      // Create subscription
+      // Create subscription with proper expansion
       try {
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
@@ -3104,15 +3104,30 @@ Please upload the document again through the secure upload system.`;
           }
         });
 
-        // Access the expanded invoice and payment intent
-        const invoice = subscription.latest_invoice as any;
-        const clientSecret = invoice?.payment_intent?.client_secret;
+        // The payment intent should be in the expanded invoice
+        let clientSecret: string | undefined;
+        
+        if (typeof subscription.latest_invoice === 'object' && subscription.latest_invoice !== null) {
+          const invoice = subscription.latest_invoice as any;
+          if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
+            clientSecret = invoice.payment_intent.client_secret;
+          }
+        }
+
+        // If we still don't have a client secret, try retrieving the invoice separately
+        if (!clientSecret && typeof subscription.latest_invoice === 'string') {
+          const invoice = await stripe.invoices.retrieve(subscription.latest_invoice, {
+            expand: ['payment_intent']
+          });
+          if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
+            clientSecret = (invoice.payment_intent as any).client_secret;
+          }
+        }
 
         console.log("Subscription created:", {
           subscriptionId: subscription.id,
-          hasInvoice: !!invoice,
-          hasPaymentIntent: !!invoice?.payment_intent,
-          hasClientSecret: !!clientSecret
+          hasClientSecret: !!clientSecret,
+          invoiceType: typeof subscription.latest_invoice
         });
 
         res.json({
