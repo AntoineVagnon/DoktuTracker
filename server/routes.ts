@@ -3087,7 +3087,7 @@ Please upload the document again through the secure upload system.`;
         return res.status(500).json({ error: "Failed to process customer information" });
       }
 
-      // Create subscription
+      // Create subscription with immediate invoice finalization
       try {
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
@@ -3096,6 +3096,7 @@ Please upload the document again through the secure upload system.`;
           }],
           payment_behavior: 'default_incomplete',
           payment_settings: { save_default_payment_method: 'on_subscription' },
+          expand: ['latest_invoice.payment_intent'],
           metadata: {
             userId: userId.toString(),
             planId: planId,
@@ -3103,37 +3104,52 @@ Please upload the document again through the secure upload system.`;
           }
         });
 
-        // Get the invoice ID from the subscription
-        const invoiceId = typeof subscription.latest_invoice === 'string' 
-          ? subscription.latest_invoice 
-          : subscription.latest_invoice?.id;
-
-        if (!invoiceId) {
-          console.error("No invoice ID found on subscription");
-          return res.status(500).json({ error: "Failed to create subscription invoice" });
-        }
-
-        // Retrieve the invoice with the payment intent expanded
-        const invoice = await stripe.invoices.retrieve(invoiceId, {
-          expand: ['payment_intent']
-        });
-
-        // Get the client secret from the payment intent
+        // Get the client secret directly from the expanded response
         let clientSecret: string | undefined;
-        if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
-          clientSecret = (invoice.payment_intent as any).client_secret;
+        
+        // Check if the invoice is already expanded with payment intent
+        if (subscription.latest_invoice && typeof subscription.latest_invoice === 'object') {
+          const invoice = subscription.latest_invoice as any;
+          if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
+            clientSecret = invoice.payment_intent.client_secret;
+          }
         }
 
-        console.log("Subscription and invoice details:", {
+        // If no client secret yet, retrieve and finalize the invoice
+        if (!clientSecret) {
+          const invoiceId = typeof subscription.latest_invoice === 'string' 
+            ? subscription.latest_invoice 
+            : (subscription.latest_invoice as any)?.id;
+
+          if (invoiceId) {
+            // Finalize the invoice to ensure payment intent is created
+            const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoiceId, {
+              expand: ['payment_intent']
+            });
+            
+            if (finalizedInvoice.payment_intent && typeof finalizedInvoice.payment_intent === 'object') {
+              clientSecret = (finalizedInvoice.payment_intent as any).client_secret;
+            }
+          }
+        }
+
+        console.log("Subscription created:", {
           subscriptionId: subscription.id,
-          invoiceId: invoice.id,
-          paymentIntentId: typeof invoice.payment_intent === 'string' ? invoice.payment_intent : (invoice.payment_intent as any)?.id,
           hasClientSecret: !!clientSecret
         });
 
         if (!clientSecret) {
-          console.error("Failed to get client secret from invoice payment intent");
-          return res.status(500).json({ error: "Failed to initialize payment. Please try again." });
+          // Last resort: create a setup intent for the subscription
+          const setupIntent = await stripe.setupIntents.create({
+            customer: customer.id,
+            payment_method_types: ['card'],
+            metadata: {
+              subscription_id: subscription.id
+            }
+          });
+          
+          console.log("Using setup intent as fallback");
+          clientSecret = setupIntent.client_secret;
         }
 
         res.json({
