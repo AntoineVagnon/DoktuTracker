@@ -2979,21 +2979,85 @@ Please upload the document again through the secure upload system.`;
         return res.status(400).json({ error: "Plan ID is required" });
       }
 
-      // Get plan details (hardcoded for now)
-      const plans = {
+      // Plan configurations with dynamic price creation
+      const planConfigs = {
         "monthly_plan": {
-          stripePriceId: process.env.STRIPE_MONTHLY_PRICE_ID || "price_monthly_placeholder",
-          name: "Monthly Membership"
+          name: "Monthly Membership",
+          priceAmount: 4500, // €45.00 in cents
+          interval: 'month' as const,
+          intervalCount: 1
         },
         "biannual_plan": {
-          stripePriceId: process.env.STRIPE_BIANNUAL_PRICE_ID || "price_biannual_placeholder", 
-          name: "6-Month Membership"
+          name: "6-Month Membership", 
+          priceAmount: 21900, // €219.00 in cents
+          interval: 'month' as const,
+          intervalCount: 6
         }
       };
 
-      const selectedPlan = plans[planId];
-      if (!selectedPlan) {
+      const selectedPlanConfig = planConfigs[planId];
+      if (!selectedPlanConfig) {
         return res.status(400).json({ error: "Invalid plan selected" });
+      }
+
+      // Create or retrieve the product in Stripe
+      let product;
+      try {
+        const products = await stripe.products.list({
+          active: true,
+          limit: 100
+        });
+        
+        product = products.data.find(p => p.name === selectedPlanConfig.name);
+        
+        if (!product) {
+          product = await stripe.products.create({
+            name: selectedPlanConfig.name,
+            description: planId === 'monthly_plan' 
+              ? '2 consultations per month with certified doctors'
+              : '12 consultations over 6 months with certified doctors',
+            metadata: {
+              planId: planId
+            }
+          });
+        }
+      } catch (productError) {
+        console.error("Error with Stripe product:", productError);
+        return res.status(500).json({ error: "Failed to process product information" });
+      }
+
+      // Create or retrieve the price
+      let price;
+      try {
+        const prices = await stripe.prices.list({
+          product: product.id,
+          active: true,
+          limit: 100
+        });
+        
+        price = prices.data.find(p => 
+          p.unit_amount === selectedPlanConfig.priceAmount &&
+          p.recurring?.interval === selectedPlanConfig.interval &&
+          p.recurring?.interval_count === selectedPlanConfig.intervalCount
+        );
+        
+        if (!price) {
+          price = await stripe.prices.create({
+            product: product.id,
+            unit_amount: selectedPlanConfig.priceAmount,
+            currency: 'eur',
+            recurring: {
+              interval: selectedPlanConfig.interval,
+              interval_count: selectedPlanConfig.intervalCount
+            },
+            metadata: {
+              planId: planId
+            }
+          });
+        }
+      } catch (priceError) {
+        console.error("Error with Stripe price:", priceError);
+        return res.status(500).json({ error: "Failed to process pricing information" });
       }
 
       // Create or retrieve Stripe customer
@@ -3028,7 +3092,7 @@ Please upload the document again through the secure upload system.`;
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
           items: [{
-            price: selectedPlan.stripePriceId,
+            price: price.id,
           }],
           payment_behavior: 'default_incomplete',
           payment_settings: { save_default_payment_method: 'on_subscription' },
@@ -3036,7 +3100,7 @@ Please upload the document again through the secure upload system.`;
           metadata: {
             userId: userId.toString(),
             planId: planId,
-            planName: selectedPlan.name
+            planName: selectedPlanConfig.name
           }
         });
 
