@@ -3100,7 +3100,7 @@ Please upload the document again through the secure upload system.`;
             save_default_payment_method: 'on_subscription',
             payment_method_types: ['card']
           },
-          expand: ['latest_invoice.payment_intent', 'pending_setup_intent'],
+          expand: ['latest_invoice.payment_intent'],
           metadata: {
             userId: userId.toString(),
             planId: planId,
@@ -3110,45 +3110,65 @@ Please upload the document again through the secure upload system.`;
 
         // Extract client secret from the subscription
         let clientSecret: string | undefined;
-        let paymentType: 'payment' | 'setup' = 'payment';
+        let paymentIntentId: string | undefined;
         
-        // Try to get payment intent from the invoice
-        if (subscription.latest_invoice && typeof subscription.latest_invoice === 'object') {
-          const invoice = subscription.latest_invoice as any;
-          
-          // Check if invoice has a payment_intent
-          if (invoice.payment_intent) {
-            if (typeof invoice.payment_intent === 'string') {
-              // Payment intent is just an ID, we need to retrieve it
-              const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent);
-              clientSecret = paymentIntent.client_secret;
-            } else if (typeof invoice.payment_intent === 'object') {
-              // Payment intent is already expanded
-              clientSecret = invoice.payment_intent.client_secret;
+        // Get the invoice from the subscription
+        const invoice = subscription.latest_invoice;
+        
+        if (invoice && typeof invoice === 'object') {
+          // Get payment intent ID from invoice
+          paymentIntentId = typeof invoice.payment_intent === 'string' 
+            ? invoice.payment_intent 
+            : invoice.payment_intent?.id;
+            
+          // Try to get client secret from expanded payment intent
+          if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
+            clientSecret = (invoice.payment_intent as any).client_secret;
+          }
+        }
+        
+        // If we have payment intent ID but no client secret, retrieve it
+        if (!clientSecret && paymentIntentId) {
+          try {
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+            clientSecret = paymentIntent.client_secret;
+            console.log("Retrieved payment intent separately:", {
+              id: paymentIntent.id,
+              hasClientSecret: !!paymentIntent.client_secret
+            });
+          } catch (error) {
+            console.error("Error retrieving payment intent:", error);
+          }
+        }
+        
+        // If still no client secret, try to retrieve the full subscription with expansion
+        if (!clientSecret) {
+          try {
+            const fullSubscription = await stripe.subscriptions.retrieve(
+              subscription.id,
+              { expand: ['latest_invoice.payment_intent'] }
+            );
+            
+            const fullInvoice = fullSubscription.latest_invoice as any;
+            if (fullInvoice?.payment_intent?.client_secret) {
+              clientSecret = fullInvoice.payment_intent.client_secret;
             }
+          } catch (error) {
+            console.error("Error retrieving full subscription:", error);
           }
         }
 
-        // If still no client secret, try pending_setup_intent
-        if (!clientSecret && subscription.pending_setup_intent) {
-          const setupIntent = subscription.pending_setup_intent as any;
-          if (typeof setupIntent === 'object' && setupIntent.client_secret) {
-            clientSecret = setupIntent.client_secret;
-            paymentType = 'setup';
-          }
-        }
-
-        console.log("Subscription details:", {
+        console.log("Subscription created:", {
           subscriptionId: subscription.id,
+          paymentIntentId: paymentIntentId,
           hasClientSecret: !!clientSecret,
-          paymentType: paymentType,
-          invoiceStatus: (subscription.latest_invoice as any)?.status
+          invoiceStatus: (invoice as any)?.status
         });
 
         if (!clientSecret) {
-          console.error("Failed to get client secret from subscription");
+          console.error("Failed to get client secret after all attempts");
           return res.status(500).json({ 
-            error: "Unable to initialize payment. Please contact support." 
+            error: "Unable to initialize payment. Please try again or contact support." 
           });
         }
 
@@ -3157,7 +3177,7 @@ Please upload the document again through the secure upload system.`;
           clientSecret: clientSecret,
           customerId: customer.id,
           status: subscription.status,
-          paymentType: paymentType // Let frontend know if it's setup or payment
+          paymentType: 'payment' // Always use payment for subscriptions
         });
 
       } catch (subscriptionError) {
