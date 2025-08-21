@@ -3087,7 +3087,7 @@ Please upload the document again through the secure upload system.`;
         return res.status(500).json({ error: "Failed to process customer information" });
       }
 
-      // Create subscription with proper expansion
+      // Create subscription
       try {
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
@@ -3104,31 +3104,35 @@ Please upload the document again through the secure upload system.`;
           }
         });
 
-        // The payment intent should be in the expanded invoice
+        // Retrieve the subscription again with proper expansion to ensure we get the payment intent
+        const expandedSubscription = await stripe.subscriptions.retrieve(
+          subscription.id,
+          {
+            expand: ['latest_invoice.payment_intent']
+          }
+        );
+
+        // Extract client secret from the expanded subscription
         let clientSecret: string | undefined;
+        const latestInvoice = expandedSubscription.latest_invoice;
         
-        if (typeof subscription.latest_invoice === 'object' && subscription.latest_invoice !== null) {
-          const invoice = subscription.latest_invoice as any;
-          if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
-            clientSecret = invoice.payment_intent.client_secret;
+        if (latestInvoice && typeof latestInvoice === 'object') {
+          const paymentIntent = (latestInvoice as any).payment_intent;
+          if (paymentIntent && typeof paymentIntent === 'object') {
+            clientSecret = paymentIntent.client_secret;
           }
         }
 
-        // If we still don't have a client secret, try retrieving the invoice separately
-        if (!clientSecret && typeof subscription.latest_invoice === 'string') {
-          const invoice = await stripe.invoices.retrieve(subscription.latest_invoice, {
-            expand: ['payment_intent']
-          });
-          if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
-            clientSecret = (invoice.payment_intent as any).client_secret;
-          }
-        }
-
-        console.log("Subscription created:", {
+        console.log("Subscription details:", {
           subscriptionId: subscription.id,
           hasClientSecret: !!clientSecret,
-          invoiceType: typeof subscription.latest_invoice
+          invoiceId: typeof latestInvoice === 'string' ? latestInvoice : (latestInvoice as any)?.id
         });
+
+        if (!clientSecret) {
+          console.error("Failed to get client secret from subscription");
+          return res.status(500).json({ error: "Failed to initialize payment. Please try again." });
+        }
 
         res.json({
           subscriptionId: subscription.id,
