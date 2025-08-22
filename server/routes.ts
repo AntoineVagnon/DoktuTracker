@@ -3479,27 +3479,80 @@ Please upload the document again through the secure upload system.`;
         case 'setup_intent.succeeded':
           const setupIntent = event.data.object;
           console.log('💳 Setup intent succeeded:', setupIntent.id);
+          console.log('🔍 Setup intent metadata:', setupIntent.metadata);
+          console.log('👤 Setup intent customer:', setupIntent.customer);
           
-          // Check if this setup intent is for a subscription
-          if (setupIntent.metadata?.subscriptionId && setupIntent.metadata?.userId) {
+          let subscriptionToActivate = null;
+          
+          // Method 1: Try to find subscription by metadata
+          if (setupIntent.metadata?.subscriptionId) {
             try {
-              const subscriptionId = setupIntent.metadata.subscriptionId;
-              console.log('🔄 Activating subscription after setup intent success:', subscriptionId);
-              
-              // Get the subscription and update its default payment method
-              const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-              
-              if (subscription.status === 'incomplete' && setupIntent.payment_method) {
-                // Update the subscription with the payment method
-                await stripe.subscriptions.update(subscriptionId, {
-                  default_payment_method: setupIntent.payment_method as string
-                });
-                
-                console.log('✅ Subscription payment method updated, should activate automatically');
+              console.log('🔄 Finding subscription by metadata:', setupIntent.metadata.subscriptionId);
+              const subscription = await stripe.subscriptions.retrieve(setupIntent.metadata.subscriptionId);
+              if (subscription.status === 'incomplete') {
+                subscriptionToActivate = subscription;
+                console.log('✅ Found subscription via metadata:', subscription.id);
               }
             } catch (error) {
-              console.error('❌ Failed to process setup intent success:', error);
+              console.error('❌ Failed to retrieve subscription from metadata:', error);
             }
+          }
+          
+          // Method 2: If no subscription found via metadata, find incomplete subscriptions for this customer
+          if (!subscriptionToActivate && setupIntent.customer) {
+            try {
+              console.log('🔍 Searching for incomplete subscriptions for customer:', setupIntent.customer);
+              const subscriptions = await stripe.subscriptions.list({
+                customer: setupIntent.customer,
+                status: 'incomplete',
+                limit: 10
+              });
+              
+              console.log(`📋 Found ${subscriptions.data.length} incomplete subscriptions for customer`);
+              
+              // Find the most recent incomplete subscription
+              if (subscriptions.data.length > 0) {
+                subscriptionToActivate = subscriptions.data[0]; // Most recent
+                console.log('✅ Found subscription via customer search:', subscriptionToActivate.id);
+              }
+            } catch (error) {
+              console.error('❌ Failed to search subscriptions by customer:', error);
+            }
+          }
+          
+          // Activate the subscription if found
+          if (subscriptionToActivate && setupIntent.payment_method) {
+            try {
+              console.log(`🚀 Activating subscription ${subscriptionToActivate.id} with payment method ${setupIntent.payment_method}`);
+              
+              // Update the subscription with the payment method
+              const updatedSubscription = await stripe.subscriptions.update(subscriptionToActivate.id, {
+                default_payment_method: setupIntent.payment_method as string
+              });
+              
+              console.log(`🎉 Subscription updated to status: ${updatedSubscription.status}`);
+              
+              // If still incomplete, try to pay the latest invoice
+              if (updatedSubscription.status === 'incomplete' && updatedSubscription.latest_invoice) {
+                console.log('💳 Attempting to pay outstanding invoice...');
+                try {
+                  const invoice = await stripe.invoices.pay(updatedSubscription.latest_invoice as string);
+                  console.log(`📄 Invoice payment result: ${invoice.status}`);
+                } catch (invoiceError) {
+                  console.error('❌ Failed to pay invoice:', invoiceError);
+                }
+              }
+              
+              // Get final status
+              const finalSubscription = await stripe.subscriptions.retrieve(subscriptionToActivate.id);
+              console.log(`✅ Final subscription status: ${finalSubscription.status}`);
+              
+            } catch (error) {
+              console.error('❌ Failed to activate subscription:', error);
+            }
+          } else {
+            console.log('ℹ️ No subscription to activate or no payment method found');
+            console.log(`Subscription found: ${!!subscriptionToActivate}, Payment method: ${!!setupIntent.payment_method}`);
           }
           break;
 

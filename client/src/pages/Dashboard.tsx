@@ -147,41 +147,7 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
-  // Mutation to automatically complete incomplete subscriptions
-  const completeSubscriptionMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/api/membership/complete-subscription"),
-    onSuccess: (data) => {
-      console.log("Subscription automatically completed:", data);
-      toast({
-        title: "Subscription Activated!",
-        description: "Your membership is now active and ready to use.",
-      });
-      // Refresh subscription data
-      queryClient.invalidateQueries({ queryKey: ["/api/membership/subscription"] });
-    },
-    onError: (error) => {
-      console.error("Failed to complete subscription:", error);
-      toast({
-        title: "Payment Completion Issue",
-        description: "We'll try to complete your subscription automatically. Please contact support if this persists.",
-        variant: "destructive",
-      });
-    }
-  });
 
-  // Auto-complete subscription if it's incomplete (payment likely succeeded but webhook didn't trigger)
-  const [autoCompleteAttempted, setAutoCompleteAttempted] = useState(false);
-  
-  useEffect(() => {
-    if (subscriptionData?.hasSubscription && 
-        subscriptionData?.subscription?.status === 'incomplete' && 
-        !completeSubscriptionMutation.isPending &&
-        !autoCompleteAttempted) {
-      console.log("Detected incomplete subscription, attempting auto-completion...");
-      setAutoCompleteAttempted(true);
-      completeSubscriptionMutation.mutate();
-    }
-  }, [subscriptionData?.subscription?.status, completeSubscriptionMutation.isPending, autoCompleteAttempted]);
 
   // All appointments (past, present, future) 
   const allAppointments = appointments || [];
@@ -527,26 +493,15 @@ export default function Dashboard() {
               <div>
                 <h4 className="font-semibold text-orange-900">Complete Your Membership Payment</h4>
                 <p className="text-sm text-orange-800 mt-1">
-                  Your payment succeeded but subscription needs activation. 
-                  {completeSubscriptionMutation.isPending && " Processing..."}
+                  Your membership subscription requires payment completion to activate your benefits.
                 </p>
               </div>
-              <div className="flex gap-2 ml-4">
-                <Button 
-                  onClick={() => completeSubscriptionMutation.mutate()}
-                  disabled={completeSubscriptionMutation.isPending}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  {completeSubscriptionMutation.isPending ? "Fixing..." : "Fix My Subscription"}
-                </Button>
-                <Button 
-                  onClick={() => setLocation('/complete-subscription')}
-                  variant="outline"
-                  className="border-orange-600 text-orange-600 hover:bg-orange-50"
-                >
-                  Complete Payment
-                </Button>
-              </div>
+              <Button 
+                onClick={() => setLocation('/complete-subscription')}
+                className="bg-orange-600 hover:bg-orange-700 text-white ml-4"
+              >
+                Complete Payment
+              </Button>
             </div>
           </Alert>
         )}
