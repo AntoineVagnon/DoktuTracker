@@ -3155,7 +3155,8 @@ Please upload the document again through the secure upload system.`;
           }],
           payment_behavior: 'default_incomplete',
           payment_settings: {
-            save_default_payment_method: 'on_subscription'
+            save_default_payment_method: 'on_subscription',
+            payment_method_types: ['card']
           },
           expand: ['latest_invoice.payment_intent'],
           metadata: {
@@ -3173,21 +3174,53 @@ Please upload the document again through the secure upload system.`;
 
         const paymentIntent = subscription.latest_invoice?.payment_intent;
         
+        // If no payment intent was created with the subscription, create one manually
+        let clientSecret = paymentIntent?.client_secret;
+        
+        if (!clientSecret && subscription.status === 'incomplete') {
+          console.log("No payment intent found, creating setup intent for subscription...");
+          
+          try {
+            const setupIntent = await stripe.setupIntents.create({
+              customer: customer.id,
+              payment_method_types: ['card'],
+              usage: 'off_session',
+              metadata: {
+                subscriptionId: subscription.id,
+                userId: userId.toString(),
+                planId: planId
+              }
+            });
+            
+            clientSecret = setupIntent.client_secret;
+            console.log("Created setup intent:", setupIntent.id);
+          } catch (setupError) {
+            console.error("Failed to create setup intent:", setupError);
+            throw new Error("Failed to initialize payment for subscription");
+          }
+        }
+        
         console.log("Created subscription with payment intent:", {
           subscriptionId: subscription.id,
           paymentIntentId: paymentIntent?.id,
           amount: selectedPlanConfig.priceAmount,
           status: subscription.status,
           productId: product.id,
-          priceId: price.id
+          priceId: price.id,
+          hasClientSecret: !!clientSecret
         });
+
+        if (!clientSecret) {
+          throw new Error("Failed to create payment intent or setup intent for subscription");
+        }
 
         res.json({
           subscriptionId: subscription.id,
-          clientSecret: paymentIntent?.client_secret,
+          clientSecret: clientSecret,
           customerId: customer.id,
           status: subscription.status,
-          paymentIntentId: paymentIntent?.id
+          paymentIntentId: paymentIntent?.id,
+          paymentType: paymentIntent ? 'payment' : 'setup'
         });
 
       } catch (subscriptionError) {

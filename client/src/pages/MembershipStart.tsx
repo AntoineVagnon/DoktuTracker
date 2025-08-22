@@ -93,13 +93,25 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
     }
 
     let error;
+    let result;
     
-    // Use confirmCardPayment for CardElement
-    const result = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: cardElement,
-      }
-    });
+    // Check if this is a setup intent or payment intent based on client secret prefix
+    if (clientSecret.startsWith('seti_')) {
+      // This is a setup intent - use confirmCardSetup
+      result = await stripe.confirmCardSetup(clientSecret, {
+        payment_method: {
+          card: cardElement,
+        }
+      });
+    } else {
+      // This is a payment intent - use confirmCardPayment
+      result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+        }
+      });
+    }
+    
     error = result.error;
 
     if (error) {
@@ -110,17 +122,25 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
         reason: error.message
       });
       setIsLoading(false);
-    } else if (result.paymentIntent?.status === 'succeeded') {
-      console.log("Payment succeeded!");
-      analytics.track('membership_payment_success', {
-        plan: plan.id,
-        amount: plan.price
-      });
-      onSuccess();
     } else {
-      console.log("Payment status:", result.paymentIntent?.status);
-      onError("Payment processing. Please wait...");
-      setIsLoading(false);
+      // Check success for both payment intent and setup intent
+      const isPaymentSuccess = result.paymentIntent?.status === 'succeeded';
+      const isSetupSuccess = result.setupIntent?.status === 'succeeded';
+      
+      if (isPaymentSuccess || isSetupSuccess) {
+        console.log("Payment/setup succeeded!");
+        analytics.track('membership_payment_success', {
+          plan: plan.id,
+          amount: plan.price,
+          type: isPaymentSuccess ? 'payment' : 'setup'
+        });
+        onSuccess();
+      } else {
+        const status = result.paymentIntent?.status || result.setupIntent?.status || 'unknown';
+        console.log("Payment/setup status:", status);
+        onError("Payment processing. Please wait...");
+        setIsLoading(false);
+      }
     }
   };
 
