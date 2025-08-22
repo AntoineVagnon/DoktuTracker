@@ -3131,15 +3131,7 @@ Please upload the document again through the secure upload system.`;
           items: [{
             price_data: {
               currency: 'eur',
-              product_data: {
-                name: selectedPlanConfig.name,
-                description: planId === 'monthly_plan' 
-                  ? '2 consultations per month with certified doctors'
-                  : '12 consultations over 6 months with certified doctors',
-                metadata: {
-                  planId: planId
-                }
-              },
+              product: selectedPlanConfig.name,
               unit_amount: selectedPlanConfig.priceAmount,
               recurring: {
                 interval: selectedPlanConfig.interval,
