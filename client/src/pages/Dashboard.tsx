@@ -147,6 +147,38 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
+  // Mutation to automatically complete incomplete subscriptions
+  const completeSubscriptionMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/membership/complete-subscription"),
+    onSuccess: (data) => {
+      console.log("Subscription automatically completed:", data);
+      toast({
+        title: "Subscription Activated!",
+        description: "Your membership is now active and ready to use.",
+      });
+      // Refresh subscription data
+      queryClient.invalidateQueries({ queryKey: ["/api/membership/subscription"] });
+    },
+    onError: (error) => {
+      console.error("Failed to complete subscription:", error);
+      toast({
+        title: "Payment Completion Issue",
+        description: "We'll try to complete your subscription automatically. Please contact support if this persists.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Auto-complete subscription if it's incomplete (payment likely succeeded but webhook didn't trigger)
+  useEffect(() => {
+    if (subscriptionData?.hasSubscription && 
+        subscriptionData?.subscription?.status === 'incomplete' && 
+        !completeSubscriptionMutation.isPending) {
+      console.log("Detected incomplete subscription, attempting auto-completion...");
+      completeSubscriptionMutation.mutate();
+    }
+  }, [subscriptionData?.subscription?.status, completeSubscriptionMutation]);
+
   // All appointments (past, present, future) 
   const allAppointments = appointments || [];
 

@@ -2949,6 +2949,75 @@ Please upload the document again through the secure upload system.`;
     }
   });
 
+  // Manual subscription completion endpoint
+  app.post('/api/membership/complete-subscription', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const user = req.user;
+      
+      if (!user?.stripeSubscriptionId) {
+        return res.status(400).json({ error: 'No subscription found' });
+      }
+
+      console.log(`🔄 Manually completing subscription: ${user.stripeSubscriptionId}`);
+      
+      // Get the subscription from Stripe
+      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+      
+      if (subscription.status === 'incomplete') {
+        console.log('📋 Subscription is incomplete, checking for successful setup intents...');
+        
+        // List setup intents for this customer to find successful ones
+        const setupIntents = await stripe.setupIntents.list({
+          customer: user.stripeCustomerId || subscription.customer as string,
+          limit: 10
+        });
+        
+        const successfulSetupIntent = setupIntents.data.find(si => 
+          si.status === 'succeeded' && si.payment_method
+        );
+        
+        if (successfulSetupIntent) {
+          console.log(`✅ Found successful setup intent: ${successfulSetupIntent.id}`);
+          
+          // Update subscription with the payment method
+          const updatedSubscription = await stripe.subscriptions.update(subscription.id, {
+            default_payment_method: successfulSetupIntent.payment_method as string
+          });
+          
+          console.log(`🎉 Subscription activated: ${updatedSubscription.status}`);
+          
+          return res.json({
+            success: true,
+            subscription: {
+              id: updatedSubscription.id,
+              status: updatedSubscription.status,
+              current_period_start: updatedSubscription.current_period_start,
+              current_period_end: updatedSubscription.current_period_end
+            }
+          });
+        } else {
+          console.log('❌ No successful setup intent found');
+          return res.status(400).json({ error: 'No successful payment found' });
+        }
+      } else {
+        console.log(`ℹ️ Subscription already active: ${subscription.status}`);
+        return res.json({
+          success: true,
+          subscription: {
+            id: subscription.id,
+            status: subscription.status,
+            current_period_start: subscription.current_period_start,
+            current_period_end: subscription.current_period_end
+          }
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error completing subscription:', error);
+      return res.status(500).json({ error: 'Failed to complete subscription' });
+    }
+  });
+
   // Get current user's subscription status
   app.get("/api/membership/subscription", isAuthenticated, async (req, res) => {
     try {
