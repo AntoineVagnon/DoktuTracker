@@ -1,0 +1,332 @@
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+DoktuTracker:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+DoktuTracker:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+DoktuTracker:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+ [LaunchDarkly] LaunchDarkly client initialized
+cdn.segment.com/next-integrations/integrations/google-analytics/2.18.6/google-analytics.dynamic.js.gz:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+ Google Analytics 
+(anonymous) @ _app-590c5e22561cd1dc.js:16
+www.googletagmanager.com/gtag/js?id=AW-11411994397:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+DoktuTracker:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-413e545680f3649b.js:1
+ Unrecognized feature: 'battery'.
+_ @ framework-413e545680f3649b.js:1
+ Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-413e545680f3649b.js:1
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-413e545680f3649b.js:1
+ Unrecognized feature: 'layout-animations'.
+_ @ framework-413e545680f3649b.js:1
+ Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-413e545680f3649b.js:1
+ Unrecognized feature: 'navigation-override'.
+_ @ framework-413e545680f3649b.js:1
+ Unrecognized feature: 'oversized-images'.
+_ @ framework-413e545680f3649b.js:1
+ Unrecognized feature: 'publickey-credentials'.
+_ @ framework-413e545680f3649b.js:1
+framework-413e545680f3649b.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-413e545680f3649b.js:1
+framework-413e545680f3649b.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-413e545680f3649b.js:1
+framework-413e545680f3649b.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-413e545680f3649b.js:1
+framework-413e545680f3649b.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-413e545680f3649b.js:1
+framework-413e545680f3649b.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-413e545680f3649b.js:1
+framework-413e545680f3649b.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-413e545680f3649b.js:1
+1755-d8cc6e9a435e85c3.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSTkveWl4UVlTQmdpV21hUEZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...T1pYQTVUblIySlRKQ1dEazNNazFrYkZwRWJuWkJNbFpqTUVVNVV6VXhTa0oyU2pSRFRVaEtiMk00VkVKSFRYQXpjWFY1ZWtjMVlUTnVTREJoZUVkV2EwZEVWRTVyY2tGWWFXUTFKVEpDV1hOc1IwTkxVMnRpUVcweU4wdE1kbkZVSlRKQ2JUVmxRamRGVnpJeVFsbFhSMnBNWWs1VFRETmFiR2dsTWtaS1NGTnNXSGR6V1dWWVRHUkJkMVk0U1dkNGRrRjVjWEJJVUZkTmFIWm9iRTVpWmt3M1luSmlSVUpsT0RaYU9GVklSVGh0TkcxVmN5VXlRa2gxSlRKQ1dUUk9TR2hDWmlVeVJsb3dVa3RFZEdsSk1rRWxNMFFsTTBRPTJkRcHlogyI_9cmlpcRSJZB6DzGXIkCNfKjaXlfq2-bxP99PUm316-EAEQ8CV14O78mySNLi4qihrXhqZ4fKAU.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 1755-d8cc6e9a435e85c3.js:1
+_app-590c5e22561cd1dc.js:16 task queue exceeded allotted deadline by 285ms
+(anonymous) @ _app-590c5e22561cd1dc.js:16
+_app-590c5e22561cd1dc.js:16 task queue exceeded allotted deadline by 283ms
+(anonymous) @ _app-590c5e22561cd1dc.js:16
+_app-590c5e22561cd1dc.js:16 task queue exceeded allotted deadline by 442ms
+(anonymous) @ _app-590c5e22561cd1dc.js:16
+1755-d8cc6e9a435e85c3.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSTkveWl4UVlTQmdpV21hUEZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...T1pYQTVUblIySlRKQ1dEazNNazFrYkZwRWJuWkJNbFpqTUVVNVV6VXhTa0oyU2pSRFRVaEtiMk00VkVKSFRYQXpjWFY1ZWtjMVlUTnVTREJoZUVkV2EwZEVWRTVyY2tGWWFXUTFKVEpDV1hOc1IwTkxVMnRpUVcweU4wdE1kbkZVSlRKQ2JUVmxRamRGVnpJeVFsbFhSMnBNWWs1VFRETmFiR2dsTWtaS1NGTnNXSGR6V1dWWVRHUkJkMVk0U1dkNGRrRjVjWEJJVUZkTmFIWm9iRTVpWmt3M1luSmlSVUpsT0RaYU9GVklSVGh0TkcxVmN5VXlRa2gxSlRKQ1dUUk9TR2hDWmlVeVJsb3dVa3RFZEdsSk1rRWxNMFFsTTBRPTJkRcHlogyI_9cmlpcRSJZB6DzGXIkCNfKjaXlfq2-bxP99PUm316-EAEQ8CV14O78mySNLi4qihrXhqZ4fKAU.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 1755-d8cc6e9a435e85c3.js:1
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+stallwart.build.js:1 stallwart: failed ping 3
+1755-d8cc6e9a435e85c3.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSTkveWl4UVlTQmdpV21hUEZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...T1pYQTVUblIySlRKQ1dEazNNazFrYkZwRWJuWkJNbFpqTUVVNVV6VXhTa0oyU2pSRFRVaEtiMk00VkVKSFRYQXpjWFY1ZWtjMVlUTnVTREJoZUVkV2EwZEVWRTVyY2tGWWFXUTFKVEpDV1hOc1IwTkxVMnRpUVcweU4wdE1kbkZVSlRKQ2JUVmxRamRGVnpJeVFsbFhSMnBNWWs1VFRETmFiR2dsTWtaS1NGTnNXSGR6V1dWWVRHUkJkMVk0U1dkNGRrRjVjWEJJVUZkTmFIWm9iRTVpWmt3M1luSmlSVUpsT0RaYU9GVklSVGh0TkcxVmN5VXlRa2gxSlRKQ1dUUk9TR2hDWmlVeVJsb3dVa3RFZEdsSk1rRWxNMFFsTTBRPTJkRcHlogyI_9cmlpcRSJZB6DzGXIkCNfKjaXlfq2-bxP99PUm316-EAEQ8CV14O78mySNLi4qihrXhqZ4fKAU.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 1755-d8cc6e9a435e85c3.js:1
+1755-d8cc6e9a435e85c3.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSTdybWp4UVlTQmdpTjFxUEZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...NFdFSXhlR2wyYzJRbE1rWkNUbms0YW1SSGRFSk1Oamc0VkhSMllUZFBjMUpsY0VsUU1qTllWbTBsTWtKQ0pUSkdWQ1V5UWtaTFlVSnlTSGxVT0hCbUpUSkNTMGcwYTNwTFFVdzJNVkFsTWtKWGIzYzFVbTVCUkdNbE1rWkRhbGRyZG5KRk56UmtkMEYxZFZsRFJVWkpZVEp0YkZaalZVWm9VQ1V5UWtwVFUycGhiMHBZYmtoS1FXOTRTSEJNUlVkaVVVa3dXbVE0VTFsb04yUmtZMGRvVXpnbE1rSlJURUkwYkRsbmVEaFpkbWxwVmpBMGIwc3hjRU5GT1Vwd0pUSkNabTF1SlRKR2RuVnJWWGhQZDNRM1UwSm5KVE5FSlRORX4fJhEeDOjep7_dqMvqKkEJ-SVLt5zZcHt4A-RhC46PRzjLlsjLLg3glZYfg2bzbJV_tAw2kggd7yc5NQrZ4w0.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 1755-d8cc6e9a435e85c3.js:1
+stallwart.build.js:1 stallwart: failed ping 1
+api.sorryapp.com/v1/pages/27c7b5fc:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15q%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with public key: pk_test_51...
+Console.js:61 Landing page loaded, checking for password reset tokens
+Console.js:61 Current URL hash: 
+Console.js:61 Hash params: [object Object]
+Console.js:61 All hash params: 
+Console.js:61 ❌ No password reset tokens found, loading normal landing page
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)
+Console.js:61 Register page loaded with location: /register
+Console.js:61 Window URL search: ?redirect=/membership-start?plan=semiannual
+Console.js:61 Full window URL: https://0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/register?redirect=/membership-start?plan=semiannual
+Console.js:61 Parsed booking params: [object Object]
+Console.js:61 Create Account button clicked
+Console.js:61 Booking params: [object Object]
+Console.js:61 Redirect param: /membership-start?plan=semiannual
+Console.js:61 Stored loginRedirect: /membership-start?plan=semiannual
+Console.js:61 Redirecting to: /create-account?redirect=%2Fmembership-start%3Fplan%3Dsemiannual
+Console.js:61 Failed to send analytics events: TypeError: Failed to fetch
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with public key: pk_test_51...
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 Registration successful, session data: Object
+Console.js:61 CreateAccount page loaded with booking params: Object
+Console.js:61 CreateAccount redirect param: /membership-start?plan=semiannual
+Console.js:61 Redirecting to: /membership-start?plan=semiannual
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/membership/subscribe:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+Console.js:61 Error creating subscription: Error: 500: {"error":"Failed to create subscription","details":"This customer has no attached payment source or default payment method. Please consider adding a default payment method. For more information, visit https://stripe.com/docs/billing/subscriptions/payment-methods-setting#payment-method-priority."}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+    at async startSubscription (MembershipStart.tsx:333:24)
+    at async checkAuthAndMembership (MembershipStart.tsx:271:15)
+Mt.forEach.n.<computed> @ Console.js:61
+console.error @ main.tsx:79
+startSubscription @ MembershipStart.tsx:352
