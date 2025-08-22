@@ -365,13 +365,49 @@ export default function MembershipStart() {
     setLocation(`${route}?redirect=/membership-start?plan=${planParam}`);
   };
 
-  const handlePaymentSuccess = () => {
-    // Redirect to success page
-    setLocation(`/membership/success?plan=${plan.id}`);
-    analytics.track('membership_flow_step_viewed', {
-      step: 'success',
-      plan: plan.id
-    });
+  const handlePaymentSuccess = async () => {
+    try {
+      // Set loading state while activating subscription
+      setCurrentStep('activating');
+      
+      console.log("Payment succeeded, activating subscription...");
+      
+      // Call the completion endpoint to activate the subscription immediately
+      const response = await apiRequest("POST", "/api/membership/complete-subscription");
+      const result = await response.json();
+      
+      console.log("Subscription activation result:", result);
+      
+      if (result.success) {
+        console.log("Subscription successfully activated!");
+        // Track successful activation
+        analytics.track('membership_flow_step_viewed', {
+          step: 'success',
+          plan: plan.id
+        });
+        // Redirect to success page
+        setLocation(`/membership/success?plan=${plan.id}`);
+      } else {
+        // Handle activation failure
+        console.error("Subscription activation failed:", result.error);
+        toast({
+          title: "Activation Issue",
+          description: "Payment succeeded but subscription activation failed. Please contact support.",
+          variant: "destructive",
+        });
+        // Still redirect to success but with warning
+        setLocation(`/membership/success?plan=${plan.id}&warning=activation_failed`);
+      }
+    } catch (error) {
+      console.error("Error activating subscription:", error);
+      toast({
+        title: "Activation Error",
+        description: "Payment succeeded but we couldn't activate your subscription immediately. Please contact support.",
+        variant: "destructive",
+      });
+      // Still redirect to success but with error flag
+      setLocation(`/membership/success?plan=${plan.id}&error=activation_error`);
+    }
   };
 
   // Loading state
@@ -379,6 +415,23 @@ export default function MembershipStart() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Activating subscription state
+  if (currentStep === 'activating') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="max-w-md w-full">
+          <CardContent className="p-8 text-center">
+            <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Activating Your Membership</h3>
+            <p className="text-gray-600">
+              Payment successful! We're activating your {plan.name} membership...
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
