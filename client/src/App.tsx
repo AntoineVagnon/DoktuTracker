@@ -50,6 +50,7 @@ import SecurityDashboard from "@/pages/SecurityDashboard";
 import Membership from "@/pages/Membership";
 import MembershipSuccess from "@/pages/MembershipSuccess";
 import MembershipStart from "@/pages/MembershipStart";
+import CompleteSubscription from "@/pages/CompleteSubscription";
 
 
 function Router() {
@@ -75,6 +76,7 @@ function Router() {
       <Route path="/membership" component={Membership} />
       <Route path="/membership-start" component={MembershipStart} />
       <Route path="/membership/success" component={MembershipSuccess} />
+      <Route path="/complete-subscription" component={CompleteSubscription} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       <Route path="/doctors" component={DoctorList} />
       <Route path="/book-appointment-choice" component={BookAppointmentChoice} />

@@ -131,6 +131,12 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
+  // Check subscription status for incomplete payments
+  const { data: subscriptionData } = useQuery({
+    queryKey: ["/api/membership/subscription"],
+    enabled: isAuthenticated,
+  });
+
   // All appointments (past, present, future) 
   const allAppointments = appointments || [];
 
@@ -466,6 +472,27 @@ export default function Dashboard() {
             <span className="sm:hidden">Book Appointment</span>
           </Button>
         </div>
+
+        {/* Incomplete subscription banner */}
+        {subscriptionData?.hasSubscription && subscriptionData?.subscription?.status === 'incomplete' && (
+          <Alert className="mb-6 border-orange-200 bg-orange-50">
+            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <h4 className="font-semibold text-orange-900">Complete Your Membership Payment</h4>
+                <p className="text-sm text-orange-800 mt-1">
+                  Your membership subscription requires payment completion to activate your benefits.
+                </p>
+              </div>
+              <Button 
+                onClick={() => setLocation('/complete-subscription')}
+                className="bg-orange-600 hover:bg-orange-700 text-white ml-4"
+              >
+                Complete Payment
+              </Button>
+            </div>
+          </Alert>
+        )}
 
         {/* Live Appointments Banner - Compact */}
         {live.length > 0 && (

@@ -3394,6 +3394,81 @@ Please upload the document again through the secure upload system.`;
     }
   });
 
+  // Complete incomplete subscription
+  app.post("/api/membership/complete-subscription", strictLimiter, isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const user = req.user;
+
+      if (!user.stripeSubscriptionId) {
+        return res.status(400).json({ error: "No subscription found" });
+      }
+
+      // Get subscription from Stripe
+      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId, {
+        expand: ['latest_invoice.payment_intent']
+      });
+
+      console.log(`Completing subscription ${subscription.id} with status: ${subscription.status}`);
+
+      if (subscription.status === 'active') {
+        return res.json({ 
+          message: "Subscription is already active",
+          subscriptionId: subscription.id,
+          status: subscription.status
+        });
+      }
+
+      if (subscription.status === 'incomplete') {
+        // Get the latest invoice
+        const invoice = subscription.latest_invoice;
+        
+        if (invoice && typeof invoice === 'object' && invoice.payment_intent) {
+          const paymentIntent = invoice.payment_intent;
+          
+          if (typeof paymentIntent === 'object' && paymentIntent.client_secret) {
+            console.log(`Returning existing payment intent for completion: ${paymentIntent.id}`);
+            // Return the existing payment intent for completion
+            return res.json({
+              subscriptionId: subscription.id,
+              clientSecret: paymentIntent.client_secret,
+              status: subscription.status,
+              paymentIntentId: paymentIntent.id,
+              paymentType: 'payment',
+              message: "Complete your payment to activate subscription"
+            });
+          }
+        }
+
+        // If no payment intent, create a new setup intent
+        console.log("Creating new setup intent for incomplete subscription");
+        const setupIntent = await stripe.setupIntents.create({
+          customer: subscription.customer,
+          payment_method_types: ['card'],
+          usage: 'off_session',
+          metadata: {
+            subscriptionId: subscription.id,
+            userId: userId.toString(),
+            action: 'complete_subscription'
+          }
+        });
+
+        return res.json({
+          subscriptionId: subscription.id,
+          clientSecret: setupIntent.client_secret,
+          status: subscription.status,
+          paymentType: 'setup',
+          message: "Complete your payment to activate subscription"
+        });
+      }
+
+      res.status(400).json({ error: `Subscription status '${subscription.status}' cannot be completed` });
+    } catch (error) {
+      console.error("Error completing subscription:", error);
+      res.status(500).json({ error: "Failed to complete subscription" });
+    }
+  });
+
   // Apply global error handler (must be last)
   app.use(errorHandler);
   
