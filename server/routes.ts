@@ -3153,7 +3153,7 @@ Please upload the document again through the secure upload system.`;
           items: [{
             price: price.id
           }],
-          payment_behavior: 'default_incomplete',
+          payment_behavior: 'allow_incomplete',
           payment_settings: {
             save_default_payment_method: 'on_subscription',
             payment_method_types: ['card']
@@ -3348,6 +3348,33 @@ Please upload the document again through the secure upload system.`;
             console.log('✅ Initial subscription payment successful');
             // Grant initial allowance for the membership
             // This would be implemented when the membership tables are created
+          }
+          break;
+
+        case 'setup_intent.succeeded':
+          const setupIntent = event.data.object;
+          console.log('💳 Setup intent succeeded:', setupIntent.id);
+          
+          // Check if this setup intent is for a subscription
+          if (setupIntent.metadata?.subscriptionId && setupIntent.metadata?.userId) {
+            try {
+              const subscriptionId = setupIntent.metadata.subscriptionId;
+              console.log('🔄 Activating subscription after setup intent success:', subscriptionId);
+              
+              // Get the subscription and update its default payment method
+              const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+              
+              if (subscription.status === 'incomplete' && setupIntent.payment_method) {
+                // Update the subscription with the payment method
+                await stripe.subscriptions.update(subscriptionId, {
+                  default_payment_method: setupIntent.payment_method as string
+                });
+                
+                console.log('✅ Subscription payment method updated, should activate automatically');
+              }
+            } catch (error) {
+              console.error('❌ Failed to process setup intent success:', error);
+            }
           }
           break;
 

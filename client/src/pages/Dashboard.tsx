@@ -133,7 +133,16 @@ export default function Dashboard() {
   });
 
   // Check subscription status for incomplete payments
-  const { data: subscriptionData } = useQuery({
+  const { data: subscriptionData } = useQuery<{
+    hasSubscription: boolean;
+    subscription?: {
+      id: string;
+      status: string;
+      plan: string;
+      amount: number;
+      currency: string;
+    };
+  }>({
     queryKey: ["/api/membership/subscription"],
     enabled: isAuthenticated,
   });
