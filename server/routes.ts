@@ -3123,26 +3123,35 @@ Please upload the document again through the secure upload system.`;
         return res.status(500).json({ error: "Failed to process customer information" });
       }
 
-      // Create actual Stripe subscription with payment
+      // Create actual Stripe subscription with payment - simplified approach
       try {
-        // Create the subscription with payment behavior
+        // First create a product for this plan if needed
+        const product = await stripe.products.create({
+          name: selectedPlanConfig.name,
+          description: planId === 'monthly_plan' 
+            ? '2 consultations per month with certified doctors'
+            : '12 consultations over 6 months with certified doctors',
+          metadata: {
+            planId: planId
+          }
+        });
+
+        // Then create a price for this product
+        const price = await stripe.prices.create({
+          currency: 'eur',
+          unit_amount: selectedPlanConfig.priceAmount,
+          recurring: {
+            interval: selectedPlanConfig.interval,
+            interval_count: selectedPlanConfig.intervalCount
+          },
+          product: product.id
+        });
+
+        // Finally create the subscription using the price
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
           items: [{
-            price_data: {
-              currency: 'eur',
-              product_data: {
-                name: selectedPlanConfig.name,
-                description: planId === 'monthly_plan' 
-                  ? '2 consultations per month with certified doctors'
-                  : '12 consultations over 6 months with certified doctors'
-              },
-              unit_amount: selectedPlanConfig.priceAmount,
-              recurring: {
-                interval: selectedPlanConfig.interval,
-                interval_count: selectedPlanConfig.intervalCount
-              }
-            }
+            price: price.id
           }],
           payment_behavior: 'default_incomplete',
           payment_settings: {
@@ -3168,7 +3177,9 @@ Please upload the document again through the secure upload system.`;
           subscriptionId: subscription.id,
           paymentIntentId: paymentIntent?.id,
           amount: selectedPlanConfig.priceAmount,
-          status: subscription.status
+          status: subscription.status,
+          productId: product.id,
+          priceId: price.id
         });
 
         res.json({
