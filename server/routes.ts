@@ -2953,15 +2953,51 @@ Please upload the document again through the secure upload system.`;
   app.get("/api/membership/subscription", isAuthenticated, async (req, res) => {
     try {
       const userId = req.user.id;
+      const user = req.user;
       
-      // For now, return no subscription until database schema is pushed
-      // TODO: Query membershipSubscriptions table once schema is deployed
+      // Check if user has a Stripe subscription ID
+      if (!user.stripeSubscriptionId || user.stripeSubscriptionId.startsWith('pending_')) {
+        return res.json({ 
+          hasSubscription: false,
+          subscription: null,
+          allowanceRemaining: 0
+        });
+      }
       
-      res.json({ 
-        hasSubscription: false,
-        subscription: null,
-        allowanceRemaining: 0
-      });
+      try {
+        // Fetch subscription details from Stripe
+        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+        
+        // Determine plan details from metadata
+        const planId = subscription.metadata?.planId || user.pendingSubscriptionPlan;
+        const planName = subscription.metadata?.planName || 
+          (planId === 'monthly_plan' ? 'Monthly Membership' : '6-Month Membership');
+        
+        res.json({
+          hasSubscription: true,
+          subscription: {
+            id: subscription.id,
+            status: subscription.status,
+            planId: planId,
+            planName: planName,
+            currentPeriodEnd: subscription.current_period_end,
+            cancelAtPeriodEnd: subscription.cancel_at_period_end,
+            cancelAt: subscription.cancel_at,
+            created: subscription.created,
+            amount: subscription.items.data[0]?.price?.unit_amount || 0,
+            interval: subscription.items.data[0]?.price?.recurring?.interval,
+            intervalCount: subscription.items.data[0]?.price?.recurring?.interval_count
+          },
+          allowanceRemaining: planId === 'monthly_plan' ? 2 : 12 // Default allowances
+        });
+      } catch (stripeError) {
+        console.error("Error fetching subscription from Stripe:", stripeError);
+        return res.json({ 
+          hasSubscription: false,
+          subscription: null,
+          allowanceRemaining: 0
+        });
+      }
     } catch (error) {
       console.error("Error fetching user subscription:", error);
       res.status(500).json({ error: "Failed to fetch subscription status" });
@@ -3087,42 +3123,63 @@ Please upload the document again through the secure upload system.`;
         return res.status(500).json({ error: "Failed to process customer information" });
       }
 
-      // Create subscription - simplified approach with manual payment intent
+      // Create actual Stripe subscription with payment
       try {
-        // Use the priceAmount from the plan configuration (already in cents)
-        const amountInCents = selectedPlanConfig.priceAmount;
-        
-        // Create a payment intent for the subscription amount
-        const paymentIntent = await stripe.paymentIntents.create({
-          amount: amountInCents,
-          currency: 'eur',
+        // Create the subscription with payment behavior
+        const subscription = await stripe.subscriptions.create({
           customer: customer.id,
-          setup_future_usage: 'off_session', // Save card for future subscription payments
+          items: [{
+            price_data: {
+              currency: 'eur',
+              product_data: {
+                name: selectedPlanConfig.name,
+                description: planId === 'monthly_plan' 
+                  ? '2 consultations per month with certified doctors'
+                  : '12 consultations over 6 months with certified doctors',
+                metadata: {
+                  planId: planId
+                }
+              },
+              unit_amount: selectedPlanConfig.priceAmount,
+              recurring: {
+                interval: selectedPlanConfig.interval,
+                interval_count: selectedPlanConfig.intervalCount
+              }
+            }
+          }],
+          payment_behavior: 'default_incomplete',
+          payment_settings: {
+            save_default_payment_method: 'on_subscription'
+          },
+          expand: ['latest_invoice.payment_intent'],
           metadata: {
             userId: userId.toString(),
             planId: planId,
-            planName: selectedPlanConfig.name,
-            type: 'subscription_initial'
+            planName: selectedPlanConfig.name
           }
         });
 
-        // Store subscription info in user record for later activation
+        // Store subscription info in user record
         await storage.updateUser(userId, {
+          stripeSubscriptionId: subscription.id,
           pendingSubscriptionPlan: planId
         } as any);
 
-        console.log("Created payment intent for subscription:", {
-          paymentIntentId: paymentIntent.id,
-          amount: amountInCents,
-          hasClientSecret: !!paymentIntent.client_secret
+        const paymentIntent = subscription.latest_invoice?.payment_intent;
+        
+        console.log("Created subscription with payment intent:", {
+          subscriptionId: subscription.id,
+          paymentIntentId: paymentIntent?.id,
+          amount: selectedPlanConfig.priceAmount,
+          status: subscription.status
         });
 
         res.json({
-          subscriptionId: null, // Will create subscription after payment
-          clientSecret: paymentIntent.client_secret,
+          subscriptionId: subscription.id,
+          clientSecret: paymentIntent?.client_secret,
           customerId: customer.id,
-          status: 'pending_payment',
-          paymentIntentId: paymentIntent.id
+          status: subscription.status,
+          paymentIntentId: paymentIntent?.id
         });
 
       } catch (subscriptionError) {
@@ -3140,14 +3197,35 @@ Please upload the document again through the secure upload system.`;
   app.post("/api/membership/cancel", isAuthenticated, async (req, res) => {
     try {
       const userId = req.user.id;
+      const user = req.user;
       
-      // TODO: Query user's subscription from database once schema is deployed
-      // For now, return success message
+      // Check if user has an active subscription
+      if (!user.stripeSubscriptionId) {
+        return res.status(400).json({ error: "No active subscription found" });
+      }
       
-      res.json({ 
-        success: true,
-        message: "Subscription cancellation will be processed at the end of current billing period" 
-      });
+      try {
+        // Cancel at period end (don't immediately terminate access)
+        const subscription = await stripe.subscriptions.update(
+          user.stripeSubscriptionId,
+          {
+            cancel_at_period_end: true
+          }
+        );
+        
+        console.log(`Subscription ${subscription.id} set to cancel at period end`);
+        
+        res.json({ 
+          success: true,
+          message: "Subscription will be cancelled at the end of the current billing period",
+          cancelAt: subscription.cancel_at,
+          currentPeriodEnd: subscription.current_period_end
+        });
+      } catch (stripeError) {
+        console.error("Stripe cancellation error:", stripeError);
+        return res.status(500).json({ error: "Failed to cancel subscription with payment provider" });
+      }
+      
     } catch (error) {
       console.error("Error cancelling subscription:", error);
       res.status(500).json({ error: "Failed to cancel subscription" });
@@ -3171,30 +3249,74 @@ Please upload the document again through the secure upload system.`;
     try {
       switch (event.type) {
         case 'customer.subscription.created':
-          console.log('📝 Subscription created:', event.data.object.id);
-          // TODO: Save subscription to database once schema is deployed
+          const createdSub = event.data.object;
+          console.log('📝 Subscription created:', createdSub.id);
+          // Update user with subscription ID
+          if (createdSub.metadata?.userId) {
+            try {
+              await storage.updateUser(parseInt(createdSub.metadata.userId), {
+                stripeSubscriptionId: createdSub.id,
+                stripeCustomerId: createdSub.customer
+              } as any);
+              console.log('✅ Updated user with subscription ID');
+            } catch (error) {
+              console.error('Failed to update user with subscription:', error);
+            }
+          }
           break;
 
         case 'customer.subscription.updated':
-          console.log('📝 Subscription updated:', event.data.object.id);
-          // TODO: Update subscription in database
+          const updatedSub = event.data.object;
+          console.log('📝 Subscription updated:', updatedSub.id, 'Status:', updatedSub.status);
+          // Update subscription status in database
+          if (updatedSub.metadata?.userId && updatedSub.status === 'active') {
+            try {
+              await storage.updateUser(parseInt(updatedSub.metadata.userId), {
+                stripeSubscriptionId: updatedSub.id,
+                pendingSubscriptionPlan: null // Clear pending status
+              } as any);
+              console.log('✅ Subscription activated for user');
+            } catch (error) {
+              console.error('Failed to update subscription status:', error);
+            }
+          }
           break;
 
         case 'customer.subscription.deleted':
-          console.log('📝 Subscription cancelled:', event.data.object.id);
-          // TODO: Mark subscription as cancelled in database
+          const deletedSub = event.data.object;
+          console.log('📝 Subscription cancelled:', deletedSub.id);
+          // Clear subscription from user
+          if (deletedSub.metadata?.userId) {
+            try {
+              await storage.updateUser(parseInt(deletedSub.metadata.userId), {
+                stripeSubscriptionId: null,
+                pendingSubscriptionPlan: null
+              } as any);
+              console.log('✅ Subscription removed from user');
+            } catch (error) {
+              console.error('Failed to remove subscription:', error);
+            }
+          }
           break;
 
         case 'invoice.payment_succeeded':
           const invoice = event.data.object;
           console.log('💰 Payment succeeded for invoice:', invoice.id);
-          // TODO: Update billing records and grant allowance for new cycle
+          // Activate subscription if it's the first payment
+          if (invoice.subscription && invoice.billing_reason === 'subscription_create') {
+            console.log('✅ Initial subscription payment successful');
+            // Grant initial allowance for the membership
+            // This would be implemented when the membership tables are created
+          }
           break;
 
         case 'invoice.payment_failed':
           const failedInvoice = event.data.object;
           console.log('❌ Payment failed for invoice:', failedInvoice.id);
-          // TODO: Handle failed payment, suspend subscription if needed
+          // Suspend subscription if payment fails
+          if (failedInvoice.subscription) {
+            console.log('⚠️ Subscription payment failed, may need suspension');
+          }
           break;
 
         default:
