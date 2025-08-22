@@ -170,14 +170,18 @@ export default function Dashboard() {
   });
 
   // Auto-complete subscription if it's incomplete (payment likely succeeded but webhook didn't trigger)
+  const [autoCompleteAttempted, setAutoCompleteAttempted] = useState(false);
+  
   useEffect(() => {
     if (subscriptionData?.hasSubscription && 
         subscriptionData?.subscription?.status === 'incomplete' && 
-        !completeSubscriptionMutation.isPending) {
+        !completeSubscriptionMutation.isPending &&
+        !autoCompleteAttempted) {
       console.log("Detected incomplete subscription, attempting auto-completion...");
+      setAutoCompleteAttempted(true);
       completeSubscriptionMutation.mutate();
     }
-  }, [subscriptionData?.subscription?.status, completeSubscriptionMutation]);
+  }, [subscriptionData?.subscription?.status, completeSubscriptionMutation.isPending, autoCompleteAttempted]);
 
   // All appointments (past, present, future) 
   const allAppointments = appointments || [];
@@ -523,15 +527,26 @@ export default function Dashboard() {
               <div>
                 <h4 className="font-semibold text-orange-900">Complete Your Membership Payment</h4>
                 <p className="text-sm text-orange-800 mt-1">
-                  Your membership subscription requires payment completion to activate your benefits.
+                  Your payment succeeded but subscription needs activation. 
+                  {completeSubscriptionMutation.isPending && " Processing..."}
                 </p>
               </div>
-              <Button 
-                onClick={() => setLocation('/complete-subscription')}
-                className="bg-orange-600 hover:bg-orange-700 text-white ml-4"
-              >
-                Complete Payment
-              </Button>
+              <div className="flex gap-2 ml-4">
+                <Button 
+                  onClick={() => completeSubscriptionMutation.mutate()}
+                  disabled={completeSubscriptionMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {completeSubscriptionMutation.isPending ? "Fixing..." : "Fix My Subscription"}
+                </Button>
+                <Button 
+                  onClick={() => setLocation('/complete-subscription')}
+                  variant="outline"
+                  className="border-orange-600 text-orange-600 hover:bg-orange-50"
+                >
+                  Complete Payment
+                </Button>
+              </div>
             </div>
           </Alert>
         )}

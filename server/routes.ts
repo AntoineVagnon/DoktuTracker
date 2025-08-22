@@ -2967,38 +2967,84 @@ Please upload the document again through the secure upload system.`;
       if (subscription.status === 'incomplete') {
         console.log('📋 Subscription is incomplete, checking for successful setup intents...');
         
-        // List setup intents for this customer to find successful ones
-        const setupIntents = await stripe.setupIntents.list({
+        // First check for setup intents with subscription metadata
+        let setupIntents = await stripe.setupIntents.list({
           customer: user.stripeCustomerId || subscription.customer as string,
-          limit: 10
+          limit: 20
         });
         
-        const successfulSetupIntent = setupIntents.data.find(si => 
-          si.status === 'succeeded' && si.payment_method
+        console.log(`Found ${setupIntents.data.length} setup intents for customer`);
+        
+        // Look for successful setup intent with subscription metadata first
+        let successfulSetupIntent = setupIntents.data.find(si => 
+          si.status === 'succeeded' && 
+          si.payment_method &&
+          si.metadata?.subscriptionId === subscription.id
         );
         
+        // If not found, look for any recent successful setup intent
+        if (!successfulSetupIntent) {
+          successfulSetupIntent = setupIntents.data.find(si => 
+            si.status === 'succeeded' && si.payment_method
+          );
+        }
+        
         if (successfulSetupIntent) {
-          console.log(`✅ Found successful setup intent: ${successfulSetupIntent.id}`);
+          console.log(`✅ Found successful setup intent: ${successfulSetupIntent.id} with payment method: ${successfulSetupIntent.payment_method}`);
           
-          // Update subscription with the payment method
-          const updatedSubscription = await stripe.subscriptions.update(subscription.id, {
-            default_payment_method: successfulSetupIntent.payment_method as string
-          });
+          try {
+            // Update subscription with the payment method
+            const updatedSubscription = await stripe.subscriptions.update(subscription.id, {
+              default_payment_method: successfulSetupIntent.payment_method as string
+            });
+            
+            console.log(`🎉 Subscription updated: ${updatedSubscription.status}`);
+            
+            // If still incomplete, try to pay the outstanding invoice
+            if (updatedSubscription.status === 'incomplete' && updatedSubscription.latest_invoice) {
+              console.log('💳 Attempting to pay outstanding invoice...');
+              const invoice = await stripe.invoices.pay(updatedSubscription.latest_invoice as string);
+              console.log(`📄 Invoice payment result: ${invoice.status}`);
+            }
+            
+            // Retrieve the updated subscription status
+            const finalSubscription = await stripe.subscriptions.retrieve(subscription.id);
+            console.log(`✅ Final subscription status: ${finalSubscription.status}`);
+            
+            return res.json({
+              success: true,
+              subscription: {
+                id: finalSubscription.id,
+                status: finalSubscription.status,
+                current_period_start: finalSubscription.current_period_start,
+                current_period_end: finalSubscription.current_period_end
+              }
+            });
+          } catch (updateError) {
+            console.error('❌ Error updating subscription:', updateError);
+            return res.status(500).json({ error: 'Failed to activate subscription with payment method' });
+          }
+        } else {
+          console.log('❌ No successful setup intent found, creating new one...');
+          console.log('Creating new setup intent for incomplete subscription');
           
-          console.log(`🎉 Subscription activated: ${updatedSubscription.status}`);
-          
-          return res.json({
-            success: true,
-            subscription: {
-              id: updatedSubscription.id,
-              status: updatedSubscription.status,
-              current_period_start: updatedSubscription.current_period_start,
-              current_period_end: updatedSubscription.current_period_end
+          // Create a new setup intent as fallback
+          const newSetupIntent = await stripe.setupIntents.create({
+            customer: user.stripeCustomerId || subscription.customer as string,
+            payment_method_types: ['card'],
+            usage: 'off_session',
+            metadata: {
+              subscriptionId: subscription.id,
+              userId: userId.toString()
             }
           });
-        } else {
-          console.log('❌ No successful setup intent found');
-          return res.status(400).json({ error: 'No successful payment found' });
+          
+          return res.json({
+            success: false,
+            requiresPayment: true,
+            subscriptionId: subscription.id,
+            clientSecret: newSetupIntent.client_secret
+          });
         }
       } else {
         console.log(`ℹ️ Subscription already active: ${subscription.status}`);
