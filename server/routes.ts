@@ -3099,6 +3099,8 @@ Please upload the document again through the secure upload system.`;
       // Create or retrieve Stripe customer
       let customer;
       try {
+        console.log(`Looking for existing customer with email: ${userEmail}`);
+        
         // Check if customer already exists
         const existingCustomers = await stripe.customers.list({
           email: userEmail,
@@ -3107,8 +3109,10 @@ Please upload the document again through the secure upload system.`;
 
         if (existingCustomers.data.length > 0) {
           customer = existingCustomers.data[0];
+          console.log(`Found existing customer: ${customer.id}`);
         } else {
           // Create new customer
+          console.log('Creating new customer...');
           customer = await stripe.customers.create({
             email: userEmail,
             name: `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim(),
@@ -3117,37 +3121,18 @@ Please upload the document again through the secure upload system.`;
               planId: planId
             }
           });
+          console.log(`Created new customer: ${customer.id}`);
         }
       } catch (stripeError) {
         console.error("Error with Stripe customer:", stripeError);
         return res.status(500).json({ error: "Failed to process customer information" });
       }
 
-      // Create actual Stripe subscription with payment - simplified approach
+      // Create actual Stripe subscription with payment
       try {
-        // First create a product for this plan if needed
-        const product = await stripe.products.create({
-          name: selectedPlanConfig.name,
-          description: planId === 'monthly_plan' 
-            ? '2 consultations per month with certified doctors'
-            : '12 consultations over 6 months with certified doctors',
-          metadata: {
-            planId: planId
-          }
-        });
-
-        // Then create a price for this product
-        const price = await stripe.prices.create({
-          currency: 'eur',
-          unit_amount: selectedPlanConfig.priceAmount,
-          recurring: {
-            interval: selectedPlanConfig.interval,
-            interval_count: selectedPlanConfig.intervalCount
-          },
-          product: product.id
-        });
-
-        // Finally create the subscription using the price
+        console.log(`Creating subscription with price: ${price.id} for customer: ${customer.id}`);
+        
+        // Create the subscription using the existing price
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
           items: [{
@@ -3205,7 +3190,6 @@ Please upload the document again through the secure upload system.`;
           paymentIntentId: paymentIntent?.id,
           amount: selectedPlanConfig.priceAmount,
           status: subscription.status,
-          productId: product.id,
           priceId: price.id,
           hasClientSecret: !!clientSecret
         });
@@ -3223,14 +3207,29 @@ Please upload the document again through the secure upload system.`;
           paymentType: paymentIntent ? 'payment' : 'setup'
         });
 
-      } catch (subscriptionError) {
+      } catch (subscriptionError: any) {
         console.error("Error creating subscription:", subscriptionError);
-        return res.status(500).json({ error: "Failed to create subscription" });
+        console.error("Subscription creation failed with details:", {
+          customerId: customer?.id,
+          priceId: price?.id,
+          userEmail: userEmail,
+          planId: planId,
+          stripeError: subscriptionError.message,
+          errorType: subscriptionError.type,
+          errorCode: subscriptionError.code
+        });
+        return res.status(500).json({ 
+          error: "Failed to create subscription",
+          details: subscriptionError.message || "Unknown error during subscription creation"
+        });
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in subscription creation:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ 
+        error: "Internal server error",
+        details: error.message || "Unknown error"
+      });
     }
   });
 
