@@ -154,6 +154,9 @@ export default function CreateAccount() {
       
       if (data.session) {
         // User is immediately signed in (no email confirmation required)
+        // Set flag to indicate fresh registration for MembershipStart component
+        localStorage.setItem('just_registered', 'true');
+        
         toast({
           title: "Registration Complete!",
           description: redirect ? "Redirecting to complete membership..." : "Redirecting to checkout...",

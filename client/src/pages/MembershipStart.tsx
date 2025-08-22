@@ -219,13 +219,21 @@ export default function MembershipStart() {
   }, [planParam]);
 
   useEffect(() => {
-    const checkAuthAndMembership = async () => {
+    const checkAuthAndMembership = async (retryCount = 0) => {
+      // Check if user just registered
+      const justRegistered = localStorage.getItem('just_registered') === 'true';
+      
       // First check if we have a session directly via API
       try {
         const authResponse = await apiRequest("GET", "/api/auth/user");
         const authData = await authResponse.json();
         
         if (authData && authData.id) {
+          // Clear the registration flag
+          if (justRegistered) {
+            localStorage.removeItem('just_registered');
+          }
+          
           // User is authenticated - check for existing membership
           try {
             const membershipResponse = await apiRequest("GET", "/api/membership/subscription");
@@ -247,27 +255,55 @@ export default function MembershipStart() {
             await startSubscription();
           }
         } else {
-          // Not authenticated - show auth step
+          // If we just registered or haven't retried yet, retry after a delay
+          const shouldRetry = justRegistered || (retryCount < 3 && document.referrer.includes('/register'));
+          
+          if (shouldRetry && retryCount < 5) {
+            console.log(`Auth check retry ${retryCount + 1} of 5...`);
+            setTimeout(() => {
+              checkAuthAndMembership(retryCount + 1);
+            }, 1500);
+          } else {
+            // Clear the registration flag
+            if (justRegistered) {
+              localStorage.removeItem('just_registered');
+            }
+            // Not authenticated after retries - show auth step
+            setCurrentStep('auth');
+            analytics.track('membership_flow_step_viewed', {
+              step: 'auth',
+              plan: plan.id
+            });
+          }
+        }
+      } catch (error) {
+        // If we just registered or haven't retried yet, retry after a delay
+        const shouldRetry = justRegistered || (retryCount < 3 && document.referrer.includes('/register'));
+        
+        if (shouldRetry && retryCount < 5) {
+          console.log(`Auth check retry ${retryCount + 1} of 5 (after error)...`);
+          setTimeout(() => {
+            checkAuthAndMembership(retryCount + 1);
+          }, 1500);
+        } else {
+          // Clear the registration flag
+          if (justRegistered) {
+            localStorage.removeItem('just_registered');
+          }
+          // Not authenticated after retries - show auth step
           setCurrentStep('auth');
           analytics.track('membership_flow_step_viewed', {
             step: 'auth',
             plan: plan.id
           });
         }
-      } catch (error) {
-        // Not authenticated - show auth step
-        setCurrentStep('auth');
-        analytics.track('membership_flow_step_viewed', {
-          step: 'auth',
-          plan: plan.id
-        });
       }
     };
 
-    // Small delay to ensure session is established after registration redirect
+    // Longer initial delay to ensure session is established after registration redirect
     const timer = setTimeout(() => {
-      checkAuthAndMembership();
-    }, 500);
+      checkAuthAndMembership(0);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [plan.id]);
