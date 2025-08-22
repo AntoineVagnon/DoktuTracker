@@ -1,54 +1,54 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, RefreshCw } from 'lucide-react';
 import { useLocation, useSearch } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
 
 export default function MembershipSuccess() {
   const [, setLocation] = useLocation();
   const searchParams = useSearch();
   const { isAuthenticated, isLoading } = useAuth();
+  const [retryCount, setRetryCount] = useState(0);
   const planParam = new URLSearchParams(searchParams).get('plan') || 'monthly';
+  
+  // Direct auth check using React Query to bypass useAuth issues
+  const { data: authData, refetch: refetchAuth } = useQuery({
+    queryKey: ['/api/auth/user'],
+    retry: 3,
+    retryDelay: 1000,
+    staleTime: 0, // Always refetch
+    refetchOnMount: 'always'
+  });
+  
+  const isDirectlyAuthenticated = !!(authData as any)?.id;
+  const finalAuthState = isAuthenticated || isDirectlyAuthenticated;
   
   const planNames: Record<string, string> = {
     'monthly_plan': 'Monthly',
-    'biannual_plan': '6-Month',
+    'biannual_plan': '6-Month', 
     'monthly': 'Monthly',
     'semiannual': '6-Month'
   };
   
   const planName = planNames[planParam] || 'Membership';
   
+  const handleRetryAuth = async () => {
+    setRetryCount(prev => prev + 1);
+    await refetchAuth();
+  };
+  
   useEffect(() => {
-    // Don't redirect while auth is loading
-    if (isLoading) return;
-    
-    // Give the auth state more time to settle after payment redirect
-    // Payment redirects can sometimes interrupt auth state temporarily
-    if (!isAuthenticated && !isLoading) {
-      // Wait a bit longer before assuming user is truly logged out
-      const authCheckTimer = setTimeout(() => {
-        // Re-check auth state
-        if (!isAuthenticated && !isLoading) {
-          console.log("MembershipSuccess: User not authenticated after waiting, showing login prompt");
-          // Don't redirect immediately - show success message with login prompt
-          return;
-        }
-      }, 4000); // Wait 4 seconds for auth to settle
-      
-      return () => clearTimeout(authCheckTimer);
-    }
-    
-    // Only redirect to dashboard if definitely authenticated
-    if (isAuthenticated) {
+    // Auto-redirect to dashboard if authenticated
+    if (finalAuthState && !isLoading) {
       const timer = setTimeout(() => {
         setLocation('/dashboard');
-      }, 5000);
+      }, 3000); // Reduced from 5 seconds to 3
       
       return () => clearTimeout(timer);
     }
-  }, [setLocation, isAuthenticated, isLoading]);
+  }, [finalAuthState, isLoading, setLocation]);
   
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -73,7 +73,7 @@ export default function MembershipSuccess() {
             </ul>
           </div>
           
-          {isAuthenticated ? (
+          {finalAuthState ? (
             <>
               <Button 
                 onClick={() => setLocation('/dashboard')}
@@ -84,27 +84,40 @@ export default function MembershipSuccess() {
               </Button>
               
               <p className="text-xs text-center text-gray-500">
-                You will be redirected to your dashboard in a few seconds...
+                You will be redirected to your dashboard in 3 seconds...
               </p>
             </>
           ) : (
             <>
               <div className="bg-yellow-50 p-3 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  Please log in to access your membership benefits
+                  Checking your account access...
                 </p>
               </div>
               
-              <Button 
-                onClick={() => setLocation('/login-form')}
-                className="w-full"
-                size="lg"
-              >
-                Log In to Continue
-              </Button>
+              <div className="space-y-3">
+                <Button 
+                  onClick={handleRetryAuth}
+                  variant="outline"
+                  className="w-full"
+                  size="lg"
+                  disabled={isLoading}
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+                  Refresh Account Status
+                </Button>
+                
+                <Button 
+                  onClick={() => setLocation('/dashboard')}
+                  className="w-full"
+                  size="lg"
+                >
+                  Continue to Dashboard
+                </Button>
+              </div>
               
               <p className="text-xs text-center text-gray-500">
-                Your payment was successful. Log in to start using your membership.
+                Your payment was successful! If the dashboard doesn't load your membership, try refreshing above.
               </p>
             </>
           )}
