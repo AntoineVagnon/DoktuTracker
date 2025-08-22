@@ -3143,7 +3143,7 @@ Please upload the document again through the secure upload system.`;
             save_default_payment_method: 'on_subscription',
             payment_method_types: ['card']
           },
-          expand: ['latest_invoice.payment_intent'],
+          expand: ['latest_invoice.payment_intent', 'pending_setup_intent'],
           metadata: {
             userId: userId.toString(),
             planId: planId,
@@ -3158,15 +3158,26 @@ Please upload the document again through the secure upload system.`;
         } as any);
 
         const paymentIntent = subscription.latest_invoice?.payment_intent;
+        const setupIntent = subscription.pending_setup_intent;
         
-        // If no payment intent was created with the subscription, create one manually
-        let clientSecret = paymentIntent?.client_secret;
+        // Get client secret from payment intent or setup intent
+        let clientSecret = paymentIntent?.client_secret || setupIntent?.client_secret;
         
-        if (!clientSecret && subscription.status === 'incomplete') {
-          console.log("No payment intent found, creating setup intent for subscription...");
+        console.log("Subscription payment details:", {
+          subscriptionStatus: subscription.status,
+          hasPaymentIntent: !!paymentIntent,
+          hasSetupIntent: !!setupIntent,
+          paymentIntentStatus: paymentIntent?.status,
+          setupIntentStatus: setupIntent?.status,
+          hasClientSecret: !!clientSecret
+        });
+        
+        // If still no client secret, create a setup intent manually
+        if (!clientSecret) {
+          console.log("No payment intent or setup intent found, creating setup intent manually...");
           
           try {
-            const setupIntent = await stripe.setupIntents.create({
+            const manualSetupIntent = await stripe.setupIntents.create({
               customer: customer.id,
               payment_method_types: ['card'],
               usage: 'off_session',
@@ -3177,8 +3188,8 @@ Please upload the document again through the secure upload system.`;
               }
             });
             
-            clientSecret = setupIntent.client_secret;
-            console.log("Created setup intent:", setupIntent.id);
+            clientSecret = manualSetupIntent.client_secret;
+            console.log("Created manual setup intent:", manualSetupIntent.id);
           } catch (setupError) {
             console.error("Failed to create setup intent:", setupError);
             throw new Error("Failed to initialize payment for subscription");
