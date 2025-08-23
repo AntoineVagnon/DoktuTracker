@@ -820,17 +820,128 @@ export const pushNotifications = pgTable("push_notifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// User notification preferences
+// Enhanced user notification preferences for Universal Notification System
 export const notificationPreferences = pgTable("notification_preferences", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: integer("user_id").references(() => users.id).notNull().unique(),
+  
+  // Channel preferences
   emailEnabled: boolean("email_enabled").default(true),
   smsEnabled: boolean("sms_enabled").default(false),
   pushEnabled: boolean("push_enabled").default(false),
+  
+  // Category preferences (granular control)
+  transactionalEnabled: boolean("transactional_enabled").default(true), // Cannot be disabled
+  securityEnabled: boolean("security_enabled").default(true), // Cannot be disabled
+  appointmentRemindersEnabled: boolean("appointment_reminders_enabled").default(true),
   marketingEmailsEnabled: boolean("marketing_emails_enabled").default(true),
+  lifeCycleEnabled: boolean("life_cycle_enabled").default(true),
+  documentNotificationsEnabled: boolean("document_notifications_enabled").default(true),
+  membershipNotificationsEnabled: boolean("membership_notifications_enabled").default(true),
+  
+  // Timing preferences
   reminderTiming: jsonb("reminder_timing"), // Custom reminder preferences
-  locale: varchar("locale").default("en"), // Language preference
-  timezone: varchar("timezone").default("Europe/Paris"),
+  quietHoursStart: time("quiet_hours_start").default("22:00:00"), // Default 22:00
+  quietHoursEnd: time("quiet_hours_end").default("08:00:00"), // Default 08:00
+  
+  // Localization
+  locale: varchar("locale").default("en"), // Language preference for notifications
+  timezone: varchar("timezone").default("Europe/Paris"), // User timezone for scheduling
+  
+  // Frequency limits
+  marketingEmailsPerWeek: integer("marketing_emails_per_week").default(1),
+  lifeCycleNudgesPerWeek: integer("life_cycle_nudges_per_week").default(3),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// In-app notifications (banners and inbox)
+export const inAppNotifications = pgTable("in_app_notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  
+  // Notification details
+  type: varchar("type").notNull(), // banner, inbox
+  triggerCode: varchar("trigger_code").notNull(),
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  ctaText: varchar("cta_text"),
+  ctaUrl: varchar("cta_url"),
+  
+  // Display properties
+  priority: integer("priority").notNull().default(50), // Higher = more important
+  style: varchar("style").default("info"), // success, warning, error, info, urgent
+  persistent: boolean("persistent").default(false), // Whether it auto-dismisses
+  autoDismissSeconds: integer("auto_dismiss_seconds").default(10),
+  
+  // Status tracking
+  status: varchar("status").notNull().default("pending"), // pending, delivered, read, dismissed
+  deliveredAt: timestamp("delivered_at"),
+  readAt: timestamp("read_at"),
+  dismissedAt: timestamp("dismissed_at"),
+  
+  // Suppression and scheduling
+  scheduledFor: timestamp("scheduled_for").notNull(),
+  expiresAt: timestamp("expires_at"),
+  suppressedBy: uuid("suppressed_by"), // Higher priority notification that suppressed this
+  
+  // Metadata
+  mergeData: jsonb("merge_data"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Notification audit log for comprehensive tracking
+export const notificationAuditLog = pgTable("notification_audit_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  
+  // Event details
+  eventType: varchar("event_type").notNull(), // scheduled, sent, delivered, opened, clicked, bounced, failed, suppressed
+  channel: varchar("channel").notNull(), // email, sms, push, in_app_banner, in_app_inbox
+  triggerCode: varchar("trigger_code").notNull(),
+  
+  // References to actual notifications
+  emailNotificationId: uuid("email_notification_id").references(() => emailNotifications.id),
+  smsNotificationId: uuid("sms_notification_id").references(() => smsNotifications.id),
+  pushNotificationId: uuid("push_notification_id").references(() => pushNotifications.id),
+  inAppNotificationId: uuid("in_app_notification_id").references(() => inAppNotifications.id),
+  
+  // Event metadata
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+  details: jsonb("details"), // Additional event-specific data
+  errorMessage: text("error_message"),
+  
+  // User context
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  locale: varchar("locale"),
+  timezone: varchar("timezone"),
+});
+
+// Notification suppression rules (priority-based)
+export const notificationSuppressionRules = pgTable("notification_suppression_rules", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  suppressorTrigger: varchar("suppressor_trigger").notNull(), // Higher priority trigger
+  suppressedTrigger: varchar("suppressed_trigger").notNull(), // Lower priority trigger to suppress
+  suppressionDuration: integer("suppression_duration").notNull(), // Minutes to suppress for
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Notification frequency tracking (for caps)
+export const notificationFrequencyTracking = pgTable("notification_frequency_tracking", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  category: varchar("category").notNull(), // marketing, lifecycle, reminder, etc.
+  channel: varchar("channel").notNull(), // email, sms, push
+  weekStarting: date("week_starting").notNull(), // Monday of the week
+  sentCount: integer("sent_count").default(0),
+  lastSentAt: timestamp("last_sent_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
