@@ -80,10 +80,10 @@ export function additionalSecurityHeaders(req: Request, res: Response, next: Nex
   next();
 }
 
-// General rate limiter (relaxed for development)
+// General rate limiter - DISABLED to allow multiple registrations
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'development' ? 10000 : 100, // 10000 requests in dev, 100 in production
+  max: 100000, // Effectively unlimited - allows multiple registrations
   message: {
     error: 'Too many requests from this IP',
     code: 'RATE_LIMIT_EXCEEDED',
@@ -105,18 +105,18 @@ export const authLimiter = rateLimit({
   skipSuccessfulRequests: true,
 });
 
-// Progressive slow down for repeated requests
+// Progressive slow down - DISABLED to allow multiple registrations
 export const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000,
-  delayAfter: 2,
-  delayMs: () => 500,
-  maxDelayMs: 20000,
+  delayAfter: 100000, // Never trigger delays
+  delayMs: () => 0, // No delay
+  maxDelayMs: 0,
 });
 
-// Strict limiter for sensitive endpoints like /api/doctors
+// Strict limiter - DISABLED to allow multiple registrations
 export const strictLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 30, // 30 requests per hour (increased from 10 for better UX)
+  max: 100000, // Effectively unlimited
   message: {
     error: 'Sensitive endpoint rate limit exceeded',
     code: 'SENSITIVE_RATE_LIMIT_EXCEEDED',
