@@ -101,6 +101,10 @@ export function setupSlotRoutes(app: Express) {
 
   // Create time slots in batch
   app.post('/api/time-slots/batch', async (req, res) => {
+    console.log('🎯 POST /api/time-slots/batch endpoint hit');
+    console.log('🎯 Request method:', req.method);
+    console.log('🎯 Request URL:', req.url);
+    
     try {
       console.log('🚀 Batch creating availability blocks - Raw body:', req.body);
       console.log('📥 Request headers:', req.headers);
@@ -111,11 +115,14 @@ export function setupSlotRoutes(app: Express) {
       });
       
       if (!req.body) {
+        console.error('❌ Request body is missing!');
         return res.status(400).json({ error: 'Request body is missing' });
       }
       
+      console.log('📋 Attempting to parse request body with schema...');
       const validatedData = createTimeSlotBatchSchema.parse(req.body);
       const { doctorId, slots } = validatedData;
+      console.log('✅ Request body validated successfully');
       
       // Verify the doctor exists
       const doctor = await storage.getDoctor(doctorId);

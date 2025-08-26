@@ -69,8 +69,17 @@ export default function CalendarAvailabilityManager({ doctorId }: DoctorAvailabi
     mutationFn: async (data: { doctorId: number; slots: Array<{ date: string; startTime: string; endTime: string; isRecurring?: boolean; recurringUntil?: string }> }) => {
       console.log('🚀 Batch creating availability blocks:', data);
       console.log('📤 Sending data to backend:', JSON.stringify(data));
-      const response = await apiRequest('POST', '/api/time-slots/batch', data);
-      return await response.json();
+      
+      try {
+        const response = await apiRequest('POST', '/api/time-slots/batch', data);
+        const responseData = await response.json();
+        console.log('📥 Response from backend:', responseData);
+        return responseData;
+      } catch (error: any) {
+        console.error('📛 API request error:', error);
+        console.error('📛 Error details:', error.message, error.stack);
+        throw error;
+      }
     },
     onSuccess: (data) => {
       console.log('✅ Successfully created availability slots:', data);
@@ -85,10 +94,21 @@ export default function CalendarAvailabilityManager({ doctorId }: DoctorAvailabi
       setRecurringUntil("");
     },
     onError: (error: any) => {
-      console.error('Error creating blocks:', error);
+      console.error('❌ Error creating blocks:', error);
+      console.error('❌ Error message:', error.message);
+      console.error('❌ Full error:', JSON.stringify(error, null, 2));
+      
+      // Show more detailed error message
+      let errorMessage = "Please try again";
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       toast({
         title: "Error creating availability",
-        description: error.message || "Please try again",
+        description: errorMessage,
         variant: "destructive",
       });
     },
