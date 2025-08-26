@@ -321,16 +321,22 @@ export default function GoogleStyleCalendar({
       
       return createdSlots;
     },
-    onSuccess: (slots) => {
+    onSuccess: (response) => {
       // More targeted cache invalidation - only invalidate time slots
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
       
       // Sync availability across all booking surfaces
       syncAvailability(user?.id);
       
+      // Handle the response properly - it might be slots array or an object with slots
+      const slotCount = Array.isArray(response) ? response.length : 
+                        response?.slots?.length || 
+                        response?.created || 
+                        'multiple';
+      
       toast({ 
         title: "Success!",
-        description: `Created ${slots.length} slots instantly`
+        description: `Created ${slotCount} slots instantly`
       });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
     },
