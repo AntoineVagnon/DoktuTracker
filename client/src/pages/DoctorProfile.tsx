@@ -288,10 +288,17 @@ export default function DoctorProfile() {
                     });
                     
                     if (response.ok) {
+                      const holdData = await response.json();
+                      console.log('Slot held successfully:', holdData);
+                      
+                      // Store the slot ID in sessionStorage as backup
+                      sessionStorage.setItem('heldSlotId', nextSlot.id);
+                      sessionStorage.setItem('heldSlotExpiry', holdData.expiresAt);
+                      
                       if (user) {
-                        window.location.href = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                        window.location.href = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${nextSlot.id}`;
                       } else {
-                        window.location.href = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                        window.location.href = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${nextSlot.id}`;
                       }
                     } else {
                       const error = await response.json();
@@ -524,10 +531,11 @@ export default function DoctorProfile() {
                             console.log('Slot clicked:', { doctorId, slot: fullSlotDateTime, price: doctor.consultationPrice });
                             
                             try {
-                              // Hold the slot for 15 minutes before redirecting to auth
+                              // Hold the slot for 30 minutes before redirecting to auth
                               const response = await fetch('/api/slots/hold', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include', // Ensure cookies are sent
                                 body: JSON.stringify({ 
                                   slotId: slot.id,
                                   sessionId: undefined // Let server use session ID
@@ -535,15 +543,22 @@ export default function DoctorProfile() {
                               });
                               
                               if (response.ok) {
+                                const holdData = await response.json();
+                                console.log('Slot held successfully:', holdData);
+                                
+                                // Store the slot ID in sessionStorage as backup
+                                sessionStorage.setItem('heldSlotId', slot.id);
+                                sessionStorage.setItem('heldSlotExpiry', holdData.expiresAt);
+                                
                                 // Slot successfully held - redirect based on authentication status
                                 if (user) {
                                   // User is authenticated - go directly to checkout
-                                  const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                                  const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${slot.id}`;
                                   console.log('Slot held successfully, user authenticated, redirecting to checkout:', checkoutUrl);
                                   window.location.href = checkoutUrl;
                                 } else {
                                   // User not authenticated - go to register page
-                                  const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}`;
+                                  const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${slot.id}`;
                                   console.log('Slot held successfully, user not authenticated, redirecting to register:', registerUrl);
                                   window.location.href = registerUrl;
                                 }

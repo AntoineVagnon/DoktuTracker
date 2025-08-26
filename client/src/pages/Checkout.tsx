@@ -27,6 +27,7 @@ export default function Checkout() {
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
+  const slotId = urlParams.get('slotId');
 
   useEffect(() => {
     const initializeCheckout = async () => {
@@ -41,9 +42,36 @@ export default function Checkout() {
       }
 
       try {
-        // Check if the slot is still held by this session
-        const heldSlotResponse = await fetch('/api/slots/held');
-        const heldSlotData = await heldSlotResponse.json();
+        // If we have a slotId from the URL, re-hold the slot
+        let heldSlotData: any = {};
+        
+        if (slotId) {
+          console.log('Re-holding slot with ID:', slotId);
+          const reholdResponse = await fetch('/api/slots/hold', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ slotId })
+          });
+          
+          if (reholdResponse.ok) {
+            const reholdData = await reholdResponse.json();
+            console.log('Slot re-held successfully:', reholdData);
+            
+            // Now get the held slot
+            const heldSlotResponse = await fetch('/api/slots/held');
+            heldSlotData = await heldSlotResponse.json();
+          } else {
+            console.error('Failed to re-hold slot');
+            setSlotExpired(true);
+            setIsLoading(false);
+            return;
+          }
+        } else {
+          // No slotId provided, check if there's already a held slot
+          const heldSlotResponse = await fetch('/api/slots/held');
+          heldSlotData = await heldSlotResponse.json();
+        }
         
         if (!heldSlotData.heldSlot) {
           setSlotExpired(true);

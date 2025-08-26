@@ -15,6 +15,7 @@ export default function Register() {
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
+  const slotId = urlParams.get('slotId'); // Get the slot ID to preserve the hold
   const redirect = urlParams.get('redirect'); // Get the redirect parameter for membership flow
   
   console.log('Register page loaded with location:', location);
@@ -34,7 +35,7 @@ export default function Register() {
     }
     // If we have booking parameters, create checkout callback URL
     else if (doctorId && slot && price) {
-      const callbackUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
+      const callbackUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}${slotId ? `&slotId=${slotId}` : ''}`;
       sessionStorage.setItem('loginRedirect', callbackUrl);
       console.log('Stored loginRedirect:', callbackUrl);
     } else {
@@ -48,7 +49,7 @@ export default function Register() {
     if (redirect) {
       signupUrl += `redirect=${encodeURIComponent(redirect)}`;
     } else if (doctorId && slot && price) {
-      signupUrl += `doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}`;
+      signupUrl += `doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}${slotId ? `&slotId=${slotId}` : ''}`;
     }
     console.log('Redirecting to:', signupUrl);
     window.location.href = signupUrl;
