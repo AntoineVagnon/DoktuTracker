@@ -257,9 +257,15 @@ export default function GoogleStyleCalendar({
           while (currentTime < dayEndTime) {
             const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
             
+            // Format date as YYYY-MM-DD and times as HH:MM
+            const dateStr = currentTime.toISOString().split('T')[0];
+            const startTimeStr = currentTime.toTimeString().slice(0, 5);
+            const endTimeStr = slotEnd.toTimeString().slice(0, 5);
+            
             slots.push({
-              startTime: currentTime.toISOString(),
-              endTime: slotEnd.toISOString(),
+              date: dateStr,
+              startTime: startTimeStr,
+              endTime: endTimeStr,
               isRecurring: data.isRecurring,
               recurringEndDate: data.recurringEndDate
             });
@@ -277,9 +283,15 @@ export default function GoogleStyleCalendar({
         while (currentTime < endDateTime) {
           const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
           
+          // Format date as YYYY-MM-DD and times as HH:MM
+          const dateStr = currentTime.toISOString().split('T')[0];
+          const startTimeStr = currentTime.toTimeString().slice(0, 5);
+          const endTimeStr = slotEnd.toTimeString().slice(0, 5);
+          
           slots.push({
-            startTime: currentTime.toISOString(),
-            endTime: slotEnd.toISOString(),
+            date: dateStr,
+            startTime: startTimeStr,
+            endTime: endTimeStr,
             isRecurring: false,
             recurringEndDate: null
           });
@@ -411,9 +423,15 @@ export default function GoogleStyleCalendar({
             while (currentTime < dayEndTime) {
               const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
               
+              // Format date as YYYY-MM-DD and times as HH:MM
+              const dateStr = currentTime.toISOString().split('T')[0];
+              const startTimeStr = currentTime.toTimeString().slice(0, 5);
+              const endTimeStr = slotEnd.toTimeString().slice(0, 5);
+              
               slots.push({
-                startTime: currentTime.toISOString(),
-                endTime: slotEnd.toISOString(),
+                date: dateStr,
+                startTime: startTimeStr,
+                endTime: endTimeStr,
                 isRecurring: block.isRecurring,
                 recurringEndDate: block.recurringEndDate
               });
@@ -431,9 +449,15 @@ export default function GoogleStyleCalendar({
           while (currentTime < endDateTime) {
             const slotEnd = new Date(currentTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
             
+            // Format date as YYYY-MM-DD and times as HH:MM
+            const dateStr = currentTime.toISOString().split('T')[0];
+            const startTimeStr = currentTime.toTimeString().slice(0, 5);
+            const endTimeStr = slotEnd.toTimeString().slice(0, 5);
+            
             slots.push({
-              startTime: currentTime.toISOString(),
-              endTime: slotEnd.toISOString(),
+              date: dateStr,
+              startTime: startTimeStr,
+              endTime: endTimeStr,
               isRecurring: false,
               recurringEndDate: null
             });
@@ -750,8 +774,8 @@ export default function GoogleStyleCalendar({
         // Each block will be processed by the batch mutation internally
         if (blocksToCreate.length === 1) {
           const block = blocksToCreate[0];
-          const startDateTime = new Date(`${block.date}T${block.startTime}:00.000Z`);
-          const endDateTime = new Date(`${block.date}T${block.endTime}:00.000Z`);
+          const startDateTime = new Date(`${block.date}T${block.startTime}:00`);
+          const endDateTime = new Date(`${block.date}T${block.endTime}:00`);
           
           await createSlotMutation.mutateAsync({
             startTime: startDateTime.toISOString(),
@@ -762,8 +786,8 @@ export default function GoogleStyleCalendar({
         } else {
           // For multiple blocks, create them all as individual calls but the mutation handles batching internally
           const promises = blocksToCreate.map(block => {
-            const startDateTime = new Date(`${block.date}T${block.startTime}:00.000Z`);
-            const endDateTime = new Date(`${block.date}T${block.endTime}:00.000Z`);
+            const startDateTime = new Date(`${block.date}T${block.startTime}:00`);
+            const endDateTime = new Date(`${block.date}T${block.endTime}:00`);
             
             return createSlotMutation.mutateAsync({
               startTime: startDateTime.toISOString(),

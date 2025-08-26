@@ -1,0 +1,170 @@
+precedence over 'allowfullscreen'.
+_ @ framework-5f907a9a9ca07a6d.js:1Understand this warning
+framework-5f907a9a9ca07a6d.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-5f907a9a9ca07a6d.js:1Understand this warning
+stallwart.build.js:1 stallwart: failed ping 1
+1755-3dad9e1c8a567afb.js:1 WebSocket connection to 'wss://eval.picard.platform.replit.com/wsv2/v2.public.Q2dZSXpzNnl4UVlTQmdqdDZyTEZCaUlHY0dsallYSmtNQUE2MHdFS0pEWmxZemM0T0RReExUZGpNVFl0TkRBNFpDMWlNalV6TFRreU5EUmtaRFF4TVdZNE5CSURibWw0R2hoeVpYQnNhWFF0Y21Wd2JDMW1hV3hsY3kxd2FXTmhjbVFpQ1ZCaGNtdFRiV0Z5ZENvTllXNTBiMmx1WlhaaFoyNXZia0pVQ2hseVpYQnNhWFF0Y21Wd2JDMWliRzlqYTNNdGNHbGpZWEprRWhkeVpYQnNhWFF0Y21Wd2JDMXRaWFJoTFhCcFkyRnlaQm9lY21Wd2JHbDBMVzFoY21kaGNtbHVaUzFpYkc5amEzTXRjR2xqWVhKa1NnY0kvdFRXRkJBQlVBQmFEMmx1ZEdWdWRGOXdaWEp6YjI1aGJIZ0FVaU1JQVJDQWdJQ0FJQmtBQUFBQUFBQVFRQ0VBQUFBQUFBQVFRQ2lBZ0lDQXlBRXdBbUFBYWhRSS90VFdGQklOWVc1MGIybHVaWFpoWjI1dmJvSUJBaW9BbWdFS0NnZ3dMakF1TVRZMk02QUJBUT09enjGUGZOgVQLTGbhCVywioONYon8AfYe33desvXHe-Xxbj8aEvhXbnSkMiUvc7-viss3lqLeSdU5vzS1EBfcAA.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: WebSocket is closed before the connection is established.
+cleanupSocket @ 1755-3dad9e1c8a567afb.js:1Understand this warning
+1755-3dad9e1c8a567afb.js:1 WebSocket connection to 'wss://eval.picard.platform.replit.com/wsv2/v2.public.Q2dZSTRzNnl4UVlTQmdpQjY3TEZCaUlHY0dsallYSmtNQUE2MHdFS0pEWmxZemM0T0RReExUZGpNVFl0TkRBNFpDMWlNalV6TFRreU5EUmtaRFF4TVdZNE5CSURibWw0R2hoeVpYQnNhWFF0Y21Wd2JDMW1hV3hsY3kxd2FXTmhjbVFpQ1ZCaGNtdFRiV0Z5ZENvTllXNTBiMmx1WlhaaFoyNXZia0pVQ2hseVpYQnNhWFF0Y21Wd2JDMWliRzlqYTNNdGNHbGpZWEprRWhkeVpYQnNhWFF0Y21Wd2JDMXRaWFJoTFhCcFkyRnlaQm9lY21Wd2JHbDBMVzFoY21kaGNtbHVaUzFpYkc5amEzTXRjR2xqWVhKa1NnY0kvdFRXRkJBQlVBQmFEMmx1ZEdWdWRGOXdaWEp6YjI1aGJIZ0FVaU1JQVJDQWdJQ0FJQmtBQUFBQUFBQVFRQ0VBQUFBQUFBQVFRQ2lBZ0lDQXlBRXdBbUFBYWhRSS90VFdGQklOWVc1MGIybHVaWFpoWjI1dmJvSUJBaW9BbWdFS0NnZ3dMakF1TVRZMk02QUJBUT09NcxM7c-HAEYw8gebVdv1BcXmHWifeusXatqc5eEetOWh2BVjAgW24mAu7qWLtTRKZdxF4m9yq4r5V5gJO90ACA.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: WebSocket is closed before the connection is established.
+cleanupSocket @ 1755-3dad9e1c8a567afb.js:1Understand this warning
+/graphql:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+/data/repls/6ec78841-7c16-408d-b253-9244dd411f84/get_connection_metadata:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+/graphql:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+/data/repls/6ec78841-7c16-408d-b253-9244dd411f84/get_connection_metadata:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+_app-52873c15c7d44003.js:28 WebSocket connection to 'wss://replit.com/graphql_subscriptions' failed: 
+(anonymous) @ _app-52873c15c7d44003.js:28Understand this error
+/data/repls/6ec78841-7c16-408d-b253-9244dd411f84/get_connection_metadata:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+api.sorryapp.com/v1/pages/27c7b5fc:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Afetch%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3A19ef00cd&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=3b7079ae-17e6-46ea-8fa1-ce86ad4ff6ca:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+r.stripe.com/b:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+r.stripe.com/b:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+r.stripe.com/b:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+r.stripe.com/b:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
+shared-5229f17447f9baa1e5e4a0b5b3e948ca.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-5229f17447f9baa1e5e4a0b5b3e948ca.js:1:220596Understand this error
+events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_SOCKET_NOT_CONNECTEDUnderstand this error
+stallwart.build.js:1 stallwart: failed ping 1
+1755-3dad9e1c8a567afb.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSXZKMjN4UVlTQmdqYnViZkZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...TJhR2xXWkhsM1Ywc3pVazFuTVZGMWVuUTVSVFk0YUhkU2VXNXBiU1V5UW5KRFEzcFdSalZaUTJzMFIxZzRkREJGTkRrbE1rWmxRbXA1WTI5elkweDFUamhCWjBOTVFYQTBibWtsTWtKSVlVODRNRk50YldsdGJHRlhRemRJZVVoTE5rbDRWa2swTm5SeWNtNU9RbUpVU2swbE1rSjNRVWxHSlRKR2MyMGxNa1pSYlRWM1RubHZaMjA1YzFFbE1rSjNZakpoUjFoVFZUTlhVa1ZEU1RBNWEzUk9ka3A0ZVVGck1qRndOWG80ZFRJbE1rSlpORk16YlVoMFZVRmlPU1V5UWpWdU5scDRjVVpKUTBFd2JEZHlaR2hSSlRORUpUTkWj7HeE9sQc47ABFbCv2UX47DQr6JsbT70SYhm7vRmrGK4J5B8IIKugZ66GQ82wXtp73_mOQnQn-aMhNZazoqUF.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 1755-3dad9e1c8a567afb.js:1Understand this error
+1755-3dad9e1c8a567afb.js:1 WebSocket connection to 'wss://eval.picard.platform.replit.com/wsv2/v2.public.Q2dZSXM1MjN4UVlTQmdqU3ViZkZCaUlHY0dsallYSmtNQUE2MHdFS0pEWmxZemM0T0RReExUZGpNVFl0TkRBNFpDMWlNalV6TFRreU5EUmtaRFF4TVdZNE5CSURibWw0R2hoeVpYQnNhWFF0Y21Wd2JDMW1hV3hsY3kxd2FXTmhjbVFpQ1ZCaGNtdFRiV0Z5ZENvTllXNTBiMmx1WlhaaFoyNXZia0pVQ2hseVpYQnNhWFF0Y21Wd2JDMWliRzlqYTNNdGNHbGpZWEprRWhkeVpYQnNhWFF0Y21Wd2JDMXRaWFJoTFhCcFkyRnlaQm9lY21Wd2JHbDBMVzFoY21kaGNtbHVaUzFpYkc5amEzTXRjR2xqWVhKa1NnY0kvdFRXRkJBQlVBQmFEMmx1ZEdWdWRGOXdaWEp6YjI1aGJIZ0FVaU1JQVJDQWdJQ0FJQmtBQUFBQUFBQVFRQ0VBQUFBQUFBQVFRQ2lBZ0lDQXlBRXdBbUFBYWhRSS90VFdGQklOWVc1MGIybHVaWFpoWjI1dmJvSUJBaW9BbWdFS0NnZ3dMakF1TVRZMk02QUJBUT09JJTDBzJ8geCHclFYrvlIlu3aCpEG8Jk5_hrgdmW6UQ-SVUeGsxSXfjErKP-q3QHZuydO9iGfXcIay0pK9oF_AQ.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 1755-3dad9e1c8a567afb.js:1Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+1755-3dad9e1c8a567afb.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSXZKMjN4UVlTQmdqYnViZkZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...TJhR2xXWkhsM1Ywc3pVazFuTVZGMWVuUTVSVFk0YUhkU2VXNXBiU1V5UW5KRFEzcFdSalZaUTJzMFIxZzRkREJGTkRrbE1rWmxRbXA1WTI5elkweDFUamhCWjBOTVFYQTBibWtsTWtKSVlVODRNRk50YldsdGJHRlhRemRJZVVoTE5rbDRWa2swTm5SeWNtNU9RbUpVU2swbE1rSjNRVWxHSlRKR2MyMGxNa1pSYlRWM1RubHZaMjA1YzFFbE1rSjNZakpoUjFoVFZUTlhVa1ZEU1RBNWEzUk9ka3A0ZVVGck1qRndOWG80ZFRJbE1rSlpORk16YlVoMFZVRmlPU1V5UWpWdU5scDRjVVpKUTBFd2JEZHlaR2hSSlRORUpUTkWj7HeE9sQc47ABFbCv2UX47DQr6JsbT70SYhm7vRmrGK4J5B8IIKugZ66GQ82wXtp73_mOQnQn-aMhNZazoqUF.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 1755-3dad9e1c8a567afb.js:1Understand this error
+_app-52873c15c7d44003.js:16 Viewport failed to stabilize
+(anonymous) @ _app-52873c15c7d44003.js:16Understand this warning
+2_app-52873c15c7d44003.js:16 Measure loop restarted more than 5 times
+(anonymous) @ _app-52873c15c7d44003.js:16Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar1ld%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+12Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+Understand this error
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with public key: pk_test_51...
+Console.js:61 Landing page loaded, checking for password reset tokens
+Console.js:61 Current URL hash: 
+Console.js:61 Hash params: [object Object]
+Console.js:61 All hash params: 
+Console.js:61 ❌ No password reset tokens found, loading normal landing page
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)Understand this error
+Console.js:61 Failed to send analytics events: TypeError: Failed to fetch
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with public key: pk_test_51...
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/time-slots:1  Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this error
+Console.js:61 🚀 Batch creating 1 availability blocks: Array(1)
+Console.js:61 🚀 Batch creating 4 slots with single API call
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/time-slots/batch:1  Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this error
+Console.js:61 Batch slot creation failed: Error: [
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "slots",
+      0,
+      "date"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "slots",
+      1,
+      "date"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "slots",
+      2,
+      "date"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "slots",
+      3,
+      "date"
+    ],
+    "message": "Required"
+  }
+]
+    at throwIfResNotOk (queryClient.ts:21:11)
+    at async apiRequest (queryClient.ts:37:3)
+    at async Object.mutationFn (GoogleStyleCalendar.tsx:304:24)
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Error creating blocks: Error: [
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "slots",
+      0,
+      "date"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "slots",
+      1,
+      "date"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "slots",
+      2,
+      "date"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "slots",
+      3,
+      "date"
+    ],
+    "message": "Required"
+  }
+]
+    at throwIfResNotOk (queryClient.ts:21:11)
+    at async apiRequest (queryClient.ts:37:3)
+    at async Object.mutationFn (GoogleStyleCalendar.tsx:304:24)
