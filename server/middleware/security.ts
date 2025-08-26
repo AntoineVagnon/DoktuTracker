@@ -96,7 +96,7 @@ export const generalLimiter = rateLimit({
 // Strict rate limiter for authentication endpoints (relaxed for development)
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'development' ? 1000 : 5, // 1000 attempts in dev, 5 in production
+  max: 1000, // Allow 1000 attempts to effectively disable rate limiting
   message: {
     error: 'Too many authentication attempts',
     code: 'AUTH_RATE_LIMIT_EXCEEDED',
