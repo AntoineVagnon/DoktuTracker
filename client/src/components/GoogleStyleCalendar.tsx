@@ -156,6 +156,31 @@ export default function GoogleStyleCalendar({
 
   const [templateEndDate, setTemplateEndDate] = useState('');
   const calendarScrollRef = useRef<HTMLDivElement>(null);
+  const [currentDoctorId, setCurrentDoctorId] = useState<number | null>(null);
+
+  // Fetch the doctor ID for the current user
+  useEffect(() => {
+    const fetchDoctorId = async () => {
+      if (user?.role === 'doctor' && user?.id && !doctorId) {
+        try {
+          const response = await fetch(`/api/doctors?userId=${user.id}`);
+          if (response.ok) {
+            const doctors = await response.json();
+            if (doctors[0]?.id) {
+              setCurrentDoctorId(doctors[0].id);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching doctor ID:', error);
+        }
+      } else if (doctorId) {
+        // If doctorId prop is provided, use it (convert to number if string)
+        setCurrentDoctorId(typeof doctorId === 'string' ? parseInt(doctorId) : doctorId);
+      }
+    };
+    
+    fetchDoctorId();
+  }, [user, doctorId]);
 
   // Scroll to 8 AM position when calendar loads
   useEffect(() => {
@@ -271,7 +296,15 @@ export default function GoogleStyleCalendar({
         console.log(`🚀 Batch creating ${slots.length} slots with single API call`);
       }
       
-      const response = await apiRequest('POST', '/api/time-slots/batch', { slots });
+      // Use the currentDoctorId that was fetched in the useEffect
+      if (!currentDoctorId) {
+        throw new Error('Doctor ID is required for creating time slots');
+      }
+      
+      const response = await apiRequest('POST', '/api/time-slots/batch', { 
+        doctorId: currentDoctorId,
+        slots 
+      });
       const createdSlots = await response.json();
       
       return createdSlots;
@@ -411,7 +444,16 @@ export default function GoogleStyleCalendar({
       }
       
       console.log(`🚀 Batch creating ${slots.length} slots from ${timeBlocks.length} time blocks`);
-      const response = await apiRequest('POST', '/api/time-slots/batch', { slots });
+      
+      // Use the currentDoctorId that was fetched in the useEffect
+      if (!currentDoctorId) {
+        throw new Error('Doctor ID is required for creating time slots');
+      }
+      
+      const response = await apiRequest('POST', '/api/time-slots/batch', { 
+        doctorId: currentDoctorId,
+        slots 
+      });
       return response.json();
     },
     onSuccess: (createdSlots) => {
