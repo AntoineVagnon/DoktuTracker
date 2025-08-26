@@ -480,21 +480,57 @@ export default function GoogleStyleCalendar({
         throw new Error('Doctor ID is required for creating time slots');
       }
       
-      const response = await apiRequest('POST', '/api/time-slots/batch', { 
-        doctorId: currentDoctorId,
-        slots 
-      });
-      return response.json();
+      // For large batches, process in chunks to avoid overwhelming the system
+      const CHUNK_SIZE = 50; // Process 50 slots at a time
+      const results = [];
+      
+      if (slots.length > CHUNK_SIZE) {
+        // Show progress toast for large batches
+        toast({ 
+          title: "Processing...", 
+          description: `Creating ${slots.length} slots, please wait...` 
+        });
+        
+        for (let i = 0; i < slots.length; i += CHUNK_SIZE) {
+          const chunk = slots.slice(i, i + CHUNK_SIZE);
+          const response = await apiRequest('POST', '/api/time-slots/batch', { 
+            doctorId: currentDoctorId,
+            slots: chunk
+          });
+          const chunkResult = await response.json();
+          results.push(...(Array.isArray(chunkResult) ? chunkResult : [chunkResult]));
+          
+          // Update progress
+          const progress = Math.min((i + CHUNK_SIZE) / slots.length * 100, 100);
+          console.log(`📊 Progress: ${Math.round(progress)}% (${Math.min(i + CHUNK_SIZE, slots.length)}/${slots.length} slots)`);
+        }
+      } else {
+        // Small batch - process all at once
+        const response = await apiRequest('POST', '/api/time-slots/batch', { 
+          doctorId: currentDoctorId,
+          slots 
+        });
+        const result = await response.json();
+        results.push(...(Array.isArray(result) ? result : [result]));
+      }
+      
+      return results;
     },
-    onSuccess: (createdSlots) => {
+    onSuccess: (results) => {
       // Sync availability across all surfaces when template applied
       syncAvailability(user?.id);
       queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+      
+      // Count the actual number of created slots
+      const slotCount = Array.isArray(results) ? results.length : 'multiple';
+      
       toast({ 
         title: "Success!",
-        description: `Created ${createdSlots.length} time slots from your weekly template` 
+        description: `Created ${slotCount} time slots from your weekly template` 
       });
       setIsTemplateOpen(false);
+      // Reset the template end date for next time
+      setTemplateEndDate('');
     },
     onError: () => {
       toast({ title: "Failed to apply template", variant: "destructive" });
