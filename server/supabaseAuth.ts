@@ -159,6 +159,14 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(400).json({ error: 'Email and password required' });
       }
 
+      // Save the old session ID to preserve held slots
+      const oldSessionId = req.session.id;
+      console.log('Old session ID before registration:', oldSessionId);
+
+      // Check if there's a held slot before registration
+      const heldSlot = await storage.getHeldSlot(oldSessionId);
+      console.log('Held slot before registration:', heldSlot ? `Slot ${heldSlot.id} held until ${heldSlot.expiresAt}` : 'No held slot');
+
       // Create user in Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -197,6 +205,28 @@ export async function setupSupabaseAuth(app: Express) {
         // Store session if user is confirmed
         if (data.session) {
           (req.session as any).supabaseSession = data.session;
+          
+          // If there was a held slot, transfer it to the new session
+          if (heldSlot) {
+            // The session ID might have changed, so we need to update the held slot
+            console.log('Transferring held slot to new session...');
+            
+            // First, release the old slot hold
+            await storage.releaseAllSlotsForSession(oldSessionId);
+            
+            // Then re-hold it with the current session ID
+            const newSessionId = req.session.id;
+            console.log('New session ID after registration:', newSessionId);
+            
+            // Calculate remaining time for the slot hold
+            const now = new Date();
+            const expiresAt = new Date(heldSlot.expiresAt);
+            const remainingMinutes = Math.max(1, Math.floor((expiresAt.getTime() - now.getTime()) / 60000));
+            
+            // Re-hold the slot with the new session ID
+            await storage.holdSlot(heldSlot.id, newSessionId, remainingMinutes);
+            console.log(`Slot ${heldSlot.id} transferred to new session, expires in ${remainingMinutes} minutes`);
+          }
         }
 
         res.json({ 
