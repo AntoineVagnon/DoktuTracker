@@ -1305,3 +1305,116 @@ export const insertDataBreachIncidentsSchema = createInsertSchema(dataBreachInci
 });
 export type InsertDataBreachIncidents = z.infer<typeof insertDataBreachIncidentsSchema>;
 export type DataBreachIncidents = typeof dataBreachIncidents.$inferSelect;
+
+// Notification System Tables
+export const notificationTemplates = pgTable('notification_templates', {
+  id: serial('id').primaryKey(),
+  triggerCode: varchar('trigger_code', { length: 100 }).unique().notNull(),
+  templateName: varchar('template_name', { length: 255 }).notNull(),
+  description: text('description'),
+  channel: varchar('channel', { length: 50 }).notNull(),
+  priorityLevel: integer('priority_level').default(3),
+  templateContent: jsonb('template_content'),
+  variables: jsonb('variables'),
+  frequencyCapHours: integer('frequency_cap_hours'),
+  batchWindowMinutes: integer('batch_window_minutes'),
+  autoDismissSeconds: integer('auto_dismiss_seconds').default(10),
+  active: boolean('active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const notificationQueue = pgTable('notification_queue', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id'),
+  triggerCode: varchar('trigger_code', { length: 100 }).notNull(),
+  channel: varchar('channel', { length: 50 }).notNull(),
+  priorityLevel: integer('priority_level').default(3),
+  templateData: jsonb('template_data'),
+  scheduledFor: timestamp('scheduled_for').defaultNow(),
+  expiresAt: timestamp('expires_at'),
+  status: varchar('status', { length: 50 }).default('pending'),
+  attempts: integer('attempts').default(0),
+  lastAttemptAt: timestamp('last_attempt_at'),
+  sentAt: timestamp('sent_at'),
+  errorMessage: text('error_message'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const notificationAuditLog = pgTable('notification_audit_log', {
+  id: serial('id').primaryKey(),
+  notificationId: integer('notification_id'),
+  userId: integer('user_id'),
+  triggerCode: varchar('trigger_code', { length: 100 }),
+  channel: varchar('channel', { length: 50 }),
+  eventType: varchar('event_type', { length: 50 }),
+  eventData: jsonb('event_data'),
+  timestamp: timestamp('timestamp').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+export const userNotificationPreferences = pgTable('user_notification_preferences', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull(),
+  channel: varchar('channel', { length: 50 }).notNull(),
+  triggerCode: varchar('trigger_code', { length: 100 }),
+  enabled: boolean('enabled').default(true),
+  frequencyCapOverride: integer('frequency_cap_override'),
+  quietHoursStart: time('quiet_hours_start'),
+  quietHoursEnd: time('quiet_hours_end'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const notificationBatch = pgTable('notification_batch', {
+  id: serial('id').primaryKey(),
+  batchKey: varchar('batch_key', { length: 255 }).unique().notNull(),
+  channel: varchar('channel', { length: 50 }).notNull(),
+  scheduledFor: timestamp('scheduled_for'),
+  notificationIds: integer('notification_ids').array(),
+  status: varchar('status', { length: 50 }).default('pending'),
+  createdAt: timestamp('created_at').defaultNow(),
+  processedAt: timestamp('processed_at')
+});
+
+// Notification Zod schemas
+export const insertNotificationTemplatesSchema = createInsertSchema(notificationTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+export type InsertNotificationTemplates = z.infer<typeof insertNotificationTemplatesSchema>;
+export type NotificationTemplates = typeof notificationTemplates.$inferSelect;
+
+export const insertNotificationQueueSchema = createInsertSchema(notificationQueue).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+export type InsertNotificationQueue = z.infer<typeof insertNotificationQueueSchema>;
+export type NotificationQueue = typeof notificationQueue.$inferSelect;
+
+export const insertNotificationAuditLogSchema = createInsertSchema(notificationAuditLog).omit({
+  id: true,
+  timestamp: true,
+  createdAt: true
+});
+export type InsertNotificationAuditLog = z.infer<typeof insertNotificationAuditLogSchema>;
+export type NotificationAuditLog = typeof notificationAuditLog.$inferSelect;
+
+export const insertUserNotificationPreferencesSchema = createInsertSchema(userNotificationPreferences).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+export type InsertUserNotificationPreferences = z.infer<typeof insertUserNotificationPreferencesSchema>;
+export type UserNotificationPreferences = typeof userNotificationPreferences.$inferSelect;
+
+export const insertNotificationBatchSchema = createInsertSchema(notificationBatch).omit({
+  id: true,
+  createdAt: true,
+  processedAt: true
+});
+export type InsertNotificationBatch = z.infer<typeof insertNotificationBatchSchema>;
+export type NotificationBatch = typeof notificationBatch.$inferSelect;

@@ -1,13 +1,10 @@
 import { db } from "../db";
 import { 
-  emailNotifications, 
-  smsNotifications, 
-  pushNotifications,
-  inAppNotifications,
-  notificationPreferences,
+  notificationTemplates,
+  notificationQueue,
   notificationAuditLog,
-  notificationFrequencyTracking,
-  notificationSuppressionRules,
+  userNotificationPreferences,
+  notificationBatch,
   appointments,
   users,
   doctors
@@ -396,16 +393,20 @@ export class UniversalNotificationService {
 
       let [prefs] = await db
         .select()
-        .from(notificationPreferences)
-        .where(eq(notificationPreferences.userId, userId));
+        .from(userNotificationPreferences)
+        .where(eq(userNotificationPreferences.userId, userId));
 
       // Create default preferences if not exists
       if (!prefs) {
-        await db.insert(notificationPreferences).values({ userId });
+        await db.insert(userNotificationPreferences).values({ 
+          userId,
+          channel: 'email',
+          enabled: true 
+        });
         [prefs] = await db
           .select()
-          .from(notificationPreferences)
-          .where(eq(notificationPreferences.userId, userId));
+          .from(userNotificationPreferences)
+          .where(eq(userNotificationPreferences.userId, userId));
       }
 
       // 2. Check if notification is enabled for this category
@@ -616,29 +617,18 @@ export class UniversalNotificationService {
   private async checkDuplicateNotification(userId: number, appointmentId: number | undefined, triggerCode: TriggerCode): Promise<boolean> {
     const thirtyMinutesAgo = subMinutes(new Date(), 30);
     
-    // Check email notifications
-    const [existingEmail] = await db
+    // Check notification queue for duplicate notifications
+    const [existing] = await db
       .select()
-      .from(emailNotifications)
+      .from(notificationQueue)
       .where(and(
-        eq(emailNotifications.userId, userId),
-        appointmentId ? eq(emailNotifications.appointmentId, appointmentId) : isNull(emailNotifications.appointmentId),
-        eq(emailNotifications.triggerCode, triggerCode),
-        gte(emailNotifications.createdAt, thirtyMinutesAgo)
+        eq(notificationQueue.userId, userId),
+        eq(notificationQueue.triggerCode, triggerCode),
+        gte(notificationQueue.createdAt, thirtyMinutesAgo),
+        eq(notificationQueue.status, 'pending')
       ));
 
-    // Check in-app notifications  
-    const [existingInApp] = await db
-      .select()
-      .from(inAppNotifications)
-      .where(and(
-        eq(inAppNotifications.userId, userId),
-        appointmentId ? eq(inAppNotifications.appointmentId, appointmentId) : isNull(inAppNotifications.appointmentId),
-        eq(inAppNotifications.triggerCode, triggerCode),
-        gte(inAppNotifications.createdAt, thirtyMinutesAgo)
-      ));
-
-    return !!(existingEmail || existingInApp);
+    return !!existing;
   }
 
   /**
@@ -705,75 +695,17 @@ export class UniversalNotificationService {
       return { allowed: true };
     }
 
-    const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }); // Monday
-    
-    const [tracking] = await db
-      .select()
-      .from(notificationFrequencyTracking)
-      .where(and(
-        eq(notificationFrequencyTracking.userId, userId),
-        eq(notificationFrequencyTracking.category, category),
-        eq(notificationFrequencyTracking.channel, "email"),
-        eq(notificationFrequencyTracking.weekStarting, weekStart)
-      ));
-
-    const currentCount = tracking?.sentCount || 0;
-    let limit: number;
-
-    if (category === "marketing_emails") {
-      // Get user's marketing email preference
-      const [prefs] = await db
-        .select()
-        .from(notificationPreferences)
-        .where(eq(notificationPreferences.userId, userId));
-      limit = prefs?.marketingEmailsPerWeek || 1;
-    } else {
-      // lifecycle
-      const [prefs] = await db
-        .select()
-        .from(notificationPreferences)
-        .where(eq(notificationPreferences.userId, userId));
-      limit = prefs?.lifeCycleNudgesPerWeek || 3;
-    }
-
-    return {
-      allowed: currentCount < limit,
-      currentCount,
-      limit
-    };
+    // For now, allow all notifications while we implement full frequency tracking
+    // TODO: Implement frequency tracking using notification_queue history
+    return { allowed: true, currentCount: 0, limit: 10 };
   }
 
   /**
    * Check for active suppression rules based on priority
    */
   private async checkSuppressionRules(userId: number, triggerCode: TriggerCode): Promise<{ suppressed: boolean; suppressorTrigger?: string }> {
-    const currentPriority = TRIGGER_PRIORITY[triggerCode];
-    
-    // Look for active higher-priority notifications in the last hour
-    const oneHourAgo = subHours(new Date(), 1);
-    
-    // Check in-app notifications for active banners
-    const activeHighPriorityNotifications = await db
-      .select()
-      .from(inAppNotifications)
-      .where(and(
-        eq(inAppNotifications.userId, userId),
-        eq(inAppNotifications.status, "delivered"),
-        eq(inAppNotifications.persistent, true),
-        isNull(inAppNotifications.dismissedAt),
-        gte(inAppNotifications.deliveredAt, oneHourAgo)
-      ));
-
-    for (const notification of activeHighPriorityNotifications) {
-      const notificationPriority = TRIGGER_PRIORITY[notification.triggerCode as TriggerCode];
-      if (notificationPriority > currentPriority) {
-        return {
-          suppressed: true,
-          suppressorTrigger: notification.triggerCode
-        };
-      }
-    }
-
+    // For now, don't suppress any notifications while we implement full suppression rules
+    // TODO: Implement suppression rules using notification_queue history and priority levels
     return { suppressed: false };
   }
 
