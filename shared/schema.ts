@@ -1342,17 +1342,6 @@ export const notificationQueue = pgTable('notification_queue', {
   updatedAt: timestamp('updated_at').defaultNow()
 });
 
-export const notificationAuditLog = pgTable('notification_audit_log', {
-  id: serial('id').primaryKey(),
-  notificationId: integer('notification_id'),
-  userId: integer('user_id'),
-  triggerCode: varchar('trigger_code', { length: 100 }),
-  channel: varchar('channel', { length: 50 }),
-  eventType: varchar('event_type', { length: 50 }),
-  eventData: jsonb('event_data'),
-  timestamp: timestamp('timestamp').defaultNow(),
-  createdAt: timestamp('created_at').defaultNow()
-});
 
 export const userNotificationPreferences = pgTable('user_notification_preferences', {
   id: serial('id').primaryKey(),
@@ -1397,8 +1386,7 @@ export type NotificationQueue = typeof notificationQueue.$inferSelect;
 
 export const insertNotificationAuditLogSchema = createInsertSchema(notificationAuditLog).omit({
   id: true,
-  timestamp: true,
-  createdAt: true
+  timestamp: true
 });
 export type InsertNotificationAuditLog = z.infer<typeof insertNotificationAuditLogSchema>;
 export type NotificationAuditLog = typeof notificationAuditLog.$inferSelect;
