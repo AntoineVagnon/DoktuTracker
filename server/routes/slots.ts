@@ -21,22 +21,34 @@ const createTimeSlotBatchSchema = z.object({
 });
 
 export function setupSlotRoutes(app: Express) {
-  // Hold a slot for 15 minutes
+  // Hold a slot for 30 minutes
   app.post('/api/slots/hold', async (req, res) => {
     try {
       const { slotId, sessionId } = holdSlotSchema.parse(req.body);
       const actualSessionId = sessionId || req.session.id;
-
-      // Rate limiting check - max 10 requests per minute per IP
-      const clientIP = req.ip || req.connection.remoteAddress;
-      // Note: In production, implement Redis-based rate limiting
       
-      await storage.holdSlot(slotId, actualSessionId, 30); // Increased to 30 minutes for registration flow
+      console.log(`Holding slot ${slotId} for session ${actualSessionId}`);
+      
+      await storage.holdSlot(slotId, actualSessionId, 30); // 30 minutes for registration flow
+      
+      // Save the session to ensure it persists
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) {
+            console.error('Failed to save session:', err);
+            reject(err);
+          } else {
+            console.log('Session saved successfully after holding slot');
+            resolve(true);
+          }
+        });
+      });
       
       res.json({ 
         success: true, 
         message: 'Slot held for 30 minutes',
-        expiresAt: new Date(Date.now() + 30 * 60 * 1000)
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+        sessionId: actualSessionId
       });
     } catch (error: any) {
       console.error('Hold slot error:', error);
