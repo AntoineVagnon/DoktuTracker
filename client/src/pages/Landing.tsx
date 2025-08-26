@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Star, Search, Calendar, Video, Shield, Clock, UserCheck, Smartphone, History, CheckCircle, Phone, ArrowRight, Play } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -22,6 +23,7 @@ export default function Landing() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<"login" | "signup">("login");
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   const { data: doctors = [], isLoading } = useQuery({
     queryKey: ["/api/doctors"],
@@ -567,9 +569,16 @@ export default function Landing() {
                             doctorsSection.scrollIntoView({ behavior: 'smooth' });
                           }
                         } else {
-                          // Navigate directly to registration with membership redirect
+                          // Check if user is authenticated
                           const planParam = plan.name === "Monthly Membership" ? 'monthly' : 'semiannual';
-                          setLocation(`/register?redirect=/membership-start?plan=${planParam}`);
+                          
+                          if (isAuthenticated) {
+                            // User is logged in, go directly to membership page
+                            setLocation(`/membership-start?plan=${planParam}`);
+                          } else {
+                            // User not logged in, go to registration with redirect
+                            setLocation(`/register?redirect=/membership-start?plan=${planParam}`);
+                          }
                         }
                       }}
                     >
