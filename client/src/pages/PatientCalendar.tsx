@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import GoogleStyleCalendar from "@/components/GoogleStyleCalendar";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { AppointmentActionsModal } from "@/components/AppointmentActionsModal";
 
 interface Appointment {
   id: number;
@@ -20,6 +21,7 @@ interface Appointment {
   price: string;
   notes?: string;
   zoomJoinUrl?: string;
+  rescheduleCount?: number;
   doctor: {
     id: number;
     firstName?: string;
@@ -49,6 +51,10 @@ export function PatientCalendar() {
   const [view, setView] = useState<'day' | 'week' | 'month'>('week');
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [appointmentModal, setAppointmentModal] = useState({ isOpen: false, appointment: null as Appointment | null });
+  const [appointmentAction, setAppointmentAction] = useState<{ appointment: any; action: "reschedule" | "cancel" | null }>({ 
+    appointment: null, 
+    action: null 
+  });
 
   // Fetch patient's appointments
   const { data: appointments = [], isLoading } = useQuery<Appointment[]>({
@@ -293,15 +299,18 @@ export function PatientCalendar() {
                     variant="outline" 
                     className="w-full"
                     onClick={() => {
-                      // TODO: Implement reschedule functionality
-                      toast({
-                        title: "Coming Soon",
-                        description: "Rescheduling functionality will be available soon.",
+                      setAppointmentAction({ 
+                        appointment: appointmentModal.appointment, 
+                        action: "reschedule" 
                       });
+                      setAppointmentModal({ isOpen: false, appointment: null });
                     }}
+                    disabled={appointmentModal.appointment?.rescheduleCount && appointmentModal.appointment.rescheduleCount >= 2}
                   >
                     <CalendarDays className="h-4 w-4 mr-2" />
-                    Reschedule Appointment
+                    {appointmentModal.appointment?.rescheduleCount && appointmentModal.appointment.rescheduleCount >= 2 
+                      ? "Reschedule Limit Reached (2/2)" 
+                      : `Reschedule Appointment ${appointmentModal.appointment?.rescheduleCount ? `(${appointmentModal.appointment.rescheduleCount}/2)` : ''}`}
                   </Button>
                   
                   <Button 
@@ -356,6 +365,16 @@ export function PatientCalendar() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Appointment Actions Modal */}
+      <AppointmentActionsModal
+        appointment={appointmentAction.appointment}
+        action={appointmentAction.action}
+        onClose={() => {
+          setAppointmentAction({ appointment: null, action: null });
+          queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+        }}
+      />
     </div>
   );
 }
