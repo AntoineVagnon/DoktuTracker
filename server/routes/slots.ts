@@ -104,7 +104,11 @@ export function setupSlotRoutes(app: Express) {
     try {
       console.log('🚀 Batch creating availability blocks - Raw body:', req.body);
       console.log('📥 Request headers:', req.headers);
-      console.log('📥 Body type:', typeof req.body);
+      console.log('📥 Session info:', {
+        sessionId: req.session?.id,
+        hasSession: !!(req.session as any)?.supabaseSession,
+        hasAccessToken: !!(req.session as any)?.supabaseSession?.access_token
+      });
       
       if (!req.body) {
         return res.status(400).json({ error: 'Request body is missing' });
@@ -113,15 +117,16 @@ export function setupSlotRoutes(app: Express) {
       const validatedData = createTimeSlotBatchSchema.parse(req.body);
       const { doctorId, slots } = validatedData;
       
-      // For now, we'll allow creating slots for any doctor without strict authentication
-      // This is a temporary fix while we resolve the authentication issue
-      // In production, this should require proper authentication
-      
       // Verify the doctor exists
       const doctor = await storage.getDoctor(doctorId);
       if (!doctor) {
         return res.status(404).json({ error: 'Doctor not found' });
       }
+      
+      // For now, temporarily allow slot creation while we fix the auth issue
+      // In production, this should check proper authentication
+      console.log('⚠️ Temporarily allowing slot creation for doctor while auth is being fixed');
+      console.log('Note: This is a temporary measure to allow doctors to work while auth is resolved');
       
       console.log(`Creating availability slots for doctor ${doctor.id} - ${doctor.user?.firstName} ${doctor.user?.lastName}`);
 
@@ -162,6 +167,12 @@ export function setupSlotRoutes(app: Express) {
             createdSlots.push(createdSlot);
           } catch (error: any) {
             console.error('Error creating individual slot:', error);
+            console.error('Slot data that failed:', timeSlotData);
+            console.error('Error details:', error.message, error.code, error.detail);
+            // If all slots are failing with the same error, throw it
+            if (createdSlots.length === 0 && timeSlotsToCreate.length > 0) {
+              throw new Error(`Failed to create slots: ${error.message || 'Database error'}`);
+            }
             // Continue with other slots if one fails
           }
         }
