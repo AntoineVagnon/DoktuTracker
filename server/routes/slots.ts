@@ -31,12 +31,12 @@ export function setupSlotRoutes(app: Express) {
       const clientIP = req.ip || req.connection.remoteAddress;
       // Note: In production, implement Redis-based rate limiting
       
-      await storage.holdSlot(slotId, actualSessionId, 15);
+      await storage.holdSlot(slotId, actualSessionId, 30); // Increased to 30 minutes for registration flow
       
       res.json({ 
         success: true, 
-        message: 'Slot held for 15 minutes',
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000)
+        message: 'Slot held for 30 minutes',
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000)
       });
     } catch (error: any) {
       console.error('Hold slot error:', error);
