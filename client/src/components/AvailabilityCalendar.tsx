@@ -118,23 +118,23 @@ export default function AvailabilityCalendar({
         // Calculate the week offset needed (divide by 7 and round down)
         const requiredWeekOffset = Math.floor(daysDifference / 7);
         
-        // Only update if we're currently at week 0 (today's week) and there are no slots in current week
-        if (weekOffset === 0) {
-          const currentWeekDates = getNext7Days(todayStart);
-          const hasCurrentWeekSlots = currentWeekDates.some(date => {
-            const dateStr = format(date, "yyyy-MM-dd");
-            return availableSlots.some(slot => slot.date === dateStr && slot.isAvailable);
-          });
-          
-          // If current week has no available slots, navigate to first available week
-          if (!hasCurrentWeekSlots && requiredWeekOffset > 0) {
-            setWeekOffset(requiredWeekOffset);
-            setSelectedDay(firstAvailableDate);
-          }
+        // Check if current displayed week has any available slots
+        const currentWeekStart = addWeeks(todayStart, weekOffset);
+        const currentWeekDates = getNext7Days(currentWeekStart);
+        const hasCurrentWeekSlots = currentWeekDates.some(date => {
+          const dateStr = format(date, "yyyy-MM-dd");
+          return availableSlots.some(slot => slot.date === dateStr && slot.isAvailable);
+        });
+        
+        // Always navigate to first available date if current week has no slots
+        if (!hasCurrentWeekSlots && availableDates.length > 0) {
+          console.log(`📅 No slots in current week (offset: ${weekOffset}), navigating to first available date: ${format(firstAvailableDate, 'yyyy-MM-dd')}`);
+          setWeekOffset(requiredWeekOffset);
+          setSelectedDay(firstAvailableDate);
         }
       }
     }
-  }, [availableSlots, today, weekOffset]); // Run when slots change
+  }, [availableSlots, today]); // Removed weekOffset from deps to avoid infinite loops
 
   // Use the passed-in availability data instead of fetching separately
   const doctorSlots = availableSlots;
