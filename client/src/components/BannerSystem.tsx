@@ -233,7 +233,7 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
       });
       
       // Only show banner if not expired
-      if (isAfter(expiresAt, now)) {
+      if (!isAfter(now, expiresAt)) {
         newBanners.push({
           type: 'payment',
           priority: 1,
@@ -249,6 +249,10 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
                 price: latestPendingPayment.price,
                 appointmentId: latestPendingPayment.id.toString()
               }).toString();
+              console.log('🔥 Banner Click - Navigating to checkout:', { 
+                appointmentId: latestPendingPayment.id,
+                checkoutUrl 
+              });
               window.location.href = checkoutUrl;
             },
             icon: AlertCircle,

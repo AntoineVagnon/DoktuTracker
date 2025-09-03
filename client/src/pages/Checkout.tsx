@@ -29,6 +29,15 @@ export default function Checkout() {
   const price = urlParams.get('price');
   const slotId = urlParams.get('slotId');
   const appointmentId = urlParams.get('appointmentId');
+  
+  console.log('🔥 Checkout Page Params:', { 
+    doctorId, 
+    slot, 
+    price, 
+    slotId, 
+    appointmentId,
+    fullUrl: window.location.href 
+  });
 
   useEffect(() => {
     const initializeCheckout = async () => {
@@ -43,41 +52,44 @@ export default function Checkout() {
       }
 
       try {
-        // If we have a slotId from the URL, re-hold the slot
+        // Only check for held slots if we don't have an existing appointment
         let heldSlotData: any = {};
         
-        if (slotId) {
-          console.log('Re-holding slot with ID:', slotId);
-          const reholdResponse = await fetch('/api/slots/hold', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ slotId })
-          });
-          
-          if (reholdResponse.ok) {
-            const reholdData = await reholdResponse.json();
-            console.log('Slot re-held successfully:', reholdData);
+        if (!appointmentId) {
+          // If we have a slotId from the URL, re-hold the slot
+          if (slotId) {
+            console.log('Re-holding slot with ID:', slotId);
+            const reholdResponse = await fetch('/api/slots/hold', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ slotId })
+            });
             
-            // Now get the held slot
+            if (reholdResponse.ok) {
+              const reholdData = await reholdResponse.json();
+              console.log('Slot re-held successfully:', reholdData);
+              
+              // Now get the held slot
+              const heldSlotResponse = await fetch('/api/slots/held');
+              heldSlotData = await heldSlotResponse.json();
+            } else {
+              console.error('Failed to re-hold slot');
+              setSlotExpired(true);
+              setIsLoading(false);
+              return;
+            }
+          } else {
+            // No slotId provided, check if there's already a held slot
             const heldSlotResponse = await fetch('/api/slots/held');
             heldSlotData = await heldSlotResponse.json();
-          } else {
-            console.error('Failed to re-hold slot');
+          }
+          
+          if (!heldSlotData.heldSlot) {
             setSlotExpired(true);
             setIsLoading(false);
             return;
           }
-        } else {
-          // No slotId provided, check if there's already a held slot
-          const heldSlotResponse = await fetch('/api/slots/held');
-          heldSlotData = await heldSlotResponse.json();
-        }
-        
-        if (!heldSlotData.heldSlot) {
-          setSlotExpired(true);
-          setIsLoading(false);
-          return;
         }
 
         // Fetch doctor information
@@ -91,7 +103,7 @@ export default function Checkout() {
           doctorId,
           slot: slotDateTime,
           price: parseFloat(price),
-          slotId: heldSlotData.heldSlot.id
+          slotId: heldSlotData.heldSlot?.id || null
         });
 
         // We'll calculate time remaining after we know if we have an existing appointment
@@ -105,11 +117,12 @@ export default function Checkout() {
           const existingAppointmentResponse = await fetch(`/api/appointments/${appointmentId}`);
           
           if (!existingAppointmentResponse.ok) {
+            console.error('❌ Failed to fetch appointment:', existingAppointmentResponse.status);
             throw new Error('Failed to fetch existing appointment');
           }
           
           appointmentData = await existingAppointmentResponse.json();
-          console.log('🔄 Using existing appointment with original timer');
+          console.log('🔄 Fetched appointment data:', appointmentData);
           
           // Calculate time remaining from original appointment creation time
           const createdAt = new Date(appointmentData.createdAt);
