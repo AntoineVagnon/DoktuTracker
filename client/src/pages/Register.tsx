@@ -121,12 +121,12 @@ export default function Register() {
 
           {/* Registration Form Card */}
           <Card className="rounded-2xl shadow-lg p-6">
-            <CardHeader className="p-0 mb-6">
+            <CardHeader className="p-0 mb-6 text-center">
               <CardTitle className="text-2xl font-bold text-gray-900">
-                Create your account
+                Welcome on Doktu
               </CardTitle>
               <p className="text-gray-600 mt-2">
-                Join Doktu to book your consultation
+                Book your appointment in 2 min
               </p>
             </CardHeader>
 

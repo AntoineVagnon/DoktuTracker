@@ -121,61 +121,38 @@ export default function DoctorProfile() {
 
   // Auto-navigate to first available future date when slots are loaded
   useEffect(() => {
-    console.log(`📅 DOCTOR-PROFILE AUTO-NAV: useEffect triggered with ${timeSlots?.length || 0} slots`);
-    
     if (timeSlots && timeSlots.length > 0) {
       const now = new Date();
       const leadTimeMinutes = 60;
-      
-      console.log(`📅 DOCTOR-PROFILE AUTO-NAV: Current time: ${now.toISOString()}`);
       
       // Filter future slots with 60-minute lead time (same logic as in the component)
       const futureSlots = timeSlots.filter((slot: TimeSlot) => {
         const slotDateTime = new Date(`${slot.date}T${slot.startTime}`);
         const diffMinutes = (slotDateTime.getTime() - now.getTime()) / (1000 * 60);
-        const result = diffMinutes >= leadTimeMinutes && slot.isAvailable;
-        if (slot.date === '2025-09-04') {
-          console.log(`📅 DOCTOR-PROFILE AUTO-NAV: Checking Sept 4 slot: available=${slot.isAvailable}, diffMinutes=${diffMinutes}, result=${result}`);
-        }
-        return result;
+        return diffMinutes >= leadTimeMinutes && slot.isAvailable;
       }).sort((a: TimeSlot, b: TimeSlot) => {
         const dateCompare = a.date.localeCompare(b.date);
         if (dateCompare !== 0) return dateCompare;
         return a.startTime.localeCompare(b.startTime);
       });
-
-      console.log(`📅 DOCTOR-PROFILE AUTO-NAV: Found ${futureSlots.length} future available slots`);
       
       if (futureSlots.length > 0) {
         const firstFutureSlot = futureSlots[0];
         const firstFutureDate = new Date(firstFutureSlot.date);
-        
-        console.log(`📅 DOCTOR-PROFILE AUTO-NAV: First future slot: ${firstFutureSlot.date} ${firstFutureSlot.startTime}`);
-        console.log(`📅 DOCTOR-PROFILE AUTO-NAV: Current selected date: ${format(selectedDate, 'yyyy-MM-dd')}`);
         
         // Check if current selected date has any future slots
         const selectedDateHasFutureSlots = futureSlots.some(slot => 
           isSameDay(new Date(slot.date), selectedDate)
         );
         
-        console.log(`📅 DOCTOR-PROFILE AUTO-NAV: Selected date has future slots: ${selectedDateHasFutureSlots}`);
-        
         // Only navigate if current selected date has no future slots
         if (!selectedDateHasFutureSlots) {
-          console.log(`📅 DOCTOR-PROFILE AUTO-NAV: NAVIGATING! Moving to ${format(firstFutureDate, 'yyyy-MM-dd')}`);
-          
           setSelectedDate(firstFutureDate);
           // Also update week start to include this date
           const newWeekStart = startOfWeek(firstFutureDate, { weekStartsOn: 1 });
           setWeekStart(newWeekStart);
-        } else {
-          console.log(`📅 DOCTOR-PROFILE AUTO-NAV: Selected date has future slots, staying put`);
         }
-      } else {
-        console.log(`📅 DOCTOR-PROFILE AUTO-NAV: No future available slots found`);
       }
-    } else {
-      console.log(`📅 DOCTOR-PROFILE AUTO-NAV: No slots available yet`);
     }
   }, [timeSlots]); // Only depend on timeSlots, not selectedDate to avoid loops
 
