@@ -712,6 +712,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         zoomStartUrl: req.body.zoomStartUrl || null,
         zoomPassword: req.body.zoomPassword || null
       });
+      
+      // Cancel any existing pending payment appointments for this user to prevent multiple payment banners
+      const userAppointments = await storage.getUserAppointments(userId);
+      const pendingPaymentAppointments = userAppointments.filter(apt => apt.status === 'pending_payment');
+      
+      for (const pendingApt of pendingPaymentAppointments) {
+        await storage.updateAppointmentStatus(pendingApt.id, "cancelled");
+        console.log(`🚫 Auto-cancelled previous pending appointment ${pendingApt.id} for user ${userId}`);
+      }
+      
       const appointment = await storage.createAppointment(appointmentData);
       
       // Send email notifications after appointment creation
@@ -1018,6 +1028,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         zoomStartUrl: null,
         zoomPassword: null
       };
+      
+      // Cancel any existing pending payment appointments for this user to prevent multiple payment banners
+      const userAppointments = await storage.getUserAppointments(userId);
+      const pendingPaymentAppointments = userAppointments.filter(apt => apt.status === 'pending_payment');
+      
+      for (const pendingApt of pendingPaymentAppointments) {
+        await storage.updateAppointmentStatus(pendingApt.id, "cancelled");
+        console.log(`🚫 Auto-cancelled previous pending appointment ${pendingApt.id} for user ${userId}`);
+      }
       
       const appointment = await storage.createAppointment(appointmentData);
       
