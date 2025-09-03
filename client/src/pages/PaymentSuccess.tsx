@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Calendar, Clock, User } from 'lucide-react';
@@ -10,6 +11,7 @@ export default function PaymentSuccess() {
   const [isConfirming, setIsConfirming] = useState(true);
   const [appointmentDetails, setAppointmentDetails] = useState<any>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -54,6 +56,9 @@ export default function PaymentSuccess() {
         if (result.appointmentDetails) {
           setAppointmentDetails(result.appointmentDetails);
         }
+        
+        // Invalidate appointments cache to refresh banner system
+        queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
         
         toast({
           title: "Payment Successful!",
