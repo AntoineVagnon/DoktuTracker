@@ -112,23 +112,30 @@ export default function AvailabilityCalendar({
         const todayStart = new Date(today);
         todayStart.setHours(0, 0, 0, 0);
         
-        // Calculate the difference in days between today and first available date
-        const daysDifference = Math.floor((firstAvailableDate.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
-        
-        // Calculate the week offset needed (divide by 7 and round down)
-        const requiredWeekOffset = Math.floor(daysDifference / 7);
+        console.log(`📅 Auto-navigation check: First available date is ${format(firstAvailableDate, 'yyyy-MM-dd')}, today is ${format(todayStart, 'yyyy-MM-dd')}`);
         
         // Check if current displayed week has any available slots
         const currentWeekStart = addWeeks(todayStart, weekOffset);
         const currentWeekDates = getNext7Days(currentWeekStart);
         const hasCurrentWeekSlots = currentWeekDates.some(date => {
           const dateStr = format(date, "yyyy-MM-dd");
-          return availableSlots.some(slot => slot.date === dateStr && slot.isAvailable);
+          const hasSlot = availableSlots.some(slot => slot.date === dateStr && slot.isAvailable);
+          return hasSlot;
         });
         
+        console.log(`📅 Current week (offset ${weekOffset}): ${format(currentWeekStart, 'yyyy-MM-dd')} to ${format(currentWeekDates[6], 'yyyy-MM-dd')}, has slots: ${hasCurrentWeekSlots}`);
+        
+        // Calculate the difference in days between today and first available date
+        const daysDifference = Math.floor((firstAvailableDate.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
+        
+        // Calculate the week offset needed - for past dates this will be negative
+        const requiredWeekOffset = Math.floor(daysDifference / 7);
+        
+        console.log(`📅 Days difference: ${daysDifference}, Required week offset: ${requiredWeekOffset}`);
+        
         // Always navigate to first available date if current week has no slots
-        if (!hasCurrentWeekSlots && availableDates.length > 0) {
-          console.log(`📅 No slots in current week (offset: ${weekOffset}), navigating to first available date: ${format(firstAvailableDate, 'yyyy-MM-dd')}`);
+        if (!hasCurrentWeekSlots) {
+          console.log(`📅 No slots in current week, navigating to first available date: ${format(firstAvailableDate, 'yyyy-MM-dd')} (week offset: ${requiredWeekOffset})`);
           setWeekOffset(requiredWeekOffset);
           setSelectedDay(firstAvailableDate);
         }
