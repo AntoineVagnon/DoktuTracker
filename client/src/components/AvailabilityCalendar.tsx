@@ -100,37 +100,23 @@ export default function AvailabilityCalendar({
 
   // Auto-navigate to first available date when slots are loaded
   useEffect(() => {
-    console.log(`📅 AUTO-NAV: useEffect triggered with ${availableSlots.length} slots`);
-    
     if (availableSlots.length > 0) {
       const now = new Date();
-      console.log(`📅 AUTO-NAV: Current time: ${now.toISOString()}`);
-      
-      // Log first few slots to debug
-      console.log(`📅 AUTO-NAV: First 3 slots:`, availableSlots.slice(0, 3).map(s => `${s.date} ${s.startTime} (available: ${s.isAvailable})`));
       
       // Find the first FUTURE date with available slots (not past dates)
       const futureAvailableDates = availableSlots
         .filter(slot => {
           const slotDate = parseISO(slot.date);
           const isInFuture = slotDate >= now || format(slotDate, 'yyyy-MM-dd') === format(now, 'yyyy-MM-dd');
-          const result = slot.isAvailable && isInFuture;
-          if (slot.date === '2025-09-04') {
-            console.log(`📅 AUTO-NAV: Checking Sept 4 slot: isAvailable=${slot.isAvailable}, isInFuture=${isInFuture}, result=${result}`);
-          }
-          return result;
+          return slot.isAvailable && isInFuture;
         })
         .map(slot => parseISO(slot.date))
         .sort((a, b) => a.getTime() - b.getTime());
-
-      console.log(`📅 AUTO-NAV: Found ${futureAvailableDates.length} future available dates`);
 
       if (futureAvailableDates.length > 0) {
         const firstFutureAvailableDate = futureAvailableDates[0];
         const todayStart = new Date(today);
         todayStart.setHours(0, 0, 0, 0);
-        
-        console.log(`📅 AUTO-NAV: Next available date from now is ${format(firstFutureAvailableDate, 'yyyy-MM-dd')}, today is ${format(todayStart, 'yyyy-MM-dd')}`);
         
         // Check if current displayed week has any future available slots
         const currentWeekStart = addWeeks(todayStart, weekOffset);
@@ -142,29 +128,18 @@ export default function AvailabilityCalendar({
           return hasSlot && isInFuture;
         });
         
-        console.log(`📅 AUTO-NAV: Current week (offset ${weekOffset}): ${format(currentWeekStart, 'yyyy-MM-dd')} to ${format(currentWeekDates[6], 'yyyy-MM-dd')}, has future slots: ${hasCurrentWeekFutureSlots}`);
-        
         // Calculate the difference in days between today and first future available date
         const daysDifference = Math.floor((firstFutureAvailableDate.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
         
         // Calculate the week offset needed
         const requiredWeekOffset = Math.floor(daysDifference / 7);
         
-        console.log(`📅 AUTO-NAV: Days difference: ${daysDifference}, Required week offset: ${requiredWeekOffset}`);
-        
         // Always navigate to first future available date if current week has no future slots
         if (!hasCurrentWeekFutureSlots) {
-          console.log(`📅 AUTO-NAV: NAVIGATING! No future slots in current week, going to: ${format(firstFutureAvailableDate, 'yyyy-MM-dd')} (week offset: ${requiredWeekOffset})`);
           setWeekOffset(requiredWeekOffset);
           setSelectedDay(firstFutureAvailableDate);
-        } else {
-          console.log(`📅 AUTO-NAV: Current week has future slots, staying put`);
         }
-      } else {
-        console.log(`📅 AUTO-NAV: No future available dates found`);
       }
-    } else {
-      console.log(`📅 AUTO-NAV: No slots available yet`);
     }
   }, [availableSlots, today]); // Removed weekOffset from deps to avoid infinite loops
 
