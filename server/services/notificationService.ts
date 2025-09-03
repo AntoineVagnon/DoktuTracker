@@ -4,7 +4,13 @@ import {
   notificationQueue,
   notificationAuditLog,
   userNotificationPreferences,
+  notificationPreferences,
+  notificationFrequencyTracking,
   notificationBatch,
+  emailNotifications,
+  smsNotifications,
+  pushNotifications,
+  inAppNotifications,
   appointments,
   users,
   doctors
