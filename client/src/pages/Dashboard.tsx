@@ -525,33 +525,17 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Health Profile Completion Banner - Always visible until 100% complete */}
-        {user && healthProfile && !healthProfileLoading && calculateHealthProfileCompletion(healthProfile) < 100 && (
-          <Card className="mb-4 border-blue-200 bg-blue-50/50">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Heart className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-blue-900">
-                      Complete Your Health Profile ({calculateHealthProfileCompletion(healthProfile)}% complete)
-                    </p>
-                    <p className="text-sm text-blue-700 mt-1">
-                      Add the remaining information to unlock all features and enable appointment bookings
-                    </p>
-                  </div>
-                </div>
-                <Button 
-                  variant="default"
-                  size="sm"
-                  onClick={() => setHealthProfileOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  Complete Now
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Unified Banner System - Handles payment, live appointments, and health profile banners with proper priority */}
+        {user && (
+          <div className="mb-4">
+            <BannerSystem 
+              onOpenHealthProfile={() => setHealthProfileOpen(true)}
+              onOpenDocumentUpload={(appointmentId) => {
+                setSelectedAppointmentId(appointmentId);
+                setDocumentUploadOpen(true);
+              }}
+            />
+          </div>
         )}
 
         <div className="max-w-4xl mx-auto px-0 sm:px-4">
