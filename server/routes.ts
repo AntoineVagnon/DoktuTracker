@@ -2037,13 +2037,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // EMERGENCY: Cancel appointment 72 that should have been auto-cancelled
+  app.post("/api/emergency-cancel-72", async (req, res) => {
+    try {
+      await storage.updateAppointmentStatus(72, "cancelled");
+      console.log(`🚫 Emergency cancelled appointment 72`);
+      res.json({ success: true, message: "Cancelled appointment 72" });
+    } catch (error) {
+      console.error("Error cancelling appointment 72:", error);
+      res.status(500).json({ error: "Failed to cancel appointment 72" });
+    }
+  });
 
   // ADMIN: Clean up pending appointments for user (temporary fix for banner issue)
   app.post("/api/admin/cleanup-pending-user", async (req, res) => {
     try {
-      const { userId } = req.body;
-      if (!userId) {
-        return res.status(400).json({ error: "userId required" });
+      const { userId, appointmentId } = req.body;
+      console.log(`🔍 Cleanup request:`, { userId, appointmentId });
+      if (!userId && !appointmentId) {
+        return res.status(400).json({ error: "userId or appointmentId required" });
+      }
+      
+      if (appointmentId) {
+        // Cancel specific appointment
+        console.log(`🚫 Cancelling specific appointment ${appointmentId}...`);
+        await storage.updateAppointmentStatus(appointmentId, "cancelled");
+        console.log(`✅ Cancelled appointment ${appointmentId}`);
+        
+        return res.json({ 
+          success: true, 
+          message: `Cancelled appointment ${appointmentId}`,
+          cancelledIds: [appointmentId]
+        });
       }
       
       console.log(`🧹 Cleaning up pending appointments for user ${userId}...`);
