@@ -28,6 +28,7 @@ export default function Checkout() {
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
   const slotId = urlParams.get('slotId');
+  const appointmentId = urlParams.get('appointmentId');
 
   useEffect(() => {
     const initializeCheckout = async () => {
@@ -93,53 +94,84 @@ export default function Checkout() {
           slotId: heldSlotData.heldSlot.id
         });
 
-        // Calculate time remaining (15 minutes from when slot was held)
-        const expiresAt = new Date(heldSlotData.heldSlot.expiresAt);
-        const now = new Date();
-        const remaining = Math.max(0, expiresAt.getTime() - now.getTime());
-        setTimeRemaining(remaining);
+        // Only calculate slot expiry if we're NOT using an existing appointment
+        if (!appointmentId) {
+          // Calculate time remaining (15 minutes from when slot was held)
+          const expiresAt = new Date(heldSlotData.heldSlot.expiresAt);
+          const now = new Date();
+          const remaining = Math.max(0, expiresAt.getTime() - now.getTime());
+          setTimeRemaining(remaining);
 
-        if (remaining <= 0) {
-          setSlotExpired(true);
-          setIsLoading(false);
-          return;
+          if (remaining <= 0) {
+            setSlotExpired(true);
+            setIsLoading(false);
+            return;
+          }
         }
 
-        // Create appointment with proper timezone handling
-        // The slot parameter comes as "2025-08-01T14:00:00" representing LOCAL TIME
-        // We need to convert this local time to the correct UTC time for storage
-        console.log('🕐 Original slot parameter:', slot);
+        let appointmentData;
         
-        // Parse as local time - JavaScript treats "YYYY-MM-DDTHH:MM:SS" as local time
-        const localSlotDate = new Date(slot);
-        console.log('🕐 Parsed local date:', localSlotDate.toLocaleString());
-        console.log('🕐 Current timezone offset (minutes):', localSlotDate.getTimezoneOffset());
-        
-        // Convert to UTC for storage - JavaScript's toISOString() does this automatically
-        const appointmentDateUTC = localSlotDate;
-        console.log('🕐 UTC for storage:', appointmentDateUTC.toISOString());
-        
-        // Verify the conversion
-        const verifyLocal = new Date(appointmentDateUTC.toISOString());
-        console.log('🕐 Verification - stored UTC converted back to local:', verifyLocal.toLocaleString());
-        
-        const appointmentResponse = await fetch('/api/appointments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            doctorId: doctorId.toString(),
-            timeSlotId: heldSlotData.heldSlot.id,
-            appointmentDate: appointmentDateUTC.toISOString(), // Store as UTC
-            price: price.toString(),
-            status: 'pending_payment'
-          })
-        });
+        if (appointmentId) {
+          // Use existing appointment instead of creating new one
+          console.log('🔄 Using existing appointment ID:', appointmentId);
+          const existingAppointmentResponse = await fetch(`/api/appointments/${appointmentId}`);
+          
+          if (!existingAppointmentResponse.ok) {
+            throw new Error('Failed to fetch existing appointment');
+          }
+          
+          appointmentData = await existingAppointmentResponse.json();
+          console.log('🔄 Using existing appointment with original timer');
+          
+          // Calculate time remaining from original appointment creation time
+          const createdAt = new Date(appointmentData.createdAt);
+          const originalExpiresAt = new Date(createdAt.getTime() + 15 * 60 * 1000); // 15 minutes from original creation
+          const now = new Date();
+          const remaining = Math.max(0, originalExpiresAt.getTime() - now.getTime());
+          setTimeRemaining(remaining);
+          
+          if (remaining <= 0) {
+            console.log('⏰ Original appointment timer expired');
+            setSlotExpired(true);
+            setIsLoading(false);
+            return;
+          }
+        } else {
+          // Create new appointment with proper timezone handling
+          console.log('🆕 Creating new appointment');
+          console.log('🕐 Original slot parameter:', slot);
+          
+          // Parse as local time - JavaScript treats "YYYY-MM-DDTHH:MM:SS" as local time
+          const localSlotDate = new Date(slot);
+          console.log('🕐 Parsed local date:', localSlotDate.toLocaleString());
+          console.log('🕐 Current timezone offset (minutes):', localSlotDate.getTimezoneOffset());
+          
+          // Convert to UTC for storage - JavaScript's toISOString() does this automatically
+          const appointmentDateUTC = localSlotDate;
+          console.log('🕐 UTC for storage:', appointmentDateUTC.toISOString());
+          
+          // Verify the conversion
+          const verifyLocal = new Date(appointmentDateUTC.toISOString());
+          console.log('🕐 Verification - stored UTC converted back to local:', verifyLocal.toLocaleString());
+          
+          const appointmentResponse = await fetch('/api/appointments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              doctorId: doctorId.toString(),
+              timeSlotId: heldSlotData.heldSlot.id,
+              appointmentDate: appointmentDateUTC.toISOString(), // Store as UTC
+              price: price.toString(),
+              status: 'pending_payment'
+            })
+          });
 
-        if (!appointmentResponse.ok) {
-          throw new Error('Failed to create appointment');
+          if (!appointmentResponse.ok) {
+            throw new Error('Failed to create appointment');
+          }
+
+          appointmentData = await appointmentResponse.json();
         }
-
-        const appointmentData = await appointmentResponse.json();
 
         // Create payment intent
         const paymentResponse = await fetch('/api/payment/create-intent', {
