@@ -223,6 +223,15 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
       const createdAt = new Date(latestPendingPayment.createdAt);
       const expiresAt = new Date(createdAt.getTime() + 15 * 60 * 1000); // 15 minutes from creation
       
+      console.log('🔥 Banner Timer Check:', { 
+        appointmentId: latestPendingPayment.id,
+        createdAt: createdAt.toISOString(), 
+        expiresAt: expiresAt.toISOString(), 
+        now: now.toISOString(),
+        remainingMs: expiresAt.getTime() - now.getTime(),
+        isExpired: isAfter(now, expiresAt)
+      });
+      
       // Only show banner if not expired
       if (isAfter(expiresAt, now)) {
         newBanners.push({

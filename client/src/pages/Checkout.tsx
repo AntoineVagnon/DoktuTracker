@@ -94,20 +94,8 @@ export default function Checkout() {
           slotId: heldSlotData.heldSlot.id
         });
 
-        // Only calculate slot expiry if we're NOT using an existing appointment
-        if (!appointmentId) {
-          // Calculate time remaining (15 minutes from when slot was held)
-          const expiresAt = new Date(heldSlotData.heldSlot.expiresAt);
-          const now = new Date();
-          const remaining = Math.max(0, expiresAt.getTime() - now.getTime());
-          setTimeRemaining(remaining);
-
-          if (remaining <= 0) {
-            setSlotExpired(true);
-            setIsLoading(false);
-            return;
-          }
-        }
+        // We'll calculate time remaining after we know if we have an existing appointment
+        // This will be done in the appointment handling section below
 
         let appointmentData;
         
@@ -128,6 +116,16 @@ export default function Checkout() {
           const originalExpiresAt = new Date(createdAt.getTime() + 15 * 60 * 1000); // 15 minutes from original creation
           const now = new Date();
           const remaining = Math.max(0, originalExpiresAt.getTime() - now.getTime());
+          
+          console.log('🔥 Checkout Timer Check (Existing):', { 
+            appointmentId: appointmentData.id,
+            createdAt: createdAt.toISOString(), 
+            expiresAt: originalExpiresAt.toISOString(), 
+            now: now.toISOString(),
+            remainingMs: remaining,
+            isExpired: remaining <= 0
+          });
+          
           setTimeRemaining(remaining);
           
           if (remaining <= 0) {
@@ -171,6 +169,20 @@ export default function Checkout() {
           }
 
           appointmentData = await appointmentResponse.json();
+          
+          // Calculate time remaining from new appointment creation time
+          const createdAt = new Date(appointmentData.createdAt);
+          const expiresAt = new Date(createdAt.getTime() + 15 * 60 * 1000); // 15 minutes from creation
+          const now = new Date();
+          const remaining = Math.max(0, expiresAt.getTime() - now.getTime());
+          setTimeRemaining(remaining);
+          
+          if (remaining <= 0) {
+            console.log('⏰ New appointment timer expired');
+            setSlotExpired(true);
+            setIsLoading(false);
+            return;
+          }
         }
 
         // Create payment intent
