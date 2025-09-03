@@ -101,43 +101,50 @@ export default function AvailabilityCalendar({
   // Auto-navigate to first available date when slots are loaded
   useEffect(() => {
     if (availableSlots.length > 0) {
-      // Find the first date with available slots
-      const availableDates = availableSlots
-        .filter(slot => slot.isAvailable)
+      const now = new Date();
+      
+      // Find the first FUTURE date with available slots (not past dates)
+      const futureAvailableDates = availableSlots
+        .filter(slot => {
+          const slotDate = parseISO(slot.date);
+          const isInFuture = slotDate >= now || format(slotDate, 'yyyy-MM-dd') === format(now, 'yyyy-MM-dd');
+          return slot.isAvailable && isInFuture;
+        })
         .map(slot => parseISO(slot.date))
         .sort((a, b) => a.getTime() - b.getTime());
 
-      if (availableDates.length > 0) {
-        const firstAvailableDate = availableDates[0];
+      if (futureAvailableDates.length > 0) {
+        const firstFutureAvailableDate = futureAvailableDates[0];
         const todayStart = new Date(today);
         todayStart.setHours(0, 0, 0, 0);
         
-        console.log(`📅 Auto-navigation check: First available date is ${format(firstAvailableDate, 'yyyy-MM-dd')}, today is ${format(todayStart, 'yyyy-MM-dd')}`);
+        console.log(`📅 Auto-navigation check: Next available date from now is ${format(firstFutureAvailableDate, 'yyyy-MM-dd')}, today is ${format(todayStart, 'yyyy-MM-dd')}`);
         
-        // Check if current displayed week has any available slots
+        // Check if current displayed week has any future available slots
         const currentWeekStart = addWeeks(todayStart, weekOffset);
         const currentWeekDates = getNext7Days(currentWeekStart);
-        const hasCurrentWeekSlots = currentWeekDates.some(date => {
+        const hasCurrentWeekFutureSlots = currentWeekDates.some(date => {
           const dateStr = format(date, "yyyy-MM-dd");
+          const isInFuture = date >= now || format(date, 'yyyy-MM-dd') === format(now, 'yyyy-MM-dd');
           const hasSlot = availableSlots.some(slot => slot.date === dateStr && slot.isAvailable);
-          return hasSlot;
+          return hasSlot && isInFuture;
         });
         
-        console.log(`📅 Current week (offset ${weekOffset}): ${format(currentWeekStart, 'yyyy-MM-dd')} to ${format(currentWeekDates[6], 'yyyy-MM-dd')}, has slots: ${hasCurrentWeekSlots}`);
+        console.log(`📅 Current week (offset ${weekOffset}): ${format(currentWeekStart, 'yyyy-MM-dd')} to ${format(currentWeekDates[6], 'yyyy-MM-dd')}, has future slots: ${hasCurrentWeekFutureSlots}`);
         
-        // Calculate the difference in days between today and first available date
-        const daysDifference = Math.floor((firstAvailableDate.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
+        // Calculate the difference in days between today and first future available date
+        const daysDifference = Math.floor((firstFutureAvailableDate.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
         
-        // Calculate the week offset needed - for past dates this will be negative
+        // Calculate the week offset needed
         const requiredWeekOffset = Math.floor(daysDifference / 7);
         
         console.log(`📅 Days difference: ${daysDifference}, Required week offset: ${requiredWeekOffset}`);
         
-        // Always navigate to first available date if current week has no slots
-        if (!hasCurrentWeekSlots) {
-          console.log(`📅 No slots in current week, navigating to first available date: ${format(firstAvailableDate, 'yyyy-MM-dd')} (week offset: ${requiredWeekOffset})`);
+        // Always navigate to first future available date if current week has no future slots
+        if (!hasCurrentWeekFutureSlots) {
+          console.log(`📅 No future slots in current week, navigating to next available date: ${format(firstFutureAvailableDate, 'yyyy-MM-dd')} (week offset: ${requiredWeekOffset})`);
           setWeekOffset(requiredWeekOffset);
-          setSelectedDay(firstAvailableDate);
+          setSelectedDay(firstFutureAvailableDate);
         }
       }
     }
