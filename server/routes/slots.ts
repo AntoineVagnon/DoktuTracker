@@ -21,7 +21,7 @@ const createTimeSlotBatchSchema = z.object({
 });
 
 export function setupSlotRoutes(app: Express) {
-  // Hold a slot for 30 minutes
+  // Hold a slot for 15 minutes
   app.post('/api/slots/hold', async (req, res) => {
     try {
       const { slotId, sessionId } = holdSlotSchema.parse(req.body);
@@ -29,7 +29,11 @@ export function setupSlotRoutes(app: Express) {
       
       console.log(`Holding slot ${slotId} for session ${actualSessionId}`);
       
-      await storage.holdSlot(slotId, actualSessionId, 30); // Keep 30 min slot block but reduce payment timeout to 15 min
+      // Release any previous slots held by this session to start fresh timer
+      await storage.releaseAllSlotsForSession(actualSessionId);
+      
+      // Hold the new slot for 15 minutes
+      await storage.holdSlot(slotId, actualSessionId, 15);
       
       // Save the session to ensure it persists
       await new Promise((resolve, reject) => {
@@ -46,7 +50,7 @@ export function setupSlotRoutes(app: Express) {
       
       res.json({ 
         success: true, 
-        message: 'Slot held for 30 minutes, payment required within 15 minutes',
+        message: 'Slot held for 15 minutes, payment required within 15 minutes',
         expiresAt: new Date(Date.now() + 15 * 60 * 1000), // Payment timeout: 15 minutes
         sessionId: actualSessionId
       });
