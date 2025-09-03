@@ -98,6 +98,44 @@ export default function AvailabilityCalendar({
     }
   }, [weekOffset]); // Only depend on weekOffset, not weekDays to avoid infinite loop
 
+  // Auto-navigate to first available date when slots are loaded
+  useEffect(() => {
+    if (availableSlots.length > 0) {
+      // Find the first date with available slots
+      const availableDates = availableSlots
+        .filter(slot => slot.isAvailable)
+        .map(slot => parseISO(slot.date))
+        .sort((a, b) => a.getTime() - b.getTime());
+
+      if (availableDates.length > 0) {
+        const firstAvailableDate = availableDates[0];
+        const todayStart = new Date(today);
+        todayStart.setHours(0, 0, 0, 0);
+        
+        // Calculate the difference in days between today and first available date
+        const daysDifference = Math.floor((firstAvailableDate.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
+        
+        // Calculate the week offset needed (divide by 7 and round down)
+        const requiredWeekOffset = Math.floor(daysDifference / 7);
+        
+        // Only update if we're currently at week 0 (today's week) and there are no slots in current week
+        if (weekOffset === 0) {
+          const currentWeekDates = getNext7Days(todayStart);
+          const hasCurrentWeekSlots = currentWeekDates.some(date => {
+            const dateStr = format(date, "yyyy-MM-dd");
+            return availableSlots.some(slot => slot.date === dateStr && slot.isAvailable);
+          });
+          
+          // If current week has no available slots, navigate to first available week
+          if (!hasCurrentWeekSlots && requiredWeekOffset > 0) {
+            setWeekOffset(requiredWeekOffset);
+            setSelectedDay(firstAvailableDate);
+          }
+        }
+      }
+    }
+  }, [availableSlots, today, weekOffset]); // Run when slots change
+
   // Use the passed-in availability data instead of fetching separately
   const doctorSlots = availableSlots;
 
