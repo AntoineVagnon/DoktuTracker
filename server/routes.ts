@@ -713,13 +713,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         zoomPassword: req.body.zoomPassword || null
       });
       
-      // Cancel any existing pending payment appointments for this user to prevent multiple payment banners
+      // Cancel any existing pending/pending_payment appointments for this user to prevent multiple payment banners
       const userAppointments = await storage.getUserAppointments(userId);
-      const pendingPaymentAppointments = userAppointments.filter(apt => apt.status === 'pending_payment');
+      const pendingAppointments = userAppointments.filter(apt => 
+        apt.status === 'pending_payment' || apt.status === 'pending'
+      );
       
-      for (const pendingApt of pendingPaymentAppointments) {
+      for (const pendingApt of pendingAppointments) {
         await storage.updateAppointmentStatus(pendingApt.id, "cancelled");
-        console.log(`🚫 Auto-cancelled previous pending appointment ${pendingApt.id} for user ${userId}`);
+        console.log(`🚫 Auto-cancelled previous ${pendingApt.status} appointment ${pendingApt.id} for user ${userId}`);
       }
       
       const appointment = await storage.createAppointment(appointmentData);
@@ -1029,13 +1031,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         zoomPassword: null
       };
       
-      // Cancel any existing pending payment appointments for this user to prevent multiple payment banners
+      // Cancel any existing pending/pending_payment appointments for this user to prevent multiple payment banners
       const userAppointments = await storage.getUserAppointments(userId);
-      const pendingPaymentAppointments = userAppointments.filter(apt => apt.status === 'pending_payment');
+      const pendingAppointments = userAppointments.filter(apt => 
+        apt.status === 'pending_payment' || apt.status === 'pending'
+      );
       
-      for (const pendingApt of pendingPaymentAppointments) {
+      for (const pendingApt of pendingAppointments) {
         await storage.updateAppointmentStatus(pendingApt.id, "cancelled");
-        console.log(`🚫 Auto-cancelled previous pending appointment ${pendingApt.id} for user ${userId}`);
+        console.log(`🚫 Auto-cancelled previous ${pendingApt.status} appointment ${pendingApt.id} for user ${userId}`);
       }
       
       const appointment = await storage.createAppointment(appointmentData);
@@ -2033,6 +2037,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+
+  // ADMIN: Clean up pending appointments for user (temporary fix for banner issue)
+  app.post("/api/admin/cleanup-pending-user", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ error: "userId required" });
+      }
+      
+      console.log(`🧹 Cleaning up pending appointments for user ${userId}...`);
+      
+      const userAppointments = await storage.getUserAppointments(userId);
+      const pendingAppointments = userAppointments.filter(apt => 
+        apt.status === 'pending_payment' || apt.status === 'pending'
+      );
+      
+      console.log(`Found ${pendingAppointments.length} pending appointments to clean up`);
+      
+      for (const appointment of pendingAppointments) {
+        await storage.updateAppointmentStatus(appointment.id, "cancelled");
+        console.log(`🚫 Cancelled ${appointment.status} appointment ${appointment.id}`);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Cancelled ${pendingAppointments.length} pending appointments for user ${userId}`,
+        cancelledIds: pendingAppointments.map(apt => apt.id)
+      });
+    } catch (error) {
+      console.error("Error cleaning up pending appointments:", error);
+      res.status(500).json({ error: "Failed to cleanup pending appointments" });
+    }
+  });
 
   // ADMIN: Sync existing paid appointments with slot availability
   app.post("/api/admin/sync-appointments-slots", async (req, res) => {
