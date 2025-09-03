@@ -1985,13 +1985,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
             status: appointment.status
           };
           
-          // Trigger appointment confirmation notification
-          await notificationService.scheduleNotification({
-            userId: appointment.patientId,
-            appointmentId: appointment.id,
-            triggerCode: TriggerCode.BOOK_CONF,
-            scheduledFor: new Date()
-          });
+          // Trigger appointment confirmation notification (non-blocking)
+          try {
+            await notificationService.scheduleNotification({
+              userId: appointment.patientId,
+              appointmentId: appointment.id,
+              triggerCode: TriggerCode.BOOK_CONF,
+              scheduledFor: new Date()
+            });
+            console.log(`✅ Confirmation notification scheduled for appointment ${appointment.id}`);
+          } catch (notificationError) {
+            console.error(`⚠️ Failed to schedule confirmation notification for appointment ${appointment.id}:`, notificationError);
+            // Don't fail payment confirmation if notification fails
+          }
         }
 
         res.json({ 
