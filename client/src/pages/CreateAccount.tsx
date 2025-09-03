@@ -208,29 +208,15 @@ export default function CreateAccount() {
           <Card className="rounded-2xl shadow-lg">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-center">
-                Create Supabase Account
+                Welcome to Doktu
               </CardTitle>
               <p className="text-gray-600 text-center">
-                Create your account in the Supabase Auth system
+                Create a new account
               </p>
             </CardHeader>
 
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full"
-                  />
-                </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
@@ -258,6 +244,20 @@ export default function CreateAccount() {
                       className="w-full"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full"
+                  />
                 </div>
 
                 <div className="space-y-2">
