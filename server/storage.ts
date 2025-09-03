@@ -702,15 +702,30 @@ export class PostgresStorage implements IStorage {
       const rawSlots = await query.orderBy(asc(doctorTimeSlots.date), asc(doctorTimeSlots.startTime));
       console.log(`📅 Found ${rawSlots.length} raw time slots for doctor ${doctorIntId}`);
       
-      // Get confirmed appointments for this doctor
+      // Get confirmed appointments for this doctor (including valid pending payments)
       const confirmedAppointments = await db.select()
         .from(appointments)
         .where(and(
           eq(appointments.doctorId, doctorIntId),
-          inArray(appointments.status, ['paid', 'confirmed'])
+          inArray(appointments.status, ['paid', 'confirmed', 'pending_payment'])
         ));
       
-      console.log(`🔒 Found ${confirmedAppointments.length} confirmed appointments that should block slots`);
+      // Filter out expired pending payment appointments (older than 15 minutes)
+      const validConfirmedAppointments = confirmedAppointments.filter(apt => {
+        if (apt.status === 'pending_payment') {
+          const createdAt = new Date(apt.createdAt);
+          const expiresAt = new Date(createdAt.getTime() + 15 * 60 * 1000); // 15 minutes from creation
+          const now = new Date();
+          const isValid = now < expiresAt;
+          if (!isValid) {
+            console.log(`⏰ Expired pending payment appointment ${apt.id} - not blocking slot`);
+          }
+          return isValid;
+        }
+        return true; // paid/confirmed appointments are always valid
+      });
+      
+      console.log(`🔒 Found ${confirmedAppointments.length} total appointments, ${validConfirmedAppointments.length} valid ones that should block slots`);
       
       // Get currently held slots (pending appointments that haven't expired)
       const heldSlots = await db.select({
@@ -743,8 +758,8 @@ export class PostgresStorage implements IStorage {
         const existingIndex = acc.findIndex(slot => `${slot.date}_${slot.startTime}` === key);
         
         if (existingIndex === -1) {
-          // Check if this slot conflicts with any confirmed appointment
-          const hasConflictingAppointment = confirmedAppointments.some(apt => {
+          // Check if this slot conflicts with any confirmed appointment (including valid pending payments)
+          const hasConflictingAppointment = validConfirmedAppointments.some(apt => {
             const appointmentDate = new Date(apt.appointmentDate);
             
             // Convert UTC appointment time to European local time (UTC+2 during summer)
