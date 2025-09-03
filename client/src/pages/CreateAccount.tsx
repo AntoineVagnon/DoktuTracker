@@ -331,14 +331,6 @@ export default function CreateAccount() {
                 </Button>
               </form>
 
-              {result && (
-                <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-                  <h3 className="font-medium mb-2">Result:</h3>
-                  <pre className="text-sm overflow-auto">
-                    {JSON.stringify(result, null, 2)}
-                  </pre>
-                </div>
-              )}
 
               <div className="text-center">
                 <p className="text-sm text-gray-600">
