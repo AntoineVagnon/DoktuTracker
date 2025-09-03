@@ -193,35 +193,48 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
     // Debug: Remove in production
     // console.log('🔄 Banner System - Processing banners at:', { appointmentsCount: appointments.length });
 
-    // 1. Payment incomplete banners (highest priority)
+    // 1. Payment incomplete banners (highest priority) - Show only latest pending payment
     const pendingPaymentAppointments = appointments.filter(
       apt => apt.status === 'pending_payment'
     );
 
-    pendingPaymentAppointments.forEach((apt) => {
-      const appointmentDate = new Date(apt.appointmentDate);
-      const doctorName = apt.doctor?.firstName ? `Dr. ${apt.doctor.firstName}` : 'Doctor';
+    // Only show the most recent pending payment appointment
+    if (pendingPaymentAppointments.length > 0) {
+      const latestPendingPayment = pendingPaymentAppointments.sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )[0];
+
+      const appointmentDate = new Date(latestPendingPayment.appointmentDate);
+      const doctorName = latestPendingPayment.doctor?.firstName ? `Dr. ${latestPendingPayment.doctor.firstName}` : 'Doctor';
       
-      newBanners.push({
-        type: 'payment',
-        priority: 1,
-        title: `Complete payment for your ${doctorName} consultation`,
-        primaryAction: {
-          label: 'Complete Payment',
-          onClick: () => {
-            // Build checkout URL with appointment data
-            const checkoutUrl = `/checkout?` + new URLSearchParams({
-              doctorId: apt.doctorId.toString(),
-              slot: apt.appointmentDate,
-              price: apt.price,
-              appointmentId: apt.id.toString()
-            }).toString();
-            window.location.href = checkoutUrl;
-          },
-          icon: AlertCircle,
-        }
-      });
-    });
+      // Calculate countdown from appointment creation time + 15 minutes
+      const createdAt = new Date(latestPendingPayment.createdAt);
+      const expiresAt = new Date(createdAt.getTime() + 15 * 60 * 1000); // 15 minutes from creation
+      
+      // Only show banner if not expired
+      if (isAfter(expiresAt, now)) {
+        newBanners.push({
+          type: 'payment',
+          priority: 1,
+          title: `Complete payment for your ${doctorName} consultation`,
+          countdown: expiresAt,
+          primaryAction: {
+            label: 'Complete Payment',
+            onClick: () => {
+              // Build checkout URL with appointment data
+              const checkoutUrl = `/checkout?` + new URLSearchParams({
+                doctorId: latestPendingPayment.doctorId.toString(),
+                slot: latestPendingPayment.appointmentDate,
+                price: latestPendingPayment.price,
+                appointmentId: latestPendingPayment.id.toString()
+              }).toString();
+              window.location.href = checkoutUrl;
+            },
+            icon: AlertCircle,
+          }
+        });
+      }
+    }
 
     // 2. Live/imminent session banners (second priority)
     // Only show during actual appointment window (5 minutes before to 15 minutes after)
@@ -343,12 +356,12 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
           key={index}
           className={cn(
             "relative transition-all duration-300",
-            index > 0 && "mt-[-32px]" // Increased overlap - only show thin border of cards below
+            index > 0 && "mt-[-98%]" // Top banner covers 98% of banner below
           )}
           style={{
             zIndex: banners.length - index,
-            transform: index > 0 ? `translateY(-${index * 4}px) scale(${1 - index * 0.01})` : 'none',
-            opacity: index > 0 ? 0.85 : 1,
+            transform: index > 0 ? `translateY(-${index * 2}px) scale(${1 - index * 0.005})` : 'none',
+            opacity: index > 0 ? 0.95 : 1,
           }}
         >
           <Banner {...banner} />
