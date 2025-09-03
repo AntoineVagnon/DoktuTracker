@@ -150,6 +150,9 @@ interface BannerSystemProps {
 export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpload }: BannerSystemProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  
+  // Add a timer that updates every second to re-evaluate banner expiry
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Fetch user's appointments
   const { data: appointments = [] } = useQuery<any[]>({
@@ -184,10 +187,19 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
 
   const [banners, setBanners] = useState<BannerProps[]>([]);
 
+  // Update current time every second to trigger banner expiry checks
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (!user || !appointments) return;
 
-    const now = new Date();
+    const now = currentTime;
     const newBanners: BannerProps[] = [];
     
     // Debug: Remove in production
@@ -345,7 +357,7 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
     if (JSON.stringify(sortedBanners) !== JSON.stringify(banners)) {
       setBanners(sortedBanners);
     }
-  }, [user?.id, user?.role, appointments?.length, healthProfile?.profileStatus, healthProfile?.completionScore]);
+  }, [user?.id, user?.role, appointments?.length, healthProfile?.profileStatus, healthProfile?.completionScore, currentTime]);
 
   if (banners.length === 0) return null;
 
