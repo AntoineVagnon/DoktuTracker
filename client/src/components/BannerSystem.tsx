@@ -195,18 +195,29 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
 
     // 1. Payment incomplete banners (highest priority)
     const pendingPaymentAppointments = appointments.filter(
-      apt => apt.status === 'pending_payment' && apt.lockedUntil && isAfter(new Date(apt.lockedUntil), now)
+      apt => apt.status === 'pending_payment'
     );
 
     pendingPaymentAppointments.forEach((apt) => {
+      const appointmentDate = new Date(apt.appointmentDate);
+      const doctorName = apt.doctor?.firstName ? `Dr. ${apt.doctor.firstName}` : 'Doctor';
+      
       newBanners.push({
         type: 'payment',
         priority: 1,
-        title: `Payment required to confirm your consultation`,
-        countdown: new Date(apt.lockedUntil),
+        title: `Complete payment for your ${doctorName} consultation`,
         primaryAction: {
-          label: 'Resume Payment',
-          onClick: () => window.location.href = `/checkout?appointmentId=${apt.id}`,
+          label: 'Complete Payment',
+          onClick: () => {
+            // Build checkout URL with appointment data
+            const checkoutUrl = `/checkout?` + new URLSearchParams({
+              doctorId: apt.doctorId.toString(),
+              slot: apt.appointmentDate,
+              price: apt.price,
+              appointmentId: apt.id.toString()
+            }).toString();
+            window.location.href = checkoutUrl;
+          },
           icon: AlertCircle,
         }
       });

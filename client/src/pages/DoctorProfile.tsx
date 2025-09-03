@@ -15,6 +15,7 @@ import { Link } from "wouter";
 import Header from "@/components/Header";
 import { analytics } from "@/lib/analytics";
 import { convertSlotTimeToLocal } from "@/lib/dateUtils";
+import { BannerSystem } from "@/components/BannerSystem";
 
 // Helper function to translate French specialties to English
 function translateSpecialty(specialty: string): string {
@@ -65,6 +66,7 @@ export default function DoctorProfile() {
   const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 })); // Monday start
+  const [isNewBookingInProgress, setIsNewBookingInProgress] = useState(false);
   
   console.log('DoctorProfile - Raw params:', params);
   console.log('DoctorProfile - Doctor ID:', doctorId);
@@ -263,6 +265,15 @@ export default function DoctorProfile() {
         </div>
       </div>
 
+      {/* Priority Banner System for logged users - Hide during new booking */}
+      {user && !isNewBookingInProgress && (
+        <div className="bg-white px-4 py-2">
+          <div className="max-w-7xl mx-auto">
+            <BannerSystem />
+          </div>
+        </div>
+      )}
+
       {/* Gradient Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
         <div className="max-w-7xl mx-auto px-4 py-12">
@@ -313,6 +324,9 @@ export default function DoctorProfile() {
                 size="sm"
                 className="bg-green-600 hover:bg-green-700 text-white"
                 onClick={async () => {
+                  // Hide banner when starting new booking flow
+                  setIsNewBookingInProgress(true);
+                  
                   const fullSlotDateTime = `${nextSlot.date}T${nextSlot.startTime}`;
                   try {
                     const response = await fetch('/api/slots/hold', {
@@ -339,11 +353,13 @@ export default function DoctorProfile() {
                       }
                     } else {
                       const error = await response.json();
+                      setIsNewBookingInProgress(false); // Reset if error
                       alert(error.error || 'This slot is no longer available. Please select another time.');
                       window.location.reload();
                     }
                   } catch (error) {
                     console.error('Failed to hold slot:', error);
+                    setIsNewBookingInProgress(false); // Reset if error
                     alert('Unable to reserve this slot. Please try again.');
                   }
                 }}
@@ -563,12 +579,15 @@ export default function DoctorProfile() {
                           variant="outline"
                           className="w-full justify-center"
                           onClick={async () => {
+                            // Hide banner when starting new booking flow
+                            setIsNewBookingInProgress(true);
+                            
                             // Handle slot booking - include both date and time
                             const fullSlotDateTime = `${slot.date}T${slot.startTime}`;
                             console.log('Slot clicked:', { doctorId, slot: fullSlotDateTime, price: doctor.consultationPrice });
                             
                             try {
-                              // Hold the slot for 30 minutes before redirecting to auth
+                              // Hold the slot for 15 minutes before redirecting to auth
                               const response = await fetch('/api/slots/hold', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -602,11 +621,13 @@ export default function DoctorProfile() {
                               } else {
                                 // Slot couldn't be held (probably taken by another user)
                                 const error = await response.json();
+                                setIsNewBookingInProgress(false); // Reset if error
                                 alert(error.error || 'This slot is no longer available. Please select another time.');
                                 window.location.reload(); // Refresh to show updated availability
                               }
                             } catch (error) {
                               console.error('Failed to hold slot:', error);
+                              setIsNewBookingInProgress(false); // Reset if error
                               alert('Unable to reserve this slot. Please try again.');
                             }
                           }}
