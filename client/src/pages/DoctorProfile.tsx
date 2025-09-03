@@ -309,67 +309,6 @@ export default function DoctorProfile() {
         </div>
       </div>
 
-      {/* Next Available Slot Bar */}
-      {!slotsLoading && nextSlot && (
-        <div className="bg-green-50 border-b border-green-200">
-          <div className="max-w-7xl mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-green-600" />
-                <span className="text-green-800 font-medium">
-                  Next available: {format(new Date(`${nextSlot.date}T00:00:00`), 'EEEE, MMMM d')} at {convertSlotTimeToLocal(nextSlot.date, nextSlot.startTime)}
-                </span>
-              </div>
-              <Button
-                size="sm"
-                className="bg-green-600 hover:bg-green-700 text-white"
-                onClick={async () => {
-                  // Hide banner when starting new booking flow
-                  setIsNewBookingInProgress(true);
-                  
-                  const fullSlotDateTime = `${nextSlot.date}T${nextSlot.startTime}`;
-                  try {
-                    const response = await fetch('/api/slots/hold', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ 
-                        slotId: nextSlot.id,
-                        sessionId: undefined
-                      })
-                    });
-                    
-                    if (response.ok) {
-                      const holdData = await response.json();
-                      console.log('Slot held successfully:', holdData);
-                      
-                      // Store the slot ID in sessionStorage as backup
-                      sessionStorage.setItem('heldSlotId', nextSlot.id);
-                      sessionStorage.setItem('heldSlotExpiry', holdData.expiresAt);
-                      
-                      if (user) {
-                        window.location.href = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${nextSlot.id}`;
-                      } else {
-                        window.location.href = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${nextSlot.id}`;
-                      }
-                    } else {
-                      const error = await response.json();
-                      setIsNewBookingInProgress(false); // Reset if error
-                      alert(error.error || 'This slot is no longer available. Please select another time.');
-                      window.location.reload();
-                    }
-                  } catch (error) {
-                    console.error('Failed to hold slot:', error);
-                    setIsNewBookingInProgress(false); // Reset if error
-                    alert('Unable to reserve this slot. Please try again.');
-                  }
-                }}
-              >
-                Book This Slot
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Main content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
