@@ -712,6 +712,17 @@ export class PostgresStorage implements IStorage {
       
       console.log(`🔒 Found ${confirmedAppointments.length} confirmed appointments that should block slots`);
       
+      // Get currently held slots (pending appointments that haven't expired)
+      const heldSlots = await db.select()
+        .from(appointmentPending)
+        .innerJoin(doctorTimeSlots, eq(appointmentPending.timeSlotId, doctorTimeSlots.id))
+        .where(and(
+          eq(doctorTimeSlots.doctorId, doctorIntId),
+          sql`${appointmentPending.expiresAt} > NOW()`
+        ));
+      
+      console.log(`🔒 Found ${heldSlots.length} slots currently being held`);
+      
       // Debug: Get ALL appointments for this doctor to see what's there
       const allAppointments = await db.select()
         .from(appointments)
@@ -753,9 +764,21 @@ export class PostgresStorage implements IStorage {
             return isMatch;
           });
           
-          // If there's a conflicting appointment, mark slot as unavailable
+          // Check if this slot is currently being held by another session
+          const isCurrentlyHeld = heldSlots.some(held => {
+            const isMatch = held.doctorTimeSlots.id === current.id;
+            if (isMatch) {
+              console.log(`🚫 HELD SLOT: Slot ${current.date} ${current.startTime} (${current.id}) is currently being held until ${held.appointmentPending.expiresAt}`);
+            }
+            return isMatch;
+          });
+          
+          // If there's a conflicting appointment or slot is held, mark slot as unavailable
           if (hasConflictingAppointment) {
             console.log(`🔒 Slot ${current.date} ${current.startTime} has conflicting appointment - marking as unavailable`);
+            current.isAvailable = false;
+          } else if (isCurrentlyHeld) {
+            console.log(`🔒 Slot ${current.date} ${current.startTime} is currently held - marking as unavailable`);
             current.isAvailable = false;
           }
           

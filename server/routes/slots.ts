@@ -29,7 +29,7 @@ export function setupSlotRoutes(app: Express) {
       
       console.log(`Holding slot ${slotId} for session ${actualSessionId}`);
       
-      await storage.holdSlot(slotId, actualSessionId, 30); // 30 minutes for registration flow
+      await storage.holdSlot(slotId, actualSessionId, 30); // Keep 30 min slot block but reduce payment timeout to 15 min
       
       // Save the session to ensure it persists
       await new Promise((resolve, reject) => {
@@ -46,8 +46,8 @@ export function setupSlotRoutes(app: Express) {
       
       res.json({ 
         success: true, 
-        message: 'Slot held for 30 minutes',
-        expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+        message: 'Slot held for 30 minutes, payment required within 15 minutes',
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000), // Payment timeout: 15 minutes
         sessionId: actualSessionId
       });
     } catch (error: any) {
