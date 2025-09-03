@@ -713,7 +713,10 @@ export class PostgresStorage implements IStorage {
       console.log(`🔒 Found ${confirmedAppointments.length} confirmed appointments that should block slots`);
       
       // Get currently held slots (pending appointments that haven't expired)
-      const heldSlots = await db.select()
+      const heldSlots = await db.select({
+        timeSlotId: appointmentPending.timeSlotId,
+        expiresAt: appointmentPending.expiresAt
+      })
         .from(appointmentPending)
         .innerJoin(doctorTimeSlots, eq(appointmentPending.timeSlotId, doctorTimeSlots.id))
         .where(and(
@@ -766,9 +769,9 @@ export class PostgresStorage implements IStorage {
           
           // Check if this slot is currently being held by another session
           const isCurrentlyHeld = heldSlots.some(held => {
-            const isMatch = held.doctorTimeSlots.id === current.id;
+            const isMatch = held.timeSlotId === current.id;
             if (isMatch) {
-              console.log(`🚫 HELD SLOT: Slot ${current.date} ${current.startTime} (${current.id}) is currently being held until ${held.appointmentPending.expiresAt}`);
+              console.log(`🚫 HELD SLOT: Slot ${current.date} ${current.startTime} (${current.id}) is currently being held until ${held.expiresAt}`);
             }
             return isMatch;
           });
