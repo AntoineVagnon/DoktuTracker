@@ -2042,10 +2042,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       await storage.updateAppointmentStatus(72, "cancelled");
       console.log(`🚫 Emergency cancelled appointment 72`);
-      res.json({ success: true, message: "Cancelled appointment 72" });
+      res.json({ 
+        success: true, 
+        message: "Cancelled appointment 72",
+        refreshCache: true // Tell frontend to refresh
+      });
     } catch (error) {
       console.error("Error cancelling appointment 72:", error);
       res.status(500).json({ error: "Failed to cancel appointment 72" });
+    }
+  });
+
+  // Force cache refresh endpoint 
+  app.post("/api/force-refresh", async (req, res) => {
+    try {
+      res.json({ 
+        success: true, 
+        message: "Cache refresh requested",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to refresh" });
     }
   });
 
