@@ -156,9 +156,27 @@ export class ObjectStorageService {
       const stream = file.createReadStream();
 
       let bytesStreamed = 0;
+      let firstChunk = true;
+      let totalBuffer = Buffer.alloc(0);
       
       stream.on("data", (chunk) => {
         bytesStreamed += chunk.length;
+        
+        // Capture first chunk for analysis
+        if (firstChunk) {
+          console.log('🔍 DOWNLOAD: First chunk analysis:', {
+            chunkSize: chunk.length,
+            firstBytes: chunk.slice(0, 16).toString('hex'),
+            isPNG: chunk.slice(0, 8).toString('hex') === '89504e470d0a1a0a',
+            fileSize: metadata.size
+          });
+          firstChunk = false;
+        }
+        
+        // Capture data for end analysis (limited to prevent memory issues)
+        if (totalBuffer.length < 100000) { // Only capture first 100KB for analysis
+          totalBuffer = Buffer.concat([totalBuffer, chunk]);
+        }
       });
       
       stream.on("error", (err) => {
@@ -170,6 +188,19 @@ export class ObjectStorageService {
 
       stream.on("end", () => {
         console.log(`✅ Download completed: ${bytesStreamed} bytes streamed`);
+        
+        // Analyze what came out of cloud storage
+        if (totalBuffer.length > 0) {
+          const lastBytes = totalBuffer.length > 16 ? totalBuffer.slice(-16).toString('hex') : totalBuffer.toString('hex');
+          console.log('🔍 DOWNLOAD: Final analysis:', {
+            totalBytesReceived: bytesStreamed,
+            expectedSize: metadata.size,
+            bufferCaptured: totalBuffer.length,
+            lastBytes: lastBytes,
+            hasValidPNGEnd: lastBytes.includes('49454e44ae426082'),
+            sizeMismatch: metadata.size && bytesStreamed !== metadata.size
+          });
+        }
       });
 
       // Verify file exists and is readable before streaming
