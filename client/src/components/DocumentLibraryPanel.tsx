@@ -31,7 +31,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
 
   // Fetch documents attached to this appointment (if appointmentId provided)
   const { data: attachedDocuments = [], isLoading: isLoadingAttached } = useQuery({
-    queryKey: [`/api/appointments/${appointmentId}/documents`],
+    queryKey: [`/api/documents/${appointmentId}`],
     enabled: !!appointmentId && isOpen,
   });
 
@@ -53,16 +53,31 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       }
       const uploadedFile = result.successful[0];
       
-      // Create document directly attached to appointment (not in library)
-      await apiRequest("POST", `/api/appointments/${appointmentId}/documents`, {
-        documentUrl: uploadedFile.uploadURL,
-        fileName: uploadedFile.name,
-        fileType: uploadedFile.type,
-        fileSize: uploadedFile.size,
+      // Create document directly attached to appointment using the correct endpoint
+      const formData = new FormData();
+      
+      // Fetch the file from the upload URL and convert to blob
+      const response = await fetch(uploadedFile.uploadURL);
+      const blob = await response.blob();
+      const file = new File([blob], uploadedFile.name, { type: uploadedFile.type });
+      
+      formData.append('file', file);
+      formData.append('appointmentId', appointmentId.toString());
+      formData.append('documentType', 'appointment-only');
+      
+      // Upload using the correct endpoint
+      const uploadResponse = await fetch("/api/documents/upload", {
+        method: "POST",
+        credentials: 'include',
+        body: formData,
       });
 
+      if (!uploadResponse.ok) {
+        throw new Error("Upload failed");
+      }
+
       // Refresh appointment documents
-      queryClient.invalidateQueries({ queryKey: [`/api/appointments/${appointmentId}/documents`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/documents/${appointmentId}`] });
 
       toast({
         title: "Document uploaded",
@@ -87,14 +102,27 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       }
       const uploadedFile = result.successful[0];
       
-      // Create document in library only
-      await apiRequest("POST", "/api/documents", {
-        fileName: uploadedFile.name,
-        fileType: uploadedFile.type,
-        fileSize: uploadedFile.size,
-        uploadUrl: uploadedFile.uploadURL,
-        documentType: "other", // Default type
+      // Create document in library using the correct endpoint
+      const formData = new FormData();
+      
+      // Fetch the file from the upload URL and convert to blob
+      const response = await fetch(uploadedFile.uploadURL);
+      const blob = await response.blob();
+      const file = new File([blob], uploadedFile.name, { type: uploadedFile.type });
+      
+      formData.append('file', file);
+      formData.append('documentType', 'library');
+      
+      // Upload using the correct endpoint
+      const uploadResponse = await fetch("/api/documents/upload", {
+        method: "POST",
+        credentials: 'include',
+        body: formData,
       });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Upload failed");
+      }
 
       // Refresh library documents
       queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
@@ -124,7 +152,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/appointments/${appointmentId}/documents`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/documents/${appointmentId}`] });
       toast({
         title: "Document attached",
         description: "Document has been attached to this appointment.",
@@ -150,7 +178,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       return response;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/appointments/${appointmentId}/documents`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/documents/${appointmentId}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
       toast({
         title: "Document removed",
@@ -175,7 +203,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
       if (appointmentId) {
-        queryClient.invalidateQueries({ queryKey: [`/api/appointments/${appointmentId}/documents`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/documents/${appointmentId}`] });
       }
       toast({
         title: "Document deleted",
