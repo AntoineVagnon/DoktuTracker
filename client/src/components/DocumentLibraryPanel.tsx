@@ -211,159 +211,141 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-hidden">
-        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="h-full flex flex-col">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="library">Attach from Library</TabsTrigger>
-              <TabsTrigger value="upload">Upload New</TabsTrigger>
-            </TabsList>
-          </div>
-
-          <div className="flex-1 overflow-auto p-4 space-y-4">
-            {/* Files for this appointment section */}
-            {appointmentId && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">Files for this appointment</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {isLoadingAttached ? (
-                    <div className="text-sm text-gray-500">Loading...</div>
-                  ) : (attachedDocuments as any[]).length > 0 ? (
-                    (attachedDocuments as any[]).map((doc: any) => (
-                      <div key={doc.id} className="flex items-center justify-between p-2 border rounded-lg">
-                        <div className="flex items-center space-x-2 flex-1 min-w-0">
-                          <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                          <span className="text-sm truncate" title={doc.fileName}>
-                            {doc.fileName}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDownload(doc)}
-                            title="Download"
-                          >
-                            <Download className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => detachMutation.mutate(doc.id)}
-                            disabled={detachMutation.isPending}
-                            title="Remove from appointment"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-sm text-gray-500 text-center py-4">
-                      No documents attached to this appointment
+      <div className="flex-1 overflow-auto p-4 space-y-4">
+        {/* Files for this appointment section */}
+        {appointmentId && (
+          <Card>
+            <CardHeader className="pb-3 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm font-medium">Files for this appointment</CardTitle>
+              <ObjectUploader
+                maxNumberOfFiles={1}
+                maxFileSize={10485760} // 10MB
+                onGetUploadParameters={getUploadParameters}
+                onComplete={handleUploadComplete}
+                buttonClassName="h-8 px-3 text-xs"
+              >
+                <span>Upload</span>
+              </ObjectUploader>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {isLoadingAttached ? (
+                <div className="text-sm text-gray-500">Loading...</div>
+              ) : (attachedDocuments as any[]).length > 0 ? (
+                (attachedDocuments as any[]).map((doc: any) => (
+                  <div key={doc.id} className="flex items-center justify-between p-2 border rounded-lg">
+                    <div className="flex items-center space-x-2 flex-1 min-w-0">
+                      <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                      <span className="text-sm truncate" title={doc.fileName}>
+                        {doc.fileName}
+                      </span>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                    <div className="flex items-center space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownload(doc)}
+                        title="Download"
+                      >
+                        <Download className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => detachMutation.mutate(doc.id)}
+                        disabled={detachMutation.isPending}
+                        title="Remove from appointment"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-sm text-gray-500 text-center py-4">
+                  No documents attached to this appointment
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Attach from Library section */}
+        <Card>
+          <CardHeader className="pb-3 flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-medium">Attach from Library</CardTitle>
+            <ObjectUploader
+              maxNumberOfFiles={1}
+              maxFileSize={10485760} // 10MB
+              onGetUploadParameters={getUploadParameters}
+              onComplete={handleUploadComplete}
+              buttonClassName="h-8 px-3 text-xs"
+            >
+              <span>Upload</span>
+            </ObjectUploader>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {isLoadingLibrary ? (
+              <div className="text-sm text-gray-500">Loading library...</div>
+            ) : availableForAttachment.length > 0 ? (
+              availableForAttachment.map((doc: any) => (
+                <div key={doc.id} className="flex items-center justify-between p-2 border rounded-lg">
+                  <div className="flex items-center space-x-2 flex-1 min-w-0">
+                    <FileText className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                    <span className="text-sm truncate" title={doc.fileName}>
+                      {doc.fileName}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDownload(doc)}
+                      title="Download"
+                    >
+                      <Download className="h-3 w-3" />
+                    </Button>
+                    {appointmentId && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => attachMutation.mutate(doc.id)}
+                        disabled={attachMutation.isPending}
+                        title="Attach to appointment"
+                      >
+                        <Paperclip className="h-3 w-3" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (confirm("Are you sure you want to delete this document permanently?")) {
+                          deleteMutation.mutate(doc.id);
+                        }
+                      }}
+                      disabled={deleteMutation.isPending}
+                      title="Delete forever"
+                    >
+                      <Trash2 className="h-3 w-3 text-red-500" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-gray-500 text-center py-4">
+                No documents available to attach
+              </div>
             )}
-
-            <TabsContent value="library" className="mt-0 space-y-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">Other files in your library</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {isLoadingLibrary ? (
-                    <div className="text-sm text-gray-500">Loading library...</div>
-                  ) : availableForAttachment.length > 0 ? (
-                    availableForAttachment.map((doc: any) => (
-                      <div key={doc.id} className="flex items-center justify-between p-2 border rounded-lg">
-                        <div className="flex items-center space-x-2 flex-1 min-w-0">
-                          <FileText className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                          <span className="text-sm truncate" title={doc.fileName}>
-                            {doc.fileName}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDownload(doc)}
-                            title="Download"
-                          >
-                            <Download className="h-3 w-3" />
-                          </Button>
-                          {appointmentId && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => attachMutation.mutate(doc.id)}
-                              disabled={attachMutation.isPending}
-                              title="Attach to appointment"
-                            >
-                              <Paperclip className="h-3 w-3" />
-                            </Button>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              if (confirm("Are you sure you want to delete this document permanently?")) {
-                                deleteMutation.mutate(doc.id);
-                              }
-                            }}
-                            disabled={deleteMutation.isPending}
-                            title="Delete forever"
-                          >
-                            <Trash2 className="h-3 w-3 text-red-500" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-sm text-gray-500 text-center py-4">
-                      No documents available to attach
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="upload" className="mt-0 space-y-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">Upload new document</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ObjectUploader
-                    maxNumberOfFiles={1}
-                    maxFileSize={10485760} // 10MB
-                    onGetUploadParameters={getUploadParameters}
-                    onComplete={handleUploadComplete}
-                    buttonClassName="w-full"
-                  >
-                    <div className="flex items-center justify-center space-x-2 py-8">
-                      <FileText className="h-5 w-5" />
-                      <span>Choose Files</span>
-                    </div>
-                  </ObjectUploader>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    Supported formats: PDF, JPG, PNG, GIF, TXT (max 10MB each)
-                  </p>
-                  {appointmentId && (
-                    <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                      <p className="text-xs text-blue-700 dark:text-blue-300">
-                        ✓ Documents uploaded here will be automatically attached to this appointment
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </div>
-        </Tabs>
+            
+            {appointmentId && (
+              <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <p className="text-xs text-blue-700 dark:text-blue-300">
+                  ✓ Documents uploaded here will be automatically attached to this appointment
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
