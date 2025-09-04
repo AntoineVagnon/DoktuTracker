@@ -23,21 +23,7 @@ import {
   authenticateToken
 } from "./middleware/security";
 
-// Extend express session type
-declare module 'express-session' {
-  interface SessionData {
-    heldSlots?: Record<string, {
-      slotId: string;
-      expiresAt: Date;
-      heldAt: Date;
-    }>;
-    supabaseSession?: {
-      access_token: string;
-      refresh_token: string;
-      user: any;
-    };
-  }
-}
+// Session types are defined in ./types.ts
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
@@ -46,7 +32,7 @@ import { z } from "zod";
 import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
 import { setupSlotRoutes } from "./routes/slots";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { notificationService, TriggerCode } from "./services/notificationService";
 import { emailService } from "./emailService";
 import { zoomService } from "./services/zoomService";
@@ -56,7 +42,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-05-28.basil",
+  apiVersion: "2025-08-27.basil",
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -114,7 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/appointments/:id/zoom", isAuthenticated, async (req, res) => {
     try {
       const appointmentId = parseInt(req.params.id);
-      const appointment = await storage.getAppointment(appointmentId);
+      const appointment = await storage.getAppointment(appointmentId.toString());
       
       if (!appointment) {
         return res.status(404).json({ error: "Appointment not found" });
@@ -122,6 +108,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check if user has access to this appointment
       const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user) {
@@ -240,7 +229,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Update appointment 24 to be video and live (started 5 minutes ago)
       await storage.updateAppointment(24, {
-        type: 'video',
         appointmentDate: new Date(now.getTime() - 5 * 60 * 1000),
         zoomMeetingId: 'test-meeting-24',
         zoomJoinUrl: 'https://zoom.us/j/test24',
@@ -250,7 +238,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Update appointment 16 to be video and start in 3 minutes
       await storage.updateAppointment(16, {
-        type: 'video',
         appointmentDate: new Date(now.getTime() + 3 * 60 * 1000),
         zoomMeetingId: 'test-meeting-16',
         zoomJoinUrl: 'https://zoom.us/j/test16',
@@ -260,7 +247,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Update appointment 22 to be video and start in 15 minutes
       await storage.updateAppointment(22, {
-        type: 'video',
         appointmentDate: new Date(now.getTime() + 15 * 60 * 1000),
         zoomMeetingId: 'test-meeting-22',
         zoomJoinUrl: 'https://zoom.us/j/test22',
@@ -1024,8 +1010,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Check slot availability
-      const slot = await storage.getTimeSlot(slotId);
+      // Check slot availability - using getDoctorTimeSlots
+      const slots = await storage.getDoctorTimeSlots(doctorId);
+      const slot = slots.find(s => s.id === slotId);
       if (!slot || !slot.isAvailable) {
         return res.status(409).json({ 
           error: "Slot is no longer available",
@@ -1035,7 +1022,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create appointment
       const appointmentData = {
-        patientId: parseInt(userId),
+        patientId: parseInt(userId!),
         doctorId: parseInt(doctorId),
         appointmentDate: new Date(appointmentDate),
         status: 'pending' as const,
@@ -3475,10 +3462,13 @@ Please upload the document again through the secure upload system.`;
     let event;
 
     try {
+      if (!sig) {
+        return res.status(400).send('Missing stripe-signature header');
+      }
       event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET || '');
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
+      return res.status(400).send(`Webhook Error: ${(err as Error).message}`);
     }
 
     console.log(`🔔 Stripe webhook received: ${event.type}`);
@@ -3491,7 +3481,7 @@ Please upload the document again through the secure upload system.`;
           // Update user with subscription ID
           if (createdSub.metadata?.userId) {
             try {
-              await storage.updateUser(parseInt(createdSub.metadata.userId), {
+              await storage.updateUser(createdSub.metadata.userId, {
                 stripeSubscriptionId: createdSub.id,
                 stripeCustomerId: createdSub.customer
               } as any);
@@ -3508,7 +3498,7 @@ Please upload the document again through the secure upload system.`;
           // Update subscription status in database
           if (updatedSub.metadata?.userId && updatedSub.status === 'active') {
             try {
-              await storage.updateUser(parseInt(updatedSub.metadata.userId), {
+              await storage.updateUser(updatedSub.metadata.userId, {
                 stripeSubscriptionId: updatedSub.id,
                 pendingSubscriptionPlan: null // Clear pending status
               } as any);
@@ -3525,7 +3515,7 @@ Please upload the document again through the secure upload system.`;
           // Clear subscription from user
           if (deletedSub.metadata?.userId) {
             try {
-              await storage.updateUser(parseInt(deletedSub.metadata.userId), {
+              await storage.updateUser(deletedSub.metadata.userId, {
                 stripeSubscriptionId: null,
                 pendingSubscriptionPlan: null
               } as any);

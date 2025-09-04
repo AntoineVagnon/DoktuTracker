@@ -6,6 +6,11 @@ declare module 'express-session' {
   interface SessionData {
     supabaseSession?: Session;
     bookingRedirect?: string;
+    heldSlots?: Record<string, {
+      slotId: string;
+      expiresAt: Date;
+      heldAt: Date;
+    }>;
   }
 }
 
@@ -15,6 +20,11 @@ declare global {
       user?: {
         id: string;
         email?: string;
+        firstName?: string;
+        lastName?: string;
+        stripeSubscriptionId?: string;
+        stripeCustomerId?: string;
+        pendingSubscriptionPlan?: string;
       };
     }
   }

@@ -1,0 +1,151 @@
+Failed to load resource: net::ERR_BLOCKED_BY_CLIENTUnderstand this error
+event-queue.js:41 Google Analytics Error: Failed to load https://cdn.segment.com/next-integrations/integrations/google-analytics/2.18.6/google-analytics.dynamic.js.gz
+    at i.6238.o.onerror (load-script.ts:53:24)
+i @ event-queue.js:41Understand this warning
+www.googletagmanager.com/gtag/js?id=AW-11411994397:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENTUnderstand this error
+79The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+79The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+79The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+DoktuTracker:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+DoktuTracker:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+DoktuTracker:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+_app-fb59155de99a746e.js:38 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-fb59155de99a746e.js:38 [LaunchDarkly] LaunchDarkly client initialized
+DoktuTracker:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+41Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'battery'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+framework-cc5b76d46a594bdb.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-cc5b76d46a594bdb.js:1Understand this warning
+6504-c9e166e7fcf65121.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSW90VGh4UVlTQmdqQjhPSEZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...DU2pSc2IwRlplWEo1V0RWemR6UjZVek5qVmpSNU9USk9aMmg0VUcxMlkzTlFORmhDVGtzM1oyTmlORzlGTWtsMFdHRnNUMGhOU0U5UlZVdHVWVVl3SlRKR1VsY3hhamcxVGpOTVlUUlFiaVV5UmpScmVHbFhhREZHYkZCRFJGVjBUMlkxY2xSS1JUSmpNQ1V5UmxGbGVFVTRjVkJzT0ZscU16azNWV1UzTnpVNE9YQTVZME5wWjJGNFV6WnNXREZZUzA5T1oxWlFZMHhHYzBacVpHaG5WalJKTkhOblQzVkpORU53WkVKd1VpVXlSbnAyUWpObWNYTm9iSE5QZUVSNlV6UlNaelp1ZUVjNVEzTnpiMWxZWnlVelJDVXpSQT09uo0wfqSblwWVFM3pXIHdcZID9qGq8145hTfniiBpXjBtt4kjHNkfVHS_HHyRxZ26StO2IGm3tsxvgVhZsUGQBQ.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-c9e166e7fcf65121.js:1Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+40Each dictionary in the list "icons" should contain a non-empty UTF8 string field "sizes".Understand this warning
+40Each dictionary in the list "icons" should contain a non-empty UTF8 string field "type".Understand this warning
+6504-c9e166e7fcf65121.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSWd2Ymh4UVlTQmdpaGt1TEZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...MFdEVlBVQ1V5UWpGT2QwNUtTRlJVU21OQ01tMVFaelpKZGt0b0pUSkNRemh2TjFobmJXODVXVWhWUzNOclEwcEdjMmRyWldWa1MxaElSa0ZuTjJsSE1uaHlaRnAzWkRabE0xaFhVbWxqVGxaTVIzZDNiU1V5UWs1dlMycFRaWEpsUVRSTVp6UlpOSHBRVFV0cWJVWktVREJ1VG5sS1dYaEtVRVZzVnlVeVFrRWxNa1pJSlRKR2VHd3pPSGhTU2tSaFUzaE9TekZUVFVVMU1WcDVRMjVITm1OYVpUZDFlSEoyWnpNeFpqSklWVlE0T1dzMEpUSkNSM2xYWmpWb01tcFVWMjUxY21WcU9TVXlSbVo2TTJOWU5IY2xNMFFsTTBRPZV8RVy5PA-bYn-azcuzMQudRV_2XkcDK-4LVPKsGvzQE2rBDEfsp0aKAXvtpIzyPj3VHtA-oG4lIIvNk3C83Ak.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-c9e166e7fcf65121.js:1Understand this error
+6504-c9e166e7fcf65121.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSStxL2l4UVlTQmdpWnpPTEZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...NGRUTnlUR1pUTVZGT1JreHVZMnMwTXpoNFJVSnRSR00yVVVsYVJGRkhOVlJqYUdRbE1rSktOMlJuT1VSWU4yTlJKVEpDUzJOdEpUSkNlRlpLSlRKR1FVcDJVVTlqVVdGUVdHVnBabGw0Um01TFoydGlhMjQzV1ROUVRWWmplVU14YWt4VFZXVndSVTkzYTNSYVpHRmFSVkZ1T1haallURXljakJHZWt0ak0wUmtTMlZITUdKeU1HSk9NWGtsTWtaWVRreGFZMEZTYTBwVlRISlViMVV4ZUdad1lVaE1Xa2xYVFVwSVdUaEdSWFpOUjJRbE1rSkhOa1JDZGxobVFrTWxNa1ozUkdFNU5tczNTM1I2VTBveVFTVXpSQ1V6UkE9PdKTTtnZcrjLU7zmf9oJ6Bk-dtGvTW64ZcfbP13BfQjEbCOVABmFkuNCtx2p2rP0DMhIX8K6_E_3MFU-Gii7RgM.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-c9e166e7fcf65121.js:1Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+stallwart.build.js:1 stallwart: failed ping 3
+stallwart.build.js:1 stallwart: failed ping 4
+6504-c9e166e7fcf65121.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSTg1em54UVlTQmdpU3VlZkZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...CY0ZSQlJuUjVWbVphSlRKQ2RESjVUMDVuUzBOR1pWcGFWbVYySlRKQ2RrVjBXRE5sVkRCWU5sUXhPWGRpTWxsU2NHSm9SRmRGY0hGaVZUTlpkaVV5Um1SMFJHeFlSa3RJYzBKaGVHaE5iMHhGWkV0Rllrd2xNa0p6UzBod1pGTmtTazlUY0VvbE1rSWxNa0ppZGtod04zVm1hamh0TkhWeUpUSkNZVE15TTNSSFNsRnFiMHh1ZFc1WVZYWkxXSHBDY0hvbE1rSlljRXRYYkdoa1lsZzJZbTlrSlRKQ2NFMDFhbFJEVDA1a1ZuUk9aMGxVWW1vMVZuaGxhakJYY2tGMmNUVnZTREUxYm5kNWRqWnFkVE5hU1VFbE0wUWxNMFE9sjmbGrC24-nE2wNyFRATglNYaudhP94gtvcOn4nk9TYqgyOKrvymlu8rEY84VYQCPbF9nUFnw192-CUvpBbcAw.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-c9e166e7fcf65121.js:1Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+6504-c9e166e7fcf65121.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSTlQTG54UVlTQmdpVGorakZCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...mFTSEkwUzBrME5IRlJTVmxHY2xOa1ZGZ2xNa1l3VjB0Q1VtNXlVU1V5UmsxdGFWaHdXVU4yZUc1eWVuTjFUMVJYUmtWSFlYZG9UVnBIYzBkRVVVdEVUbllsTWtKMU9HSlRlaVV5UW1KSlZrOW1jMW8zVkZveVUxbzRiREY1VFhSeldFMWFaV2xMV1cxclJrRnZOMFpMVlROTmFVVnpibTl4WkRCcWFuRnZXa2xzSlRKR2FsbHJVVXM0TWs5TVREWjNWRTF2TmtFek1UUjBVR2xLTW5OMmEyMVJjV28yYUZCR1NFWmhPWGRNZFROalF6WlhNelp0U25KRmJuQlBPVWx6U2xkV05rczRkVmQzWkhCNVVYQnVORGxSSlRORUpUTkX0cL0nn0kEab6dOYerkRuuF1FGeJ1-PuuqPhxU0A8yFbAUQ5vWM65UMjHngCQV6RouGqyGLdC55M_DVBm6sxcC.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-c9e166e7fcf65121.js:1Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+_app-fb59155de99a746e.js:38 Invalid href 'https://0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev//api/documents/download-simple/88248d8d-7508-40a3-a0a1-e29e21b05ab8' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-fb59155de99a746e.js:38Understand this error
+_app-fb59155de99a746e.js:38 WARN: A component changed from uncontrolled to controlled.
+(anonymous) @ _app-fb59155de99a746e.js:38Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar44q%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+12Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+Understand this error
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with public key: pk_test_51...
+Console.js:61 Landing page loaded, checking for password reset tokens
+Console.js:61 Current URL hash: 
+Console.js:61 Hash params: [object Object]
+Console.js:61 All hash params: 
+Console.js:61 ❌ No password reset tokens found, loading normal landing page
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)Understand this error
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with public key: pk_test_51...
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🚀 DOWNLOAD ATTEMPT - Document: 88248d8d-7508-40a3-a0a1-e29e21b05ab8 FireShot Capture 168 - lemlist â¢ lemwarm - app.lemlist.com.png
+Console.js:61 📡 Sending request to: /api/documents/download/88248d8d-7508-40a3-a0a1-e29e21b05ab8
+Console.js:61 📨 Response received: Object
+Console.js:61 📦 Blob created: Object
+Console.js:61 ⬇️ Triggering download for: FireShot Capture 168 - lemlist â¢ lemwarm - app.lemlist.com.png
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: 
