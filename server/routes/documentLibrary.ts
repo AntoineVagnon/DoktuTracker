@@ -9,6 +9,12 @@ import {
 export function registerDocumentLibraryRoutes(app: Express) {
   console.log("🔧 REGISTERING DOCUMENT LIBRARY ROUTES");
   
+  // Add comprehensive logging middleware for ALL /api/documents/* requests
+  app.use('/api/documents/*', (req, res, next) => {
+    console.log(`🌐 INTERCEPTED REQUEST - ${req.method} ${req.url} - User-Agent: ${req.get('User-Agent')?.substring(0, 50)}...`);
+    next();
+  });
+  
   // Get user's document library
   app.get("/api/documents", isAuthenticated, async (req, res) => {
     try {
