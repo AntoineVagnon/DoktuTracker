@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ObjectUploader } from "@/components/ObjectUploader";
 import { X, FileText, Paperclip, Trash2, Download } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -35,63 +34,41 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     enabled: !!appointmentId && isOpen,
   });
 
-  // Get upload parameters for new documents
-  const getUploadParameters = async () => {
-    const response = await apiRequest("POST", "/api/objects/upload");
-    const data = await response.json();
-    return {
-      method: "PUT" as const,
-      url: data.uploadURL,
-    };
-  };
-
-  // Handle appointment-only file upload (upload directly to appointment)
-  const handleAppointmentUpload = async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+  // Handle direct file upload without cloud storage
+  const handleDirectFileUpload = async (file: File, documentType: 'appointment-only' | 'library') => {
     try {
-      if (!result.successful || result.successful.length === 0) {
-        throw new Error("No files uploaded successfully");
-      }
-      const uploadedFile = result.successful[0];
-      
-      // Create document directly attached to appointment using the correct endpoint
       const formData = new FormData();
-      
-      // Get the original file from Uppy's file data (not from upload URL)
-      if (!appointmentId) {
-        throw new Error("Appointment ID is required");
-      }
-      
-      // Access the original file data from the upload result
-      const file = uploadedFile.data as File;
-      if (!file) {
-        throw new Error("File data is missing");
-      }
-      
       formData.append('file', file);
-      formData.append('appointmentId', appointmentId.toString());
-      formData.append('documentType', 'appointment-only');
+      formData.append('documentType', documentType);
       
-      // Upload using the correct endpoint
-      const uploadResponse = await fetch("/api/documents/upload", {
+      if (documentType === 'appointment-only' && appointmentId) {
+        formData.append('appointmentId', appointmentId.toString());
+      }
+      
+      const response = await fetch("/api/documents/upload", {
         method: "POST",
         credentials: 'include',
         body: formData,
       });
-
-      if (!uploadResponse.ok) {
+      
+      if (!response.ok) {
         throw new Error("Upload failed");
       }
-
-      // Refresh appointment documents
-      queryClient.invalidateQueries({ queryKey: [`/api/documents/${appointmentId}`] });
-
+      
+      // Refresh appropriate document lists
+      if (documentType === 'appointment-only' && appointmentId) {
+        queryClient.invalidateQueries({ queryKey: [`/api/documents/${appointmentId}`] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
+      }
+      
       toast({
         title: "Document uploaded",
-        description: `${uploadedFile.name} has been uploaded to this appointment.`,
+        description: `${file.name} has been uploaded successfully.`,
       });
-
+      
     } catch (error) {
-      console.error("Error handling appointment upload:", error);
+      console.error("Error uploading document:", error);
       toast({
         title: "Upload failed",
         description: "There was an error uploading your document. Please try again.",
@@ -100,54 +77,6 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     }
   };
 
-  // Handle library file upload (upload to library for reuse)
-  const handleLibraryUpload = async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
-    try {
-      if (!result.successful || result.successful.length === 0) {
-        throw new Error("No files uploaded successfully");
-      }
-      const uploadedFile = result.successful[0];
-      
-      // Create document in library using the correct endpoint
-      const formData = new FormData();
-      
-      // Get the original file from Uppy's file data (not from upload URL)
-      const file = uploadedFile.data as File;
-      if (!file) {
-        throw new Error("File data is missing");
-      }
-      
-      formData.append('file', file);
-      formData.append('documentType', 'library');
-      
-      // Upload using the correct endpoint
-      const uploadResponse = await fetch("/api/documents/upload", {
-        method: "POST",
-        credentials: 'include',
-        body: formData,
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Upload failed");
-      }
-
-      // Refresh library documents
-      queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
-
-      toast({
-        title: "Document uploaded",
-        description: `${uploadedFile.name} has been added to your library.`,
-      });
-
-    } catch (error) {
-      console.error("Error handling library upload:", error);
-      toast({
-        title: "Upload failed",
-        description: "There was an error uploading your document. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   // Attach document to appointment
   const attachMutation = useMutation({
@@ -310,15 +239,27 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
           <Card>
             <CardHeader className="pb-3 flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-medium">Files for this appointment</CardTitle>
-              <ObjectUploader
-                maxNumberOfFiles={1}
-                maxFileSize={10485760} // 10MB
-                onGetUploadParameters={getUploadParameters}
-                onComplete={handleAppointmentUpload}
-                buttonClassName="h-8 px-3 text-xs"
-              >
-                <span>Upload</span>
-              </ObjectUploader>
+              <div>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png,.gif,.txt"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      handleDirectFileUpload(file, 'appointment-only');
+                      e.target.value = '';
+                    }
+                  }}
+                  className="hidden"
+                  id="appointment-file-input"
+                />
+                <Button
+                  onClick={() => document.getElementById('appointment-file-input')?.click()}
+                  className="h-8 px-3 text-xs"
+                >
+                  <span>Upload</span>
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-2">
               {isLoadingAttached ? (
@@ -366,15 +307,27 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
         <Card>
           <CardHeader className="pb-3 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium">Attach from Library</CardTitle>
-            <ObjectUploader
-              maxNumberOfFiles={1}
-              maxFileSize={10485760} // 10MB
-              onGetUploadParameters={getUploadParameters}
-              onComplete={handleLibraryUpload}
-              buttonClassName="h-8 px-3 text-xs"
-            >
-              <span>Upload</span>
-            </ObjectUploader>
+            <div>
+              <input
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.gif,.txt"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleDirectFileUpload(file, 'library');
+                    e.target.value = '';
+                  }
+                }}
+                className="hidden"
+                id="library-file-input"
+              />
+              <Button
+                onClick={() => document.getElementById('library-file-input')?.click()}
+                className="h-8 px-3 text-xs"
+              >
+                <span>Upload</span>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-2">
             {isLoadingLibrary ? (
