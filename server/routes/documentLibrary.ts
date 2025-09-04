@@ -146,7 +146,7 @@ export function registerDocumentLibraryRoutes(app: Express) {
     }
   });
 
-  // Import document to library (convert appointment-only to library)
+  // Import document to library (create a copy for reuse)
   app.post("/api/documents/:documentId/import", isAuthenticated, async (req, res) => {
     try {
       const { documentId } = req.params;
@@ -167,10 +167,32 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(403).json({ error: "Access denied" });
       }
 
-      // Update document type to be available in library
-      await storage.updateDocumentType(documentId, 'other'); // Convert to library document
+      // Check if document is already in library (avoid duplicates)
+      const libraryDocs = await storage.getDocuments(userIdInt);
+      const existsInLibrary = libraryDocs.some((doc: any) => 
+        doc.fileName === document.fileName && 
+        doc.fileSize === document.fileSize &&
+        doc.documentType !== 'appointment-only'
+      );
+
+      if (existsInLibrary) {
+        return res.json({ message: "Document already exists in library" });
+      }
+
+      // Create a copy in library with 'other' type
+      const libraryDocument = await storage.createDocument({
+        uploadedBy: userIdInt,
+        fileName: document.fileName,
+        fileSize: document.fileSize,
+        fileType: document.fileType,
+        uploadUrl: document.uploadUrl,
+        documentType: 'other', // Mark as library document
+      });
       
-      res.json({ message: "Document imported to library successfully" });
+      res.json({ 
+        message: "Document imported to library successfully",
+        document: libraryDocument
+      });
     } catch (error) {
       console.error("Error importing document to library:", error);
       res.status(500).json({ error: "Internal server error" });
