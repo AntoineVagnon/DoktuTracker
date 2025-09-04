@@ -267,26 +267,27 @@ export function registerDocumentLibraryRoutes(app: Express) {
         uploadUrl: document.uploadUrl
       });
 
-      // Windows-compatible download with proper headers for iframe approach
+      // Direct download with proper headers for browser navigation
       const objectStorageService = new ObjectStorageService();
       
       try {
         const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
         const [fileContents] = await objectFile.download();
         
-        // Clean filename for Windows - remove problematic characters
+        // Clean filename for Windows - keep it simple
         const cleanFileName = document.fileName
           .replace(/[<>:"/\\|?*]/g, '_')  // Replace Windows-forbidden chars
-          .replace(/\s+/g, '_');           // Replace spaces with underscores
+          .replace(/\s+/g, '_')           // Replace spaces with underscores
+          .replace(/_+/g, '_');           // Remove duplicate underscores
         
-        // Set headers for proper Windows download via iframe
-        res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
-        res.setHeader('Content-Length', fileContents.length.toString());
+        // Set minimal headers for direct browser download
+        // Use application/octet-stream to force download instead of display
+        res.setHeader('Content-Type', 'application/octet-stream');
         res.setHeader('Content-Disposition', `attachment; filename="${cleanFileName}"`);
-        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('Content-Length', fileContents.length.toString());
         
-        // Send the complete file
-        res.send(fileContents);
+        // Send the file buffer directly
+        res.end(fileContents);
         
       } catch (error) {
         console.error("❌ Object storage error:", error);

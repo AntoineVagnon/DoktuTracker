@@ -156,37 +156,16 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     },
   });
 
-  // Handle document download - Windows-compatible approach
-  const handleDownload = async (doc: any) => {
-    try {
-      // Direct download approach for Windows compatibility
-      // This avoids blob creation which can cause Windows registry errors
-      const downloadUrl = `/api/download/${doc.id}`;
-      
-      // Create a hidden iframe to trigger download without blob
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = downloadUrl;
-      document.body.appendChild(iframe);
-      
-      // Clean up after a delay
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 5000);
-      
-      toast({
-        title: "Download started",
-        description: `${doc.fileName} is downloading...`,
-      });
-      
-    } catch (error) {
-      console.error("Download error:", error);
-      toast({
-        title: "Download failed",
-        description: `Unable to download document`,
-        variant: "destructive",
-      });
-    }
+  // Handle document download - Direct navigation approach
+  const handleDownload = (doc: any) => {
+    // Most direct approach - let browser handle download natively
+    // This works best in all environments including Replit dev mode
+    window.location.href = `/api/download/${doc.id}`;
+    
+    toast({
+      title: "Download started",
+      description: `${doc.fileName} is downloading...`,
+    });
   };
 
   if (!isOpen) return null;
