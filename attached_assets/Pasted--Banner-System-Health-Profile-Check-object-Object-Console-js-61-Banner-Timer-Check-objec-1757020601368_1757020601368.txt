@@ -1,0 +1,77 @@
+🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 🔥 Banner Timer Check: [object Object]
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 🔥 Banner Timer Check: [object Object]
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 🔥 Banner Timer Check: [object Object]
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 Slot clicked: [object Object]
+Console.js:61 DoctorProfile - Raw params: [object Object]
+Console.js:61 DoctorProfile - Doctor ID: 9
+Console.js:61 Slot held successfully: [object Object]
+Console.js:61 Slot held successfully, user authenticated, redirecting to checkout: /checkout?doctorId=9&slot=2025-09-05T11%3A30%3A00&price=35.00&slotId=b94cdc8e-9cc8-4381-ae2f-99cb6046df16
+Console.js:61 Failed to send analytics events: TypeError: Failed to fetch
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with public key: pk_test_51...
+Console.js:61 🔥 Checkout Page Params: {doctorId: '9', slot: '2025-09-05T11:30:00', price: '35.00', slotId: 'b94cdc8e-9cc8-4381-ae2f-99cb6046df16', appointmentId: null, …}
+Console.js:61 Re-holding slot with ID: b94cdc8e-9cc8-4381-ae2f-99cb6046df16
+Console.js:61 Slot re-held successfully: {success: true, message: 'Slot held for 15 minutes, payment required within 15 minutes', expiresAt: '2025-09-04T21:31:06.342Z', sessionId: 'GzZ04VgBJ1KXmUF1lVvVBKioJImiwj-X'}
+Console.js:61 🔥 Checkout Page Params: {doctorId: '9', slot: '2025-09-05T11:30:00', price: '35.00', slotId: 'b94cdc8e-9cc8-4381-ae2f-99cb6046df16', appointmentId: null, …}
+Console.js:61 🆕 Creating new appointment
+Console.js:61 🕐 Original slot parameter: 2025-09-05T11:30:00
+Console.js:61 🕐 Parsed local date: 5.9.2025, 11:30:00
+Console.js:61 🕐 Current timezone offset (minutes): -120
+Console.js:61 🕐 UTC for storage: 2025-09-05T09:30:00.000Z
+Console.js:61 🕐 Verification - stored UTC converted back to local: 5.9.2025, 11:30:00
+Console.js:61 🔥 Checkout Page Params: {doctorId: '9', slot: '2025-09-05T11:30:00', price: '35.00', slotId: 'b94cdc8e-9cc8-4381-ae2f-99cb6046df16', appointmentId: null, …}
+injected.js:253  POST https://0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/appointments 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+initializeCheckout @ Checkout.tsx:168
+await in initializeCheckout
+(anonymous) @ Checkout.tsx:228
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=c9be08bf:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=c9be08bf:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=c9be08bf:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=c9be08bf:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=c9be08bf:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=c9be08bf:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=c9be08bf:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c9be08bf:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c9be08bf:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=c9be08bf:19432
+commitRoot @ chunk-RPCDYKBN.js?v=c9be08bf:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=c9be08bf:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=c9be08bf:18718
+workLoop @ chunk-RPCDYKBN.js?v=c9be08bf:197
+flushWork @ chunk-RPCDYKBN.js?v=c9be08bf:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c9be08bf:384Understand this error
+Console.js:61 Checkout initialization error: Error: Failed to create appointment
+    at initializeCheckout (Checkout.tsx:181:19)
+Mt.forEach.n.<computed> @ Console.js:61
+console.error @ main.tsx:79
+initializeCheckout @ Checkout.tsx:218
+await in initializeCheckout
+(anonymous) @ Checkout.tsx:228
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=c9be08bf:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=c9be08bf:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=c9be08bf:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=c9be08bf:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=c9be08bf:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=c9be08bf:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=c9be08bf:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=c9be08bf:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=c9be08bf:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=c9be08bf:19432
+commitRoot @ chunk-RPCDYKBN.js?v=c9be08bf:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=c9be08bf:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=c9be08bf:18718
+workLoop @ chunk-RPCDYKBN.js?v=c9be08bf:197
+flushWork @ chunk-RPCDYKBN.js?v=c9be08bf:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c9be08bf:384Understand this error
+Console.js:61 Landing page loaded, checking for password reset tokens
+Console.js:61 Current URL hash: 
+Console.js:61 Hash params: {type: null, accessToken: false}
+Console.js:61 All hash params: []
+Console.js:61 ❌ No password reset tokens found, loading normal landing page
