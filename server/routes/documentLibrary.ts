@@ -289,6 +289,48 @@ export function registerDocumentLibraryRoutes(app: Express) {
 
         const readStream = objectFile.createReadStream();
         
+        let bytesStreamed = 0;
+        let firstChunk = true;
+        let totalBuffer = Buffer.alloc(0);
+        
+        readStream.on("data", (chunk) => {
+          bytesStreamed += chunk.length;
+          
+          // Capture first chunk for analysis
+          if (firstChunk) {
+            console.log('🔍 SIMPLE ROUTE: First chunk analysis:', {
+              fileName: cleanFileName,
+              chunkSize: chunk.length,
+              firstBytes: chunk.slice(0, 16).toString('hex'),
+              isPNG: chunk.slice(0, 8).toString('hex') === '89504e470d0a1a0a',
+              expectedSize: document.fileSize
+            });
+            firstChunk = false;
+          }
+          
+          // Capture data for end analysis (limited to prevent memory issues)
+          if (totalBuffer.length < 100000) { // Only capture first 100KB for analysis
+            totalBuffer = Buffer.concat([totalBuffer, chunk]);
+          }
+        });
+        
+        readStream.on("end", () => {
+          console.log(`✅ SIMPLE ROUTE: Download completed: ${bytesStreamed} bytes streamed`);
+          
+          // Analyze what came out of cloud storage
+          if (totalBuffer.length > 0) {
+            const lastBytes = totalBuffer.length > 16 ? totalBuffer.slice(-16).toString('hex') : totalBuffer.toString('hex');
+            console.log('🔍 SIMPLE ROUTE: Final analysis:', {
+              totalBytesReceived: bytesStreamed,
+              expectedSize: document.fileSize,
+              bufferCaptured: totalBuffer.length,
+              lastBytes: lastBytes,
+              hasValidPNGEnd: lastBytes.includes('49454e44ae426082'),
+              sizeMismatch: document.fileSize && bytesStreamed !== document.fileSize
+            });
+          }
+        });
+        
         readStream.pipe(res);
         
         readStream.on('error', (error) => {
