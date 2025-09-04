@@ -2368,29 +2368,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/documents/:appointmentId", isAuthenticated, async (req, res) => {
-    try {
-      const appointmentId = parseInt(req.params.appointmentId);
-      const documents = await storage.getDocuments(appointmentId);
-      res.json(documents);
-    } catch (error) {
-      console.error("Error fetching documents:", error);
-      res.status(500).json({ message: "Failed to fetch documents" });
-    }
-  });
-
-  app.get("/api/documents/patient/:patientId", isAuthenticated, async (req, res) => {
-    try {
-      const patientId = parseInt(req.params.patientId);
-      const documents = await storage.getDocumentsByPatient(patientId);
-      res.json(documents);
-    } catch (error) {
-      console.error("Error fetching patient documents:", error);
-      res.status(500).json({ message: "Failed to fetch patient documents" });
-    }
-  });
-
-
+  // IMPORTANT: Specific routes MUST come BEFORE general routes to avoid conflicts
   app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
     try {
       const documentId = req.params.documentId;
@@ -2524,6 +2502,28 @@ Please upload the document again through the secure upload system.`;
     } catch (error) {
       console.error("Error downloading document:", error);
       res.status(500).json({ message: "Failed to download document" });
+    }
+  });
+
+  app.get("/api/documents/patient/:patientId", isAuthenticated, async (req, res) => {
+    try {
+      const patientId = parseInt(req.params.patientId);
+      const documents = await storage.getDocumentsByPatient(patientId);
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching patient documents:", error);
+      res.status(500).json({ message: "Failed to fetch patient documents" });
+    }
+  });
+
+  app.get("/api/documents/:appointmentId", isAuthenticated, async (req, res) => {
+    try {
+      const appointmentId = parseInt(req.params.appointmentId);
+      const documents = await storage.getDocuments(appointmentId);
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
     }
   });
 
