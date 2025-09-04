@@ -267,19 +267,20 @@ export function registerDocumentLibraryRoutes(app: Express) {
         uploadUrl: document.uploadUrl
       });
 
-      // Clean filename for Windows compatibility
-      const cleanFileName = document.fileName
-        .replace(/[^\w\s.-]/g, '') // Remove special characters
-        .replace(/\s+/g, ' ') // Normalize spaces
-        .trim();
+      // Use simple test filename to isolate the issue
+      const simpleFileName = `document_${documentId.substring(0, 8)}.png`;
+      
+      console.log('🧹 Using simple filename for testing:', { 
+        original: document.fileName, 
+        simple: simpleFileName 
+      });
 
-      console.log('🧹 Cleaned filename:', { original: document.fileName, cleaned: cleanFileName });
-
-      // Set proper headers for file download with Windows compatibility
-      res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
-      res.setHeader('Content-Disposition', `attachment; filename="${cleanFileName}"`);
-      res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
+      // Set headers optimized for Windows PNG downloads
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Disposition', `attachment; filename="${simpleFileName}"`);
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       res.setHeader('Content-Transfer-Encoding', 'binary');
 
       // Handle the file streaming
