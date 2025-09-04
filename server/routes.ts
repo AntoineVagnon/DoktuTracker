@@ -2435,6 +2435,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.status(403).json({ message: "Access denied" });
           }
 
+          console.log('🧪 Debugging download - document details:', {
+            fileName: document.fileName,
+            fileType: document.fileType,
+            fileSize: document.fileSize,
+            uploadUrl: document.uploadUrl
+          });
+          
+          console.log('📂 ObjectFile details:', {
+            exists: !!objectFile,
+            canRead: !!objectFile.createReadStream
+          });
+
           // Set HIPAA-compliant headers for secure download FIRST
           res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
           res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
@@ -2442,12 +2454,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.setHeader('X-Frame-Options', 'DENY');
           res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
           
-          // Stream the file directly without buffering to preserve binary integrity
+          console.log('📡 Headers set, starting stream...');
+          
+          // Create a simple test - let's read and check the first few bytes
           const readStream = objectFile.createReadStream();
+          let bytesRead = 0;
+          let firstChunk: Buffer | null = null;
+          
+          readStream.on('data', (chunk: Buffer) => {
+            bytesRead += chunk.length;
+            if (!firstChunk) {
+              firstChunk = chunk;
+              console.log('🔍 First chunk info:', {
+                size: chunk.length,
+                firstBytes: chunk.slice(0, 10).toString('hex'),
+                isPNG: chunk.slice(0, 4).toString('hex') === '89504e47'
+              });
+            }
+          });
+          
+          readStream.on('end', () => {
+            console.log('📊 Stream completed, total bytes:', bytesRead);
+          });
           
           // Handle stream errors
           readStream.on('error', (streamError) => {
-            console.error('Error streaming file:', streamError);
+            console.error('❌ Error streaming file:', streamError);
             if (!res.headersSent) {
               res.status(500).json({ message: "Error streaming file" });
             }
