@@ -267,39 +267,20 @@ export function registerDocumentLibraryRoutes(app: Express) {
         uploadUrl: document.uploadUrl
       });
 
-      // Windows-specific filename handling to prevent registry errors
-      const fileExtension = document.fileName.split('.').pop()?.toLowerCase() || '';
-      let baseName = document.fileName.replace(/\.[^/.]+$/, ""); // Remove extension
-      
-      // Clean basename but preserve essential characters for Windows
-      baseName = baseName
-        .replace(/[<>:"/\\|?*]/g, '') // Remove Windows-forbidden characters only
-        .replace(/\s+/g, ' ') // Normalize spaces
-        .trim()
-        .substring(0, 100); // Limit length for Windows compatibility
-      
-      // Reconstruct filename with guaranteed extension
-      const windowsFileName = baseName + (fileExtension ? `.${fileExtension}` : '.png');
-      
-      // Set Windows-compatible headers optimized for file associations
-      res.setHeader('Content-Type', 'image/png'); // Force PNG MIME type for Windows
-      res.setHeader('Content-Length', document.fileSize.toString());
-      res.setHeader('Content-Disposition', `attachment; filename="${windowsFileName}"`);
-      res.setHeader('Cache-Control', 'no-cache, no-store');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-
-      // Handle the file streaming
+      // Simple, standard download approach for maximum Windows compatibility
       const objectStorageService = new ObjectStorageService();
       
       try {
         const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
-        
-        // Download complete file and send without corruption
         const [fileContents] = await objectFile.download();
         
-        // Stream the complete buffer to response
-        res.end(fileContents);
+        // Use the most basic headers that Windows expects
+        res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+        res.setHeader('Content-Length', fileContents.length.toString());
+        res.setHeader('Content-Disposition', `inline; filename="${document.fileName}"`);
+        
+        // Send the complete file
+        res.send(fileContents);
         
       } catch (error) {
         console.error("❌ Object storage error:", error);
