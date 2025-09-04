@@ -2434,15 +2434,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.status(403).json({ message: "Access denied" });
           }
 
-          // Set HIPAA-compliant headers
+          // Set HIPAA-compliant headers (let downloadObject handle Content-Type and Cache-Control)
           res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
-          res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
           res.setHeader('X-Content-Type-Options', 'nosniff');
           res.setHeader('X-Frame-Options', 'DENY');
-          res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
           
-          // Stream the file securely
-          await objectStorageService.downloadObject(objectFile, res);
+          // Stream the file securely - downloadObject will handle Content-Type, Content-Length, and Cache-Control
+          await objectStorageService.downloadObject(objectFile, res, 0); // 0 cache for private medical files
           
         } catch (objectError) {
           console.error('Error accessing object storage:', objectError);
