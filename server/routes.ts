@@ -2435,26 +2435,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.status(403).json({ message: "Access denied" });
           }
 
-          // Get file content as buffer for direct download
-          const fileBuffer = await new Promise<Buffer>((resolve, reject) => {
-            const chunks: Buffer[] = [];
-            const stream = objectFile.createReadStream();
-            
-            stream.on('data', (chunk) => chunks.push(chunk));
-            stream.on('end', () => resolve(Buffer.concat(chunks)));
-            stream.on('error', reject);
-          });
-          
-          // Set HIPAA-compliant headers for secure download
+          // Set HIPAA-compliant headers for secure download FIRST
           res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
           res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
-          res.setHeader('Content-Length', fileBuffer.length.toString());
           res.setHeader('X-Content-Type-Options', 'nosniff');
           res.setHeader('X-Frame-Options', 'DENY');
           res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
           
-          // Send the file directly as buffer
-          res.send(fileBuffer);
+          // Stream the file directly without buffering to preserve binary integrity
+          const readStream = objectFile.createReadStream();
+          
+          // Handle stream errors
+          readStream.on('error', (streamError) => {
+            console.error('Error streaming file:', streamError);
+            if (!res.headersSent) {
+              res.status(500).json({ message: "Error streaming file" });
+            }
+          });
+          
+          // Pipe the file stream directly to response (preserves binary data)
+          readStream.pipe(res);
           
         } catch (objectError) {
           console.error('Error accessing object storage:', objectError);
