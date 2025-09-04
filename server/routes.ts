@@ -2390,6 +2390,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Simple alternative download route for debugging
+  app.get("/api/documents/download-simple/:documentId", isAuthenticated, async (req, res) => {
+    try {
+      const documentId = req.params.documentId;
+      console.log('🔍 Simple download test for document:', documentId);
+      
+      const document = await storage.getDocumentById(documentId);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      console.log('📁 Document found:', {
+        fileName: document.fileName,
+        fileType: document.fileType,
+        uploadUrl: document.uploadUrl,
+        fileSize: document.fileSize
+      });
+      
+      // For testing - return document info as JSON first
+      res.json({
+        message: "Document info",
+        fileName: document.fileName,
+        fileType: document.fileType,
+        uploadUrl: document.uploadUrl,
+        fileSize: document.fileSize,
+        debug: "This is a simple test route"
+      });
+      
+    } catch (error) {
+      console.error("Error in simple download:", error);
+      res.status(500).json({ message: "Failed to download document", error: error.message });
+    }
+  });
+
   app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
     try {
       const documentId = req.params.documentId;
