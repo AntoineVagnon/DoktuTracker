@@ -99,6 +99,16 @@ export class ObjectStorageService {
     try {
       // Get file metadata
       const [metadata] = await file.getMetadata();
+      console.log('📋 DOWNLOAD METADATA:', {
+        name: metadata.name,
+        contentType: metadata.contentType,
+        size: metadata.size,
+        timeCreated: metadata.timeCreated,
+        updated: metadata.updated,
+        md5Hash: metadata.md5Hash,
+        crc32c: metadata.crc32c
+      });
+      
       // Get the ACL policy for the object.
       const aclPolicy = await getObjectAclPolicy(file);
       const isPublic = aclPolicy?.visibility === "public";
@@ -128,27 +138,47 @@ export class ObjectStorageService {
         "Content-Type": contentType,
         "Content-Length": metadata.size?.toString() || "0",
         "Cache-Control": `${isPublic ? "public" : "private"}, max-age=${cacheTtlSec}`,
+        "Accept-Ranges": "bytes",
+        "X-Content-Type-Options": "nosniff"
       };
 
       // Add Content-Disposition header with filename if provided
       if (fileName) {
-        // Sanitize filename for HTTP header
-        const sanitizedFilename = fileName.replace(/[^\w\-_\. ]/g, '');
-        headers["Content-Disposition"] = `attachment; filename="${sanitizedFilename}"`;
+        // Sanitize filename for HTTP header and encode properly
+        const sanitizedFilename = fileName.replace(/[^\w\-_\. ()]/g, '');
+        headers["Content-Disposition"] = `attachment; filename*=UTF-8''${encodeURIComponent(sanitizedFilename)}`;
       }
 
+      console.log('📤 DOWNLOAD HEADERS:', headers);
       res.set(headers);
 
       // Stream the file to the response
       const stream = file.createReadStream();
 
+      let bytesStreamed = 0;
+      
+      stream.on("data", (chunk) => {
+        bytesStreamed += chunk.length;
+      });
+      
       stream.on("error", (err) => {
-        console.error("Stream error:", err);
+        console.error("💥 Stream error:", err);
         if (!res.headersSent) {
           res.status(500).json({ error: "Error streaming file" });
         }
       });
 
+      stream.on("end", () => {
+        console.log(`✅ Download completed: ${bytesStreamed} bytes streamed`);
+      });
+
+      // Verify file exists and is readable before streaming
+      const [exists] = await file.exists();
+      if (!exists) {
+        throw new ObjectNotFoundError();
+      }
+
+      console.log(`🚀 Starting download stream for: ${fileName || 'unknown'}`);
       stream.pipe(res);
     } catch (error) {
       console.error("Error downloading file:", error);
