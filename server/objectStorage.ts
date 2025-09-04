@@ -95,21 +95,49 @@ export class ObjectStorageService {
   }
 
   // Downloads an object to the response.
-  async downloadObject(file: File, res: Response, cacheTtlSec: number = 3600) {
+  async downloadObject(file: File, res: Response, cacheTtlSec: number = 3600, fileName?: string) {
     try {
       // Get file metadata
       const [metadata] = await file.getMetadata();
       // Get the ACL policy for the object.
       const aclPolicy = await getObjectAclPolicy(file);
       const isPublic = aclPolicy?.visibility === "public";
-      // Set appropriate headers
-      res.set({
-        "Content-Type": metadata.contentType || "application/octet-stream",
-        "Content-Length": metadata.size,
-        "Cache-Control": `${
-          isPublic ? "public" : "private"
-        }, max-age=${cacheTtlSec}`,
-      });
+      
+      // Determine the content type - prefer stored metadata, fallback to file extension
+      let contentType = metadata.contentType || "application/octet-stream";
+      
+      // If no proper content type and we have a filename, try to determine from extension
+      if (contentType === "application/octet-stream" && fileName) {
+        const ext = fileName.toLowerCase().split('.').pop();
+        switch (ext) {
+          case 'pdf': contentType = 'application/pdf'; break;
+          case 'jpg':
+          case 'jpeg': contentType = 'image/jpeg'; break;
+          case 'png': contentType = 'image/png'; break;
+          case 'gif': contentType = 'image/gif'; break;
+          case 'txt': contentType = 'text/plain'; break;
+          case 'doc': contentType = 'application/msword'; break;
+          case 'docx': contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'; break;
+          case 'xls': contentType = 'application/vnd.ms-excel'; break;
+          case 'xlsx': contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'; break;
+        }
+      }
+
+      // Set appropriate headers including Content-Disposition for proper downloads
+      const headers: Record<string, string> = {
+        "Content-Type": contentType,
+        "Content-Length": metadata.size?.toString() || "0",
+        "Cache-Control": `${isPublic ? "public" : "private"}, max-age=${cacheTtlSec}`,
+      };
+
+      // Add Content-Disposition header with filename if provided
+      if (fileName) {
+        // Sanitize filename for HTTP header
+        const sanitizedFilename = fileName.replace(/[^\w\-_\. ]/g, '');
+        headers["Content-Disposition"] = `attachment; filename="${sanitizedFilename}"`;
+      }
+
+      res.set(headers);
 
       // Stream the file to the response
       const stream = file.createReadStream();

@@ -278,11 +278,20 @@ export function registerDocumentLibraryRoutes(app: Express) {
       // Use object storage to download the file
       const objectStorageService = new ObjectStorageService();
       try {
-        const objectFile = await objectStorageService.getObjectEntityFile(
-          objectStorageService.normalizeObjectEntityPath(document.uploadUrl)
-        );
+        console.log(`🔍 DOWNLOAD DEBUG - Document ${documentId}:`, {
+          fileName: document.fileName,
+          fileType: document.fileType,
+          fileSize: document.fileSize,
+          uploadUrl: document.uploadUrl
+        });
         
-        objectStorageService.downloadObject(objectFile, res);
+        const normalizedPath = objectStorageService.normalizeObjectEntityPath(document.uploadUrl);
+        console.log(`🔍 NORMALIZED PATH: ${normalizedPath}`);
+        
+        const objectFile = await objectStorageService.getObjectEntityFile(normalizedPath);
+        
+        // Pass the original filename to the download function for proper headers
+        objectStorageService.downloadObject(objectFile, res, 3600, document.fileName);
       } catch (error) {
         if (error instanceof ObjectNotFoundError) {
           return res.status(404).json({ 
