@@ -221,9 +221,9 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
   });
 
   // Handle document download
-  const handleDownload = async (document: any) => {
+  const handleDownload = async (doc: any) => {
     try {
-      const response = await fetch(`/api/documents/download/${document.id}`, {
+      const response = await fetch(`/api/documents/download/${doc.id}`, {
         credentials: 'include',
       });
       
@@ -235,7 +235,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = document.fileName;
+      a.download = doc.fileName;
       a.click();
       window.URL.revokeObjectURL(url);
       

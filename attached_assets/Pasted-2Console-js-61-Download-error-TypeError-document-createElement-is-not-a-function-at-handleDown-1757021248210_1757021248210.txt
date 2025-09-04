@@ -1,0 +1,32 @@
+2Console.js:61 Download error: TypeError: document.createElement is not a function
+    at handleDownload (DocumentLibraryPanel.tsx:236:26)
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: Object
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}completionScore: 0hasHealthProfile: trueneedsCompletion: trueprofileStatus: "incomplete"queryKey: (2) ['/api/health-profile', 222]userId: 222[[Prototype]]: Object
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js:61 🩺 Banner System - Health Profile Check: {hasHealthProfile: true, profileStatus: 'incomplete', completionScore: 0, needsCompletion: true, userId: 222, …}
+Console.js
