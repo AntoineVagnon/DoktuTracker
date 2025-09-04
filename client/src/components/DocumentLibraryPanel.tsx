@@ -57,9 +57,15 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       const formData = new FormData();
       
       // Fetch the file from the upload URL and convert to blob
+      if (!uploadedFile.uploadURL) {
+        throw new Error("Upload URL is missing");
+      }
+      if (!appointmentId) {
+        throw new Error("Appointment ID is required");
+      }
       const response = await fetch(uploadedFile.uploadURL);
       const blob = await response.blob();
-      const file = new File([blob], uploadedFile.name, { type: uploadedFile.type });
+      const file = new File([blob], uploadedFile.name || 'unnamed', { type: uploadedFile.type });
       
       formData.append('file', file);
       formData.append('appointmentId', appointmentId.toString());
@@ -106,9 +112,12 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       const formData = new FormData();
       
       // Fetch the file from the upload URL and convert to blob
+      if (!uploadedFile.uploadURL) {
+        throw new Error("Upload URL is missing");
+      }
       const response = await fetch(uploadedFile.uploadURL);
       const blob = await response.blob();
-      const file = new File([blob], uploadedFile.name, { type: uploadedFile.type });
+      const file = new File([blob], uploadedFile.name || 'unnamed', { type: uploadedFile.type });
       
       formData.append('file', file);
       formData.append('documentType', 'library');
