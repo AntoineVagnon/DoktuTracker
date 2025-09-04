@@ -243,11 +243,16 @@ export function registerDocumentLibraryRoutes(app: Express) {
 
   // Download document
   app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
+    console.log(`🎯 DOWNLOAD ROUTE HIT - DocumentId: ${req.params.documentId}, UserAgent: ${req.get('User-Agent')?.substring(0, 50)}...`);
+    
     try {
       const { documentId } = req.params;
       const userId = req.user?.id;
       
+      console.log(`🔐 AUTH CHECK - UserId: ${userId}, Session: ${!!req.session}`);
+      
       if (!userId) {
+        console.log("❌ UNAUTHORIZED - No userId found");
         return res.status(401).json({ error: "Unauthorized" });
       }
 
