@@ -7,6 +7,7 @@ import {
 } from "../objectStorage";
 
 export function registerDocumentLibraryRoutes(app: Express) {
+  console.log("🔧 REGISTERING DOCUMENT LIBRARY ROUTES");
   
   // Get user's document library
   app.get("/api/documents", isAuthenticated, async (req, res) => {
