@@ -56,16 +56,16 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       // Create document directly attached to appointment using the correct endpoint
       const formData = new FormData();
       
-      // Fetch the file from the upload URL and convert to blob
-      if (!uploadedFile.uploadURL) {
-        throw new Error("Upload URL is missing");
-      }
+      // Get the original file from Uppy's file data (not from upload URL)
       if (!appointmentId) {
         throw new Error("Appointment ID is required");
       }
-      const response = await fetch(uploadedFile.uploadURL);
-      const blob = await response.blob();
-      const file = new File([blob], uploadedFile.name || 'unnamed', { type: uploadedFile.type });
+      
+      // Access the original file data from the upload result
+      const file = uploadedFile.data as File;
+      if (!file) {
+        throw new Error("File data is missing");
+      }
       
       formData.append('file', file);
       formData.append('appointmentId', appointmentId.toString());
@@ -111,13 +111,11 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       // Create document in library using the correct endpoint
       const formData = new FormData();
       
-      // Fetch the file from the upload URL and convert to blob
-      if (!uploadedFile.uploadURL) {
-        throw new Error("Upload URL is missing");
+      // Get the original file from Uppy's file data (not from upload URL)
+      const file = uploadedFile.data as File;
+      if (!file) {
+        throw new Error("File data is missing");
       }
-      const response = await fetch(uploadedFile.uploadURL);
-      const blob = await response.blob();
-      const file = new File([blob], uploadedFile.name || 'unnamed', { type: uploadedFile.type });
       
       formData.append('file', file);
       formData.append('documentType', 'library');
