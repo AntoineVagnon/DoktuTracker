@@ -2406,6 +2406,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const uploadURL = await objectStorageService.getObjectEntityUploadURL();
         console.log('🔗 Generated secure upload URL');
 
+        // Debug file buffer integrity before upload
+        console.log('🔍 File buffer analysis:', {
+          originalName: req.file.originalname,
+          size: req.file.size,
+          bufferLength: req.file.buffer.length,
+          mimeType: req.file.mimetype,
+          firstBytes: req.file.buffer.slice(0, 16).toString('hex'),
+          lastBytes: req.file.buffer.slice(-16).toString('hex'),
+          isPNG: req.file.buffer.slice(0, 8).toString('hex') === '89504e470d0a1a0a',
+          hasValidPNGEnd: req.file.buffer.slice(-8).toString('hex').includes('49454e44ae426082')
+        });
+
         // Upload file to secure object storage
         const uploadResponse = await fetch(uploadURL, {
           method: 'PUT',
