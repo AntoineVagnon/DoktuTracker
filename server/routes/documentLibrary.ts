@@ -273,12 +273,12 @@ export function registerDocumentLibraryRoutes(app: Express) {
         .replace(/\s+/g, ' ') // Normalize spaces
         .trim();
 
-      // Set proper headers for file download with Windows compatibility
+      // Set Windows-compatible headers for file download
       res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
-      res.setHeader('Content-Disposition', `attachment; filename="${cleanFileName}"`);
-      res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.setHeader('Content-Transfer-Encoding', 'binary');
+      res.setHeader('Content-Length', document.fileSize.toString());
+      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(cleanFileName)}`);
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Accept-Ranges', 'bytes');
 
       // Handle the file streaming
       const objectStorageService = new ObjectStorageService();
