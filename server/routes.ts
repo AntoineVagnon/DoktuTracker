@@ -2434,13 +2434,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.status(403).json({ message: "Access denied" });
           }
 
-          // Set HIPAA-compliant headers (let downloadObject handle Content-Type and Cache-Control)
+          // Get file content as buffer for direct download
+          const fileBuffer = await new Promise<Buffer>((resolve, reject) => {
+            const chunks: Buffer[] = [];
+            const stream = objectFile.createReadStream();
+            
+            stream.on('data', (chunk) => chunks.push(chunk));
+            stream.on('end', () => resolve(Buffer.concat(chunks)));
+            stream.on('error', reject);
+          });
+          
+          // Set HIPAA-compliant headers for secure download
           res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
+          res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+          res.setHeader('Content-Length', fileBuffer.length.toString());
           res.setHeader('X-Content-Type-Options', 'nosniff');
           res.setHeader('X-Frame-Options', 'DENY');
+          res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
           
-          // Stream the file securely - downloadObject will handle Content-Type, Content-Length, and Cache-Control
-          await objectStorageService.downloadObject(objectFile, res, 0); // 0 cache for private medical files
+          // Send the file directly as buffer
+          res.send(fileBuffer);
           
         } catch (objectError) {
           console.error('Error accessing object storage:', objectError);
