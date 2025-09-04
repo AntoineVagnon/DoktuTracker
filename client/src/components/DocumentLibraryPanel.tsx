@@ -45,15 +45,49 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     };
   };
 
-  // Handle file upload completion
-  const handleUploadComplete = async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+  // Handle appointment-only file upload (upload directly to appointment)
+  const handleAppointmentUpload = async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
     try {
       if (!result.successful || result.successful.length === 0) {
         throw new Error("No files uploaded successfully");
       }
       const uploadedFile = result.successful[0];
       
-      // Create document in library
+      // Create document directly attached to appointment (not in library)
+      await apiRequest("POST", `/api/appointments/${appointmentId}/documents`, {
+        documentUrl: uploadedFile.uploadURL,
+        fileName: uploadedFile.name,
+        fileType: uploadedFile.type,
+        fileSize: uploadedFile.size,
+      });
+
+      // Refresh appointment documents
+      queryClient.invalidateQueries({ queryKey: [`/api/appointments/${appointmentId}/documents`] });
+
+      toast({
+        title: "Document uploaded",
+        description: `${uploadedFile.name} has been uploaded to this appointment.`,
+      });
+
+    } catch (error) {
+      console.error("Error handling appointment upload:", error);
+      toast({
+        title: "Upload failed",
+        description: "There was an error uploading your document. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle library file upload (upload to library for reuse)
+  const handleLibraryUpload = async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+    try {
+      if (!result.successful || result.successful.length === 0) {
+        throw new Error("No files uploaded successfully");
+      }
+      const uploadedFile = result.successful[0];
+      
+      // Create document in library only
       await apiRequest("POST", "/api/documents", {
         fileName: uploadedFile.name,
         fileType: uploadedFile.type,
@@ -62,26 +96,16 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
         documentType: "other", // Default type
       });
 
-      // If we're in an appointment context, attach it automatically
-      if (appointmentId && uploadedFile.uploadURL) {
-        await apiRequest("POST", `/api/appointments/${appointmentId}/documents`, {
-          documentUrl: uploadedFile.uploadURL,
-        });
-      }
-
-      // Refresh data
+      // Refresh library documents
       queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
-      if (appointmentId) {
-        queryClient.invalidateQueries({ queryKey: [`/api/appointments/${appointmentId}/documents`] });
-      }
 
       toast({
         title: "Document uploaded",
-        description: `${uploadedFile.name} has been added to your library${appointmentId ? " and attached to this appointment" : ""}.`,
+        description: `${uploadedFile.name} has been added to your library.`,
       });
 
     } catch (error) {
-      console.error("Error handling upload:", error);
+      console.error("Error handling library upload:", error);
       toast({
         title: "Upload failed",
         description: "There was an error uploading your document. Please try again.",
@@ -116,22 +140,25 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     },
   });
 
-  // Detach document from appointment
+  // Detach/delete document from appointment
   const detachMutation = useMutation({
     mutationFn: async (documentId: string) => {
       if (!appointmentId) throw new Error("No appointment selected");
       
-      return apiRequest("DELETE", `/api/appointments/${appointmentId}/documents/${documentId}`);
+      // First try to detach from appointment
+      const response = await apiRequest("DELETE", `/api/appointments/${appointmentId}/documents/${documentId}`);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/appointments/${appointmentId}/documents`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
       toast({
         title: "Document removed",
         description: "Document has been removed from this appointment.",
       });
     },
     onError: (error) => {
-      console.error("Error detaching document:", error);
+      console.error("Error removing document:", error);
       toast({
         title: "Error",
         description: "Failed to remove document from appointment.",
@@ -221,7 +248,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
                 maxNumberOfFiles={1}
                 maxFileSize={10485760} // 10MB
                 onGetUploadParameters={getUploadParameters}
-                onComplete={handleUploadComplete}
+                onComplete={handleAppointmentUpload}
                 buttonClassName="h-8 px-3 text-xs"
               >
                 <span>Upload</span>
@@ -277,7 +304,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
               maxNumberOfFiles={1}
               maxFileSize={10485760} // 10MB
               onGetUploadParameters={getUploadParameters}
-              onComplete={handleUploadComplete}
+              onComplete={handleLibraryUpload}
               buttonClassName="h-8 px-3 text-xs"
             >
               <span>Upload</span>
@@ -337,13 +364,11 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
               </div>
             )}
             
-            {appointmentId && (
-              <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-xs text-blue-700 dark:text-blue-300">
-                  ✓ Documents uploaded here will be automatically attached to this appointment
-                </p>
-              </div>
-            )}
+            <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                📁 Documents uploaded here are saved to your library for reuse across appointments
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
