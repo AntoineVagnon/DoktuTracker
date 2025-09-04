@@ -248,21 +248,57 @@ export function registerDocumentLibraryRoutes(app: Express) {
     }
   });
 
-  // Test route to check if requests reach server
-  app.get("/api/documents/test-download/:documentId", async (req, res) => {
-    console.log("🧪 TEST DOWNLOAD ROUTE HIT - DocumentId:", req.params.documentId);
-    res.json({ message: "Test route working", documentId: req.params.documentId });
-  });
+  // Simple, bulletproof download route
+  app.get("/api/download/:documentId", async (req, res) => {
+    console.log("✅ SIMPLE DOWNLOAD ROUTE - DocumentId:", req.params.documentId);
+    
+    try {
+      const { documentId } = req.params;
+      const document = await storage.getDocumentById(documentId);
+      
+      if (!document) {
+        console.log("❌ Document not found:", documentId);
+        return res.status(404).json({ error: "Document not found" });
+      }
 
-  // Debug route to check if ANY download requests reach server
-  app.get("/api/documents/download/*", async (req, res) => {
-    console.log("🔍 CATCH-ALL DOWNLOAD REQUEST:", req.url, req.params, req.query);
-    res.status(200).json({ 
-      message: "Catch-all route hit", 
-      url: req.url,
-      params: req.params,
-      method: req.method
-    });
+      console.log("📄 Document found:", { 
+        fileName: document.fileName, 
+        fileType: document.fileType,
+        uploadUrl: document.uploadUrl
+      });
+
+      // Set proper headers for file download
+      res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
+      res.setHeader('Cache-Control', 'private, no-cache');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+
+      // Handle the file streaming
+      const objectStorageService = new ObjectStorageService();
+      
+      try {
+        const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
+        console.log("📂 Object file retrieved, streaming...");
+        
+        const readStream = objectFile.createReadStream();
+        readStream.pipe(res);
+        
+        readStream.on('error', (error) => {
+          console.error("❌ Stream error:", error);
+          if (!res.headersSent) {
+            res.status(500).json({ error: "Stream error" });
+          }
+        });
+        
+      } catch (error) {
+        console.error("❌ Object storage error:", error);
+        return res.status(500).json({ error: "Storage error" });
+      }
+      
+    } catch (error) {
+      console.error("❌ Download error:", error);
+      res.status(500).json({ error: "Download failed" });
+    }
   });
 
   // Download document

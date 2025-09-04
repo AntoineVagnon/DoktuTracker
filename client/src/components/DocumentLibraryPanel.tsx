@@ -233,8 +233,9 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
   const handleDownload = async (doc: any) => {
     console.log("🚀 DOWNLOAD ATTEMPT - Document:", doc.id, doc.fileName);
     try {
-      console.log("📡 Sending request to:", `/api/documents/download/${doc.id}`);
-      const response = await fetch(`/api/documents/download/${doc.id}`, {
+      // Use simplified download endpoint
+      console.log("📡 Sending request to:", `/api/download/${doc.id}`);
+      const response = await fetch(`/api/download/${doc.id}`, {
         credentials: 'include',
       });
       
