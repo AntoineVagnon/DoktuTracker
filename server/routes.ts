@@ -700,7 +700,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const appointmentData = insertAppointmentSchema.parse({
+      console.log('🔍 Appointment creation request body:', req.body);
+      console.log('🔍 User ID from auth:', userId);
+      
+      const appointmentDataInput = {
         patientId: parseInt(userId), // Convert to integer to match schema
         doctorId: parseInt(req.body.doctorId), // Convert to integer to match schema
         appointmentDate: new Date(req.body.appointmentDate), // Convert string to Date
@@ -713,7 +716,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         zoomPassword: req.body.zoomPassword || null,
         slotId: req.body.timeSlotId || null, // Handle the timeSlotId from frontend
         price: req.body.price || "35.00" // Handle the price from frontend
-      });
+      };
+      
+      console.log('🔍 Data prepared for schema validation:', appointmentDataInput);
+      
+      let appointmentData;
+      try {
+        appointmentData = insertAppointmentSchema.parse(appointmentDataInput);
+        console.log('✅ Schema validation passed successfully');
+      } catch (validationError) {
+        console.error('❌ Schema validation failed:', validationError);
+        throw new Error(`Schema validation failed: ${JSON.stringify(validationError)}`);
+      }
       
       // Cancel any existing pending/pending_payment appointments for this user to prevent multiple payment banners
       const userAppointments = await storage.getAppointments(userId);
