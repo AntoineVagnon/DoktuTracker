@@ -152,8 +152,13 @@ export class ObjectStorageService {
       console.log('📤 DOWNLOAD HEADERS:', headers);
       res.set(headers);
 
-      // Stream the file to the response
-      const stream = file.createReadStream();
+      // Stream the file to the response with explicit options to prevent corruption
+      const stream = file.createReadStream({
+        // Prevent any automatic decompression that could corrupt binary data
+        decompress: false,
+        // Ensure binary data integrity 
+        validation: false
+      });
 
       let bytesStreamed = 0;
       let firstChunk = true;

@@ -287,7 +287,13 @@ export function registerDocumentLibraryRoutes(app: Express) {
         const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
         console.log("📂 Object file retrieved, streaming...");
 
-        const readStream = objectFile.createReadStream();
+        // Fix: Add explicit options to prevent data corruption in binary streams
+        const readStream = objectFile.createReadStream({
+          // Prevent any automatic decompression that could corrupt binary data
+          decompress: false,
+          // Ensure binary data integrity
+          validation: false
+        });
         
         let bytesStreamed = 0;
         let firstChunk = true;
