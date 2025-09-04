@@ -167,17 +167,7 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(403).json({ error: "Access denied" });
       }
 
-      // Check if document is already in library (avoid duplicates)
-      const libraryDocs = await storage.getDocuments(userIdInt);
-      const existsInLibrary = libraryDocs.some((doc: any) => 
-        doc.fileName === document.fileName && 
-        doc.fileSize === document.fileSize &&
-        doc.documentType !== 'appointment-only'
-      );
-
-      if (existsInLibrary) {
-        return res.json({ message: "Document already exists in library" });
-      }
+      // Create a copy in library with 'other' type (skip duplicate check for now)
 
       // Create a copy in library with 'other' type
       const libraryDocument = await storage.createDocument({
