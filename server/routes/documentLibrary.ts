@@ -241,6 +241,12 @@ export function registerDocumentLibraryRoutes(app: Express) {
     }
   });
 
+  // Test route to check if requests reach server
+  app.get("/api/documents/test-download/:documentId", async (req, res) => {
+    console.log("🧪 TEST DOWNLOAD ROUTE HIT - DocumentId:", req.params.documentId);
+    res.json({ message: "Test route working", documentId: req.params.documentId });
+  });
+
   // Download document
   app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
     console.log(`🎯 DOWNLOAD ROUTE HIT - DocumentId: ${req.params.documentId}, UserAgent: ${req.get('User-Agent')?.substring(0, 50)}...`);
