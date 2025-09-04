@@ -280,9 +280,9 @@ export function registerDocumentLibraryRoutes(app: Express) {
           .replace(/\s+/g, '_')           // Replace spaces with underscores
           .replace(/_+/g, '_');           // Remove duplicate underscores
         
-        // Set minimal headers for direct browser download
-        // Use application/octet-stream to force download instead of display
-        res.setHeader('Content-Type', 'application/octet-stream');
+        // Set proper content type to help Windows recognize the file
+        // Use the actual file type so Windows associates it correctly
+        res.setHeader('Content-Type', document.fileType || 'image/png');
         res.setHeader('Content-Disposition', `attachment; filename="${cleanFileName}"`);
         res.setHeader('Content-Length', fileContents.length.toString());
         
