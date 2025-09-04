@@ -193,21 +193,17 @@ export default function GoogleStyleCalendar({
 
   // Optimized time slots fetching with better caching
   const { data: timeSlots = [], isLoading: slotsLoading, refetch: refetchSlots } = useQuery({
-    queryKey: ['/api/time-slots', user?.email],
+    queryKey: ['/api/time-slots', currentDoctorId],
     queryFn: async () => {
       try {
-        // Single authenticated endpoint call
-        const response = await fetch('/api/time-slots');
-        if (response.ok) {
-          return response.json();
+        // Use the currentDoctorId to fetch slots
+        if (!currentDoctorId) {
+          return [];
         }
         
-        // Only fallback for James Rodriguez if auth fails
-        if (user?.email === 'james.rodriguez@doktu.com') {
-          const fallbackResponse = await fetch('/api/doctors/9/slots');
-          if (fallbackResponse.ok) {
-            return fallbackResponse.json();
-          }
+        const response = await fetch(`/api/doctors/${currentDoctorId}/slots`);
+        if (response.ok) {
+          return response.json();
         }
         
         return [];
@@ -216,7 +212,7 @@ export default function GoogleStyleCalendar({
         return [];
       }
     },
-    enabled: !!user?.email, // Only fetch when user is available
+    enabled: !!currentDoctorId, // Only fetch when doctor ID is available
     refetchOnWindowFocus: false, // Reduce unnecessary refetches
     staleTime: 10 * 60 * 1000, // Cache for 10 minutes
     gcTime: 15 * 60 * 1000, // Keep in cache for 15 minutes
