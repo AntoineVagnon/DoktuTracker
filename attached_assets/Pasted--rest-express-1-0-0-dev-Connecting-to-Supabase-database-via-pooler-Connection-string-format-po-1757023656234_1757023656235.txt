@@ -1,0 +1,1929 @@
+
+> rest-express@1.0.0 dev
+Connecting to Supabase database via pooler
+Connection string format: postgresql:***@db.hzmrkvooqjbxptqjqxii.supabase.co:5432/postgres
+Creating database client...
+10:06:10 PM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ Database connection verified
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:06:19.321Z',
+  ip: '10.82.7.235',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/auth/user',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: false,
+  hasAccessToken: false,
+  userId: undefined,
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - No session or access token
+10:06:19 PM [express] GET /api/auth/user 401 in 6ms :: {"error":"Not authenticated"}
+🔍 Looking for time slots for doctor ID: 8
+🔍 Looking for time slots for doctor ID: 10
+🔍 Looking for time slots for doctor ID: 11
+🔍 Looking for time slots for doctor ID: 12
+🔍 Looking for time slots for doctor ID: 13
+🔍 Looking for time slots for doctor ID: 9
+📅 Found 28 raw time slots for doctor 8
+🔒 Found 9 total appointments, 9 valid ones that should block slots
+🔒 Found 0 slots currently being held
+🔍 ALL appointments for doctor 8:
+  - ID 41: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 42: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 43: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 44: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 45: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 46: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 47: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 39: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 40: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+📅 After deduplication and appointment filtering: 28 unique slots for doctor 8
+📅 Available: 28, Unavailable: 0
+📅 First 5 slots: [
+  '2025-08-05 11:00:00 (available: true)',
+  '2025-08-05 11:30:00 (available: true)',
+  '2025-08-05 15:00:00 (available: true)',
+  '2025-08-05 15:30:00 (available: true)',
+  '2025-08-06 11:00:00 (available: true)'
+]
+📅 Returning 28 available slots (filtered out 0 unavailable)
+📅 Found 14 raw time slots for doctor 10
+📅 Found 0 raw time slots for doctor 12
+📅 Found 7 raw time slots for doctor 13
+📅 Found 49 raw time slots for doctor 11
+🔒 Found 2 total appointments, 2 valid ones that should block slots
+🔒 Found 0 total appointments, 0 valid ones that should block slots
+📅 Found 808 raw time slots for doctor 9
+🔒 Found 0 total appointments, 0 valid ones that should block slots
+🔒 Found 0 total appointments, 0 valid ones that should block slots
+🔒 Found 0 slots currently being held
+🔒 Found 0 slots currently being held
+🔒 Found 0 slots currently being held
+🔒 Found 0 slots currently being held
+⏰ Expired pending payment appointment 33 - not blocking slot
+⏰ Expired pending payment appointment 34 - not blocking slot
+⏰ Expired pending payment appointment 37 - not blocking slot
+⏰ Expired pending payment appointment 60 - not blocking slot
+⏰ Expired pending payment appointment 63 - not blocking slot
+⏰ Expired pending payment appointment 64 - not blocking slot
+🔒 Found 43 total appointments, 37 valid ones that should block slots
+🔍 ALL appointments for doctor 10:
+  - ID 29: 2025-08-07T12:00:00.000Z (paid) - Patient 51
+  - ID 30: 2025-08-09T12:00:00.000Z (paid) - Patient 52
+🎯 MATCH FOUND: Slot 2025-08-07 14:00:00 matches appointment 29 (UTC: Thu Aug 07 2025 12:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-07 14:00:00)
+🔒 Slot 2025-08-07 14:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-09 14:00:00 matches appointment 30 (UTC: Sat Aug 09 2025 12:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-09 14:00:00)
+🔒 Slot 2025-08-09 14:00:00 has conflicting appointment - marking as unavailable
+📅 After deduplication and appointment filtering: 14 unique slots for doctor 10
+📅 Available: 12, Unavailable: 2
+📅 First 5 slots: [
+  '2025-08-05 14:00:00 (available: true)',
+  '2025-08-05 16:00:00 (available: true)',
+  '2025-08-06 14:00:00 (available: true)',
+  '2025-08-06 16:00:00 (available: true)',
+  '2025-08-07 14:00:00 (available: false)'
+]
+📅 Returning 12 available slots (filtered out 2 unavailable)
+🔍 ALL appointments for doctor 12:
+📅 After deduplication and appointment filtering: 0 unique slots for doctor 12
+📅 Available: 0, Unavailable: 0
+📅 First 5 slots: []
+📅 Returning 0 available slots (filtered out 0 unavailable)
+🔍 ALL appointments for doctor 11:
+📅 After deduplication and appointment filtering: 49 unique slots for doctor 11
+📅 Available: 49, Unavailable: 0
+📅 First 5 slots: [
+  '2025-08-05 09:00:00 (available: true)',
+  '2025-08-05 10:00:00 (available: true)',
+  '2025-08-05 11:00:00 (available: true)',
+  '2025-08-05 14:00:00 (available: true)',
+  '2025-08-05 15:00:00 (available: true)'
+]
+📅 Returning 49 available slots (filtered out 0 unavailable)
+🔍 ALL appointments for doctor 13:
+📅 After deduplication and appointment filtering: 7 unique slots for doctor 13
+📅 Available: 7, Unavailable: 0
+📅 First 5 slots: [
+  '2025-08-05 10:00:00 (available: true)',
+  '2025-08-06 10:00:00 (available: true)',
+  '2025-08-07 10:00:00 (available: true)',
+  '2025-08-08 10:00:00 (available: true)',
+  '2025-08-09 10:00:00 (available: true)'
+]
+📅 Returning 7 available slots (filtered out 0 unavailable)
+🔒 Found 0 slots currently being held
+🔍 ALL appointments for doctor 9:
+  - ID 26: 2025-08-03T17:00:00.000Z (paid) - Patient 45
+  - ID 5: 2025-07-31T14:00:00.000Z (paid) - Patient 31
+  - ID 31: 2025-08-12T08:00:00.000Z (paid) - Patient 53
+  - ID 6: 2025-07-31T14:30:00.000Z (paid) - Patient 32
+  - ID 24: 2025-08-04T14:25:14.053Z (paid) - Patient 49
+  - ID 16: 2025-08-04T14:33:14.053Z (paid) - Patient 49
+  - ID 22: 2025-08-04T14:45:14.053Z (paid) - Patient 49
+  - ID 20: 2025-08-02T12:30:00.000Z (paid) - Patient 49
+  - ID 21: 2025-08-02T13:00:00.000Z (paid) - Patient 49
+  - ID 8: 2025-07-31T19:30:00.000Z (paid) - Patient 48
+  - ID 25: 2025-08-02T18:30:00.000Z (paid) - Patient 49
+  - ID 9: 2025-07-31T20:00:00.000Z (paid) - Patient 49
+  - ID 15: 2025-08-02T08:00:00.000Z (cancelled) - Patient 49
+  - ID 28: 2025-08-10T14:00:00.000Z (cancelled) - Patient 29
+  - ID 23: 2025-08-02T15:00:00.000Z (cancelled) - Patient 49
+  - ID 33: 2025-08-11T17:30:00.000Z (pending_payment) - Patient 53
+  - ID 34: 2025-08-11T18:00:00.000Z (pending_payment) - Patient 53
+  - ID 10: 2025-08-01T05:00:00.000Z (paid) - Patient 49
+  - ID 11: 2025-08-01T10:00:00.000Z (paid) - Patient 49
+  - ID 12: 2025-08-01T10:00:00.000Z (paid) - Patient 49
+  - ID 13: 2025-08-01T12:30:00.000Z (paid) - Patient 49
+  - ID 14: 2025-08-01T21:00:00.000Z (paid) - Patient 49
+  - ID 32: 2025-08-11T17:00:00.000Z (paid) - Patient 53
+  - ID 35: 2025-08-11T18:00:00.000Z (paid) - Patient 53
+  - ID 37: 2025-08-18T08:00:00.000Z (pending_payment) - Patient 39
+  - ID 36: 2025-08-15T14:30:00.000Z (paid) - Patient 53
+  - ID 38: 2025-08-20T13:00:00.000Z (paid) - Patient 53
+  - ID 48: 2025-08-26T19:30:00.000Z (paid) - Patient 209
+  - ID 53: 2025-08-27T11:00:00.000Z (paid) - Patient 214
+  - ID 49: 2025-08-26T21:00:00.000Z (paid) - Patient 213
+  - ID 57: 2025-09-01T09:30:00.000Z (paid) - Patient 217
+  - ID 50: 2025-08-27T09:30:00.000Z (paid) - Patient 209
+  - ID 54: 2025-08-27T11:30:00.000Z (paid) - Patient 215
+  - ID 51: 2025-08-27T10:00:00.000Z (paid) - Patient 209
+  - ID 52: 2025-08-27T10:30:00.000Z (paid) - Patient 209
+  - ID 55: 2025-09-01T09:00:00.000Z (paid) - Patient 55
+  - ID 56: 2025-09-04T10:00:00.000Z (paid) - Patient 55
+  - ID 59: 2025-09-05T13:00:00.000Z (paid) - Patient 55
+  - ID 58: 2025-09-09T09:30:00.000Z (cancelled) - Patient 55
+  - ID 60: 2025-09-04T09:00:00.000Z (pending_payment) - Patient 219
+  - ID 61: 2025-09-04T09:00:00.000Z (paid) - Patient 219
+  - ID 62: 2025-09-04T09:30:00.000Z (paid) - Patient 220
+  - ID 63: 2025-09-04T11:00:00.000Z (pending_payment) - Patient 220
+  - ID 64: 2025-09-04T10:30:00.000Z (pending_payment) - Patient 221
+  - ID 74: 2025-09-05T09:00:00.000Z (paid) - Patient 222
+  - ID 73: 2025-09-04T18:30:00.000Z (paid) - Patient 222
+  - ID 72: 2025-09-04T11:00:00.000Z (cancelled) - Patient 222
+  - ID 70: 2025-09-04T12:30:00.000Z (cancelled) - Patient 222
+  - ID 68: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+  - ID 69: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+  - ID 71: 2025-09-04T15:30:00.000Z (paid) - Patient 222
+  - ID 67: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+  - ID 65: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+  - ID 66: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+🎯 MATCH FOUND: Slot 2025-07-31 16:00:00 matches appointment 5 (UTC: Thu Jul 31 2025 14:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-07-31 16:00:00)
+🔒 Slot 2025-07-31 16:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-07-31 16:30:00 matches appointment 6 (UTC: Thu Jul 31 2025 14:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-07-31 16:30:00)
+🔒 Slot 2025-07-31 16:30:00 has conflicting appointment - marking as unavailable
+🎯 AUGUST DEBUG: Slot 2025-08-01 09:00:00 - Available: true, Had conflict: false
+🎯 AUGUST DEBUG: Slot 2025-08-01 10:00:00 - Available: false, Had conflict: false
+🎯 MATCH FOUND: Slot 2025-08-01 14:30:00 matches appointment 13 (UTC: Fri Aug 01 2025 12:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-01 14:30:00)
+🔒 Slot 2025-08-01 14:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-01 23:00:00 matches appointment 14 (UTC: Fri Aug 01 2025 21:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-01 23:00:00)
+🔒 Slot 2025-08-01 23:00:00 has conflicting appointment - marking as unavailable
+🎯 AUGUST DEBUG: Slot 2025-08-02 09:00:00 - Available: true, Had conflict: false
+🎯 AUGUST DEBUG: Slot 2025-08-02 10:00:00 - Available: true, Had conflict: false
+🎯 MATCH FOUND: Slot 2025-08-02 15:00:00 matches appointment 21 (UTC: Sat Aug 02 2025 13:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-02 15:00:00)
+🔒 Slot 2025-08-02 15:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-02 20:30:00 matches appointment 25 (UTC: Sat Aug 02 2025 18:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-02 20:30:00)
+🔒 Slot 2025-08-02 20:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-03 19:00:00 matches appointment 26 (UTC: Sun Aug 03 2025 17:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-03 19:00:00)
+🔒 Slot 2025-08-03 19:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-11 19:00:00 matches appointment 32 (UTC: Mon Aug 11 2025 17:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-11 19:00:00)
+🔒 Slot 2025-08-11 19:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-11 20:00:00 matches appointment 35 (UTC: Mon Aug 11 2025 18:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-11 20:00:00)
+🔒 Slot 2025-08-11 20:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-12 10:00:00 matches appointment 31 (UTC: Tue Aug 12 2025 08:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-12 10:00:00)
+🔒 Slot 2025-08-12 10:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-15 16:30:00 matches appointment 36 (UTC: Fri Aug 15 2025 14:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-15 16:30:00)
+🔒 Slot 2025-08-15 16:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-20 15:00:00 matches appointment 38 (UTC: Wed Aug 20 2025 13:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-20 15:00:00)
+🔒 Slot 2025-08-20 15:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-26 21:30:00 matches appointment 48 (UTC: Tue Aug 26 2025 19:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-26 21:30:00)
+🔒 Slot 2025-08-26 21:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-26 23:00:00 matches appointment 49 (UTC: Tue Aug 26 2025 21:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-26 23:00:00)
+🔒 Slot 2025-08-26 23:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 11:30:00 matches appointment 50 (UTC: Wed Aug 27 2025 09:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 11:30:00)
+🔒 Slot 2025-08-27 11:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 12:00:00 matches appointment 51 (UTC: Wed Aug 27 2025 10:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 12:00:00)
+🔒 Slot 2025-08-27 12:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 12:30:00 matches appointment 52 (UTC: Wed Aug 27 2025 10:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 12:30:00)
+🔒 Slot 2025-08-27 12:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 13:00:00 matches appointment 53 (UTC: Wed Aug 27 2025 11:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 13:00:00)
+🔒 Slot 2025-08-27 13:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 13:30:00 matches appointment 54 (UTC: Wed Aug 27 2025 11:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 13:30:00)
+🔒 Slot 2025-08-27 13:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-01 11:00:00 matches appointment 55 (UTC: Mon Sep 01 2025 09:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-01 11:00:00)
+🔒 Slot 2025-09-01 11:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-01 11:30:00 matches appointment 57 (UTC: Mon Sep 01 2025 09:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-01 11:30:00)
+🔒 Slot 2025-09-01 11:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 11:00:00 matches appointment 61 (UTC: Thu Sep 04 2025 09:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 11:00:00)
+🔒 Slot 2025-09-04 11:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 11:30:00 matches appointment 62 (UTC: Thu Sep 04 2025 09:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 11:30:00)
+🔒 Slot 2025-09-04 11:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 12:00:00 matches appointment 56 (UTC: Thu Sep 04 2025 10:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 12:00:00)
+🔒 Slot 2025-09-04 12:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 17:30:00 matches appointment 71 (UTC: Thu Sep 04 2025 15:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 17:30:00)
+🔒 Slot 2025-09-04 17:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 20:30:00 matches appointment 73 (UTC: Thu Sep 04 2025 18:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 20:30:00)
+🔒 Slot 2025-09-04 20:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-05 11:00:00 matches appointment 74 (UTC: Fri Sep 05 2025 09:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-05 11:00:00)
+🔒 Slot 2025-09-05 11:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-05 15:00:00 matches appointment 59 (UTC: Fri Sep 05 2025 13:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-05 15:00:00)
+🔒 Slot 2025-09-05 15:00:00 has conflicting appointment - marking as unavailable
+📅 After deduplication and appointment filtering: 754 unique slots for doctor 9
+📅 Available: 714, Unavailable: 40
+📅 First 5 slots: [
+  '2025-07-30 09:00:00 (available: true)',
+  '2025-07-30 09:30:00 (available: true)',
+  '2025-07-30 10:00:00 (available: true)',
+  '2025-07-30 10:30:00 (available: true)',
+  '2025-07-30 11:00:00 (available: true)'
+]
+📅 Returning 714 available slots (filtered out 40 unavailable)
+🏥 Returning 6 doctors sorted by availability and rating
+10:06:22 PM [express] GET /api/doctors 304 in 3334ms :: [{"id":9,"specialty":"Pediatrie","rating":"4.…
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:06:22.899Z',
+  ip: '10.82.12.199',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/doctors/11/slots?nextOnly=true',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+🔍 Fetching slots for doctor ID: 11, date: undefined, nextOnly: true
+🔍 Looking for time slots for doctor ID: 11
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:06:22.901Z',
+  ip: '10.82.5.47',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/doctors/9/slots?nextOnly=true',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+🔍 Fetching slots for doctor ID: 9, date: undefined, nextOnly: true
+🔍 Looking for time slots for doctor ID: 9
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:06:22.904Z',
+  ip: '10.82.4.142',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/doctors/13/slots?nextOnly=true',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+🔍 Fetching slots for doctor ID: 13, date: undefined, nextOnly: true
+🔍 Looking for time slots for doctor ID: 13
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:06:22.905Z',
+  ip: '10.82.2.60',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/doctors/8/slots?nextOnly=true',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+🔍 Fetching slots for doctor ID: 8, date: undefined, nextOnly: true
+🔍 Looking for time slots for doctor ID: 8
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:06:22.907Z',
+  ip: '10.82.9.247',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/doctors/10/slots?nextOnly=true',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+🔍 Fetching slots for doctor ID: 10, date: undefined, nextOnly: true
+🔍 Looking for time slots for doctor ID: 10
+📅 Found 49 raw time slots for doctor 11
+📅 Found 7 raw time slots for doctor 13
+📅 Found 28 raw time slots for doctor 8
+📅 Found 14 raw time slots for doctor 10
+🔒 Found 0 total appointments, 0 valid ones that should block slots
+🔒 Found 9 total appointments, 9 valid ones that should block slots
+🔒 Found 0 total appointments, 0 valid ones that should block slots
+🔒 Found 2 total appointments, 2 valid ones that should block slots
+📅 Found 808 raw time slots for doctor 9
+🔒 Found 0 slots currently being held
+🔒 Found 0 slots currently being held
+🔒 Found 0 slots currently being held
+🔒 Found 0 slots currently being held
+⏰ Expired pending payment appointment 33 - not blocking slot
+⏰ Expired pending payment appointment 34 - not blocking slot
+⏰ Expired pending payment appointment 37 - not blocking slot
+⏰ Expired pending payment appointment 60 - not blocking slot
+⏰ Expired pending payment appointment 63 - not blocking slot
+⏰ Expired pending payment appointment 64 - not blocking slot
+🔒 Found 43 total appointments, 37 valid ones that should block slots
+🔍 ALL appointments for doctor 13:
+📅 After deduplication and appointment filtering: 7 unique slots for doctor 13
+📅 Available: 7, Unavailable: 0
+📅 First 5 slots: [
+  '2025-08-05 10:00:00 (available: true)',
+  '2025-08-06 10:00:00 (available: true)',
+  '2025-08-07 10:00:00 (available: true)',
+  '2025-08-08 10:00:00 (available: true)',
+  '2025-08-09 10:00:00 (available: true)'
+]
+📅 Returning 7 available slots (filtered out 0 unavailable)
+⏰ Slot 2025-08-05 10:00:00 with offset +02:00: -44046 minutes from now
+⏰ Slot 2025-08-06 10:00:00 with offset +02:00: -42606 minutes from now
+⏰ Slot 2025-08-07 10:00:00 with offset +02:00: -41166 minutes from now
+⏰ Slot 2025-08-08 10:00:00 with offset +02:00: -39726 minutes from now
+⏰ Slot 2025-08-09 10:00:00 with offset +02:00: -38286 minutes from now
+⏰ Slot 2025-08-10 10:00:00 with offset +02:00: -36846 minutes from now
+⏰ Slot 2025-08-11 10:00:00 with offset +02:00: -35406 minutes from now
+📅 Next available slot for doctor 13 (with 60-min buffer): none
+10:06:24 PM [express] GET /api/doctors/13/slots 304 in 1153ms :: []
+🔍 ALL appointments for doctor 8:
+  - ID 41: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 42: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 43: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 44: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 45: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 46: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 47: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 39: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+  - ID 40: 2025-08-25T14:30:00.000Z (paid) - Patient 4
+📅 After deduplication and appointment filtering: 28 unique slots for doctor 8
+📅 Available: 28, Unavailable: 0
+📅 First 5 slots: [
+  '2025-08-05 11:00:00 (available: true)',
+  '2025-08-05 11:30:00 (available: true)',
+  '2025-08-05 15:00:00 (available: true)',
+  '2025-08-05 15:30:00 (available: true)',
+  '2025-08-06 11:00:00 (available: true)'
+]
+📅 Returning 28 available slots (filtered out 0 unavailable)
+⏰ Slot 2025-08-05 11:00:00 with offset +02:00: -43986 minutes from now
+⏰ Slot 2025-08-05 11:30:00 with offset +02:00: -43956 minutes from now
+⏰ Slot 2025-08-05 15:00:00 with offset +02:00: -43746 minutes from now
+⏰ Slot 2025-08-05 15:30:00 with offset +02:00: -43716 minutes from now
+⏰ Slot 2025-08-06 11:00:00 with offset +02:00: -42546 minutes from now
+⏰ Slot 2025-08-06 11:30:00 with offset +02:00: -42516 minutes from now
+⏰ Slot 2025-08-06 15:00:00 with offset +02:00: -42306 minutes from now
+⏰ Slot 2025-08-06 15:30:00 with offset +02:00: -42276 minutes from now
+⏰ Slot 2025-08-07 11:00:00 with offset +02:00: -41106 minutes from now
+⏰ Slot 2025-08-07 11:30:00 with offset +02:00: -41076 minutes from now
+⏰ Slot 2025-08-07 15:00:00 with offset +02:00: -40866 minutes from now
+⏰ Slot 2025-08-07 15:30:00 with offset +02:00: -40836 minutes from now
+⏰ Slot 2025-08-08 11:00:00 with offset +02:00: -39666 minutes from now
+⏰ Slot 2025-08-08 11:30:00 with offset +02:00: -39636 minutes from now
+⏰ Slot 2025-08-08 15:00:00 with offset +02:00: -39426 minutes from now
+⏰ Slot 2025-08-08 15:30:00 with offset +02:00: -39396 minutes from now
+⏰ Slot 2025-08-09 11:00:00 with offset +02:00: -38226 minutes from now
+⏰ Slot 2025-08-09 11:30:00 with offset +02:00: -38196 minutes from now
+⏰ Slot 2025-08-09 15:00:00 with offset +02:00: -37986 minutes from now
+⏰ Slot 2025-08-09 15:30:00 with offset +02:00: -37956 minutes from now
+⏰ Slot 2025-08-10 11:00:00 with offset +02:00: -36786 minutes from now
+⏰ Slot 2025-08-10 11:30:00 with offset +02:00: -36756 minutes from now
+⏰ Slot 2025-08-10 15:00:00 with offset +02:00: -36546 minutes from now
+⏰ Slot 2025-08-10 15:30:00 with offset +02:00: -36516 minutes from now
+⏰ Slot 2025-08-11 11:00:00 with offset +02:00: -35346 minutes from now
+⏰ Slot 2025-08-11 11:30:00 with offset +02:00: -35316 minutes from now
+⏰ Slot 2025-08-11 15:00:00 with offset +02:00: -35106 minutes from now
+⏰ Slot 2025-08-11 15:30:00 with offset +02:00: -35076 minutes from now
+📅 Next available slot for doctor 8 (with 60-min buffer): none
+10:06:24 PM [express] GET /api/doctors/8/slots 304 in 1155ms :: []
+🔍 ALL appointments for doctor 11:
+📅 After deduplication and appointment filtering: 49 unique slots for doctor 11
+📅 Available: 49, Unavailable: 0
+📅 First 5 slots: [
+  '2025-08-05 09:00:00 (available: true)',
+  '2025-08-05 10:00:00 (available: true)',
+  '2025-08-05 11:00:00 (available: true)',
+  '2025-08-05 14:00:00 (available: true)',
+  '2025-08-05 15:00:00 (available: true)'
+]
+📅 Returning 49 available slots (filtered out 0 unavailable)
+⏰ Slot 2025-08-05 09:00:00 with offset +02:00: -44106 minutes from now
+⏰ Slot 2025-08-05 10:00:00 with offset +02:00: -44046 minutes from now
+⏰ Slot 2025-08-05 11:00:00 with offset +02:00: -43986 minutes from now
+⏰ Slot 2025-08-05 14:00:00 with offset +02:00: -43806 minutes from now
+⏰ Slot 2025-08-05 15:00:00 with offset +02:00: -43746 minutes from now
+⏰ Slot 2025-08-05 16:00:00 with offset +02:00: -43686 minutes from now
+⏰ Slot 2025-08-05 17:00:00 with offset +02:00: -43626 minutes from now
+⏰ Slot 2025-08-06 09:00:00 with offset +02:00: -42666 minutes from now
+⏰ Slot 2025-08-06 10:00:00 with offset +02:00: -42606 minutes from now
+⏰ Slot 2025-08-06 11:00:00 with offset +02:00: -42546 minutes from now
+⏰ Slot 2025-08-06 14:00:00 with offset +02:00: -42366 minutes from now
+⏰ Slot 2025-08-06 15:00:00 with offset +02:00: -42306 minutes from now
+⏰ Slot 2025-08-06 16:00:00 with offset +02:00: -42246 minutes from now
+⏰ Slot 2025-08-06 17:00:00 with offset +02:00: -42186 minutes from now
+⏰ Slot 2025-08-07 09:00:00 with offset +02:00: -41226 minutes from now
+⏰ Slot 2025-08-07 10:00:00 with offset +02:00: -41166 minutes from now
+⏰ Slot 2025-08-07 11:00:00 with offset +02:00: -41106 minutes from now
+⏰ Slot 2025-08-07 14:00:00 with offset +02:00: -40926 minutes from now
+⏰ Slot 2025-08-07 15:00:00 with offset +02:00: -40866 minutes from now
+⏰ Slot 2025-08-07 16:00:00 with offset +02:00: -40806 minutes from now
+⏰ Slot 2025-08-07 17:00:00 with offset +02:00: -40746 minutes from now
+⏰ Slot 2025-08-08 09:00:00 with offset +02:00: -39786 minutes from now
+⏰ Slot 2025-08-08 10:00:00 with offset +02:00: -39726 minutes from now
+⏰ Slot 2025-08-08 11:00:00 with offset +02:00: -39666 minutes from now
+⏰ Slot 2025-08-08 14:00:00 with offset +02:00: -39486 minutes from now
+⏰ Slot 2025-08-08 15:00:00 with offset +02:00: -39426 minutes from now
+⏰ Slot 2025-08-08 16:00:00 with offset +02:00: -39366 minutes from now
+⏰ Slot 2025-08-08 17:00:00 with offset +02:00: -39306 minutes from now
+⏰ Slot 2025-08-09 09:00:00 with offset +02:00: -38346 minutes from now
+⏰ Slot 2025-08-09 10:00:00 with offset +02:00: -38286 minutes from now
+⏰ Slot 2025-08-09 11:00:00 with offset +02:00: -38226 minutes from now
+⏰ Slot 2025-08-09 14:00:00 with offset +02:00: -38046 minutes from now
+⏰ Slot 2025-08-09 15:00:00 with offset +02:00: -37986 minutes from now
+⏰ Slot 2025-08-09 16:00:00 with offset +02:00: -37926 minutes from now
+⏰ Slot 2025-08-09 17:00:00 with offset +02:00: -37866 minutes from now
+⏰ Slot 2025-08-10 09:00:00 with offset +02:00: -36906 minutes from now
+⏰ Slot 2025-08-10 10:00:00 with offset +02:00: -36846 minutes from now
+⏰ Slot 2025-08-10 11:00:00 with offset +02:00: -36786 minutes from now
+⏰ Slot 2025-08-10 14:00:00 with offset +02:00: -36606 minutes from now
+⏰ Slot 2025-08-10 15:00:00 with offset +02:00: -36546 minutes from now
+⏰ Slot 2025-08-10 16:00:00 with offset +02:00: -36486 minutes from now
+⏰ Slot 2025-08-10 17:00:00 with offset +02:00: -36426 minutes from now
+⏰ Slot 2025-08-11 09:00:00 with offset +02:00: -35466 minutes from now
+⏰ Slot 2025-08-11 10:00:00 with offset +02:00: -35406 minutes from now
+⏰ Slot 2025-08-11 11:00:00 with offset +02:00: -35346 minutes from now
+⏰ Slot 2025-08-11 14:00:00 with offset +02:00: -35166 minutes from now
+⏰ Slot 2025-08-11 15:00:00 with offset +02:00: -35106 minutes from now
+⏰ Slot 2025-08-11 16:00:00 with offset +02:00: -35046 minutes from now
+⏰ Slot 2025-08-11 17:00:00 with offset +02:00: -34986 minutes from now
+📅 Next available slot for doctor 11 (with 60-min buffer): none
+10:06:24 PM [express] GET /api/doctors/11/slots 304 in 1173ms :: []
+🔍 ALL appointments for doctor 10:
+  - ID 29: 2025-08-07T12:00:00.000Z (paid) - Patient 51
+  - ID 30: 2025-08-09T12:00:00.000Z (paid) - Patient 52
+🎯 MATCH FOUND: Slot 2025-08-07 14:00:00 matches appointment 29 (UTC: Thu Aug 07 2025 12:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-07 14:00:00)
+🔒 Slot 2025-08-07 14:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-09 14:00:00 matches appointment 30 (UTC: Sat Aug 09 2025 12:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-09 14:00:00)
+🔒 Slot 2025-08-09 14:00:00 has conflicting appointment - marking as unavailable
+📅 After deduplication and appointment filtering: 14 unique slots for doctor 10
+📅 Available: 12, Unavailable: 2
+📅 First 5 slots: [
+  '2025-08-05 14:00:00 (available: true)',
+  '2025-08-05 16:00:00 (available: true)',
+  '2025-08-06 14:00:00 (available: true)',
+  '2025-08-06 16:00:00 (available: true)',
+  '2025-08-07 14:00:00 (available: false)'
+]
+📅 Returning 12 available slots (filtered out 2 unavailable)
+⏰ Slot 2025-08-05 14:00:00 with offset +02:00: -43806 minutes from now
+⏰ Slot 2025-08-05 16:00:00 with offset +02:00: -43686 minutes from now
+⏰ Slot 2025-08-06 14:00:00 with offset +02:00: -42366 minutes from now
+⏰ Slot 2025-08-06 16:00:00 with offset +02:00: -42246 minutes from now
+⏰ Slot 2025-08-07 16:00:00 with offset +02:00: -40806 minutes from now
+⏰ Slot 2025-08-08 14:00:00 with offset +02:00: -39486 minutes from now
+⏰ Slot 2025-08-08 16:00:00 with offset +02:00: -39366 minutes from now
+⏰ Slot 2025-08-09 16:00:00 with offset +02:00: -37926 minutes from now
+⏰ Slot 2025-08-10 14:00:00 with offset +02:00: -36606 minutes from now
+⏰ Slot 2025-08-10 16:00:00 with offset +02:00: -36486 minutes from now
+⏰ Slot 2025-08-11 14:00:00 with offset +02:00: -35166 minutes from now
+⏰ Slot 2025-08-11 16:00:00 with offset +02:00: -35046 minutes from now
+📅 Next available slot for doctor 10 (with 60-min buffer): none
+10:06:24 PM [express] GET /api/doctors/10/slots 304 in 1263ms :: []
+🔒 Found 0 slots currently being held
+🔍 ALL appointments for doctor 9:
+  - ID 26: 2025-08-03T17:00:00.000Z (paid) - Patient 45
+  - ID 5: 2025-07-31T14:00:00.000Z (paid) - Patient 31
+  - ID 31: 2025-08-12T08:00:00.000Z (paid) - Patient 53
+  - ID 6: 2025-07-31T14:30:00.000Z (paid) - Patient 32
+  - ID 24: 2025-08-04T14:25:14.053Z (paid) - Patient 49
+  - ID 16: 2025-08-04T14:33:14.053Z (paid) - Patient 49
+  - ID 22: 2025-08-04T14:45:14.053Z (paid) - Patient 49
+  - ID 20: 2025-08-02T12:30:00.000Z (paid) - Patient 49
+  - ID 21: 2025-08-02T13:00:00.000Z (paid) - Patient 49
+  - ID 8: 2025-07-31T19:30:00.000Z (paid) - Patient 48
+  - ID 25: 2025-08-02T18:30:00.000Z (paid) - Patient 49
+  - ID 9: 2025-07-31T20:00:00.000Z (paid) - Patient 49
+  - ID 15: 2025-08-02T08:00:00.000Z (cancelled) - Patient 49
+  - ID 28: 2025-08-10T14:00:00.000Z (cancelled) - Patient 29
+  - ID 23: 2025-08-02T15:00:00.000Z (cancelled) - Patient 49
+  - ID 33: 2025-08-11T17:30:00.000Z (pending_payment) - Patient 53
+  - ID 34: 2025-08-11T18:00:00.000Z (pending_payment) - Patient 53
+  - ID 10: 2025-08-01T05:00:00.000Z (paid) - Patient 49
+  - ID 11: 2025-08-01T10:00:00.000Z (paid) - Patient 49
+  - ID 12: 2025-08-01T10:00:00.000Z (paid) - Patient 49
+  - ID 13: 2025-08-01T12:30:00.000Z (paid) - Patient 49
+  - ID 14: 2025-08-01T21:00:00.000Z (paid) - Patient 49
+  - ID 32: 2025-08-11T17:00:00.000Z (paid) - Patient 53
+  - ID 35: 2025-08-11T18:00:00.000Z (paid) - Patient 53
+  - ID 37: 2025-08-18T08:00:00.000Z (pending_payment) - Patient 39
+  - ID 36: 2025-08-15T14:30:00.000Z (paid) - Patient 53
+  - ID 38: 2025-08-20T13:00:00.000Z (paid) - Patient 53
+  - ID 48: 2025-08-26T19:30:00.000Z (paid) - Patient 209
+  - ID 53: 2025-08-27T11:00:00.000Z (paid) - Patient 214
+  - ID 49: 2025-08-26T21:00:00.000Z (paid) - Patient 213
+  - ID 57: 2025-09-01T09:30:00.000Z (paid) - Patient 217
+  - ID 50: 2025-08-27T09:30:00.000Z (paid) - Patient 209
+  - ID 54: 2025-08-27T11:30:00.000Z (paid) - Patient 215
+  - ID 51: 2025-08-27T10:00:00.000Z (paid) - Patient 209
+  - ID 52: 2025-08-27T10:30:00.000Z (paid) - Patient 209
+  - ID 55: 2025-09-01T09:00:00.000Z (paid) - Patient 55
+  - ID 56: 2025-09-04T10:00:00.000Z (paid) - Patient 55
+  - ID 59: 2025-09-05T13:00:00.000Z (paid) - Patient 55
+  - ID 58: 2025-09-09T09:30:00.000Z (cancelled) - Patient 55
+  - ID 60: 2025-09-04T09:00:00.000Z (pending_payment) - Patient 219
+  - ID 61: 2025-09-04T09:00:00.000Z (paid) - Patient 219
+  - ID 62: 2025-09-04T09:30:00.000Z (paid) - Patient 220
+  - ID 63: 2025-09-04T11:00:00.000Z (pending_payment) - Patient 220
+  - ID 64: 2025-09-04T10:30:00.000Z (pending_payment) - Patient 221
+  - ID 74: 2025-09-05T09:00:00.000Z (paid) - Patient 222
+  - ID 73: 2025-09-04T18:30:00.000Z (paid) - Patient 222
+  - ID 72: 2025-09-04T11:00:00.000Z (cancelled) - Patient 222
+  - ID 70: 2025-09-04T12:30:00.000Z (cancelled) - Patient 222
+  - ID 68: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+  - ID 69: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+  - ID 71: 2025-09-04T15:30:00.000Z (paid) - Patient 222
+  - ID 67: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+  - ID 65: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+  - ID 66: 2025-09-04T11:30:00.000Z (cancelled) - Patient 222
+🎯 MATCH FOUND: Slot 2025-07-31 16:00:00 matches appointment 5 (UTC: Thu Jul 31 2025 14:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-07-31 16:00:00)
+🔒 Slot 2025-07-31 16:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-07-31 16:30:00 matches appointment 6 (UTC: Thu Jul 31 2025 14:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-07-31 16:30:00)
+🔒 Slot 2025-07-31 16:30:00 has conflicting appointment - marking as unavailable
+🎯 AUGUST DEBUG: Slot 2025-08-01 09:00:00 - Available: true, Had conflict: false
+🎯 AUGUST DEBUG: Slot 2025-08-01 10:00:00 - Available: false, Had conflict: false
+🎯 MATCH FOUND: Slot 2025-08-01 14:30:00 matches appointment 13 (UTC: Fri Aug 01 2025 12:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-01 14:30:00)
+🔒 Slot 2025-08-01 14:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-01 23:00:00 matches appointment 14 (UTC: Fri Aug 01 2025 21:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-01 23:00:00)
+🔒 Slot 2025-08-01 23:00:00 has conflicting appointment - marking as unavailable
+🎯 AUGUST DEBUG: Slot 2025-08-02 09:00:00 - Available: true, Had conflict: false
+🎯 AUGUST DEBUG: Slot 2025-08-02 10:00:00 - Available: true, Had conflict: false
+🎯 MATCH FOUND: Slot 2025-08-02 15:00:00 matches appointment 21 (UTC: Sat Aug 02 2025 13:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-02 15:00:00)
+🔒 Slot 2025-08-02 15:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-02 20:30:00 matches appointment 25 (UTC: Sat Aug 02 2025 18:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-02 20:30:00)
+🔒 Slot 2025-08-02 20:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-03 19:00:00 matches appointment 26 (UTC: Sun Aug 03 2025 17:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-03 19:00:00)
+🔒 Slot 2025-08-03 19:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-11 19:00:00 matches appointment 32 (UTC: Mon Aug 11 2025 17:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-11 19:00:00)
+🔒 Slot 2025-08-11 19:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-11 20:00:00 matches appointment 35 (UTC: Mon Aug 11 2025 18:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-11 20:00:00)
+🔒 Slot 2025-08-11 20:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-12 10:00:00 matches appointment 31 (UTC: Tue Aug 12 2025 08:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-12 10:00:00)
+🔒 Slot 2025-08-12 10:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-15 16:30:00 matches appointment 36 (UTC: Fri Aug 15 2025 14:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-15 16:30:00)
+🔒 Slot 2025-08-15 16:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-20 15:00:00 matches appointment 38 (UTC: Wed Aug 20 2025 13:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-20 15:00:00)
+🔒 Slot 2025-08-20 15:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-26 21:30:00 matches appointment 48 (UTC: Tue Aug 26 2025 19:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-26 21:30:00)
+🔒 Slot 2025-08-26 21:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-26 23:00:00 matches appointment 49 (UTC: Tue Aug 26 2025 21:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-26 23:00:00)
+🔒 Slot 2025-08-26 23:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 11:30:00 matches appointment 50 (UTC: Wed Aug 27 2025 09:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 11:30:00)
+🔒 Slot 2025-08-27 11:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 12:00:00 matches appointment 51 (UTC: Wed Aug 27 2025 10:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 12:00:00)
+🔒 Slot 2025-08-27 12:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 12:30:00 matches appointment 52 (UTC: Wed Aug 27 2025 10:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 12:30:00)
+🔒 Slot 2025-08-27 12:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 13:00:00 matches appointment 53 (UTC: Wed Aug 27 2025 11:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 13:00:00)
+🔒 Slot 2025-08-27 13:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-08-27 13:30:00 matches appointment 54 (UTC: Wed Aug 27 2025 11:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-08-27 13:30:00)
+🔒 Slot 2025-08-27 13:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-01 11:00:00 matches appointment 55 (UTC: Mon Sep 01 2025 09:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-01 11:00:00)
+🔒 Slot 2025-09-01 11:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-01 11:30:00 matches appointment 57 (UTC: Mon Sep 01 2025 09:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-01 11:30:00)
+🔒 Slot 2025-09-01 11:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 11:00:00 matches appointment 61 (UTC: Thu Sep 04 2025 09:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 11:00:00)
+🔒 Slot 2025-09-04 11:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 11:30:00 matches appointment 62 (UTC: Thu Sep 04 2025 09:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 11:30:00)
+🔒 Slot 2025-09-04 11:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 12:00:00 matches appointment 56 (UTC: Thu Sep 04 2025 10:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 12:00:00)
+🔒 Slot 2025-09-04 12:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 17:30:00 matches appointment 71 (UTC: Thu Sep 04 2025 15:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 17:30:00)
+🔒 Slot 2025-09-04 17:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-04 20:30:00 matches appointment 73 (UTC: Thu Sep 04 2025 18:30:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-04 20:30:00)
+🔒 Slot 2025-09-04 20:30:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-05 11:00:00 matches appointment 74 (UTC: Fri Sep 05 2025 09:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-05 11:00:00)
+🔒 Slot 2025-09-05 11:00:00 has conflicting appointment - marking as unavailable
+🎯 MATCH FOUND: Slot 2025-09-05 15:00:00 matches appointment 59 (UTC: Fri Sep 05 2025 13:00:00 GMT+0000 (Coordinated Universal Time) -> Local: 2025-09-05 15:00:00)
+🔒 Slot 2025-09-05 15:00:00 has conflicting appointment - marking as unavailable
+📅 After deduplication and appointment filtering: 754 unique slots for doctor 9
+📅 Available: 714, Unavailable: 40
+📅 First 5 slots: [
+  '2025-07-30 09:00:00 (available: true)',
+  '2025-07-30 09:30:00 (available: true)',
+  '2025-07-30 10:00:00 (available: true)',
+  '2025-07-30 10:30:00 (available: true)',
+  '2025-07-30 11:00:00 (available: true)'
+]
+📅 Returning 714 available slots (filtered out 40 unavailable)
+⏰ Slot 2025-07-30 09:00:00 with offset +02:00: -52746 minutes from now
+⏰ Slot 2025-07-30 09:30:00 with offset +02:00: -52716 minutes from now
+⏰ Slot 2025-07-30 10:00:00 with offset +02:00: -52686 minutes from now
+⏰ Slot 2025-07-30 10:30:00 with offset +02:00: -52656 minutes from now
+⏰ Slot 2025-07-30 11:00:00 with offset +02:00: -52626 minutes from now
+⏰ Slot 2025-07-30 11:30:00 with offset +02:00: -52596 minutes from now
+⏰ Slot 2025-07-30 14:00:00 with offset +02:00: -52446 minutes from now
+⏰ Slot 2025-07-30 14:30:00 with offset +02:00: -52416 minutes from now
+⏰ Slot 2025-07-30 15:00:00 with offset +02:00: -52386 minutes from now
+⏰ Slot 2025-07-30 15:30:00 with offset +02:00: -52356 minutes from now
+⏰ Slot 2025-07-30 16:00:00 with offset +02:00: -52326 minutes from now
+⏰ Slot 2025-07-30 16:30:00 with offset +02:00: -52296 minutes from now
+⏰ Slot 2025-07-31 09:00:00 with offset +02:00: -51306 minutes from now
+⏰ Slot 2025-07-31 09:30:00 with offset +02:00: -51276 minutes from now
+⏰ Slot 2025-07-31 10:00:00 with offset +02:00: -51246 minutes from now
+⏰ Slot 2025-07-31 10:30:00 with offset +02:00: -51216 minutes from now
+⏰ Slot 2025-07-31 11:00:00 with offset +02:00: -51186 minutes from now
+⏰ Slot 2025-07-31 11:30:00 with offset +02:00: -51156 minutes from now
+⏰ Slot 2025-07-31 15:00:00 with offset +02:00: -50946 minutes from now
+⏰ Slot 2025-07-31 15:30:00 with offset +02:00: -50916 minutes from now
+⏰ Slot 2025-07-31 20:30:00 with offset +02:00: -50616 minutes from now
+⏰ Slot 2025-07-31 21:00:00 with offset +02:00: -50586 minutes from now
+⏰ Slot 2025-08-01 09:00:00 with offset +02:00: -49866 minutes from now
+⏰ Slot 2025-08-01 09:30:00 with offset +02:00: -49836 minutes from now
+⏰ Slot 2025-08-01 14:00:00 with offset +02:00: -49566 minutes from now
+⏰ Slot 2025-08-01 15:00:00 with offset +02:00: -49506 minutes from now
+⏰ Slot 2025-08-01 15:30:00 with offset +02:00: -49476 minutes from now
+⏰ Slot 2025-08-01 16:00:00 with offset +02:00: -49446 minutes from now
+⏰ Slot 2025-08-01 16:30:00 with offset +02:00: -49416 minutes from now
+⏰ Slot 2025-08-01 17:00:00 with offset +02:00: -49386 minutes from now
+⏰ Slot 2025-08-01 17:30:00 with offset +02:00: -49356 minutes from now
+⏰ Slot 2025-08-01 18:00:00 with offset +02:00: -49326 minutes from now
+⏰ Slot 2025-08-01 18:30:00 with offset +02:00: -49296 minutes from now
+⏰ Slot 2025-08-01 19:00:00 with offset +02:00: -49266 minutes from now
+⏰ Slot 2025-08-01 19:30:00 with offset +02:00: -49236 minutes from now
+⏰ Slot 2025-08-01 20:00:00 with offset +02:00: -49206 minutes from now
+⏰ Slot 2025-08-01 20:30:00 with offset +02:00: -49176 minutes from now
+⏰ Slot 2025-08-01 21:30:00 with offset +02:00: -49116 minutes from now
+⏰ Slot 2025-08-01 22:00:00 with offset +02:00: -49086 minutes from now
+⏰ Slot 2025-08-01 22:30:00 with offset +02:00: -49056 minutes from now
+⏰ Slot 2025-08-02 09:00:00 with offset +02:00: -48426 minutes from now
+⏰ Slot 2025-08-02 09:30:00 with offset +02:00: -48396 minutes from now
+⏰ Slot 2025-08-02 10:00:00 with offset +02:00: -48366 minutes from now
+⏰ Slot 2025-08-02 10:30:00 with offset +02:00: -48336 minutes from now
+⏰ Slot 2025-08-02 11:00:00 with offset +02:00: -48306 minutes from now
+⏰ Slot 2025-08-02 15:30:00 with offset +02:00: -48036 minutes from now
+⏰ Slot 2025-08-02 16:00:00 with offset +02:00: -48006 minutes from now
+⏰ Slot 2025-08-02 16:30:00 with offset +02:00: -47976 minutes from now
+⏰ Slot 2025-08-02 17:00:00 with offset +02:00: -47946 minutes from now
+⏰ Slot 2025-08-02 17:30:00 with offset +02:00: -47916 minutes from now
+⏰ Slot 2025-08-02 18:00:00 with offset +02:00: -47886 minutes from now
+⏰ Slot 2025-08-02 18:30:00 with offset +02:00: -47856 minutes from now
+⏰ Slot 2025-08-02 19:00:00 with offset +02:00: -47826 minutes from now
+⏰ Slot 2025-08-02 20:00:00 with offset +02:00: -47766 minutes from now
+⏰ Slot 2025-08-02 21:00:00 with offset +02:00: -47706 minutes from now
+⏰ Slot 2025-08-02 21:30:00 with offset +02:00: -47676 minutes from now
+⏰ Slot 2025-08-02 22:00:00 with offset +02:00: -47646 minutes from now
+⏰ Slot 2025-08-02 22:30:00 with offset +02:00: -47616 minutes from now
+⏰ Slot 2025-08-02 23:00:00 with offset +02:00: -47586 minutes from now
+⏰ Slot 2025-08-03 19:30:00 with offset +02:00: -46356 minutes from now
+⏰ Slot 2025-08-03 20:00:00 with offset +02:00: -46326 minutes from now
+⏰ Slot 2025-08-03 20:30:00 with offset +02:00: -46296 minutes from now
+⏰ Slot 2025-08-03 21:00:00 with offset +02:00: -46266 minutes from now
+⏰ Slot 2025-08-03 21:30:00 with offset +02:00: -46236 minutes from now
+⏰ Slot 2025-08-03 22:00:00 with offset +02:00: -46206 minutes from now
+⏰ Slot 2025-08-04 07:00:00 with offset +02:00: -45666 minutes from now
+⏰ Slot 2025-08-05 07:00:00 with offset +02:00: -44226 minutes from now
+⏰ Slot 2025-08-05 09:00:00 with offset +02:00: -44106 minutes from now
+⏰ Slot 2025-08-05 09:30:00 with offset +02:00: -44076 minutes from now
+⏰ Slot 2025-08-05 10:00:00 with offset +02:00: -44046 minutes from now
+⏰ Slot 2025-08-05 10:30:00 with offset +02:00: -44016 minutes from now
+⏰ Slot 2025-08-05 11:00:00 with offset +02:00: -43986 minutes from now
+⏰ Slot 2025-08-05 11:30:00 with offset +02:00: -43956 minutes from now
+⏰ Slot 2025-08-05 12:00:00 with offset +02:00: -43926 minutes from now
+⏰ Slot 2025-08-05 12:30:00 with offset +02:00: -43896 minutes from now
+⏰ Slot 2025-08-05 13:00:00 with offset +02:00: -43866 minutes from now
+⏰ Slot 2025-08-05 13:30:00 with offset +02:00: -43836 minutes from now
+⏰ Slot 2025-08-05 14:00:00 with offset +02:00: -43806 minutes from now
+⏰ Slot 2025-08-05 14:30:00 with offset +02:00: -43776 minutes from now
+⏰ Slot 2025-08-05 15:00:00 with offset +02:00: -43746 minutes from now
+⏰ Slot 2025-08-05 15:30:00 with offset +02:00: -43716 minutes from now
+⏰ Slot 2025-08-05 16:00:00 with offset +02:00: -43686 minutes from now
+⏰ Slot 2025-08-05 16:30:00 with offset +02:00: -43656 minutes from now
+⏰ Slot 2025-08-05 17:00:00 with offset +02:00: -43626 minutes from now
+⏰ Slot 2025-08-06 07:00:00 with offset +02:00: -42786 minutes from now
+⏰ Slot 2025-08-06 09:00:00 with offset +02:00: -42666 minutes from now
+⏰ Slot 2025-08-06 09:30:00 with offset +02:00: -42636 minutes from now
+⏰ Slot 2025-08-06 10:00:00 with offset +02:00: -42606 minutes from now
+⏰ Slot 2025-08-06 10:30:00 with offset +02:00: -42576 minutes from now
+⏰ Slot 2025-08-06 11:00:00 with offset +02:00: -42546 minutes from now
+⏰ Slot 2025-08-06 11:30:00 with offset +02:00: -42516 minutes from now
+⏰ Slot 2025-08-06 12:00:00 with offset +02:00: -42486 minutes from now
+⏰ Slot 2025-08-06 12:30:00 with offset +02:00: -42456 minutes from now
+⏰ Slot 2025-08-06 13:00:00 with offset +02:00: -42426 minutes from now
+⏰ Slot 2025-08-06 13:30:00 with offset +02:00: -42396 minutes from now
+⏰ Slot 2025-08-06 14:00:00 with offset +02:00: -42366 minutes from now
+⏰ Slot 2025-08-06 14:30:00 with offset +02:00: -42336 minutes from now
+⏰ Slot 2025-08-06 15:00:00 with offset +02:00: -42306 minutes from now
+⏰ Slot 2025-08-06 15:30:00 with offset +02:00: -42276 minutes from now
+⏰ Slot 2025-08-06 16:00:00 with offset +02:00: -42246 minutes from now
+⏰ Slot 2025-08-06 16:30:00 with offset +02:00: -42216 minutes from now
+⏰ Slot 2025-08-06 17:00:00 with offset +02:00: -42186 minutes from now
+⏰ Slot 2025-08-07 07:00:00 with offset +02:00: -41346 minutes from now
+⏰ Slot 2025-08-07 09:00:00 with offset +02:00: -41226 minutes from now
+⏰ Slot 2025-08-07 09:30:00 with offset +02:00: -41196 minutes from now
+⏰ Slot 2025-08-07 10:00:00 with offset +02:00: -41166 minutes from now
+⏰ Slot 2025-08-07 10:30:00 with offset +02:00: -41136 minutes from now
+⏰ Slot 2025-08-07 11:00:00 with offset +02:00: -41106 minutes from now
+⏰ Slot 2025-08-07 11:30:00 with offset +02:00: -41076 minutes from now
+⏰ Slot 2025-08-07 12:00:00 with offset +02:00: -41046 minutes from now
+⏰ Slot 2025-08-07 12:30:00 with offset +02:00: -41016 minutes from now
+⏰ Slot 2025-08-07 13:00:00 with offset +02:00: -40986 minutes from now
+⏰ Slot 2025-08-07 13:30:00 with offset +02:00: -40956 minutes from now
+⏰ Slot 2025-08-07 14:00:00 with offset +02:00: -40926 minutes from now
+⏰ Slot 2025-08-07 14:30:00 with offset +02:00: -40896 minutes from now
+⏰ Slot 2025-08-07 15:00:00 with offset +02:00: -40866 minutes from now
+⏰ Slot 2025-08-07 15:30:00 with offset +02:00: -40836 minutes from now
+⏰ Slot 2025-08-07 16:00:00 with offset +02:00: -40806 minutes from now
+⏰ Slot 2025-08-07 16:30:00 with offset +02:00: -40776 minutes from now
+⏰ Slot 2025-08-08 07:00:00 with offset +02:00: -39906 minutes from now
+⏰ Slot 2025-08-08 09:00:00 with offset +02:00: -39786 minutes from now
+⏰ Slot 2025-08-08 09:30:00 with offset +02:00: -39756 minutes from now
+⏰ Slot 2025-08-08 10:00:00 with offset +02:00: -39726 minutes from now
+⏰ Slot 2025-08-08 10:30:00 with offset +02:00: -39696 minutes from now
+⏰ Slot 2025-08-08 11:00:00 with offset +02:00: -39666 minutes from now
+⏰ Slot 2025-08-08 11:30:00 with offset +02:00: -39636 minutes from now
+⏰ Slot 2025-08-08 12:00:00 with offset +02:00: -39606 minutes from now
+⏰ Slot 2025-08-08 12:30:00 with offset +02:00: -39576 minutes from now
+⏰ Slot 2025-08-08 13:00:00 with offset +02:00: -39546 minutes from now
+⏰ Slot 2025-08-08 13:30:00 with offset +02:00: -39516 minutes from now
+⏰ Slot 2025-08-08 14:00:00 with offset +02:00: -39486 minutes from now
+⏰ Slot 2025-08-08 14:30:00 with offset +02:00: -39456 minutes from now
+⏰ Slot 2025-08-08 15:00:00 with offset +02:00: -39426 minutes from now
+⏰ Slot 2025-08-08 15:30:00 with offset +02:00: -39396 minutes from now
+⏰ Slot 2025-08-08 16:00:00 with offset +02:00: -39366 minutes from now
+⏰ Slot 2025-08-08 16:30:00 with offset +02:00: -39336 minutes from now
+⏰ Slot 2025-08-09 09:00:00 with offset +02:00: -38346 minutes from now
+⏰ Slot 2025-08-09 09:30:00 with offset +02:00: -38316 minutes from now
+⏰ Slot 2025-08-09 10:00:00 with offset +02:00: -38286 minutes from now
+⏰ Slot 2025-08-09 10:30:00 with offset +02:00: -38256 minutes from now
+⏰ Slot 2025-08-09 11:00:00 with offset +02:00: -38226 minutes from now
+⏰ Slot 2025-08-09 14:00:00 with offset +02:00: -38046 minutes from now
+⏰ Slot 2025-08-09 14:30:00 with offset +02:00: -38016 minutes from now
+⏰ Slot 2025-08-09 15:00:00 with offset +02:00: -37986 minutes from now
+⏰ Slot 2025-08-09 16:00:00 with offset +02:00: -37926 minutes from now
+⏰ Slot 2025-08-10 09:00:00 with offset +02:00: -36906 minutes from now
+⏰ Slot 2025-08-10 09:30:00 with offset +02:00: -36876 minutes from now
+⏰ Slot 2025-08-10 10:00:00 with offset +02:00: -36846 minutes from now
+⏰ Slot 2025-08-10 10:30:00 with offset +02:00: -36816 minutes from now
+⏰ Slot 2025-08-10 11:00:00 with offset +02:00: -36786 minutes from now
+⏰ Slot 2025-08-10 14:00:00 with offset +02:00: -36606 minutes from now
+⏰ Slot 2025-08-10 14:30:00 with offset +02:00: -36576 minutes from now
+⏰ Slot 2025-08-10 15:00:00 with offset +02:00: -36546 minutes from now
+⏰ Slot 2025-08-10 16:00:00 with offset +02:00: -36486 minutes from now
+⏰ Slot 2025-08-11 09:00:00 with offset +02:00: -35466 minutes from now
+⏰ Slot 2025-08-11 09:30:00 with offset +02:00: -35436 minutes from now
+⏰ Slot 2025-08-11 10:00:00 with offset +02:00: -35406 minutes from now
+⏰ Slot 2025-08-11 10:30:00 with offset +02:00: -35376 minutes from now
+⏰ Slot 2025-08-11 11:00:00 with offset +02:00: -35346 minutes from now
+⏰ Slot 2025-08-11 11:30:00 with offset +02:00: -35316 minutes from now
+⏰ Slot 2025-08-11 12:00:00 with offset +02:00: -35286 minutes from now
+⏰ Slot 2025-08-11 12:30:00 with offset +02:00: -35256 minutes from now
+⏰ Slot 2025-08-11 14:00:00 with offset +02:00: -35166 minutes from now
+⏰ Slot 2025-08-11 14:30:00 with offset +02:00: -35136 minutes from now
+⏰ Slot 2025-08-11 15:00:00 with offset +02:00: -35106 minutes from now
+⏰ Slot 2025-08-11 16:00:00 with offset +02:00: -35046 minutes from now
+⏰ Slot 2025-08-11 18:30:00 with offset +02:00: -34896 minutes from now
+⏰ Slot 2025-08-11 19:30:00 with offset +02:00: -34836 minutes from now
+⏰ Slot 2025-08-12 10:30:00 with offset +02:00: -33936 minutes from now
+⏰ Slot 2025-08-12 11:00:00 with offset +02:00: -33906 minutes from now
+⏰ Slot 2025-08-12 11:30:00 with offset +02:00: -33876 minutes from now
+⏰ Slot 2025-08-12 12:00:00 with offset +02:00: -33846 minutes from now
+⏰ Slot 2025-08-12 12:30:00 with offset +02:00: -33816 minutes from now
+⏰ Slot 2025-08-12 13:00:00 with offset +02:00: -33786 minutes from now
+⏰ Slot 2025-08-12 13:30:00 with offset +02:00: -33756 minutes from now
+⏰ Slot 2025-08-12 14:00:00 with offset +02:00: -33726 minutes from now
+⏰ Slot 2025-08-12 14:30:00 with offset +02:00: -33696 minutes from now
+⏰ Slot 2025-08-12 15:00:00 with offset +02:00: -33666 minutes from now
+⏰ Slot 2025-08-12 15:30:00 with offset +02:00: -33636 minutes from now
+⏰ Slot 2025-08-12 16:00:00 with offset +02:00: -33606 minutes from now
+⏰ Slot 2025-08-12 16:30:00 with offset +02:00: -33576 minutes from now
+⏰ Slot 2025-08-13 01:00:00 with offset +02:00: -33066 minutes from now
+⏰ Slot 2025-08-13 01:30:00 with offset +02:00: -33036 minutes from now
+⏰ Slot 2025-08-13 02:00:00 with offset +02:00: -33006 minutes from now
+⏰ Slot 2025-08-13 02:30:00 with offset +02:00: -32976 minutes from now
+⏰ Slot 2025-08-13 03:00:00 with offset +02:00: -32946 minutes from now
+⏰ Slot 2025-08-13 10:00:00 with offset +02:00: -32526 minutes from now
+⏰ Slot 2025-08-13 10:30:00 with offset +02:00: -32496 minutes from now
+⏰ Slot 2025-08-13 11:00:00 with offset +02:00: -32466 minutes from now
+⏰ Slot 2025-08-13 11:30:00 with offset +02:00: -32436 minutes from now
+⏰ Slot 2025-08-13 12:00:00 with offset +02:00: -32406 minutes from now
+⏰ Slot 2025-08-13 12:30:00 with offset +02:00: -32376 minutes from now
+⏰ Slot 2025-08-13 13:00:00 with offset +02:00: -32346 minutes from now
+⏰ Slot 2025-08-13 13:30:00 with offset +02:00: -32316 minutes from now
+⏰ Slot 2025-08-13 14:00:00 with offset +02:00: -32286 minutes from now
+⏰ Slot 2025-08-13 14:30:00 with offset +02:00: -32256 minutes from now
+⏰ Slot 2025-08-13 15:00:00 with offset +02:00: -32226 minutes from now
+⏰ Slot 2025-08-13 15:30:00 with offset +02:00: -32196 minutes from now
+⏰ Slot 2025-08-13 16:00:00 with offset +02:00: -32166 minutes from now
+⏰ Slot 2025-08-13 16:30:00 with offset +02:00: -32136 minutes from now
+⏰ Slot 2025-08-13 17:00:00 with offset +02:00: -32106 minutes from now
+⏰ Slot 2025-08-14 10:00:00 with offset +02:00: -31086 minutes from now
+⏰ Slot 2025-08-14 10:30:00 with offset +02:00: -31056 minutes from now
+⏰ Slot 2025-08-14 11:00:00 with offset +02:00: -31026 minutes from now
+⏰ Slot 2025-08-14 11:30:00 with offset +02:00: -30996 minutes from now
+⏰ Slot 2025-08-14 12:00:00 with offset +02:00: -30966 minutes from now
+⏰ Slot 2025-08-14 12:30:00 with offset +02:00: -30936 minutes from now
+⏰ Slot 2025-08-14 13:00:00 with offset +02:00: -30906 minutes from now
+⏰ Slot 2025-08-14 13:30:00 with offset +02:00: -30876 minutes from now
+⏰ Slot 2025-08-14 14:00:00 with offset +02:00: -30846 minutes from now
+⏰ Slot 2025-08-14 14:30:00 with offset +02:00: -30816 minutes from now
+⏰ Slot 2025-08-14 15:00:00 with offset +02:00: -30786 minutes from now
+⏰ Slot 2025-08-14 15:30:00 with offset +02:00: -30756 minutes from now
+⏰ Slot 2025-08-14 16:00:00 with offset +02:00: -30726 minutes from now
+⏰ Slot 2025-08-14 16:30:00 with offset +02:00: -30696 minutes from now
+⏰ Slot 2025-08-15 10:00:00 with offset +02:00: -29646 minutes from now
+⏰ Slot 2025-08-15 10:30:00 with offset +02:00: -29616 minutes from now
+⏰ Slot 2025-08-15 11:00:00 with offset +02:00: -29586 minutes from now
+⏰ Slot 2025-08-15 11:30:00 with offset +02:00: -29556 minutes from now
+⏰ Slot 2025-08-15 12:00:00 with offset +02:00: -29526 minutes from now
+⏰ Slot 2025-08-15 12:30:00 with offset +02:00: -29496 minutes from now
+⏰ Slot 2025-08-15 13:00:00 with offset +02:00: -29466 minutes from now
+⏰ Slot 2025-08-15 13:30:00 with offset +02:00: -29436 minutes from now
+⏰ Slot 2025-08-15 14:00:00 with offset +02:00: -29406 minutes from now
+⏰ Slot 2025-08-15 15:00:00 with offset +02:00: -29346 minutes from now
+⏰ Slot 2025-08-15 15:30:00 with offset +02:00: -29316 minutes from now
+⏰ Slot 2025-08-15 16:00:00 with offset +02:00: -29286 minutes from now
+⏰ Slot 2025-08-17 21:00:00 with offset +02:00: -26106 minutes from now
+⏰ Slot 2025-08-18 10:00:00 with offset +02:00: -25326 minutes from now
+⏰ Slot 2025-08-18 10:30:00 with offset +02:00: -25296 minutes from now
+⏰ Slot 2025-08-18 11:00:00 with offset +02:00: -25266 minutes from now
+⏰ Slot 2025-08-18 11:30:00 with offset +02:00: -25236 minutes from now
+⏰ Slot 2025-08-18 12:00:00 with offset +02:00: -25206 minutes from now
+⏰ Slot 2025-08-18 12:30:00 with offset +02:00: -25176 minutes from now
+⏰ Slot 2025-08-20 15:30:00 with offset +02:00: -22116 minutes from now
+⏰ Slot 2025-08-20 16:00:00 with offset +02:00: -22086 minutes from now
+⏰ Slot 2025-08-20 16:30:00 with offset +02:00: -22056 minutes from now
+⏰ Slot 2025-08-20 17:00:00 with offset +02:00: -22026 minutes from now
+⏰ Slot 2025-08-25 11:00:00 with offset +02:00: -15186 minutes from now
+⏰ Slot 2025-08-25 11:30:00 with offset +02:00: -15156 minutes from now
+⏰ Slot 2025-08-25 12:00:00 with offset +02:00: -15126 minutes from now
+⏰ Slot 2025-08-25 12:30:00 with offset +02:00: -15096 minutes from now
+⏰ Slot 2025-08-25 13:00:00 with offset +02:00: -15066 minutes from now
+⏰ Slot 2025-08-25 13:30:00 with offset +02:00: -15036 minutes from now
+⏰ Slot 2025-08-25 14:00:00 with offset +02:00: -15006 minutes from now
+⏰ Slot 2025-08-25 14:30:00 with offset +02:00: -14976 minutes from now
+⏰ Slot 2025-08-25 15:00:00 with offset +02:00: -14946 minutes from now
+⏰ Slot 2025-08-25 15:30:00 with offset +02:00: -14916 minutes from now
+⏰ Slot 2025-08-25 16:00:00 with offset +02:00: -14886 minutes from now
+⏰ Slot 2025-08-25 16:30:00 with offset +02:00: -14856 minutes from now
+⏰ Slot 2025-08-25 17:00:00 with offset +02:00: -14826 minutes from now
+⏰ Slot 2025-08-25 17:30:00 with offset +02:00: -14796 minutes from now
+⏰ Slot 2025-08-25 18:00:00 with offset +02:00: -14766 minutes from now
+⏰ Slot 2025-08-25 18:30:00 with offset +02:00: -14736 minutes from now
+⏰ Slot 2025-08-26 02:00:00 with offset +02:00: -14286 minutes from now
+⏰ Slot 2025-08-26 02:30:00 with offset +02:00: -14256 minutes from now
+⏰ Slot 2025-08-26 03:00:00 with offset +02:00: -14226 minutes from now
+⏰ Slot 2025-08-26 11:00:00 with offset +02:00: -13746 minutes from now
+⏰ Slot 2025-08-26 11:30:00 with offset +02:00: -13716 minutes from now
+⏰ Slot 2025-08-26 12:00:00 with offset +02:00: -13686 minutes from now
+⏰ Slot 2025-08-26 12:30:00 with offset +02:00: -13656 minutes from now
+⏰ Slot 2025-08-26 13:00:00 with offset +02:00: -13626 minutes from now
+⏰ Slot 2025-08-26 13:30:00 with offset +02:00: -13596 minutes from now
+⏰ Slot 2025-08-26 14:00:00 with offset +02:00: -13566 minutes from now
+⏰ Slot 2025-08-26 14:30:00 with offset +02:00: -13536 minutes from now
+⏰ Slot 2025-08-26 15:00:00 with offset +02:00: -13506 minutes from now
+⏰ Slot 2025-08-26 15:30:00 with offset +02:00: -13476 minutes from now
+⏰ Slot 2025-08-26 16:00:00 with offset +02:00: -13446 minutes from now
+⏰ Slot 2025-08-26 16:30:00 with offset +02:00: -13416 minutes from now
+⏰ Slot 2025-08-26 17:00:00 with offset +02:00: -13386 minutes from now
+⏰ Slot 2025-08-26 17:30:00 with offset +02:00: -13356 minutes from now
+⏰ Slot 2025-08-26 18:00:00 with offset +02:00: -13326 minutes from now
+⏰ Slot 2025-08-26 18:30:00 with offset +02:00: -13296 minutes from now
+⏰ Slot 2025-08-26 22:00:00 with offset +02:00: -13086 minutes from now
+⏰ Slot 2025-08-26 22:30:00 with offset +02:00: -13056 minutes from now
+⏰ Slot 2025-08-27 14:00:00 with offset +02:00: -12126 minutes from now
+⏰ Slot 2025-08-27 14:30:00 with offset +02:00: -12096 minutes from now
+⏰ Slot 2025-08-27 15:00:00 with offset +02:00: -12066 minutes from now
+⏰ Slot 2025-08-27 15:30:00 with offset +02:00: -12036 minutes from now
+⏰ Slot 2025-08-27 16:00:00 with offset +02:00: -12006 minutes from now
+⏰ Slot 2025-08-27 16:30:00 with offset +02:00: -11976 minutes from now
+⏰ Slot 2025-08-27 17:00:00 with offset +02:00: -11946 minutes from now
+⏰ Slot 2025-08-27 17:30:00 with offset +02:00: -11916 minutes from now
+⏰ Slot 2025-08-27 18:00:00 with offset +02:00: -11886 minutes from now
+⏰ Slot 2025-08-27 18:30:00 with offset +02:00: -11856 minutes from now
+⏰ Slot 2025-08-28 11:00:00 with offset +02:00: -10866 minutes from now
+⏰ Slot 2025-08-28 11:30:00 with offset +02:00: -10836 minutes from now
+⏰ Slot 2025-08-28 12:00:00 with offset +02:00: -10806 minutes from now
+⏰ Slot 2025-08-28 12:30:00 with offset +02:00: -10776 minutes from now
+⏰ Slot 2025-08-28 13:00:00 with offset +02:00: -10746 minutes from now
+⏰ Slot 2025-08-28 13:30:00 with offset +02:00: -10716 minutes from now
+⏰ Slot 2025-08-28 14:00:00 with offset +02:00: -10686 minutes from now
+⏰ Slot 2025-08-28 14:30:00 with offset +02:00: -10656 minutes from now
+⏰ Slot 2025-08-28 15:00:00 with offset +02:00: -10626 minutes from now
+⏰ Slot 2025-08-28 15:30:00 with offset +02:00: -10596 minutes from now
+⏰ Slot 2025-08-28 16:00:00 with offset +02:00: -10566 minutes from now
+⏰ Slot 2025-08-28 16:30:00 with offset +02:00: -10536 minutes from now
+⏰ Slot 2025-08-28 17:00:00 with offset +02:00: -10506 minutes from now
+⏰ Slot 2025-08-28 17:30:00 with offset +02:00: -10476 minutes from now
+⏰ Slot 2025-08-28 18:00:00 with offset +02:00: -10446 minutes from now
+⏰ Slot 2025-08-28 18:30:00 with offset +02:00: -10416 minutes from now
+⏰ Slot 2025-08-29 11:00:00 with offset +02:00: -9426 minutes from now
+⏰ Slot 2025-08-29 11:30:00 with offset +02:00: -9396 minutes from now
+⏰ Slot 2025-08-29 12:00:00 with offset +02:00: -9366 minutes from now
+⏰ Slot 2025-08-29 12:30:00 with offset +02:00: -9336 minutes from now
+⏰ Slot 2025-08-29 13:00:00 with offset +02:00: -9306 minutes from now
+⏰ Slot 2025-08-29 13:30:00 with offset +02:00: -9276 minutes from now
+⏰ Slot 2025-08-29 14:00:00 with offset +02:00: -9246 minutes from now
+⏰ Slot 2025-08-29 14:30:00 with offset +02:00: -9216 minutes from now
+⏰ Slot 2025-08-29 15:00:00 with offset +02:00: -9186 minutes from now
+⏰ Slot 2025-08-29 15:30:00 with offset +02:00: -9156 minutes from now
+⏰ Slot 2025-08-29 16:00:00 with offset +02:00: -9126 minutes from now
+⏰ Slot 2025-08-29 16:30:00 with offset +02:00: -9096 minutes from now
+⏰ Slot 2025-08-29 17:00:00 with offset +02:00: -9066 minutes from now
+⏰ Slot 2025-08-29 17:30:00 with offset +02:00: -9036 minutes from now
+⏰ Slot 2025-08-29 18:00:00 with offset +02:00: -9006 minutes from now
+⏰ Slot 2025-08-29 18:30:00 with offset +02:00: -8976 minutes from now
+⏰ Slot 2025-08-30 11:00:00 with offset +02:00: -7986 minutes from now
+⏰ Slot 2025-08-30 11:30:00 with offset +02:00: -7956 minutes from now
+⏰ Slot 2025-08-30 12:00:00 with offset +02:00: -7926 minutes from now
+⏰ Slot 2025-08-30 12:30:00 with offset +02:00: -7896 minutes from now
+⏰ Slot 2025-08-30 13:00:00 with offset +02:00: -7866 minutes from now
+⏰ Slot 2025-08-30 14:00:00 with offset +02:00: -7806 minutes from now
+⏰ Slot 2025-08-30 14:30:00 with offset +02:00: -7776 minutes from now
+⏰ Slot 2025-08-30 15:00:00 with offset +02:00: -7746 minutes from now
+⏰ Slot 2025-08-30 15:30:00 with offset +02:00: -7716 minutes from now
+⏰ Slot 2025-08-30 16:00:00 with offset +02:00: -7686 minutes from now
+⏰ Slot 2025-08-30 16:30:00 with offset +02:00: -7656 minutes from now
+⏰ Slot 2025-08-30 17:00:00 with offset +02:00: -7626 minutes from now
+⏰ Slot 2025-08-30 17:30:00 with offset +02:00: -7596 minutes from now
+⏰ Slot 2025-08-30 18:00:00 with offset +02:00: -7566 minutes from now
+⏰ Slot 2025-08-31 11:00:00 with offset +02:00: -6546 minutes from now
+⏰ Slot 2025-08-31 11:30:00 with offset +02:00: -6516 minutes from now
+⏰ Slot 2025-08-31 12:00:00 with offset +02:00: -6486 minutes from now
+⏰ Slot 2025-08-31 12:30:00 with offset +02:00: -6456 minutes from now
+⏰ Slot 2025-08-31 13:00:00 with offset +02:00: -6426 minutes from now
+⏰ Slot 2025-09-01 12:00:00 with offset +02:00: -5046 minutes from now
+⏰ Slot 2025-09-01 12:30:00 with offset +02:00: -5016 minutes from now
+⏰ Slot 2025-09-01 13:00:00 with offset +02:00: -4986 minutes from now
+⏰ Slot 2025-09-01 13:30:00 with offset +02:00: -4956 minutes from now
+⏰ Slot 2025-09-01 14:00:00 with offset +02:00: -4926 minutes from now
+⏰ Slot 2025-09-01 14:30:00 with offset +02:00: -4896 minutes from now
+⏰ Slot 2025-09-01 15:00:00 with offset +02:00: -4866 minutes from now
+⏰ Slot 2025-09-01 15:30:00 with offset +02:00: -4836 minutes from now
+⏰ Slot 2025-09-01 16:00:00 with offset +02:00: -4806 minutes from now
+⏰ Slot 2025-09-01 16:30:00 with offset +02:00: -4776 minutes from now
+⏰ Slot 2025-09-01 17:00:00 with offset +02:00: -4746 minutes from now
+⏰ Slot 2025-09-01 17:30:00 with offset +02:00: -4716 minutes from now
+⏰ Slot 2025-09-01 18:00:00 with offset +02:00: -4686 minutes from now
+⏰ Slot 2025-09-01 18:30:00 with offset +02:00: -4656 minutes from now
+⏰ Slot 2025-09-02 03:30:00 with offset +02:00: -4116 minutes from now
+⏰ Slot 2025-09-02 04:00:00 with offset +02:00: -4086 minutes from now
+⏰ Slot 2025-09-02 04:30:00 with offset +02:00: -4056 minutes from now
+⏰ Slot 2025-09-02 05:00:00 with offset +02:00: -4026 minutes from now
+⏰ Slot 2025-09-02 05:30:00 with offset +02:00: -3996 minutes from now
+⏰ Slot 2025-09-02 06:00:00 with offset +02:00: -3966 minutes from now
+⏰ Slot 2025-09-02 06:30:00 with offset +02:00: -3936 minutes from now
+⏰ Slot 2025-09-02 07:00:00 with offset +02:00: -3906 minutes from now
+⏰ Slot 2025-09-02 11:00:00 with offset +02:00: -3666 minutes from now
+⏰ Slot 2025-09-02 11:30:00 with offset +02:00: -3636 minutes from now
+⏰ Slot 2025-09-02 12:00:00 with offset +02:00: -3606 minutes from now
+⏰ Slot 2025-09-02 12:30:00 with offset +02:00: -3576 minutes from now
+⏰ Slot 2025-09-02 13:00:00 with offset +02:00: -3546 minutes from now
+⏰ Slot 2025-09-02 13:30:00 with offset +02:00: -3516 minutes from now
+⏰ Slot 2025-09-02 14:00:00 with offset +02:00: -3486 minutes from now
+⏰ Slot 2025-09-02 14:30:00 with offset +02:00: -3456 minutes from now
+⏰ Slot 2025-09-02 15:00:00 with offset +02:00: -3426 minutes from now
+⏰ Slot 2025-09-02 15:30:00 with offset +02:00: -3396 minutes from now
+⏰ Slot 2025-09-02 16:00:00 with offset +02:00: -3366 minutes from now
+⏰ Slot 2025-09-02 16:30:00 with offset +02:00: -3336 minutes from now
+⏰ Slot 2025-09-02 17:00:00 with offset +02:00: -3306 minutes from now
+⏰ Slot 2025-09-02 17:30:00 with offset +02:00: -3276 minutes from now
+⏰ Slot 2025-09-02 18:00:00 with offset +02:00: -3246 minutes from now
+⏰ Slot 2025-09-02 18:30:00 with offset +02:00: -3216 minutes from now
+⏰ Slot 2025-09-03 11:00:00 with offset +02:00: -2226 minutes from now
+⏰ Slot 2025-09-03 11:30:00 with offset +02:00: -2196 minutes from now
+⏰ Slot 2025-09-03 12:00:00 with offset +02:00: -2166 minutes from now
+⏰ Slot 2025-09-03 12:30:00 with offset +02:00: -2136 minutes from now
+⏰ Slot 2025-09-03 13:00:00 with offset +02:00: -2106 minutes from now
+⏰ Slot 2025-09-03 13:30:00 with offset +02:00: -2076 minutes from now
+⏰ Slot 2025-09-03 14:00:00 with offset +02:00: -2046 minutes from now
+⏰ Slot 2025-09-03 14:30:00 with offset +02:00: -2016 minutes from now
+⏰ Slot 2025-09-03 15:00:00 with offset +02:00: -1986 minutes from now
+⏰ Slot 2025-09-03 15:30:00 with offset +02:00: -1956 minutes from now
+⏰ Slot 2025-09-03 16:00:00 with offset +02:00: -1926 minutes from now
+⏰ Slot 2025-09-03 16:30:00 with offset +02:00: -1896 minutes from now
+⏰ Slot 2025-09-03 17:00:00 with offset +02:00: -1866 minutes from now
+⏰ Slot 2025-09-03 17:30:00 with offset +02:00: -1836 minutes from now
+⏰ Slot 2025-09-03 18:00:00 with offset +02:00: -1806 minutes from now
+⏰ Slot 2025-09-03 18:30:00 with offset +02:00: -1776 minutes from now
+⏰ Slot 2025-09-04 12:30:00 with offset +02:00: -696 minutes from now
+⏰ Slot 2025-09-04 13:00:00 with offset +02:00: -666 minutes from now
+⏰ Slot 2025-09-04 13:30:00 with offset +02:00: -636 minutes from now
+⏰ Slot 2025-09-04 14:00:00 with offset +02:00: -606 minutes from now
+⏰ Slot 2025-09-04 14:30:00 with offset +02:00: -576 minutes from now
+⏰ Slot 2025-09-04 15:00:00 with offset +02:00: -546 minutes from now
+⏰ Slot 2025-09-04 16:00:00 with offset +02:00: -486 minutes from now
+⏰ Slot 2025-09-04 16:30:00 with offset +02:00: -456 minutes from now
+⏰ Slot 2025-09-04 17:00:00 with offset +02:00: -426 minutes from now
+⏰ Slot 2025-09-04 18:00:00 with offset +02:00: -366 minutes from now
+⏰ Slot 2025-09-04 19:30:00 with offset +02:00: -276 minutes from now
+⏰ Slot 2025-09-04 20:00:00 with offset +02:00: -246 minutes from now
+⏰ Slot 2025-09-04 21:00:00 with offset +02:00: -186 minutes from now
+⏰ Slot 2025-09-05 11:30:00 with offset +02:00: 684 minutes from now
+⏰ Slot 2025-09-05 12:00:00 with offset +02:00: 714 minutes from now
+⏰ Slot 2025-09-05 12:30:00 with offset +02:00: 744 minutes from now
+⏰ Slot 2025-09-05 13:30:00 with offset +02:00: 804 minutes from now
+⏰ Slot 2025-09-05 14:00:00 with offset +02:00: 834 minutes from now
+⏰ Slot 2025-09-05 14:30:00 with offset +02:00: 864 minutes from now
+⏰ Slot 2025-09-05 15:30:00 with offset +02:00: 924 minutes from now
+⏰ Slot 2025-09-05 16:00:00 with offset +02:00: 954 minutes from now
+⏰ Slot 2025-09-05 16:30:00 with offset +02:00: 984 minutes from now
+⏰ Slot 2025-09-05 17:00:00 with offset +02:00: 1014 minutes from now
+⏰ Slot 2025-09-05 17:30:00 with offset +02:00: 1044 minutes from now
+⏰ Slot 2025-09-05 18:00:00 with offset +02:00: 1074 minutes from now
+⏰ Slot 2025-09-05 18:30:00 with offset +02:00: 1104 minutes from now
+⏰ Slot 2025-09-08 11:00:00 with offset +02:00: 4974 minutes from now
+⏰ Slot 2025-09-08 11:30:00 with offset +02:00: 5004 minutes from now
+⏰ Slot 2025-09-08 12:00:00 with offset +02:00: 5034 minutes from now
+⏰ Slot 2025-09-08 12:30:00 with offset +02:00: 5064 minutes from now
+⏰ Slot 2025-09-08 13:00:00 with offset +02:00: 5094 minutes from now
+⏰ Slot 2025-09-08 13:30:00 with offset +02:00: 5124 minutes from now
+⏰ Slot 2025-09-08 14:00:00 with offset +02:00: 5154 minutes from now
+⏰ Slot 2025-09-08 14:30:00 with offset +02:00: 5184 minutes from now
+⏰ Slot 2025-09-08 15:00:00 with offset +02:00: 5214 minutes from now
+⏰ Slot 2025-09-08 15:30:00 with offset +02:00: 5244 minutes from now
+⏰ Slot 2025-09-08 16:00:00 with offset +02:00: 5274 minutes from now
+⏰ Slot 2025-09-08 16:30:00 with offset +02:00: 5304 minutes from now
+⏰ Slot 2025-09-08 17:00:00 with offset +02:00: 5334 minutes from now
+⏰ Slot 2025-09-08 17:30:00 with offset +02:00: 5364 minutes from now
+⏰ Slot 2025-09-08 18:00:00 with offset +02:00: 5394 minutes from now
+⏰ Slot 2025-09-08 18:30:00 with offset +02:00: 5424 minutes from now
+⏰ Slot 2025-09-09 11:00:00 with offset +02:00: 6414 minutes from now
+⏰ Slot 2025-09-09 11:30:00 with offset +02:00: 6444 minutes from now
+⏰ Slot 2025-09-09 12:00:00 with offset +02:00: 6474 minutes from now
+⏰ Slot 2025-09-09 12:30:00 with offset +02:00: 6504 minutes from now
+⏰ Slot 2025-09-09 13:00:00 with offset +02:00: 6534 minutes from now
+⏰ Slot 2025-09-09 13:30:00 with offset +02:00: 6564 minutes from now
+⏰ Slot 2025-09-09 14:00:00 with offset +02:00: 6594 minutes from now
+⏰ Slot 2025-09-09 14:30:00 with offset +02:00: 6624 minutes from now
+⏰ Slot 2025-09-09 15:00:00 with offset +02:00: 6654 minutes from now
+⏰ Slot 2025-09-09 15:30:00 with offset +02:00: 6684 minutes from now
+⏰ Slot 2025-09-09 16:00:00 with offset +02:00: 6714 minutes from now
+⏰ Slot 2025-09-09 16:30:00 with offset +02:00: 6744 minutes from now
+⏰ Slot 2025-09-09 17:00:00 with offset +02:00: 6774 minutes from now
+⏰ Slot 2025-09-09 17:30:00 with offset +02:00: 6804 minutes from now
+⏰ Slot 2025-09-09 18:00:00 with offset +02:00: 6834 minutes from now
+⏰ Slot 2025-09-09 18:30:00 with offset +02:00: 6864 minutes from now
+⏰ Slot 2025-09-10 11:00:00 with offset +02:00: 7854 minutes from now
+⏰ Slot 2025-09-10 11:30:00 with offset +02:00: 7884 minutes from now
+⏰ Slot 2025-09-10 12:00:00 with offset +02:00: 7914 minutes from now
+⏰ Slot 2025-09-10 12:30:00 with offset +02:00: 7944 minutes from now
+⏰ Slot 2025-09-10 13:00:00 with offset +02:00: 7974 minutes from now
+⏰ Slot 2025-09-10 13:30:00 with offset +02:00: 8004 minutes from now
+⏰ Slot 2025-09-10 14:00:00 with offset +02:00: 8034 minutes from now
+⏰ Slot 2025-09-10 14:30:00 with offset +02:00: 8064 minutes from now
+⏰ Slot 2025-09-10 15:00:00 with offset +02:00: 8094 minutes from now
+⏰ Slot 2025-09-10 15:30:00 with offset +02:00: 8124 minutes from now
+⏰ Slot 2025-09-10 16:00:00 with offset +02:00: 8154 minutes from now
+⏰ Slot 2025-09-10 16:30:00 with offset +02:00: 8184 minutes from now
+⏰ Slot 2025-09-10 17:00:00 with offset +02:00: 8214 minutes from now
+⏰ Slot 2025-09-10 17:30:00 with offset +02:00: 8244 minutes from now
+⏰ Slot 2025-09-10 18:00:00 with offset +02:00: 8274 minutes from now
+⏰ Slot 2025-09-10 18:30:00 with offset +02:00: 8304 minutes from now
+⏰ Slot 2025-09-11 11:00:00 with offset +02:00: 9294 minutes from now
+⏰ Slot 2025-09-11 11:30:00 with offset +02:00: 9324 minutes from now
+⏰ Slot 2025-09-11 12:00:00 with offset +02:00: 9354 minutes from now
+⏰ Slot 2025-09-11 12:30:00 with offset +02:00: 9384 minutes from now
+⏰ Slot 2025-09-11 13:00:00 with offset +02:00: 9414 minutes from now
+⏰ Slot 2025-09-11 13:30:00 with offset +02:00: 9444 minutes from now
+⏰ Slot 2025-09-11 14:00:00 with offset +02:00: 9474 minutes from now
+⏰ Slot 2025-09-11 14:30:00 with offset +02:00: 9504 minutes from now
+⏰ Slot 2025-09-11 15:00:00 with offset +02:00: 9534 minutes from now
+⏰ Slot 2025-09-11 15:30:00 with offset +02:00: 9564 minutes from now
+⏰ Slot 2025-09-11 16:00:00 with offset +02:00: 9594 minutes from now
+⏰ Slot 2025-09-11 16:30:00 with offset +02:00: 9624 minutes from now
+⏰ Slot 2025-09-11 17:00:00 with offset +02:00: 9654 minutes from now
+⏰ Slot 2025-09-11 17:30:00 with offset +02:00: 9684 minutes from now
+⏰ Slot 2025-09-11 18:00:00 with offset +02:00: 9714 minutes from now
+⏰ Slot 2025-09-11 18:30:00 with offset +02:00: 9744 minutes from now
+⏰ Slot 2025-09-12 11:00:00 with offset +02:00: 10734 minutes from now
+⏰ Slot 2025-09-12 11:30:00 with offset +02:00: 10764 minutes from now
+⏰ Slot 2025-09-12 12:00:00 with offset +02:00: 10794 minutes from now
+⏰ Slot 2025-09-12 12:30:00 with offset +02:00: 10824 minutes from now
+⏰ Slot 2025-09-12 13:00:00 with offset +02:00: 10854 minutes from now
+⏰ Slot 2025-09-12 13:30:00 with offset +02:00: 10884 minutes from now
+⏰ Slot 2025-09-12 14:00:00 with offset +02:00: 10914 minutes from now
+⏰ Slot 2025-09-12 14:30:00 with offset +02:00: 10944 minutes from now
+⏰ Slot 2025-09-12 15:00:00 with offset +02:00: 10974 minutes from now
+⏰ Slot 2025-09-12 15:30:00 with offset +02:00: 11004 minutes from now
+⏰ Slot 2025-09-12 16:00:00 with offset +02:00: 11034 minutes from now
+⏰ Slot 2025-09-12 16:30:00 with offset +02:00: 11064 minutes from now
+⏰ Slot 2025-09-12 17:00:00 with offset +02:00: 11094 minutes from now
+⏰ Slot 2025-09-12 17:30:00 with offset +02:00: 11124 minutes from now
+⏰ Slot 2025-09-12 18:00:00 with offset +02:00: 11154 minutes from now
+⏰ Slot 2025-09-12 18:30:00 with offset +02:00: 11184 minutes from now
+⏰ Slot 2025-09-15 11:00:00 with offset +02:00: 15054 minutes from now
+⏰ Slot 2025-09-15 11:30:00 with offset +02:00: 15084 minutes from now
+⏰ Slot 2025-09-15 12:00:00 with offset +02:00: 15114 minutes from now
+⏰ Slot 2025-09-15 12:30:00 with offset +02:00: 15144 minutes from now
+⏰ Slot 2025-09-15 13:00:00 with offset +02:00: 15174 minutes from now
+⏰ Slot 2025-09-15 13:30:00 with offset +02:00: 15204 minutes from now
+⏰ Slot 2025-09-15 14:00:00 with offset +02:00: 15234 minutes from now
+⏰ Slot 2025-09-15 14:30:00 with offset +02:00: 15264 minutes from now
+⏰ Slot 2025-09-15 15:00:00 with offset +02:00: 15294 minutes from now
+⏰ Slot 2025-09-15 15:30:00 with offset +02:00: 15324 minutes from now
+⏰ Slot 2025-09-15 16:00:00 with offset +02:00: 15354 minutes from now
+⏰ Slot 2025-09-15 16:30:00 with offset +02:00: 15384 minutes from now
+⏰ Slot 2025-09-15 17:00:00 with offset +02:00: 15414 minutes from now
+⏰ Slot 2025-09-15 17:30:00 with offset +02:00: 15444 minutes from now
+⏰ Slot 2025-09-15 18:00:00 with offset +02:00: 15474 minutes from now
+⏰ Slot 2025-09-15 18:30:00 with offset +02:00: 15504 minutes from now
+⏰ Slot 2025-09-16 11:00:00 with offset +02:00: 16494 minutes from now
+⏰ Slot 2025-09-16 11:30:00 with offset +02:00: 16524 minutes from now
+⏰ Slot 2025-09-16 12:00:00 with offset +02:00: 16554 minutes from now
+⏰ Slot 2025-09-16 12:30:00 with offset +02:00: 16584 minutes from now
+⏰ Slot 2025-09-16 13:00:00 with offset +02:00: 16614 minutes from now
+⏰ Slot 2025-09-16 13:30:00 with offset +02:00: 16644 minutes from now
+⏰ Slot 2025-09-16 14:00:00 with offset +02:00: 16674 minutes from now
+⏰ Slot 2025-09-16 14:30:00 with offset +02:00: 16704 minutes from now
+⏰ Slot 2025-09-16 15:00:00 with offset +02:00: 16734 minutes from now
+⏰ Slot 2025-09-16 15:30:00 with offset +02:00: 16764 minutes from now
+⏰ Slot 2025-09-16 16:00:00 with offset +02:00: 16794 minutes from now
+⏰ Slot 2025-09-16 16:30:00 with offset +02:00: 16824 minutes from now
+⏰ Slot 2025-09-16 17:00:00 with offset +02:00: 16854 minutes from now
+⏰ Slot 2025-09-16 17:30:00 with offset +02:00: 16884 minutes from now
+⏰ Slot 2025-09-16 18:00:00 with offset +02:00: 16914 minutes from now
+⏰ Slot 2025-09-16 18:30:00 with offset +02:00: 16944 minutes from now
+⏰ Slot 2025-09-17 11:00:00 with offset +02:00: 17934 minutes from now
+⏰ Slot 2025-09-17 11:30:00 with offset +02:00: 17964 minutes from now
+⏰ Slot 2025-09-17 12:00:00 with offset +02:00: 17994 minutes from now
+⏰ Slot 2025-09-17 12:30:00 with offset +02:00: 18024 minutes from now
+⏰ Slot 2025-09-17 13:00:00 with offset +02:00: 18054 minutes from now
+⏰ Slot 2025-09-17 13:30:00 with offset +02:00: 18084 minutes from now
+⏰ Slot 2025-09-17 14:00:00 with offset +02:00: 18114 minutes from now
+⏰ Slot 2025-09-17 14:30:00 with offset +02:00: 18144 minutes from now
+⏰ Slot 2025-09-17 15:00:00 with offset +02:00: 18174 minutes from now
+⏰ Slot 2025-09-17 15:30:00 with offset +02:00: 18204 minutes from now
+⏰ Slot 2025-09-17 16:00:00 with offset +02:00: 18234 minutes from now
+⏰ Slot 2025-09-17 16:30:00 with offset +02:00: 18264 minutes from now
+⏰ Slot 2025-09-17 17:00:00 with offset +02:00: 18294 minutes from now
+⏰ Slot 2025-09-17 17:30:00 with offset +02:00: 18324 minutes from now
+⏰ Slot 2025-09-17 18:00:00 with offset +02:00: 18354 minutes from now
+⏰ Slot 2025-09-17 18:30:00 with offset +02:00: 18384 minutes from now
+⏰ Slot 2025-09-18 11:00:00 with offset +02:00: 19374 minutes from now
+⏰ Slot 2025-09-18 11:30:00 with offset +02:00: 19404 minutes from now
+⏰ Slot 2025-09-18 12:00:00 with offset +02:00: 19434 minutes from now
+⏰ Slot 2025-09-18 12:30:00 with offset +02:00: 19464 minutes from now
+⏰ Slot 2025-09-18 13:00:00 with offset +02:00: 19494 minutes from now
+⏰ Slot 2025-09-18 13:30:00 with offset +02:00: 19524 minutes from now
+⏰ Slot 2025-09-18 14:00:00 with offset +02:00: 19554 minutes from now
+⏰ Slot 2025-09-18 14:30:00 with offset +02:00: 19584 minutes from now
+⏰ Slot 2025-09-18 15:00:00 with offset +02:00: 19614 minutes from now
+⏰ Slot 2025-09-18 15:30:00 with offset +02:00: 19644 minutes from now
+⏰ Slot 2025-09-18 16:00:00 with offset +02:00: 19674 minutes from now
+⏰ Slot 2025-09-18 16:30:00 with offset +02:00: 19704 minutes from now
+⏰ Slot 2025-09-18 17:00:00 with offset +02:00: 19734 minutes from now
+⏰ Slot 2025-09-18 17:30:00 with offset +02:00: 19764 minutes from now
+⏰ Slot 2025-09-18 18:00:00 with offset +02:00: 19794 minutes from now
+⏰ Slot 2025-09-18 18:30:00 with offset +02:00: 19824 minutes from now
+⏰ Slot 2025-09-19 11:00:00 with offset +02:00: 20814 minutes from now
+⏰ Slot 2025-09-19 11:30:00 with offset +02:00: 20844 minutes from now
+⏰ Slot 2025-09-19 12:00:00 with offset +02:00: 20874 minutes from now
+⏰ Slot 2025-09-19 12:30:00 with offset +02:00: 20904 minutes from now
+⏰ Slot 2025-09-19 13:00:00 with offset +02:00: 20934 minutes from now
+⏰ Slot 2025-09-19 13:30:00 with offset +02:00: 20964 minutes from now
+⏰ Slot 2025-09-19 14:00:00 with offset +02:00: 20994 minutes from now
+⏰ Slot 2025-09-19 14:30:00 with offset +02:00: 21024 minutes from now
+⏰ Slot 2025-09-19 15:00:00 with offset +02:00: 21054 minutes from now
+⏰ Slot 2025-09-19 15:30:00 with offset +02:00: 21084 minutes from now
+⏰ Slot 2025-09-19 16:00:00 with offset +02:00: 21114 minutes from now
+⏰ Slot 2025-09-19 16:30:00 with offset +02:00: 21144 minutes from now
+⏰ Slot 2025-09-19 17:00:00 with offset +02:00: 21174 minutes from now
+⏰ Slot 2025-09-19 17:30:00 with offset +02:00: 21204 minutes from now
+⏰ Slot 2025-09-19 18:00:00 with offset +02:00: 21234 minutes from now
+⏰ Slot 2025-09-19 18:30:00 with offset +02:00: 21264 minutes from now
+⏰ Slot 2025-09-22 11:00:00 with offset +02:00: 25134 minutes from now
+⏰ Slot 2025-09-22 11:30:00 with offset +02:00: 25164 minutes from now
+⏰ Slot 2025-09-22 12:00:00 with offset +02:00: 25194 minutes from now
+⏰ Slot 2025-09-22 12:30:00 with offset +02:00: 25224 minutes from now
+⏰ Slot 2025-09-22 13:00:00 with offset +02:00: 25254 minutes from now
+⏰ Slot 2025-09-22 13:30:00 with offset +02:00: 25284 minutes from now
+⏰ Slot 2025-09-22 14:00:00 with offset +02:00: 25314 minutes from now
+⏰ Slot 2025-09-22 14:30:00 with offset +02:00: 25344 minutes from now
+⏰ Slot 2025-09-22 15:00:00 with offset +02:00: 25374 minutes from now
+⏰ Slot 2025-09-22 15:30:00 with offset +02:00: 25404 minutes from now
+⏰ Slot 2025-09-22 16:00:00 with offset +02:00: 25434 minutes from now
+⏰ Slot 2025-09-22 16:30:00 with offset +02:00: 25464 minutes from now
+⏰ Slot 2025-09-22 17:00:00 with offset +02:00: 25494 minutes from now
+⏰ Slot 2025-09-22 17:30:00 with offset +02:00: 25524 minutes from now
+⏰ Slot 2025-09-22 18:00:00 with offset +02:00: 25554 minutes from now
+⏰ Slot 2025-09-22 18:30:00 with offset +02:00: 25584 minutes from now
+⏰ Slot 2025-09-23 11:00:00 with offset +02:00: 26574 minutes from now
+⏰ Slot 2025-09-23 11:30:00 with offset +02:00: 26604 minutes from now
+⏰ Slot 2025-09-23 12:00:00 with offset +02:00: 26634 minutes from now
+⏰ Slot 2025-09-23 12:30:00 with offset +02:00: 26664 minutes from now
+⏰ Slot 2025-09-23 13:00:00 with offset +02:00: 26694 minutes from now
+⏰ Slot 2025-09-23 13:30:00 with offset +02:00: 26724 minutes from now
+⏰ Slot 2025-09-23 14:00:00 with offset +02:00: 26754 minutes from now
+⏰ Slot 2025-09-23 14:30:00 with offset +02:00: 26784 minutes from now
+⏰ Slot 2025-09-23 15:00:00 with offset +02:00: 26814 minutes from now
+⏰ Slot 2025-09-23 15:30:00 with offset +02:00: 26844 minutes from now
+⏰ Slot 2025-09-23 16:00:00 with offset +02:00: 26874 minutes from now
+⏰ Slot 2025-09-23 16:30:00 with offset +02:00: 26904 minutes from now
+⏰ Slot 2025-09-23 17:00:00 with offset +02:00: 26934 minutes from now
+⏰ Slot 2025-09-23 17:30:00 with offset +02:00: 26964 minutes from now
+⏰ Slot 2025-09-23 18:00:00 with offset +02:00: 26994 minutes from now
+⏰ Slot 2025-09-23 18:30:00 with offset +02:00: 27024 minutes from now
+⏰ Slot 2025-09-24 11:00:00 with offset +02:00: 28014 minutes from now
+⏰ Slot 2025-09-24 11:30:00 with offset +02:00: 28044 minutes from now
+⏰ Slot 2025-09-24 12:00:00 with offset +02:00: 28074 minutes from now
+⏰ Slot 2025-09-24 12:30:00 with offset +02:00: 28104 minutes from now
+⏰ Slot 2025-09-24 13:00:00 with offset +02:00: 28134 minutes from now
+⏰ Slot 2025-09-24 13:30:00 with offset +02:00: 28164 minutes from now
+⏰ Slot 2025-09-24 14:00:00 with offset +02:00: 28194 minutes from now
+⏰ Slot 2025-09-24 14:30:00 with offset +02:00: 28224 minutes from now
+⏰ Slot 2025-09-24 15:00:00 with offset +02:00: 28254 minutes from now
+⏰ Slot 2025-09-24 15:30:00 with offset +02:00: 28284 minutes from now
+⏰ Slot 2025-09-24 16:00:00 with offset +02:00: 28314 minutes from now
+⏰ Slot 2025-09-24 16:30:00 with offset +02:00: 28344 minutes from now
+⏰ Slot 2025-09-24 17:00:00 with offset +02:00: 28374 minutes from now
+⏰ Slot 2025-09-24 17:30:00 with offset +02:00: 28404 minutes from now
+⏰ Slot 2025-09-24 18:00:00 with offset +02:00: 28434 minutes from now
+⏰ Slot 2025-09-24 18:30:00 with offset +02:00: 28464 minutes from now
+⏰ Slot 2025-09-25 11:00:00 with offset +02:00: 29454 minutes from now
+⏰ Slot 2025-09-25 11:30:00 with offset +02:00: 29484 minutes from now
+⏰ Slot 2025-09-25 12:00:00 with offset +02:00: 29514 minutes from now
+⏰ Slot 2025-09-25 12:30:00 with offset +02:00: 29544 minutes from now
+⏰ Slot 2025-09-25 13:00:00 with offset +02:00: 29574 minutes from now
+⏰ Slot 2025-09-25 13:30:00 with offset +02:00: 29604 minutes from now
+⏰ Slot 2025-09-25 14:00:00 with offset +02:00: 29634 minutes from now
+⏰ Slot 2025-09-25 14:30:00 with offset +02:00: 29664 minutes from now
+⏰ Slot 2025-09-25 15:00:00 with offset +02:00: 29694 minutes from now
+⏰ Slot 2025-09-25 15:30:00 with offset +02:00: 29724 minutes from now
+⏰ Slot 2025-09-25 16:00:00 with offset +02:00: 29754 minutes from now
+⏰ Slot 2025-09-25 16:30:00 with offset +02:00: 29784 minutes from now
+⏰ Slot 2025-09-25 17:00:00 with offset +02:00: 29814 minutes from now
+⏰ Slot 2025-09-25 17:30:00 with offset +02:00: 29844 minutes from now
+⏰ Slot 2025-09-25 18:00:00 with offset +02:00: 29874 minutes from now
+⏰ Slot 2025-09-25 18:30:00 with offset +02:00: 29904 minutes from now
+⏰ Slot 2025-09-26 11:00:00 with offset +02:00: 30894 minutes from now
+⏰ Slot 2025-09-26 11:30:00 with offset +02:00: 30924 minutes from now
+⏰ Slot 2025-09-26 12:00:00 with offset +02:00: 30954 minutes from now
+⏰ Slot 2025-09-26 12:30:00 with offset +02:00: 30984 minutes from now
+⏰ Slot 2025-09-26 13:00:00 with offset +02:00: 31014 minutes from now
+⏰ Slot 2025-09-26 13:30:00 with offset +02:00: 31044 minutes from now
+⏰ Slot 2025-09-26 14:00:00 with offset +02:00: 31074 minutes from now
+⏰ Slot 2025-09-26 14:30:00 with offset +02:00: 31104 minutes from now
+⏰ Slot 2025-09-26 15:00:00 with offset +02:00: 31134 minutes from now
+⏰ Slot 2025-09-26 15:30:00 with offset +02:00: 31164 minutes from now
+⏰ Slot 2025-09-26 16:00:00 with offset +02:00: 31194 minutes from now
+⏰ Slot 2025-09-26 16:30:00 with offset +02:00: 31224 minutes from now
+⏰ Slot 2025-09-26 17:00:00 with offset +02:00: 31254 minutes from now
+⏰ Slot 2025-09-26 17:30:00 with offset +02:00: 31284 minutes from now
+⏰ Slot 2025-09-26 18:00:00 with offset +02:00: 31314 minutes from now
+⏰ Slot 2025-09-26 18:30:00 with offset +02:00: 31344 minutes from now
+⏰ Slot 2025-09-29 11:00:00 with offset +02:00: 35214 minutes from now
+⏰ Slot 2025-09-29 11:30:00 with offset +02:00: 35244 minutes from now
+⏰ Slot 2025-09-29 12:00:00 with offset +02:00: 35274 minutes from now
+⏰ Slot 2025-09-29 12:30:00 with offset +02:00: 35304 minutes from now
+⏰ Slot 2025-09-29 13:00:00 with offset +02:00: 35334 minutes from now
+⏰ Slot 2025-09-29 13:30:00 with offset +02:00: 35364 minutes from now
+⏰ Slot 2025-09-29 14:00:00 with offset +02:00: 35394 minutes from now
+⏰ Slot 2025-09-29 14:30:00 with offset +02:00: 35424 minutes from now
+⏰ Slot 2025-09-29 15:00:00 with offset +02:00: 35454 minutes from now
+⏰ Slot 2025-09-29 15:30:00 with offset +02:00: 35484 minutes from now
+⏰ Slot 2025-09-29 16:00:00 with offset +02:00: 35514 minutes from now
+⏰ Slot 2025-09-29 16:30:00 with offset +02:00: 35544 minutes from now
+⏰ Slot 2025-09-29 17:00:00 with offset +02:00: 35574 minutes from now
+⏰ Slot 2025-09-29 17:30:00 with offset +02:00: 35604 minutes from now
+⏰ Slot 2025-09-29 18:00:00 with offset +02:00: 35634 minutes from now
+⏰ Slot 2025-09-29 18:30:00 with offset +02:00: 35664 minutes from now
+⏰ Slot 2025-09-30 11:00:00 with offset +02:00: 36654 minutes from now
+⏰ Slot 2025-09-30 11:30:00 with offset +02:00: 36684 minutes from now
+⏰ Slot 2025-09-30 12:00:00 with offset +02:00: 36714 minutes from now
+⏰ Slot 2025-09-30 12:30:00 with offset +02:00: 36744 minutes from now
+⏰ Slot 2025-09-30 13:00:00 with offset +02:00: 36774 minutes from now
+⏰ Slot 2025-09-30 13:30:00 with offset +02:00: 36804 minutes from now
+⏰ Slot 2025-09-30 14:00:00 with offset +02:00: 36834 minutes from now
+⏰ Slot 2025-09-30 14:30:00 with offset +02:00: 36864 minutes from now
+⏰ Slot 2025-09-30 15:00:00 with offset +02:00: 36894 minutes from now
+⏰ Slot 2025-09-30 15:30:00 with offset +02:00: 36924 minutes from now
+⏰ Slot 2025-09-30 16:00:00 with offset +02:00: 36954 minutes from now
+⏰ Slot 2025-09-30 16:30:00 with offset +02:00: 36984 minutes from now
+⏰ Slot 2025-09-30 17:00:00 with offset +02:00: 37014 minutes from now
+⏰ Slot 2025-09-30 17:30:00 with offset +02:00: 37044 minutes from now
+⏰ Slot 2025-09-30 18:00:00 with offset +02:00: 37074 minutes from now
+⏰ Slot 2025-09-30 18:30:00 with offset +02:00: 37104 minutes from now
+⏰ Slot 2025-10-08 05:30:00 with offset +02:00: 47844 minutes from now
+⏰ Slot 2025-10-08 06:00:00 with offset +02:00: 47874 minutes from now
+⏰ Slot 2025-10-08 06:30:00 with offset +02:00: 47904 minutes from now
+⏰ Slot 2025-10-08 07:00:00 with offset +02:00: 47934 minutes from now
+⏰ Slot 2025-10-08 07:30:00 with offset +02:00: 47964 minutes from now
+⏰ Slot 2025-10-08 08:00:00 with offset +02:00: 47994 minutes from now
+⏰ Slot 2025-10-21 15:30:00 with offset +02:00: 67164 minutes from now
+⏰ Slot 2025-10-21 16:00:00 with offset +02:00: 67194 minutes from now
+⏰ Slot 2025-10-21 16:30:00 with offset +02:00: 67224 minutes from now
+⏰ Slot 2025-10-21 17:00:00 with offset +02:00: 67254 minutes from now
+⏰ Slot 2025-10-21 17:30:00 with offset +02:00: 67284 minutes from now
+⏰ Slot 2025-10-21 18:00:00 with offset +02:00: 67314 minutes from now
+⏰ Slot 2025-10-21 18:30:00 with offset +02:00: 67344 minutes from now
+⏰ Slot 2025-10-21 19:00:00 with offset +02:00: 67374 minutes from now
+⏰ Slot 2025-11-25 16:00:00 with offset +02:00: 117594 minutes from now
+⏰ Slot 2025-11-25 16:30:00 with offset +02:00: 117624 minutes from now
+⏰ Slot 2025-11-25 17:00:00 with offset +02:00: 117654 minutes from now
+⏰ Slot 2025-11-25 17:30:00 with offset +02:00: 117684 minutes from now
+⏰ Slot 2025-11-25 18:00:00 with offset +02:00: 117714 minutes from now
+⏰ Slot 2025-11-25 18:30:00 with offset +02:00: 117744 minutes from now
+⏰ Slot 2025-11-25 19:00:00 with offset +02:00: 117774 minutes from now
+⏰ Slot 2026-01-05 06:00:00 with offset +02:00: 176034 minutes from now
+⏰ Slot 2026-01-05 06:30:00 with offset +02:00: 176064 minutes from now
+⏰ Slot 2026-01-05 07:00:00 with offset +02:00: 176094 minutes from now
+⏰ Slot 2026-01-05 07:30:00 with offset +02:00: 176124 minutes from now
+⏰ Slot 2026-01-05 08:00:00 with offset +02:00: 176154 minutes from now
+📅 Next available slot for doctor 9 (with 60-min buffer): 2025-09-05T11:30:00
+10:06:24 PM [express] GET /api/doctors/9/slots 304 in 2039ms :: [{"id":"b94cdc8e-9cc8-4381-ae2f-99cb6…
+📊 Analytics Event: {
+  sessionId: 'session_1756926971348_gm5c2nvkn',
+  userId: null,
+  eventType: 'page_view',
+  eventData: {
+    page: 'homepage',
+    referrer: 'https://0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar4a8%3A',
+    url: 'https://0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/',
+    viewport: { width: 682, height: 571 }
+  },
+  timestamp: 2025-09-04T22:06:18.901Z
+}
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:06:49.620Z',
+  ip: '10.82.9.247',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'POST',
+  url: '/api/auth/login',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Attempting login for: patient121@gmail.com
+Session stored: {
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  email: 'patient121@gmail.com',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+📊 Analytics Event: {
+  sessionId: 'session_1756926971348_gm5c2nvkn',
+  userId: null,
+  eventType: 'discovery',
+  eventData: { action: 'homepage_loaded', source: 'direct', doctorsShown: 0 },
+  timestamp: 2025-09-04T22:06:18.901Z
+}
+10:06:51 PM [express] POST /api/analytics/events 200 in 1924ms :: {"success":true,"eventsProcessed":2}
+Found existing user: { email: 'patient121@gmail.com', role: 'patient' }
+Session saved successfully
+10:06:51 PM [express] POST /api/auth/login 200 in 2127ms :: {"user":{"id":222,"email":"patient121@gma…
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:06:57.025Z',
+  ip: '10.82.4.142',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/auth/user',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+📱 getUser result: {
+  id: 222,
+  user: {
+    id: 222,
+    email: 'patient121@gmail.com',
+    title: null,
+    firstName: 'patient',
+    lastName: '121',
+    phone: null,
+    profileImageUrl: null,
+    role: 'patient',
+    approved: false,
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    createdAt: 2025-09-03T18:40:50.452Z,
+    updatedAt: 2025-09-03T18:40:50.452Z
+  }
+}
+10:06:58 PM [express] GET /api/auth/user 304 in 1197ms :: {"id":222,"email":"patient121@gmail.com","t…
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+🔍 GET /api/health-profile - fetching for user ID: 222
+🔍 Fetching health profile from DATABASE for patient: 222
+Auth middleware - Success for: patient121@gmail.com
+📚 Fetching document library for patient: 222
+📚 Fetching document library for patient: 222
+❌ No health profile found in database for patient: 222 - returning incomplete
+📋 Returning health profile: { hasProfile: true, profileStatus: 'incomplete', completionScore: 0 }
+10:06:59 PM [express] GET /api/health-profile 200 in 1118ms :: {"id":"685841d0-c07a-452a-a2fd-e7171c3…
+📄 Found documents in library: 2
+📄 Found documents in library: 2
+10:06:59 PM [express] GET /api/documents 304 in 1114ms :: [{"id":"88248d8d-7508-40a3-a0a1-e29e21b05ab…
+Auth middleware - Success for: patient121@gmail.com
+10:07:00 PM [express] GET /api/membership/subscription 304 in 2192ms :: {"hasSubscription":false,"sub…
+Auth middleware - Success for: patient121@gmail.com
+📋 Found 10 appointments [
+  {
+    id: 74,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-05T09:00:00.000Z,
+    status: 'paid',
+    paymentIntentId: 'pi_3S3kdv2YxuDmKTPw1LEKidfp',
+    clientSecret: null,
+    zoomMeetingId: '85985501332',
+    zoomJoinUrl: 'https://us05web.zoom.us/j/85985501332?pwd=gGDG274g58yTQciXgx8cjPO1HdnGCn.1',
+    zoomStartUrl: 'https://us05web.zoom.us/s/85985501332?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMiIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJpc3MiOiJ3ZWIiLCJjbHQiOjAsIm1udW0iOiI4NTk4NTUwMTMzMiIsImF1ZCI6ImNsaWVudHNtIiwidWlkIjoiVjREb1NTTzZUbUtMb0FKbUdCbG14USIsInppZCI6ImUxMWE4Mzg4YTIxZjQ0YWQ5YmYwMDQ1MzViMTFmMzIwIiwic2siOiIwIiwic3R5IjoxMDAsIndjZCI6InVzMDUiLCJleHAiOjE3NTcwMjgzMTAsImlhdCI6MTc1NzAyMTExMCwiYWlkIjoiU0llZzlnNUpSakNXNWluWGpKSXdIZyIsImNpZCI6IiJ9.BEtNKDbsuKjgrVGGRLLTUAupU5P8CMluZ-tDvNzTlMg',
+    zoomPassword: '6VYi7C',
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: '9f423649-6f49-4dcc-a20c-65117c3e791d',
+    price: '35.00',
+    createdAt: 2025-09-04T21:24:27.756Z,
+    updatedAt: 2025-09-04T21:25:10.064Z
+  },
+  {
+    id: 73,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-04T18:30:00.000Z,
+    status: 'paid',
+    paymentIntentId: 'pi_3S3MPw2YxuDmKTPw0RDh5f3k',
+    clientSecret: null,
+    zoomMeetingId: '84424574324',
+    zoomJoinUrl: 'https://us05web.zoom.us/j/84424574324?pwd=OqNoBw0kMLiJYz3TSVLYgEe3kpv5bJ.1',
+    zoomStartUrl: 'https://us05web.zoom.us/s/84424574324?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMiIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJpc3MiOiJ3ZWIiLCJjbHQiOjAsIm1udW0iOiI4NDQyNDU3NDMyNCIsImF1ZCI6ImNsaWVudHNtIiwidWlkIjoiVjREb1NTTzZUbUtMb0FKbUdCbG14USIsInppZCI6IjA5OGE5MjE0MDA2MjQ1NzhhYjQ2M2ZjNTQ0NWFjYzRjIiwic2siOiIwIiwic3R5IjoxMDAsIndjZCI6InVzMDUiLCJleHAiOjE3NTY5MzUxNzAsImlhdCI6MTc1NjkyNzk3MCwiYWlkIjoiU0llZzlnNUpSakNXNWluWGpKSXdIZyIsImNpZCI6IiJ9.DiKdJPemdAndvr24TxX4x5SkLupvSy8Ey6a6UsuyMV0',
+    zoomPassword: 'kL74eZ',
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: null,
+    price: '35.00',
+    createdAt: 2025-09-03T19:32:03.866Z,
+    updatedAt: 2025-09-03T19:32:50.853Z
+  },
+  {
+    id: 71,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-04T15:30:00.000Z,
+    status: 'paid',
+    paymentIntentId: 'pi_3S3MD82YxuDmKTPw1baJrFun',
+    clientSecret: null,
+    zoomMeetingId: '81037608056',
+    zoomJoinUrl: 'https://us05web.zoom.us/j/81037608056?pwd=fmJ3pEcySAX8VTjYjxZ8W383bLnEWF.1',
+    zoomStartUrl: 'https://us05web.zoom.us/s/81037608056?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMiIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJpc3MiOiJ3ZWIiLCJjbHQiOjAsIm1udW0iOiI4MTAzNzYwODA1NiIsImF1ZCI6ImNsaWVudHNtIiwidWlkIjoiVjREb1NTTzZUbUtMb0FKbUdCbG14USIsInppZCI6IjU2MzNmMWE3Y2NjZDQ1MmZhZTBjMjY3NmRhMjgxY2RhIiwic2siOiIwIiwic3R5IjoxMDAsIndjZCI6InVzMDUiLCJleHAiOjE3NTY5MzQzNzgsImlhdCI6MTc1NjkyNzE3OCwiYWlkIjoiU0llZzlnNUpSakNXNWluWGpKSXdIZyIsImNpZCI6IiJ9.8RjQ8iYuQOOWCmA58aJxiaL5bJu030IdF4WC6Mdg7ls',
+    zoomPassword: 'uE2smw',
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: null,
+    price: '35.00',
+    createdAt: 2025-09-03T19:15:30.029Z,
+    updatedAt: 2025-09-03T19:19:38.761Z
+  },
+  {
+    id: 70,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-04T12:30:00.000Z,
+    status: 'cancelled',
+    paymentIntentId: 'pi_3S3MJE2YxuDmKTPw0B0QmNVl',
+    clientSecret: null,
+    zoomMeetingId: null,
+    zoomJoinUrl: null,
+    zoomStartUrl: null,
+    zoomPassword: null,
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: null,
+    price: '35.00',
+    createdAt: 2025-09-03T19:14:16.532Z,
+    updatedAt: 2025-09-04T21:24:25.959Z
+  },
+  {
+    id: 69,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-04T11:30:00.000Z,
+    status: 'cancelled',
+    paymentIntentId: 'pi_3S3M2Z2YxuDmKTPw1xHz8jbE',
+    clientSecret: null,
+    zoomMeetingId: null,
+    zoomJoinUrl: null,
+    zoomStartUrl: null,
+    zoomPassword: null,
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: null,
+    price: '35.00',
+    createdAt: 2025-09-03T18:56:27.748Z,
+    updatedAt: 2025-09-04T21:24:26.536Z
+  },
+  {
+    id: 68,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-04T11:30:00.000Z,
+    status: 'cancelled',
+    paymentIntentId: 'pi_3S3LoR2YxuDmKTPw0ZjmtTc7',
+    clientSecret: null,
+    zoomMeetingId: null,
+    zoomJoinUrl: null,
+    zoomStartUrl: null,
+    zoomPassword: null,
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: null,
+    price: '35.00',
+    createdAt: 2025-09-03T18:53:40.515Z,
+    updatedAt: 2025-09-04T21:24:26.249Z
+  },
+  {
+    id: 65,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-04T11:30:00.000Z,
+    status: 'cancelled',
+    paymentIntentId: 'pi_3S3Lc62YxuDmKTPw0pJ4APDn',
+    clientSecret: null,
+    zoomMeetingId: null,
+    zoomJoinUrl: null,
+    zoomStartUrl: null,
+    zoomPassword: null,
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: null,
+    price: '35.00',
+    createdAt: 2025-09-03T18:40:54.849Z,
+    updatedAt: 2025-09-04T21:24:27.109Z
+  },
+  {
+    id: 66,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-04T11:30:00.000Z,
+    status: 'cancelled',
+    paymentIntentId: 'pi_3S3Lcl2YxuDmKTPw15pS9UHA',
+    clientSecret: null,
+    zoomMeetingId: null,
+    zoomJoinUrl: null,
+    zoomStartUrl: null,
+    zoomPassword: null,
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: null,
+    price: '35.00',
+    createdAt: 2025-09-03T18:41:36.737Z,
+    updatedAt: 2025-09-04T21:24:27.397Z
+  },
+  {
+    id: 67,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-04T11:30:00.000Z,
+    status: 'cancelled',
+    paymentIntentId: 'pi_3S3Lrj2YxuDmKTPw0dP3M7Jq',
+    clientSecret: null,
+    zoomMeetingId: null,
+    zoomJoinUrl: null,
+    zoomStartUrl: null,
+    zoomPassword: null,
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: null,
+    price: '35.00',
+    createdAt: 2025-09-03T18:53:16.137Z,
+    updatedAt: 2025-09-04T21:24:26.822Z
+  },
+  {
+    id: 72,
+    patientId: 222,
+    doctorId: 9,
+    appointmentDate: 2025-09-04T11:00:00.000Z,
+    status: 'cancelled',
+    paymentIntentId: 'pi_3S3MP32YxuDmKTPw0Gd26n0X',
+    clientSecret: null,
+    zoomMeetingId: null,
+    zoomJoinUrl: null,
+    zoomStartUrl: null,
+    zoomPassword: null,
+    cancelReason: null,
+    cancelledBy: null,
+    rescheduleCount: 0,
+    slotId: null,
+    price: '35.00',
+    createdAt: 2025-09-03T19:31:30.284Z,
+    updatedAt: 2025-09-03T19:45:24.093Z
+  }
+]
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Enhanced 10 appointments with doctor/patient details
+10:07:02 PM [express] GET /api/appointments 304 in 4479ms :: [{"id":74,"patientId":222,"doctorId":9,"…
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:03.098Z',
+  ip: '10.82.5.47',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/73/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:03.101Z',
+  ip: '10.82.9.247',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/69/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:03.103Z',
+  ip: '10.82.2.60',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/68/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:03.106Z',
+  ip: '10.82.4.142',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/74/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:03.108Z',
+  ip: '10.82.7.235',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/71/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:03.110Z',
+  ip: '10.82.12.199',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/70/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+Auth middleware - Success for: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+🔍 Fetching doctor with ID: 9
+🔍 Fetching doctor with ID: 9
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+📄 Fetching documents for appointment: 69
+📄 Fetching documents for appointment: 70
+📄 Fetching documents for appointment: 73
+📄 Fetching documents for appointment: 68
+📄 Found attached documents: 0
+10:07:05 PM [express] GET /api/appointments/70/documents 304 in 1972ms :: []
+📄 Found attached documents: 0
+10:07:05 PM [express] GET /api/appointments/69/documents 304 in 1982ms :: []
+📄 Fetching documents for appointment: 74
+📄 Fetching documents for appointment: 71
+📄 Found attached documents: 0
+10:07:05 PM [express] GET /api/appointments/73/documents 304 in 2133ms :: []
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:05.247Z',
+  ip: '10.82.12.199',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/65/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:05.256Z',
+  ip: '10.82.9.247',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/66/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+📄 Found attached documents: 0
+10:07:05 PM [express] GET /api/appointments/68/documents 304 in 2258ms :: []
+📄 Found attached documents: 1
+10:07:05 PM [express] GET /api/appointments/74/documents 304 in 2267ms :: [{"id":"88248d8d-7508-40a3-…
+📄 Found attached documents: 0
+10:07:05 PM [express] GET /api/appointments/71/documents 304 in 2281ms :: []
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:05.402Z',
+  ip: '10.82.5.47',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/67/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+[SECURITY AUDIT] {
+  timestamp: '2025-09-04T22:07:05.537Z',
+  ip: '10.82.2.60',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  method: 'GET',
+  url: '/api/appointments/72/documents',
+  userId: 'anonymous',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - Session check: {
+  hasSession: true,
+  hasAccessToken: true,
+  userId: '2d1d7f40-1b34-43c3-98a3-0ad2a0b3692b',
+  sessionId: 'oGp6hwzgjXr6o5znDsyCykpbQ9msgSX_'
+}
+Auth middleware - Test session check: { isTestSession: false, token: 'eyJhbGciOiJIUzI1NiIs' }
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+Auth middleware - User validated: patient121@gmail.com
+Auth middleware - Success for: patient121@gmail.com
+📚 Fetching document library for patient: 222
+📚 Fetching document library for patient: 222
+Auth middleware - Success for: patient121@gmail.com
+📄 Fetching documents for appointment: 74
+🔍 Fetching doctor with ID: 9
+Auth middleware - Success for: patient121@gmail.com
+🔍 Fetching doctor with ID: 9
+Auth middleware - Success for: patient121@gmail.com
+📄 Found documents in library: 2
+📄 Found documents in library: 2
+10:07:06 PM [express] GET /api/documents 304 in 785ms :: [{"id":"88248d8d-7508-40a3-a0a1-e29e21b05ab8…
+✅ Found doctor: James Rodriguez
+10:07:06 PM [express] GET /api/documents/74 304 in 781ms :: [{"id":"88248d8d-7508-40a3-a0a1-e29e21b05…
+🔍 Fetching doctor with ID: 9
+✅ Found doctor: James Rodriguez
+🔍 Fetching doctor with ID: 9
+✅ Found doctor: James Rodriguez
+✅ Found doctor: James Rodriguez
+📄 Fetching documents for appointment: 66
+📄 Fetching documents for appointment: 65
+📄 Found attached documents: 0
+10:07:07 PM [express] GET /api/appointments/66/documents 304 in 1961ms :: []
+📄 Fetching documents for appointment: 72
+📄 Found attached documents: 0
+10:07:07 PM [express] GET /api/appointments/65/documents 304 in 2016ms :: []
+📄 Fetching documents for appointment: 67
+📄 Found attached documents: 0
+10:07:07 PM [express] GET /api/appointments/72/documents 304 in 1968ms :: []
+📄 Found attached documents: 0
+10:07:07 PM [express] GET /api/appointments/67/documents 304 in 2269ms :: []
