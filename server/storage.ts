@@ -2623,6 +2623,22 @@ export class PostgresStorage implements IStorage {
     }
   }
 
+  async updateDocumentType(id: string, documentType: string): Promise<void> {
+    try {
+      console.log('📝 Updating document type:', { id, documentType });
+      
+      await db
+        .update(documentUploads)
+        .set({ documentType })
+        .where(eq(documentUploads.id, id));
+      
+      console.log('✅ Document type updated successfully');
+    } catch (error) {
+      console.error('Error updating document type:', error);
+      throw error;
+    }
+  }
+
   // Appointment-Document attachment operations
   async attachDocumentToAppointment(appointmentId: number, documentId: string): Promise<any> {
     try {

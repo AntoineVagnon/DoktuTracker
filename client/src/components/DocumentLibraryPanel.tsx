@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { X, FileText, Paperclip, Trash2, Download } from "lucide-react";
+import { X, FileText, Paperclip, Trash2, Download, Archive } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { UploadResult } from "@uppy/core";
@@ -104,28 +104,47 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     },
   });
 
-  // Detach/delete document from appointment
-  const detachMutation = useMutation({
+  // Permanently delete document from appointment
+  const permanentDeleteMutation = useMutation({
     mutationFn: async (documentId: string) => {
-      if (!appointmentId) throw new Error("No appointment selected");
-      
-      // First try to detach from appointment
-      const response = await apiRequest("DELETE", `/api/appointments/${appointmentId}/documents/${documentId}`);
-      return response;
+      return apiRequest("DELETE", `/api/documents/${documentId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/documents/${appointmentId}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
       toast({
-        title: "Document removed",
-        description: "Document has been removed from this appointment.",
+        title: "Document deleted",
+        description: "Document has been permanently deleted.",
       });
     },
     onError: (error) => {
-      console.error("Error removing document:", error);
+      console.error("Error deleting document:", error);
       toast({
         title: "Error",
-        description: "Failed to remove document from appointment.",
+        description: "Failed to delete document.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Import document to library
+  const importToLibraryMutation = useMutation({
+    mutationFn: async (documentId: string) => {
+      return apiRequest("POST", `/api/documents/${documentId}/import`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/documents/${appointmentId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
+      toast({
+        title: "Document imported",
+        description: "Document has been imported to your library for reuse.",
+      });
+    },
+    onError: (error) => {
+      console.error("Error importing document:", error);
+      toast({
+        title: "Error",
+        description: "Failed to import document to library.",
         variant: "destructive",
       });
     },
@@ -237,11 +256,25 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => detachMutation.mutate(doc.id)}
-                        disabled={detachMutation.isPending}
-                        title="Remove from appointment"
+                        onClick={() => importToLibraryMutation.mutate(doc.id)}
+                        disabled={importToLibraryMutation.isPending}
+                        title="Import to library for reuse"
+                        className="text-blue-600 hover:text-blue-700"
                       >
-                        <X className="h-3 w-3" />
+                        <Archive className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm("Are you sure you want to permanently delete this document?")) {
+                            permanentDeleteMutation.mutate(doc.id);
+                          }
+                        }}
+                        disabled={permanentDeleteMutation.isPending}
+                        title="Delete permanently"
+                      >
+                        <Trash2 className="h-3 w-3 text-red-500" />
                       </Button>
                     </div>
                   </div>

@@ -146,6 +146,37 @@ export function registerDocumentLibraryRoutes(app: Express) {
     }
   });
 
+  // Import document to library (convert appointment-only to library)
+  app.post("/api/documents/:documentId/import", isAuthenticated, async (req, res) => {
+    try {
+      const { documentId } = req.params;
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Verify user owns the document
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+
+      const userIdInt = parseInt(userId.toString());
+      if (document.uploadedBy !== userIdInt) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      // Update document type to be available in library
+      await storage.updateDocumentType(documentId, 'other'); // Convert to library document
+      
+      res.json({ message: "Document imported to library successfully" });
+    } catch (error) {
+      console.error("Error importing document to library:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Detach document from appointment
   app.delete("/api/appointments/:appointmentId/documents/:documentId", isAuthenticated, async (req, res) => {
     try {
