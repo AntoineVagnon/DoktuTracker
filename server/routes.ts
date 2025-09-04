@@ -714,7 +714,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Cancel any existing pending/pending_payment appointments for this user to prevent multiple payment banners
-      const userAppointments = await storage.getUserAppointments(userId);
+      const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
         apt.status === 'pending_payment' || apt.status === 'pending'
       );
@@ -1032,7 +1032,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Cancel any existing pending/pending_payment appointments for this user to prevent multiple payment banners
-      const userAppointments = await storage.getUserAppointments(userId);
+      const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
         apt.status === 'pending_payment' || apt.status === 'pending'
       );
@@ -2110,7 +2110,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`🧹 Cleaning up pending appointments for user ${userId}...`);
       
-      const userAppointments = await storage.getUserAppointments(userId);
+      const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
         apt.status === 'pending_payment' || apt.status === 'pending'
       );
