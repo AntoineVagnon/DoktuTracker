@@ -290,23 +290,10 @@ export function registerDocumentLibraryRoutes(app: Express) {
         const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
         console.log("📂 Object file retrieved");
         
-        // Log file metadata for debugging
-        console.log("📊 File metadata:", {
-          exists: objectFile.exists(),
-          metadata: objectFile.metadata
-        });
+        // Log essential file info
+        console.log("📊 File size in storage:", objectFile.metadata.size, "bytes");
 
         const readStream = objectFile.createReadStream();
-        
-        // Debug: Count bytes being streamed
-        let bytesStreamed = 0;
-        readStream.on('data', (chunk) => {
-          bytesStreamed += chunk.length;
-        });
-        
-        readStream.on('end', () => {
-          console.log("📈 Total bytes streamed:", bytesStreamed);
-        });
         
         readStream.pipe(res);
         

@@ -2385,9 +2385,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('📁 File info:', req.file ? { 
         filename: req.file.originalname, 
         size: req.file.size, 
-        mimetype: req.file.mimetype 
+        mimetype: req.file.mimetype,
+        bufferSize: req.file.buffer.length 
       } : 'No file');
       console.log('📁 Body:', req.body);
+      
+      // Check if file buffer matches declared size
+      if (req.file && req.file.size !== req.file.buffer.length) {
+        console.log('⚠️ SIZE MISMATCH DETECTED:', {
+          declaredSize: req.file.size,
+          actualBufferSize: req.file.buffer.length
+        });
+      }
       
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
@@ -2413,20 +2422,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('🔗 Generated secure upload URL');
 
         // Upload file to secure object storage
+        console.log('📤 Uploading to cloud storage:', {
+          bufferSize: req.file.buffer.length,
+          declaredSize: req.file.size,
+          contentLength: req.file.size.toString()
+        });
+
         const uploadResponse = await fetch(uploadURL, {
           method: 'PUT',
           body: req.file.buffer,
           headers: {
             'Content-Type': req.file.mimetype,
-            'Content-Length': req.file.size.toString(),
+            'Content-Length': req.file.buffer.length.toString(), // Use actual buffer size
           },
         });
 
         if (!uploadResponse.ok) {
-          throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+          const errorText = await uploadResponse.text();
+          throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText} - ${errorText}`);
         }
 
-        console.log('✅ File uploaded to secure storage');
+        console.log('✅ File uploaded to secure storage:', {
+          status: uploadResponse.status,
+          contentLength: uploadResponse.headers.get('content-length')
+        });
 
         // Normalize the object path for database storage
         const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
