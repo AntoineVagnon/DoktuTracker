@@ -247,6 +247,17 @@ export function registerDocumentLibraryRoutes(app: Express) {
     res.json({ message: "Test route working", documentId: req.params.documentId });
   });
 
+  // Debug route to check if ANY download requests reach server
+  app.get("/api/documents/download/*", async (req, res) => {
+    console.log("🔍 CATCH-ALL DOWNLOAD REQUEST:", req.url, req.params, req.query);
+    res.status(200).json({ 
+      message: "Catch-all route hit", 
+      url: req.url,
+      params: req.params,
+      method: req.method
+    });
+  });
+
   // Download document
   app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
     console.log(`🎯 DOWNLOAD ROUTE HIT - DocumentId: ${req.params.documentId}, UserAgent: ${req.get('User-Agent')?.substring(0, 50)}...`);
