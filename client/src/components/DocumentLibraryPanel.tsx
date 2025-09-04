@@ -231,31 +231,55 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
 
   // Handle document download
   const handleDownload = async (doc: any) => {
+    console.log("🚀 DOWNLOAD ATTEMPT - Document:", doc.id, doc.fileName);
     try {
+      console.log("📡 Sending request to:", `/api/documents/download/${doc.id}`);
       const response = await fetch(`/api/documents/download/${doc.id}`, {
         credentials: 'include',
       });
       
+      console.log("📨 Response received:", {
+        status: response.status,
+        statusText: response.statusText,
+        contentType: response.headers.get('content-type'),
+        contentLength: response.headers.get('content-length'),
+        contentDisposition: response.headers.get('content-disposition')
+      });
+      
       if (!response.ok) {
         const errorText = await response.text();
+        console.error("❌ Server error response:", errorText);
         throw new Error(`Failed to download: ${response.status} - ${errorText}`);
       }
       
       const blob = await response.blob();
+      console.log("📦 Blob created:", {
+        size: blob.size,
+        type: blob.type
+      });
+      
+      // Check if blob is actually data or error message
+      if (blob.size < 100 && blob.type === 'application/json') {
+        const text = await blob.text();
+        console.error("⚠️ Received JSON instead of file:", text);
+        throw new Error("Received error message instead of file");
+      }
+      
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = doc.fileName;
+      console.log("⬇️ Triggering download for:", doc.fileName);
       a.click();
       window.URL.revokeObjectURL(url);
       
       toast({
-        title: "Download successful",
-        description: `${doc.fileName} has been downloaded successfully.`,
+        title: "Download initiated",
+        description: `${doc.fileName} download started.`,
       });
       
     } catch (error) {
-      console.error("Download error:", error);
+      console.error("❌ Download error:", error);
       toast({
         title: "Download failed",
         description: `Unable to download document: ${error.message}`,
