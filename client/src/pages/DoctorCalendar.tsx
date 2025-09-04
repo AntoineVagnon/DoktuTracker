@@ -7,7 +7,7 @@ export default function DoctorCalendar() {
   
   return (
     <DoctorLayout>
-      <GoogleStyleCalendar />
+      <GoogleStyleCalendar doctorId="10" />
     </DoctorLayout>
   );
 }
