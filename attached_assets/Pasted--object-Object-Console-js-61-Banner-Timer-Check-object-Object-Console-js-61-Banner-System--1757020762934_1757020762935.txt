@@ -1,0 +1,32 @@
+[object Object]
+Console.js:61 🔥 Banner Timer Check: [object Object]
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 Slot clicked: [object Object]
+Console.js:61 DoctorProfile - Raw params: [object Object]
+Console.js:61 DoctorProfile - Doctor ID: 9
+Console.js:61 Slot held successfully: [object Object]
+Console.js:61 Slot held successfully, user authenticated, redirecting to checkout: /checkout?doctorId=9&slot=2025-09-05T12%3A00%3A00&price=35.00&slotId=47b16e11-962a-4061-ab88-0b71704983c6
+Console.js:61 Failed to send analytics events: TypeError: Failed to fetch
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with public key: pk_test_51...
+Console.js:61 🔥 Checkout Page Params: Object
+Console.js:61 Re-holding slot with ID: 47b16e11-962a-4061-ab88-0b71704983c6
+Console.js:61 Slot re-held successfully: Object
+Console.js:61 🔥 Checkout Page Params: Object
+Console.js:61 🆕 Creating new appointment
+Console.js:61 🕐 Original slot parameter: 2025-09-05T12:00:00
+Console.js:61 🕐 Parsed local date: 5.9.2025, 12:00:00
+Console.js:61 🕐 Current timezone offset (minutes): -120
+Console.js:61 🕐 UTC for storage: 2025-09-05T10:00:00.000Z
+Console.js:61 🕐 Verification - stored UTC converted back to local: 5.9.2025, 12:00:00
+Console.js:61 🔥 Checkout Page Params: Object
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/appointments:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+Console.js:61 Checkout initialization error: Error: Failed to create appointment
+    at initializeCheckout (Checkout.tsx:181:19)
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Landing page loaded, checking for password reset tokens
+Console.js:61 Current URL hash: 
+Console.js:61 Hash params: Object
+Console.js:61 All hash params: Array(0)
+Console.js:61 ❌ No password reset tokens found, loading normal landing page

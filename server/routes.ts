@@ -710,7 +710,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         zoomMeetingId: req.body.zoomMeetingId || null,
         zoomJoinUrl: req.body.zoomJoinUrl || null,
         zoomStartUrl: req.body.zoomStartUrl || null,
-        zoomPassword: req.body.zoomPassword || null
+        zoomPassword: req.body.zoomPassword || null,
+        slotId: req.body.timeSlotId || null, // Handle the timeSlotId from frontend
+        price: req.body.price || "35.00" // Handle the price from frontend
       });
       
       // Cancel any existing pending/pending_payment appointments for this user to prevent multiple payment banners
