@@ -2561,6 +2561,17 @@ Please upload the document again through the secure upload system.`;
           auditLogged: true,
         });
 
+        // If appointmentId is provided, attach the document to the appointment
+        if (appointmentId) {
+          try {
+            await storage.attachDocumentToAppointment(appointmentId, document.id);
+            console.log('📎 Document automatically attached to appointment:', appointmentId);
+          } catch (attachError) {
+            console.error('Error attaching document to appointment:', attachError);
+            // Don't fail the upload if attachment fails - the document is still saved
+          }
+        }
+
         res.status(200).json({
           ...document,
           securityCompliance: {
