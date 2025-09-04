@@ -22,10 +22,10 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
   const queryClient = useQueryClient();
   const [selectedTab, setSelectedTab] = useState("library");
 
-  // Fetch user's document library
+  // Fetch user's document library (only for non-doctors)
   const { data: libraryDocuments = [], isLoading: isLoadingLibrary } = useQuery({
     queryKey: ["/api/documents"],
-    enabled: !!user && isOpen,
+    enabled: !!user && isOpen && user?.role !== 'doctor',
   });
 
   // Fetch documents attached to this appointment (if appointmentId provided)
@@ -288,7 +288,8 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
           </Card>
         )}
 
-        {/* Attach from Library section */}
+        {/* Attach from Library section - Only show to patients */}
+        {user?.role !== 'doctor' && (
         <Card>
           <CardHeader className="pb-3 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium">Attach from Library</CardTitle>
@@ -375,6 +376,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
             </div>
           </CardContent>
         </Card>
+        )}
       </div>
     </div>
   );
