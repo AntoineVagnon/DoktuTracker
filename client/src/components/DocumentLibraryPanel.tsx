@@ -231,43 +231,31 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
 
   // Handle document download
   const handleDownload = async (doc: any) => {
-    console.log("🔥 Download button clicked for document:", doc);
     try {
-      console.log("📥 Starting download request...");
-      const downloadUrl = `/api/documents/download/${doc.id}`;
-      console.log("📥 Download URL:", downloadUrl);
-      
-      const response = await fetch(downloadUrl, {
+      const response = await fetch(`/api/documents/download/${doc.id}`, {
         credentials: 'include',
       });
       
-      console.log("📥 Response received:", response.status, response.statusText);
-      
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("📥 Server error response:", errorText);
         throw new Error(`Failed to download: ${response.status} - ${errorText}`);
       }
       
-      console.log("📥 Converting to blob...");
       const blob = await response.blob();
-      console.log("📥 Blob size:", blob.size, "type:", blob.type);
-      
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = doc.fileName;
-      console.log("📥 Triggering download:", doc.fileName);
       a.click();
       window.URL.revokeObjectURL(url);
       
       toast({
-        title: "Download started",
-        description: `Downloading ${doc.fileName}...`,
+        title: "Download successful",
+        description: `${doc.fileName} has been downloaded successfully.`,
       });
       
     } catch (error) {
-      console.error("📥 Download error:", error);
+      console.error("Download error:", error);
       toast({
         title: "Download failed",
         description: `Unable to download document: ${error.message}`,
