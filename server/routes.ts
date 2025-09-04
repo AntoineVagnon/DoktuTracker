@@ -2369,7 +2369,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // IMPORTANT: Specific routes MUST come BEFORE general routes to avoid conflicts
-  app.get("/api/documents/download/:documentId", isAuthenticated, async (req, res) => {
+  app.get("/api/documents/download/:documentId", async (req, res) => {
+    console.log('🔥 ROUTE HIT! Download route accessed for:', req.params.documentId);
+    
+    // Check authentication
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
+      console.log('❌ Authentication failed');
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    
     try {
       const documentId = req.params.documentId;
       console.log('📥 HIPAA-compliant download request for document ID:', documentId);
