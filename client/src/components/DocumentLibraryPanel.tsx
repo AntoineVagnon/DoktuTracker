@@ -156,61 +156,34 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     },
   });
 
-  // Handle document download
+  // Handle document download - Windows-compatible approach
   const handleDownload = async (doc: any) => {
-    console.log("🚀 DOWNLOAD ATTEMPT - Document:", doc.id, doc.fileName);
     try {
-      // Use simplified download endpoint
-      console.log("📡 Sending request to:", `/api/download/${doc.id}`);
-      const response = await fetch(`/api/download/${doc.id}`, {
-        credentials: 'include',
-      });
+      // Direct download approach for Windows compatibility
+      // This avoids blob creation which can cause Windows registry errors
+      const downloadUrl = `/api/download/${doc.id}`;
       
-      console.log("📨 Response received:", {
-        status: response.status,
-        statusText: response.statusText,
-        contentType: response.headers.get('content-type'),
-        contentLength: response.headers.get('content-length'),
-        contentDisposition: response.headers.get('content-disposition')
-      });
+      // Create a hidden iframe to trigger download without blob
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = downloadUrl;
+      document.body.appendChild(iframe);
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌ Server error response:", errorText);
-        throw new Error(`Failed to download: ${response.status} - ${errorText}`);
-      }
-      
-      const blob = await response.blob();
-      console.log("📦 Blob created:", {
-        size: blob.size,
-        type: blob.type
-      });
-      
-      // Check if blob is actually data or error message
-      if (blob.size < 100 && blob.type === 'application/json') {
-        const text = await blob.text();
-        console.error("⚠️ Received JSON instead of file:", text);
-        throw new Error("Received error message instead of file");
-      }
-      
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = doc.fileName;
-      console.log("⬇️ Triggering download for:", doc.fileName);
-      a.click();
-      window.URL.revokeObjectURL(url);
+      // Clean up after a delay
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 5000);
       
       toast({
-        title: "Download initiated",
-        description: `${doc.fileName} download started.`,
+        title: "Download started",
+        description: `${doc.fileName} is downloading...`,
       });
       
     } catch (error) {
-      console.error("❌ Download error:", error);
+      console.error("Download error:", error);
       toast({
         title: "Download failed",
-        description: `Unable to download document: ${error.message}`,
+        description: `Unable to download document`,
         variant: "destructive",
       });
     }

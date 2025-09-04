@@ -267,17 +267,23 @@ export function registerDocumentLibraryRoutes(app: Express) {
         uploadUrl: document.uploadUrl
       });
 
-      // Simple, standard download approach for maximum Windows compatibility
+      // Windows-compatible download with proper headers for iframe approach
       const objectStorageService = new ObjectStorageService();
       
       try {
         const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
         const [fileContents] = await objectFile.download();
         
-        // Use the most basic headers that Windows expects
+        // Clean filename for Windows - remove problematic characters
+        const cleanFileName = document.fileName
+          .replace(/[<>:"/\\|?*]/g, '_')  // Replace Windows-forbidden chars
+          .replace(/\s+/g, '_');           // Replace spaces with underscores
+        
+        // Set headers for proper Windows download via iframe
         res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
         res.setHeader('Content-Length', fileContents.length.toString());
-        res.setHeader('Content-Disposition', `inline; filename="${document.fileName}"`);
+        res.setHeader('Content-Disposition', `attachment; filename="${cleanFileName}"`);
+        res.setHeader('X-Content-Type-Options', 'nosniff');
         
         // Send the complete file
         res.send(fileContents);
