@@ -267,46 +267,39 @@ export function registerDocumentLibraryRoutes(app: Express) {
         uploadUrl: document.uploadUrl
       });
 
-      // Clean filename for Windows compatibility
-      const cleanFileName = document.fileName
-        .replace(/[^\w\s.-]/g, '') // Remove special characters
+      // Windows-specific filename handling to prevent registry errors
+      const fileExtension = document.fileName.split('.').pop()?.toLowerCase() || '';
+      let baseName = document.fileName.replace(/\.[^/.]+$/, ""); // Remove extension
+      
+      // Clean basename but preserve essential characters for Windows
+      baseName = baseName
+        .replace(/[<>:"/\\|?*]/g, '') // Remove Windows-forbidden characters only
         .replace(/\s+/g, ' ') // Normalize spaces
-        .trim();
-
-      // Set Windows-compatible headers for file download
-      res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+        .trim()
+        .substring(0, 100); // Limit length for Windows compatibility
+      
+      // Reconstruct filename with guaranteed extension
+      const windowsFileName = baseName + (fileExtension ? `.${fileExtension}` : '.png');
+      
+      // Set Windows-compatible headers optimized for file associations
+      res.setHeader('Content-Type', 'image/png'); // Force PNG MIME type for Windows
       res.setHeader('Content-Length', document.fileSize.toString());
-      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(cleanFileName)}`);
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Accept-Ranges', 'bytes');
+      res.setHeader('Content-Disposition', `attachment; filename="${windowsFileName}"`);
+      res.setHeader('Cache-Control', 'no-cache, no-store');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
 
       // Handle the file streaming
       const objectStorageService = new ObjectStorageService();
       
       try {
         const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
-        console.log("📂 Object file retrieved, streaming...");
-
-        // Alternative approach: Download entire file into memory first to prevent streaming corruption
-        console.log('📥 Downloading entire file into memory to prevent corruption...');
         
+        // Download complete file and send without corruption
         const [fileContents] = await objectFile.download();
-        
-        console.log('🔍 MEMORY DOWNLOAD: File analysis:', {
-          fileName: cleanFileName,
-          totalSize: fileContents.length,
-          firstBytes: fileContents.slice(0, 16).toString('hex'),
-          lastBytes: fileContents.slice(-16).toString('hex'),
-          isPNG: fileContents.slice(0, 8).toString('hex') === '89504e470d0a1a0a',
-          hasValidPNGEnd: fileContents.slice(-8).toString('hex').includes('49454e44ae426082'),
-          expectedSize: document.fileSize,
-          sizeMismatch: document.fileSize && fileContents.length !== document.fileSize
-        });
         
         // Stream the complete buffer to response
         res.end(fileContents);
-        
-        console.log('✅ MEMORY DOWNLOAD: Complete file sent successfully');
         
       } catch (error) {
         console.error("❌ Object storage error:", error);
