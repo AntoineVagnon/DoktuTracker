@@ -89,10 +89,52 @@ export default function PatientRecords() {
     enabled: !!selectedPatientId,
   });
 
-  // Fetch documents for selected patient
+  // Fetch documents only from appointments between this doctor and patient
   const { data: patientDocuments = [], isLoading: isLoadingDocuments } = useQuery({
-    queryKey: [`/api/documents/patient/${selectedPatientId}`],
+    queryKey: [`/api/doctor-patient-documents/${selectedPatientId}`],
     enabled: !!selectedPatientId,
+    queryFn: async () => {
+      if (!selectedPatientId) return [];
+      
+      // Get all appointments between this doctor and patient
+      const doctorPatientAppointments = (appointments as any[]).filter((apt: any) => 
+        apt.patient?.id.toString() === selectedPatientId
+      );
+      
+      // Fetch documents for all appointments between this doctor and patient
+      const allAppointmentDocuments = await Promise.all(
+        doctorPatientAppointments.map(async (appointment: any) => {
+          try {
+            const response = await fetch(`/api/appointments/${appointment.id}/documents`, {
+              credentials: 'include'
+            });
+            if (response.ok) {
+              const docs = await response.json();
+              return docs.map((doc: any) => ({
+                ...doc,
+                appointmentId: appointment.id,
+                appointmentDate: appointment.appointmentDate
+              }));
+            }
+            return [];
+          } catch (error) {
+            console.error(`Error fetching documents for appointment ${appointment.id}:`, error);
+            return [];
+          }
+        })
+      );
+      
+      // Flatten and deduplicate documents
+      const flattenedDocs = allAppointmentDocuments.flat();
+      const uniqueDocsMap = new Map();
+      flattenedDocs.forEach(doc => {
+        if (!uniqueDocsMap.has(doc.id)) {
+          uniqueDocsMap.set(doc.id, doc);
+        }
+      });
+      
+      return Array.from(uniqueDocsMap.values());
+    },
   });
 
   // Get unique patients from appointments
@@ -296,8 +338,11 @@ export default function PatientRecords() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
-                    Patient Documents
+                    Shared Documents
                   </CardTitle>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Documents shared by this patient for your appointments together
+                  </p>
                 </CardHeader>
                 <CardContent>
                   {isLoadingDocuments ? (
@@ -314,6 +359,11 @@ export default function PatientRecords() {
                               <p className="font-medium text-gray-900">{document.fileName}</p>
                               <p className="text-sm text-gray-500">
                                 Uploaded on {new Date(document.uploadedAt).toLocaleDateString()}
+                                {document.appointmentDate && (
+                                  <span className="block text-xs text-blue-600 mt-1">
+                                    From appointment: {formatAppointmentDateTimeUS(document.appointmentDate)}
+                                  </span>
+                                )}
                               </p>
                             </div>
                           </div>
@@ -336,8 +386,8 @@ export default function PatientRecords() {
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                      <p>No documents uploaded yet</p>
-                      <p className="text-sm mt-1">Patient hasn't uploaded any documents</p>
+                      <p>No shared documents</p>
+                      <p className="text-sm mt-1">Patient hasn't shared any documents for your appointments</p>
                     </div>
                   )}
                 </CardContent>
