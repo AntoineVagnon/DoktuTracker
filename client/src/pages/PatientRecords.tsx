@@ -48,6 +48,11 @@ export default function PatientRecords() {
       const blob = await response.blob();
       console.log('📦 Blob created, size:', blob.size);
       
+      // Validate blob
+      if (blob.size === 0) {
+        throw new Error('Downloaded file is empty');
+      }
+      
       // Create download link
       const url = window.URL.createObjectURL(blob);
       const a = window.document.createElement('a');
@@ -55,15 +60,23 @@ export default function PatientRecords() {
       a.href = url;
       a.download = document.fileName || 'download';
       
-      // Append to body, click, and cleanup
+      // Append to body and trigger download
       window.document.body.appendChild(a);
       a.click();
       
-      // Cleanup
-      window.URL.revokeObjectURL(url);
-      window.document.body.removeChild(a);
+      // Cleanup after a delay to ensure download starts
+      setTimeout(() => {
+        try {
+          window.URL.revokeObjectURL(url);
+          if (window.document.body.contains(a)) {
+            window.document.body.removeChild(a);
+          }
+        } catch (cleanupError) {
+          console.warn('Cleanup warning (non-critical):', cleanupError);
+        }
+      }, 100);
       
-      console.log('✅ Download completed for:', document.fileName);
+      console.log('✅ Download initiated for:', document.fileName);
       
     } catch (error) {
       console.error('❌ Error downloading document:', error);
