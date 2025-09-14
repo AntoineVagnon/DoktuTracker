@@ -36,6 +36,7 @@ import { eq, sql } from "drizzle-orm";
 import { notificationService, TriggerCode } from "./services/notificationService";
 import { emailService } from "./emailService";
 import { zoomService } from "./services/zoomService";
+import { registerMembershipRoutes } from "./routes/membershipRoutes";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -65,6 +66,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register slot management routes
   setupSlotRoutes(app);
+  
+  // Register additional membership routes
+  registerMembershipRoutes(app);
   
   // Register consent management routes (GDPR compliance)
   const consentsRouter = (await import("./routes/consents")).default;

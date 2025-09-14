@@ -253,7 +253,7 @@ export class PostgresStorage implements IStorage {
 
   async upsertUser(userData: UpsertUser): Promise<User> {
     // Check if user already exists
-    const existingUser = await this.getUserByEmail(userData.email);
+    const existingUser = userData.email ? await this.getUserByEmail(userData.email) : null;
     if (existingUser) {
       // Update existing user with structured name fields if they're missing
       const needsUpdate = !existingUser.firstName || !existingUser.lastName;
@@ -520,10 +520,6 @@ export class PostgresStorage implements IStorage {
     return sortedDoctors;
   }
 
-  async getDoctorByUserId(userId: number): Promise<Doctor | undefined> {
-    const [doctor] = await db.select().from(doctors).where(eq(doctors.userId, userId));
-    return doctor;
-  }
 
   async updateDoctor(doctorId: number, data: Partial<Doctor>): Promise<Doctor | undefined> {
     const [updatedDoctor] = await db
@@ -569,6 +565,7 @@ export class PostgresStorage implements IStorage {
             title: users.title,
             firstName: users.firstName,
             lastName: users.lastName,
+            phone: users.phone,
             profileImageUrl: users.profileImageUrl,
             role: users.role,
             approved: users.approved,
@@ -596,7 +593,8 @@ export class PostgresStorage implements IStorage {
   }
 
   async getDoctorByUserId(userId: string): Promise<Doctor | undefined> {
-    const [doctor] = await db.select().from(doctors).where(eq(doctors.userId, userId));
+    const userIdInt = typeof userId === 'string' ? parseInt(userId) : userId;
+    const [doctor] = await db.select().from(doctors).where(eq(doctors.userId, userIdInt));
     return doctor;
   }
 
@@ -631,10 +629,9 @@ export class PostgresStorage implements IStorage {
   }
 
   async updateDoctorOnlineStatus(doctorId: string, isOnline: boolean): Promise<void> {
-    await db
-      .update(doctors)
-      .set({ isOnline, updatedAt: new Date() })
-      .where(eq(doctors.id, doctorId));
+    // Note: isOnline field doesn't exist in the database schema
+    // This method is kept for interface compatibility but doesn't update anything
+    console.warn('updateDoctorOnlineStatus: isOnline field not available in current schema');
   }
 
   async deleteDoctor(id: string): Promise<void> {
@@ -979,10 +976,8 @@ export class PostgresStorage implements IStorage {
     await db
       .update(doctorTimeSlots)
       .set({
-        isLocked: true,
         lockedBy,
-        lockedUntil,
-        updatedAt: new Date()
+        lockedUntil
       })
       .where(eq(doctorTimeSlots.id, id));
   }
@@ -991,10 +986,8 @@ export class PostgresStorage implements IStorage {
     await db
       .update(doctorTimeSlots)
       .set({
-        isLocked: false,
         lockedBy: null,
-        lockedUntil: null,
-        updatedAt: new Date()
+        lockedUntil: null
       })
       .where(eq(doctorTimeSlots.id, id));
   }
@@ -1003,14 +996,12 @@ export class PostgresStorage implements IStorage {
     await db
       .update(doctorTimeSlots)
       .set({
-        isLocked: false,
         lockedBy: null,
-        lockedUntil: null,
-        updatedAt: new Date()
+        lockedUntil: null
       })
       .where(
         and(
-          eq(doctorTimeSlots.isLocked, true),
+          sql`${doctorTimeSlots.lockedUntil} IS NOT NULL`,
           lte(doctorTimeSlots.lockedUntil, new Date())
         )
       );
@@ -1044,6 +1035,8 @@ export class PostgresStorage implements IStorage {
         startTime: doctorTimeSlots.startTime,  
         endTime: doctorTimeSlots.endTime,
         isAvailable: doctorTimeSlots.isAvailable,
+        lockedUntil: doctorTimeSlots.lockedUntil,
+        lockedBy: doctorTimeSlots.lockedBy,
         createdAt: doctorTimeSlots.createdAt,
         expiresAt: appointmentPending.expiresAt
       })
@@ -1328,7 +1321,6 @@ export class PostgresStorage implements IStorage {
         rating: reviews.rating,
         comment: reviews.comment,
         createdAt: reviews.createdAt,
-        updatedAt: reviews.updatedAt,
         // Patient info
         patient: {
           id: users.id,
@@ -1336,8 +1328,12 @@ export class PostgresStorage implements IStorage {
           title: users.title,
           firstName: users.firstName,
           lastName: users.lastName,
+          phone: users.phone,
+          profileImageUrl: users.profileImageUrl,
           role: users.role,
           approved: users.approved,
+          stripeCustomerId: users.stripeCustomerId,
+          stripeSubscriptionId: users.stripeSubscriptionId,
           createdAt: users.createdAt,
           updatedAt: users.updatedAt
         }

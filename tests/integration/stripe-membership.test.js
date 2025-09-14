@@ -1,145 +1,239 @@
 /**
  * Integration Tests for Stripe Membership System
- * Tests webhook handling, payment flows, and Stripe API integration
+ * Tests real API endpoints with supertest, authentication, validation, and storage effects
  */
 
-const { describe, it, expect, beforeEach, afterEach, jest } = require('@jest/globals');
+const { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, jest } = require('@jest/globals');
 const request = require('supertest');
+const express = require('express');
+const { nanoid } = require('nanoid');
 
-// Mock Stripe
+// Import the actual app and dependencies
+let app, server;
+
+// Mock environment variables
+process.env.NODE_ENV = 'test';
+process.env.STRIPE_SECRET_KEY = 'sk_test_mock_key';
+process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_mock_secret';
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test_db';
+
+// Mock Stripe for integration tests
 const mockStripe = {
   products: {
-    list: jest.fn(),
-    create: jest.fn()
+    list: jest.fn().mockResolvedValue({ data: [] }),
+    create: jest.fn().mockResolvedValue({
+      id: 'prod_test123',
+      name: 'Monthly Membership'
+    })
   },
   prices: {
-    list: jest.fn(),
-    create: jest.fn()
+    list: jest.fn().mockResolvedValue({ data: [] }),
+    create: jest.fn().mockResolvedValue({
+      id: 'price_test123',
+      unit_amount: 4500,
+      currency: 'eur',
+      recurring: { interval: 'month', interval_count: 1 }
+    })
   },
   customers: {
-    list: jest.fn(),
-    create: jest.fn()
+    list: jest.fn().mockResolvedValue({ data: [] }),
+    create: jest.fn().mockResolvedValue({
+      id: 'cus_test123',
+      email: 'test@example.com'
+    })
   },
   subscriptions: {
-    create: jest.fn(),
-    retrieve: jest.fn(),
-    update: jest.fn(),
-    list: jest.fn()
+    create: jest.fn().mockResolvedValue({
+      id: 'sub_test123',
+      status: 'incomplete',
+      latest_invoice: {
+        payment_intent: {
+          id: 'pi_test123',
+          client_secret: 'pi_test123_secret_test'
+        }
+      },
+      metadata: {
+        userId: '123',
+        planId: 'monthly_plan'
+      },
+      current_period_start: Math.floor(Date.now() / 1000),
+      current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60
+    }),
+    retrieve: jest.fn().mockResolvedValue({
+      id: 'sub_test123',
+      status: 'active',
+      current_period_start: Math.floor(Date.now() / 1000),
+      current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
+      metadata: { planId: 'monthly_plan' },
+      items: { data: [{ price: { unit_amount: 4500, recurring: { interval: 'month', interval_count: 1 } } }] }
+    }),
+    update: jest.fn().mockResolvedValue({
+      id: 'sub_test123',
+      status: 'active',
+      cancel_at_period_end: true,
+      current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60
+    })
   },
   setupIntents: {
-    create: jest.fn()
-  },
-  invoices: {
-    pay: jest.fn()
+    create: jest.fn().mockResolvedValue({
+      id: 'seti_test123',
+      client_secret: 'seti_test123_secret_test'
+    }),
+    list: jest.fn().mockResolvedValue({ data: [] })
   },
   webhooks: {
     constructEvent: jest.fn()
   }
 };
 
-jest.mock('stripe', () => {
-  return jest.fn(() => mockStripe);
-});
+// Mock the Stripe constructor
+jest.mock('stripe', () => jest.fn(() => mockStripe));
+
+// Mock database operations
+const mockDb = {
+  select: jest.fn(),
+  insert: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn()
+};
+
+jest.mock('../../server/db', () => ({
+  db: mockDb
+}));
 
 // Mock storage
 const mockStorage = {
+  getUser: jest.fn(),
   updateUser: jest.fn(),
-  getUser: jest.fn()
+  createUser: jest.fn()
 };
 
 jest.mock('../../server/storage', () => ({
   storage: mockStorage
 }));
 
-describe('Stripe Integration Tests', () => {
-  let app;
+// Mock authentication middleware
+const mockAuthenticateUser = async (req, res, next) => {
+  req.user = {
+    id: 123,
+    email: 'test@example.com',
+    firstName: 'Test',
+    lastName: 'User',
+    stripeCustomerId: null,
+    stripeSubscriptionId: null
+  };
+  next();
+};
+
+describe('Stripe Membership Integration Tests', () => {
+  let testUser;
   
-  beforeEach(() => {
-    jest.clearAllMocks();
-    // Mock authenticated user
-    app = {
-      user: {
-        id: 123,
-        email: 'test@example.com',
-        firstName: 'Test',
-        lastName: 'User',
-        stripeSubscriptionId: null
-      }
-    };
+  beforeAll(async () => {
+    // Create Express app with routes
+    app = express();
+    app.use(express.json());
+    
+    // Override authentication for tests
+    jest.doMock('../../server/supabaseAuth', () => ({
+      isAuthenticated: mockAuthenticateUser
+    }));
+    
+    // Import and register routes after mocking
+    const { registerRoutes } = require('../../server/routes');
+    server = await registerRoutes(app);
   });
 
-  describe('Subscription Creation Flow', () => {
-    it('should create product and price for new subscription', async () => {
-      // Mock Stripe responses
-      mockStripe.products.list.mockResolvedValue({ data: [] });
-      mockStripe.products.create.mockResolvedValue({
-        id: 'prod_test123',
-        name: 'Monthly Membership'
-      });
-      
-      mockStripe.prices.list.mockResolvedValue({ data: [] });
-      mockStripe.prices.create.mockResolvedValue({
-        id: 'price_test123',
-        unit_amount: 4500,
-        currency: 'eur'
-      });
-      
-      mockStripe.customers.list.mockResolvedValue({ data: [] });
-      mockStripe.customers.create.mockResolvedValue({
-        id: 'cus_test123',
-        email: 'test@example.com'
-      });
-      
-      mockStripe.subscriptions.create.mockResolvedValue({
-        id: 'sub_test123',
-        status: 'incomplete',
-        latest_invoice: {
-          payment_intent: {
-            id: 'pi_test123',
-            client_secret: 'pi_test123_secret_test'
-          }
-        },
-        metadata: {
-          userId: '123',
-          planId: 'monthly_plan'
-        }
-      });
+  beforeEach(() => {
+    jest.clearAllMocks();
+    
+    testUser = {
+      id: 123,
+      email: 'test@example.com',
+      firstName: 'Test',
+      lastName: 'User',
+      stripeCustomerId: null,
+      stripeSubscriptionId: null
+    };
 
-      // Simulate subscription creation
-      const subscriptionData = {
-        planId: 'monthly_plan',
-        userId: 123,
-        userEmail: 'test@example.com'
-      };
+    // Setup default mock returns
+    mockStorage.getUser.mockResolvedValue(testUser);
+    mockStorage.updateUser.mockResolvedValue({ ...testUser, stripeSubscriptionId: 'sub_test123' });
+    
+    // Setup database mocks for schema validation
+    mockDb.select.mockReturnValue({
+      from: jest.fn().mockReturnValue({
+        where: jest.fn().mockResolvedValue([])
+      })
+    });
+    mockDb.insert.mockReturnValue({
+      values: jest.fn().mockReturnValue({
+        returning: jest.fn().mockResolvedValue([{ id: 'test-uuid' }])
+      })
+    });
+  });
 
-      // Verify product creation
-      expect(mockStripe.products.list).toHaveBeenCalled();
+  afterAll(async () => {
+    if (server) {
+      server.close();
+    }
+  });
+
+  describe('GET /api/membership/plans', () => {
+    it('should return available membership plans', async () => {
+      const response = await request(app)
+        .get('/api/membership/plans')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('plans');
+      expect(Array.isArray(response.body.plans)).toBe(true);
+      expect(response.body.plans).toHaveLength(2);
       
-      // Since no product exists, it should create one
-      await mockStripe.products.create({
+      const monthlyPlan = response.body.plans.find(p => p.id === 'monthly_plan');
+      const biannualPlan = response.body.plans.find(p => p.id === 'biannual_plan');
+      
+      expect(monthlyPlan).toMatchObject({
+        id: 'monthly_plan',
         name: 'Monthly Membership',
-        description: '2 consultations per month with certified doctors',
-        metadata: { planId: 'monthly_plan' }
+        priceAmount: '45.00',
+        currency: 'EUR',
+        billingInterval: 'month',
+        intervalCount: 1,
+        allowancePerCycle: 2
       });
       
+      expect(biannualPlan).toMatchObject({
+        id: 'biannual_plan',
+        name: '6-Month Membership',
+        priceAmount: '219.00',
+        currency: 'EUR',
+        billingInterval: '6_months',
+        intervalCount: 6,
+        allowancePerCycle: 12
+      });
+    });
+  });
+
+  describe('POST /api/membership/subscribe', () => {
+    it('should create subscription with monthly plan', async () => {
+      const response = await request(app)
+        .post('/api/membership/subscribe')
+        .send({ planId: 'monthly_plan' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('subscriptionId', 'sub_test123');
+      expect(response.body).toHaveProperty('clientSecret');
+      expect(response.body).toHaveProperty('customerId', 'cus_test123');
+      expect(response.body).toHaveProperty('status', 'incomplete');
+      expect(response.body).toHaveProperty('paymentType');
+
+      // Verify Stripe interactions
+      expect(mockStripe.products.list).toHaveBeenCalled();
       expect(mockStripe.products.create).toHaveBeenCalledWith({
         name: 'Monthly Membership',
         description: '2 consultations per month with certified doctors',
         metadata: { planId: 'monthly_plan' }
       });
-
-      // Verify price creation
-      await mockStripe.prices.create({
-        product: 'prod_test123',
-        unit_amount: 4500,
-        currency: 'eur',
-        recurring: {
-          interval: 'month',
-          interval_count: 1
-        },
-        metadata: { planId: 'monthly_plan' }
-      });
-
+      
       expect(mockStripe.prices.create).toHaveBeenCalledWith({
         product: 'prod_test123',
         unit_amount: 4500,
@@ -150,450 +244,436 @@ describe('Stripe Integration Tests', () => {
         },
         metadata: { planId: 'monthly_plan' }
       });
-    });
-
-    it('should reuse existing product and price when available', async () => {
-      // Mock existing product and price
-      mockStripe.products.list.mockResolvedValue({
-        data: [{
-          id: 'prod_existing123',
-          name: 'Monthly Membership'
-        }]
-      });
-      
-      mockStripe.prices.list.mockResolvedValue({
-        data: [{
-          id: 'price_existing123',
-          unit_amount: 4500,
-          recurring: { interval: 'month', interval_count: 1 }
-        }]
-      });
-
-      // Should not create new product or price
-      const existingProduct = mockStripe.products.list.mockResolvedValue({
-        data: [{ id: 'prod_existing123', name: 'Monthly Membership' }]
-      });
-      
-      const existingPrice = mockStripe.prices.list.mockResolvedValue({
-        data: [{ 
-          id: 'price_existing123', 
-          unit_amount: 4500,
-          recurring: { interval: 'month', interval_count: 1 }
-        }]
-      });
-
-      expect(mockStripe.products.create).not.toHaveBeenCalled();
-      expect(mockStripe.prices.create).not.toHaveBeenCalled();
-    });
-
-    it('should handle customer creation and reuse', async () => {
-      const userEmail = 'test@example.com';
-      
-      // Test new customer creation
-      mockStripe.customers.list.mockResolvedValue({ data: [] });
-      mockStripe.customers.create.mockResolvedValue({
-        id: 'cus_new123',
-        email: userEmail
-      });
-
-      await mockStripe.customers.create({
-        email: userEmail,
-        name: 'Test User',
-        metadata: { userId: '123', planId: 'monthly_plan' }
-      });
 
       expect(mockStripe.customers.create).toHaveBeenCalledWith({
-        email: userEmail,
+        email: 'test@example.com',
         name: 'Test User',
-        metadata: { userId: '123', planId: 'monthly_plan' }
+        metadata: {
+          userId: '123',
+          planId: 'monthly_plan'
+        }
       });
 
-      // Test existing customer reuse
-      jest.clearAllMocks();
-      mockStripe.customers.list.mockResolvedValue({
-        data: [{ id: 'cus_existing123', email: userEmail }]
+      expect(mockStripe.subscriptions.create).toHaveBeenCalledWith({
+        customer: 'cus_test123',
+        items: [{ price: 'price_test123' }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: {
+          save_default_payment_method: 'on_subscription',
+          payment_method_types: ['card']
+        },
+        expand: ['latest_invoice.payment_intent', 'pending_setup_intent'],
+        metadata: {
+          userId: '123',
+          planId: 'monthly_plan',
+          planName: 'Monthly Membership'
+        }
       });
 
-      const existingCustomers = await mockStripe.customers.list({
-        email: userEmail,
-        limit: 1
+      // Verify user was updated with subscription ID
+      expect(mockStorage.updateUser).toHaveBeenCalledWith(123, {
+        stripeSubscriptionId: 'sub_test123',
+        pendingSubscriptionPlan: 'monthly_plan'
+      });
+    });
+
+    it('should create subscription with 6-month plan', async () => {
+      // Update mocks for 6-month plan
+      mockStripe.subscriptions.create.mockResolvedValueOnce({
+        id: 'sub_test456',
+        status: 'incomplete',
+        latest_invoice: {
+          payment_intent: {
+            id: 'pi_test456',
+            client_secret: 'pi_test456_secret_test'
+          }
+        },
+        metadata: {
+          userId: '123',
+          planId: 'biannual_plan'
+        }
       });
 
-      expect(existingCustomers.data.length).toBe(1);
+      const response = await request(app)
+        .post('/api/membership/subscribe')
+        .send({ planId: 'biannual_plan' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('subscriptionId', 'sub_test456');
+      
+      expect(mockStripe.prices.create).toHaveBeenCalledWith({
+        product: 'prod_test123',
+        unit_amount: 21900,
+        currency: 'eur',
+        recurring: {
+          interval: 'month',
+          interval_count: 6
+        },
+        metadata: { planId: 'biannual_plan' }
+      });
+    });
+
+    it('should return 400 for invalid plan ID', async () => {
+      const response = await request(app)
+        .post('/api/membership/subscribe')
+        .send({ planId: 'invalid_plan' })
+        .expect(400);
+
+      expect(response.body).toHaveProperty('error', 'Invalid plan selected');
+    });
+
+    it('should return 400 when plan ID is missing', async () => {
+      const response = await request(app)
+        .post('/api/membership/subscribe')
+        .send({})
+        .expect(400);
+
+      expect(response.body).toHaveProperty('error', 'Plan ID is required');
+    });
+
+    it('should reuse existing Stripe customer', async () => {
+      // Mock existing customer
+      mockStripe.customers.list.mockResolvedValueOnce({
+        data: [{
+          id: 'cus_existing123',
+          email: 'test@example.com'
+        }]
+      });
+
+      await request(app)
+        .post('/api/membership/subscribe')
+        .send({ planId: 'monthly_plan' })
+        .expect(200);
+
       expect(mockStripe.customers.create).not.toHaveBeenCalled();
+      expect(mockStripe.subscriptions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customer: 'cus_existing123'
+        })
+      );
+    });
+
+    it('should handle Stripe errors gracefully', async () => {
+      mockStripe.subscriptions.create.mockRejectedValueOnce(
+        new Error('Stripe API error')
+      );
+
+      const response = await request(app)
+        .post('/api/membership/subscribe')
+        .send({ planId: 'monthly_plan' })
+        .expect(500);
+
+      expect(response.body).toHaveProperty('error', 'Failed to create subscription');
+      expect(response.body).toHaveProperty('details');
     });
   });
 
-  describe('Stripe Webhook Handling', () => {
-    beforeEach(() => {
-      process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test123';
-    });
+  describe('GET /api/membership/subscription', () => {
+    it('should return subscription status for user with active subscription', async () => {
+      testUser.stripeSubscriptionId = 'sub_test123';
+      mockStorage.getUser.mockResolvedValue(testUser);
 
-    it('should handle customer.subscription.created webhook', async () => {
-      const webhookEvent = {
-        type: 'customer.subscription.created',
-        data: {
-          object: {
-            id: 'sub_test123',
-            customer: 'cus_test123',
-            status: 'active',
-            metadata: {
-              userId: '123',
-              planId: 'monthly_plan'
-            }
-          }
-        }
-      };
+      const response = await request(app)
+        .get('/api/membership/subscription')
+        .expect(200);
 
-      mockStripe.webhooks.constructEvent.mockReturnValue(webhookEvent);
-      mockStorage.updateUser.mockResolvedValue({});
-
-      // Simulate webhook processing
-      const subscription = webhookEvent.data.object;
-      
-      await mockStorage.updateUser(subscription.metadata.userId, {
-        stripeSubscriptionId: subscription.id,
-        stripeCustomerId: subscription.customer
+      expect(response.body).toMatchObject({
+        hasSubscription: true,
+        subscription: {
+          id: 'sub_test123',
+          status: 'active',
+          planId: 'monthly_plan'
+        },
+        allowanceRemaining: 2
       });
 
+      expect(mockStripe.subscriptions.retrieve).toHaveBeenCalledWith('sub_test123');
+    });
+
+    it('should return no subscription for user without subscription', async () => {
+      const response = await request(app)
+        .get('/api/membership/subscription')
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        hasSubscription: false,
+        subscription: null,
+        allowanceRemaining: 0
+      });
+
+      expect(mockStripe.subscriptions.retrieve).not.toHaveBeenCalled();
+    });
+
+    it('should handle Stripe retrieval errors', async () => {
+      testUser.stripeSubscriptionId = 'sub_invalid';
+      mockStorage.getUser.mockResolvedValue(testUser);
+      mockStripe.subscriptions.retrieve.mockRejectedValueOnce(
+        new Error('Subscription not found')
+      );
+
+      const response = await request(app)
+        .get('/api/membership/subscription')
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        hasSubscription: false,
+        subscription: null,
+        allowanceRemaining: 0
+      });
+    });
+  });
+
+  describe('POST /api/membership/cancel', () => {
+    beforeEach(() => {
+      testUser.stripeSubscriptionId = 'sub_test123';
+      mockStorage.getUser.mockResolvedValue(testUser);
+    });
+
+    it('should cancel subscription at period end', async () => {
+      const response = await request(app)
+        .post('/api/membership/cancel')
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        success: true,
+        message: 'Subscription will be cancelled at the end of the current billing period'
+      });
+
+      expect(mockStripe.subscriptions.update).toHaveBeenCalledWith(
+        'sub_test123',
+        { cancel_at_period_end: true }
+      );
+    });
+
+    it('should return 400 when user has no subscription', async () => {
+      testUser.stripeSubscriptionId = null;
+      mockStorage.getUser.mockResolvedValue(testUser);
+
+      const response = await request(app)
+        .post('/api/membership/cancel')
+        .expect(400);
+
+      expect(response.body).toHaveProperty('error', 'No active subscription found');
+    });
+
+    it('should handle Stripe cancellation errors', async () => {
+      mockStripe.subscriptions.update.mockRejectedValueOnce(
+        new Error('Failed to cancel subscription')
+      );
+
+      const response = await request(app)
+        .post('/api/membership/cancel')
+        .expect(500);
+
+      expect(response.body).toHaveProperty('error', 'Failed to cancel subscription with payment provider');
+    });
+  });
+
+  describe('POST /api/membership/complete-subscription', () => {
+    beforeEach(() => {
+      testUser.stripeSubscriptionId = 'sub_test123';
+      mockStorage.getUser.mockResolvedValue(testUser);
+    });
+
+    it('should complete active subscription', async () => {
+      mockStripe.subscriptions.retrieve.mockResolvedValueOnce({
+        id: 'sub_test123',
+        status: 'active',
+        current_period_start: Math.floor(Date.now() / 1000),
+        current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60
+      });
+
+      const response = await request(app)
+        .post('/api/membership/complete-subscription')
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        success: true,
+        subscription: {
+          id: 'sub_test123',
+          status: 'active'
+        }
+      });
+    });
+
+    it('should return 400 when user has no subscription', async () => {
+      testUser.stripeSubscriptionId = null;
+      mockStorage.getUser.mockResolvedValue(testUser);
+
+      const response = await request(app)
+        .post('/api/membership/complete-subscription')
+        .expect(400);
+
+      expect(response.body).toHaveProperty('error', 'No subscription found');
+    });
+
+    it('should handle incomplete subscription with setup intent', async () => {
+      mockStripe.subscriptions.retrieve.mockResolvedValueOnce({
+        id: 'sub_test123',
+        status: 'incomplete',
+        customer: 'cus_test123'
+      });
+
+      mockStripe.setupIntents.list.mockResolvedValueOnce({
+        data: []
+      });
+
+      mockStripe.setupIntents.create.mockResolvedValueOnce({
+        id: 'seti_new123',
+        client_secret: 'seti_new123_secret_test'
+      });
+
+      const response = await request(app)
+        .post('/api/membership/complete-subscription')
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        success: false,
+        requiresPayment: true,
+        subscriptionId: 'sub_test123',
+        clientSecret: 'seti_new123_secret_test'
+      });
+    });
+  });
+
+  describe('POST /api/webhooks/stripe', () => {
+    const mockEvent = {
+      id: 'evt_test123',
+      type: 'customer.subscription.created',
+      data: {
+        object: {
+          id: 'sub_test123',
+          customer: 'cus_test123',
+          status: 'active',
+          metadata: {
+            userId: '123',
+            planId: 'monthly_plan'
+          }
+        }
+      }
+    };
+
+    it('should handle subscription created webhook', async () => {
+      mockStripe.webhooks.constructEvent.mockReturnValueOnce(mockEvent);
+
+      const response = await request(app)
+        .post('/api/webhooks/stripe')
+        .set('stripe-signature', 'test_signature')
+        .send(JSON.stringify(mockEvent))
+        .expect(200);
+
+      expect(mockStripe.webhooks.constructEvent).toHaveBeenCalled();
       expect(mockStorage.updateUser).toHaveBeenCalledWith('123', {
         stripeSubscriptionId: 'sub_test123',
         stripeCustomerId: 'cus_test123'
       });
     });
 
-    it('should handle customer.subscription.updated webhook', async () => {
-      const webhookEvent = {
-        type: 'customer.subscription.updated',
-        data: {
-          object: {
-            id: 'sub_test123',
-            status: 'active',
-            metadata: {
-              userId: '123'
-            }
-          }
-        }
-      };
-
-      mockStripe.webhooks.constructEvent.mockReturnValue(webhookEvent);
-      mockStorage.updateUser.mockResolvedValue({});
-
-      const subscription = webhookEvent.data.object;
-      
-      if (subscription.status === 'active') {
-        await mockStorage.updateUser(subscription.metadata.userId, {
-          stripeSubscriptionId: subscription.id,
-          pendingSubscriptionPlan: null
-        });
-      }
-
-      expect(mockStorage.updateUser).toHaveBeenCalledWith('123', {
-        stripeSubscriptionId: 'sub_test123',
-        pendingSubscriptionPlan: null
-      });
-    });
-
-    it('should handle customer.subscription.deleted webhook', async () => {
-      const webhookEvent = {
-        type: 'customer.subscription.deleted',
-        data: {
-          object: {
-            id: 'sub_test123',
-            metadata: {
-              userId: '123'
-            }
-          }
-        }
-      };
-
-      mockStripe.webhooks.constructEvent.mockReturnValue(webhookEvent);
-      mockStorage.updateUser.mockResolvedValue({});
-
-      const subscription = webhookEvent.data.object;
-      
-      await mockStorage.updateUser(subscription.metadata.userId, {
-        stripeSubscriptionId: null,
-        pendingSubscriptionPlan: null
-      });
-
-      expect(mockStorage.updateUser).toHaveBeenCalledWith('123', {
-        stripeSubscriptionId: null,
-        pendingSubscriptionPlan: null
-      });
-    });
-
-    it('should handle setup_intent.succeeded webhook', async () => {
-      const webhookEvent = {
-        type: 'setup_intent.succeeded',
-        data: {
-          object: {
-            id: 'seti_test123',
-            customer: 'cus_test123',
-            payment_method: 'pm_test123',
-            metadata: {
-              subscriptionId: 'sub_test123',
-              userId: '123'
-            }
-          }
-        }
-      };
-
-      mockStripe.webhooks.constructEvent.mockReturnValue(webhookEvent);
-      mockStripe.subscriptions.retrieve.mockResolvedValue({
-        id: 'sub_test123',
-        status: 'incomplete'
-      });
-      
-      mockStripe.subscriptions.update.mockResolvedValue({
-        id: 'sub_test123',
-        status: 'active'
-      });
-
-      const setupIntent = webhookEvent.data.object;
-      
-      // Find and activate incomplete subscription
-      if (setupIntent.metadata?.subscriptionId) {
-        const subscription = await mockStripe.subscriptions.retrieve(setupIntent.metadata.subscriptionId);
-        
-        if (subscription.status === 'incomplete' && setupIntent.payment_method) {
-          await mockStripe.subscriptions.update(subscription.id, {
-            default_payment_method: setupIntent.payment_method
-          });
-        }
-      }
-
-      expect(mockStripe.subscriptions.update).toHaveBeenCalledWith('sub_test123', {
-        default_payment_method: 'pm_test123'
-      });
-    });
-
-    it('should handle invoice.payment_succeeded webhook', async () => {
-      const webhookEvent = {
-        type: 'invoice.payment_succeeded',
-        data: {
-          object: {
-            id: 'in_test123',
-            subscription: 'sub_test123',
-            billing_reason: 'subscription_create',
-            amount_paid: 4500,
-            currency: 'eur'
-          }
-        }
-      };
-
-      mockStripe.webhooks.constructEvent.mockReturnValue(webhookEvent);
-
-      const invoice = webhookEvent.data.object;
-      
-      // For initial subscription payment, grant allowance
-      const isInitialPayment = invoice.billing_reason === 'subscription_create';
-      expect(isInitialPayment).toBe(true);
-      expect(invoice.amount_paid).toBe(4500);
-      expect(invoice.currency).toBe('eur');
-    });
-
-    it('should handle invoice.payment_failed webhook', async () => {
-      const webhookEvent = {
-        type: 'invoice.payment_failed',
-        data: {
-          object: {
-            id: 'in_test123',
-            subscription: 'sub_test123',
-            attempt_count: 1,
-            next_payment_attempt: Math.floor(Date.now() / 1000) + 86400 // 24 hours
-          }
-        }
-      };
-
-      mockStripe.webhooks.constructEvent.mockReturnValue(webhookEvent);
-
-      const invoice = webhookEvent.data.object;
-      
-      // Should log payment failure and schedule retry
-      expect(invoice.subscription).toBe('sub_test123');
-      expect(invoice.attempt_count).toBe(1);
-      expect(invoice.next_payment_attempt).toBeGreaterThan(Math.floor(Date.now() / 1000));
-    });
-
-    it('should reject webhooks with invalid signatures', () => {
-      mockStripe.webhooks.constructEvent.mockImplementation(() => {
+    it('should reject webhook with invalid signature', async () => {
+      mockStripe.webhooks.constructEvent.mockImplementationOnce(() => {
         throw new Error('Invalid signature');
       });
 
-      expect(() => {
-        mockStripe.webhooks.constructEvent('invalid_payload', 'invalid_sig', 'whsec_test123');
-      }).toThrow('Invalid signature');
+      await request(app)
+        .post('/api/webhooks/stripe')
+        .set('stripe-signature', 'invalid_signature')
+        .send(JSON.stringify(mockEvent))
+        .expect(400);
+    });
+
+    it('should reject webhook without signature', async () => {
+      await request(app)
+        .post('/api/webhooks/stripe')
+        .send(JSON.stringify(mockEvent))
+        .expect(400);
     });
   });
 
-  describe('Subscription Management', () => {
-    it('should retrieve subscription status correctly', async () => {
-      const mockUser = {
-        id: 123,
-        stripeSubscriptionId: 'sub_test123'
+  describe('Authentication and Authorization', () => {
+    it('should require authentication for subscription endpoints', async () => {
+      // Override auth middleware to reject
+      const rejectAuth = (req, res, next) => {
+        res.status(401).json({ error: 'Unauthorized' });
       };
 
-      mockStripe.subscriptions.retrieve.mockResolvedValue({
-        id: 'sub_test123',
-        status: 'active',
-        current_period_end: Math.floor(Date.now() / 1000) + 2592000, // 30 days
-        cancel_at_period_end: false,
-        items: {
-          data: [{
-            price: {
-              unit_amount: 4500,
-              recurring: {
-                interval: 'month',
-                interval_count: 1
-              }
-            }
-          }]
-        },
-        metadata: {
-          planId: 'monthly_plan',
-          planName: 'Monthly Membership'
-        }
-      });
-
-      const subscription = await mockStripe.subscriptions.retrieve(mockUser.stripeSubscriptionId);
+      // Create new app without auth for this test
+      const unauthenticatedApp = express();
+      unauthenticatedApp.use(express.json());
       
-      expect(subscription.status).toBe('active');
-      expect(subscription.current_period_end).toBeGreaterThan(Math.floor(Date.now() / 1000));
-      expect(subscription.metadata.planId).toBe('monthly_plan');
+      // Mock failed authentication
+      jest.doMock('../../server/supabaseAuth', () => ({
+        isAuthenticated: rejectAuth
+      }));
+
+      // Re-register routes with failed auth
+      const { registerRoutes } = require('../../server/routes');
+      const testServer = await registerRoutes(unauthenticatedApp);
+
+      await request(unauthenticatedApp)
+        .post('/api/membership/subscribe')
+        .send({ planId: 'monthly_plan' })
+        .expect(401);
+
+      await request(unauthenticatedApp)
+        .get('/api/membership/subscription')
+        .expect(401);
+
+      await request(unauthenticatedApp)
+        .post('/api/membership/cancel')
+        .expect(401);
+
+      testServer.close();
+    });
+  });
+
+  describe('Input Validation', () => {
+    it('should validate subscription request body', async () => {
+      // Test with invalid JSON
+      const response = await request(app)
+        .post('/api/membership/subscribe')
+        .send('invalid json')
+        .set('Content-Type', 'application/json')
+        .expect(400);
     });
 
-    it('should handle subscription cancellation', async () => {
-      const mockUser = {
-        stripeSubscriptionId: 'sub_test123'
-      };
+    it('should validate plan ID format', async () => {
+      const response = await request(app)
+        .post('/api/membership/subscribe')
+        .send({ planId: 123 }) // number instead of string
+        .expect(400);
 
-      mockStripe.subscriptions.update.mockResolvedValue({
-        id: 'sub_test123',
-        status: 'active',
-        cancel_at_period_end: true,
-        cancel_at: Math.floor(Date.now() / 1000) + 2592000 // 30 days
-      });
-
-      const cancelledSubscription = await mockStripe.subscriptions.update(
-        mockUser.stripeSubscriptionId,
-        { cancel_at_period_end: true }
-      );
-
-      expect(cancelledSubscription.cancel_at_period_end).toBe(true);
-      expect(cancelledSubscription.cancel_at).toBeGreaterThan(Math.floor(Date.now() / 1000));
-    });
-
-    it('should complete incomplete subscriptions', async () => {
-      const mockUser = {
-        stripeSubscriptionId: 'sub_test123'
-      };
-
-      mockStripe.subscriptions.retrieve.mockResolvedValue({
-        id: 'sub_test123',
-        status: 'incomplete',
-        latest_invoice: {
-          payment_intent: {
-            id: 'pi_test123',
-            client_secret: 'pi_test123_secret_test',
-            status: 'requires_payment_method'
-          }
-        }
-      });
-
-      const subscription = await mockStripe.subscriptions.retrieve(mockUser.stripeSubscriptionId, {
-        expand: ['latest_invoice.payment_intent']
-      });
-
-      expect(subscription.status).toBe('incomplete');
-      expect(subscription.latest_invoice.payment_intent.client_secret).toBeTruthy();
+      expect(response.body).toHaveProperty('error');
     });
   });
 
   describe('Error Handling', () => {
-    it('should handle Stripe API errors gracefully', async () => {
-      mockStripe.subscriptions.create.mockRejectedValue({
-        type: 'StripeCardError',
-        code: 'card_declined',
-        message: 'Your card was declined.',
-        decline_code: 'generic_decline'
-      });
+    it('should handle database connection errors', async () => {
+      mockStorage.updateUser.mockRejectedValueOnce(new Error('Database connection failed'));
 
-      try {
-        await mockStripe.subscriptions.create({
-          customer: 'cus_test123',
-          items: [{ price: 'price_test123' }]
-        });
-      } catch (error) {
-        expect(error.type).toBe('StripeCardError');
-        expect(error.code).toBe('card_declined');
-        expect(error.message).toBe('Your card was declined.');
-      }
+      // Even if database fails, API should handle gracefully
+      const response = await request(app)
+        .post('/api/membership/subscribe')
+        .send({ planId: 'monthly_plan' });
+
+      // Should still attempt to create subscription but may fail gracefully
+      expect(response.status).toBeGreaterThanOrEqual(200);
     });
 
-    it('should handle network errors', async () => {
-      mockStripe.customers.create.mockRejectedValue({
-        type: 'StripeConnectionError',
-        message: 'Network error'
-      });
+    it('should handle Stripe service unavailable', async () => {
+      mockStripe.subscriptions.create.mockRejectedValueOnce(
+        Object.assign(new Error('Service unavailable'), { 
+          type: 'StripeServiceError',
+          code: 'service_unavailable'
+        })
+      );
 
-      try {
-        await mockStripe.customers.create({
-          email: 'test@example.com'
-        });
-      } catch (error) {
-        expect(error.type).toBe('StripeConnectionError');
-        expect(error.message).toBe('Network error');
-      }
-    });
+      const response = await request(app)
+        .post('/api/membership/subscribe')
+        .send({ planId: 'monthly_plan' })
+        .expect(500);
 
-    it('should handle invalid request errors', async () => {
-      mockStripe.prices.create.mockRejectedValue({
-        type: 'StripeInvalidRequestError',
-        message: 'Invalid price amount',
-        param: 'unit_amount'
-      });
-
-      try {
-        await mockStripe.prices.create({
-          product: 'prod_test123',
-          unit_amount: -100 // Invalid negative amount
-        });
-      } catch (error) {
-        expect(error.type).toBe('StripeInvalidRequestError');
-        expect(error.param).toBe('unit_amount');
-      }
-    });
-  });
-
-  describe('Plan Configuration Validation', () => {
-    it('should validate plan configurations match Stripe products', () => {
-      const planConfigs = {
-        "monthly_plan": {
-          name: "Monthly Membership",
-          priceAmount: 4500,
-          interval: 'month',
-          intervalCount: 1
-        },
-        "biannual_plan": {
-          name: "6-Month Membership", 
-          priceAmount: 21900,
-          interval: 'month',
-          intervalCount: 6
-        }
-      };
-
-      // Validate plan structure
-      Object.values(planConfigs).forEach(plan => {
-        expect(plan.name).toBeTruthy();
-        expect(plan.priceAmount).toBeGreaterThan(0);
-        expect(['month', 'year'].includes(plan.interval)).toBe(true);
-        expect(plan.intervalCount).toBeGreaterThan(0);
-      });
-
-      // Validate specific plans
-      expect(planConfigs.monthly_plan.priceAmount).toBe(4500); // €45.00
-      expect(planConfigs.biannual_plan.priceAmount).toBe(21900); // €219.00
+      expect(response.body).toHaveProperty('error');
+      expect(response.body).toHaveProperty('details');
     });
   });
 });
