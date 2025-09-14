@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 import {
   Dialog,
   DialogContent,
@@ -21,9 +23,10 @@ import {
 } from "@/components/ui/dialog";
 
 export default function DoctorSettings() {
-  const { user } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [showEmailChange, setShowEmailChange] = useState(false);
@@ -45,6 +48,27 @@ export default function DoctorSettings() {
     languages: [] as string[],
     rppsNumber: ""
   });
+
+  // Redirect unauthenticated users to home page
+  React.useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      console.log('DoctorSettings: Unauthenticated access blocked, redirecting to home');
+      setLocation('/');
+    }
+  }, [isLoading, isAuthenticated, setLocation]);
+
+  // Redirect non-doctors to appropriate dashboard
+  React.useEffect(() => {
+    if (!isLoading && isAuthenticated && user) {
+      if (user.role === 'patient') {
+        setLocation('/dashboard');
+      } else if (user.role === 'admin') {
+        setLocation('/admin-dashboard');
+      } else if (user.role !== 'doctor') {
+        setLocation('/');
+      }
+    }
+  }, [isLoading, isAuthenticated, user, setLocation]);
 
   // Fetch doctor professional information
   const { data: doctorInfo } = useQuery({
@@ -202,6 +226,26 @@ export default function DoctorSettings() {
         </Card>
       </DoctorLayout>
     );
+  }
+
+  if (isLoading) {
+    return (
+      <DoctorLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </DoctorLayout>
+    );
+  }
+
+  // Block access for unauthenticated users
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
+
+  // Block access for non-doctors
+  if (user?.role !== 'doctor') {
+    return null; // Will redirect via useEffect
   }
 
   return (

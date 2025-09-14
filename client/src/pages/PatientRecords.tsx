@@ -13,10 +13,31 @@ import { formatUserFullName } from "@/lib/nameUtils";
 import { formatAppointmentDateTimeUS } from "@/lib/dateUtils";
 
 export default function PatientRecords() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const [location, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+
+  // Redirect unauthenticated users to home page
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      console.log('PatientRecords: Unauthenticated access blocked, redirecting to home');
+      setLocation('/');
+    }
+  }, [authLoading, isAuthenticated, setLocation]);
+
+  // Redirect non-doctors to appropriate dashboard
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && user) {
+      if (user.role === 'patient') {
+        setLocation('/dashboard');
+      } else if (user.role === 'admin') {
+        setLocation('/admin-dashboard');
+      } else if (user.role !== 'doctor') {
+        setLocation('/');
+      }
+    }
+  }, [authLoading, isAuthenticated, user, setLocation]);
 
   // Check for patientId in URL parameters and auto-select the patient
   useEffect(() => {
@@ -91,7 +112,7 @@ export default function PatientRecords() {
   };
 
   // Fetch doctor's patient records (from appointments)
-  const { data: appointments = [], isLoading } = useQuery({
+  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery({
     queryKey: ["/api/appointments"],
     enabled: !!user,
   });
@@ -184,7 +205,7 @@ export default function PatientRecords() {
     // Search is already filtered in real-time
   };
 
-  if (isLoading) {
+  if (authLoading) {
     return (
       <DoctorLayout>
         <div className="flex items-center justify-center min-h-[400px]">
@@ -192,6 +213,16 @@ export default function PatientRecords() {
         </div>
       </DoctorLayout>
     );
+  }
+
+  // Block access for unauthenticated users
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
+
+  // Block access for non-doctors
+  if (user?.role !== 'doctor') {
+    return null; // Will redirect via useEffect
   }
 
   // If a specific patient is selected, show patient detail view

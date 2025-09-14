@@ -49,4 +49,8 @@ args = "NODE_ENV=production npm start"
 localPort = 5000
 externalPort = 80
 
+[[ports]]
+localPort = 43901
+externalPort = 3001
+
 [agent]

@@ -1,3 +1,4 @@
+import React from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,13 +10,34 @@ import { formatUserFullName } from "@/lib/nameUtils";
 import { formatAppointmentDateTime, categorizeAppointmentsByTiming, getTimeUntilAppointment } from "@/lib/dateUtils";
 
 export default function DoctorDashboard() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
 
   const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<any[]>({
     queryKey: ["/api/appointments", "doctor"],
     enabled: !!user,
   });
+
+  // Redirect unauthenticated users to home page
+  React.useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      console.log('DoctorDashboard: Unauthenticated access blocked, redirecting to home');
+      setLocation('/');
+    }
+  }, [isLoading, isAuthenticated, setLocation]);
+
+  // Redirect non-doctors to appropriate dashboard
+  React.useEffect(() => {
+    if (!isLoading && isAuthenticated && user) {
+      if (user.role === 'patient') {
+        setLocation('/dashboard');
+      } else if (user.role === 'admin') {
+        setLocation('/admin-dashboard');
+      } else if (user.role !== 'doctor') {
+        setLocation('/');
+      }
+    }
+  }, [isLoading, isAuthenticated, user, setLocation]);
 
   if (isLoading) {
     return (
@@ -25,6 +47,16 @@ export default function DoctorDashboard() {
         </div>
       </DoctorLayout>
     );
+  }
+
+  // Block access for unauthenticated users
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
+
+  // Block access for non-doctors
+  if (user?.role !== 'doctor') {
+    return null; // Will redirect via useEffect
   }
 
   // Categorize appointments by timing
