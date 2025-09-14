@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import AuthModal from "@/components/AuthModal";
+import { AllowanceDashboard } from "@/components/AllowanceDashboard";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -120,6 +121,9 @@ export default function Header() {
 
           {/* Right side - Auth buttons or User menu */}
           <div className="flex items-center space-x-4">
+            {/* Allowance Dashboard - only show for authenticated patients */}
+            {isAuthenticated && user?.role === "patient" && <AllowanceDashboard />}
+            
             {!isAuthenticated ? (
               <>
                 <Button 
