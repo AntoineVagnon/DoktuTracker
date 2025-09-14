@@ -188,25 +188,15 @@ export default function AdminDashboard() {
   const [timeRange, setTimeRange] = useState('7d');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  // Check authentication and admin role
+  // Immediate redirect for unauthorized users
   useEffect(() => {
-    if (!authLoading && (!isAuthenticated || user?.role !== 'admin')) {
-      // Only redirect if authentication is complete and user is not admin
-      if (!isAuthenticated) {
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to access the admin dashboard.",
-          variant: "destructive",
-        });
-      } else if (user?.role !== 'admin') {
-        toast({
-          title: "Access Denied",
-          description: "You need admin privileges to access this page.",
-          variant: "destructive",
-        });
+    if (!authLoading) {
+      if (!isAuthenticated || user?.role !== 'admin') {
+        navigate('/');
+        return;
       }
     }
-  }, [authLoading, isAuthenticated, user, navigate, toast]);
+  }, [authLoading, isAuthenticated, user, navigate]);
 
   // Fetch comprehensive dashboard metrics
   const { data: metrics, isLoading: metricsLoading, error } = useQuery({
@@ -225,6 +215,28 @@ export default function AdminDashboard() {
 
   // Combined loading state
   const isLoading = authLoading || metricsLoading;
+
+  // Block access for unauthenticated users
+  if (authLoading) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-96 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Block access for unauthenticated users
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
+
+  // Block access for non-admins
+  if (user?.role !== 'admin') {
+    return null; // Will redirect via useEffect
+  }
 
   // Helper function for metric change indicators
   const MetricChange = ({ current, previous }: { current: number; previous: number }) => {
@@ -1687,8 +1699,8 @@ export default function AdminDashboard() {
     );
   };
 
-  // Loading state
-  if (isLoading) {
+  // Loading state while fetching metrics
+  if (metricsLoading) {
     return (
       <>
         <AdminHeader />
@@ -1701,58 +1713,8 @@ export default function AdminDashboard() {
     );
   }
 
-  // Authentication error state
-  if (!isAuthenticated && !authLoading) {
-    return (
-      <>
-        <AdminHeader />
-        <div className="container mx-auto p-4 max-w-7xl">
-          <div className="flex flex-col items-center justify-center h-96 space-y-6">
-            <div className="text-center space-y-2">
-              <LogIn className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-semibold text-gray-900">Authentication Required</h2>
-              <p className="text-gray-600">Please log in to access the admin dashboard.</p>
-            </div>
-            <Button 
-              onClick={() => navigate('/login')}
-              className="flex items-center gap-2"
-            >
-              <LogIn className="h-4 w-4" />
-              Log In
-            </Button>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  // Access denied state (logged in but not admin)
-  if (isAuthenticated && user?.role !== 'admin' && !authLoading) {
-    return (
-      <>
-        <AdminHeader />
-        <div className="container mx-auto p-4 max-w-7xl">
-          <div className="flex flex-col items-center justify-center h-96 space-y-6">
-            <div className="text-center space-y-2">
-              <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-semibold text-gray-900">Access Denied</h2>
-              <p className="text-gray-600">You need admin privileges to access this page.</p>
-              <p className="text-sm text-gray-500">Current role: {user?.role || 'Unknown'}</p>
-            </div>
-            <Button 
-              onClick={() => navigate('/')}
-              variant="outline"
-            >
-              Return to Home
-            </Button>
-          </div>
-        </div>
-      </>
-    );
-  }
-
   // API error state
-  if (error && isAuthenticated && user?.role === 'admin') {
+  if (error) {
     return (
       <>
         <AdminHeader />

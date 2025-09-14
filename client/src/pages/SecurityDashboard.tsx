@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useLocation } from 'wouter';
 
 interface SecurityMetric {
   name: string;
@@ -25,11 +27,39 @@ interface SecurityEvent {
 }
 
 export default function SecurityDashboard() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const [, navigate] = useLocation();
   const [securityMetrics, setSecurityMetrics] = useState<SecurityMetric[]>([]);
   const [securityEvents, setSecurityEvents] = useState<SecurityEvent[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showSensitiveData, setShowSensitiveData] = useState(false);
   const { toast } = useToast();
+
+  // Immediate redirect for unauthorized users
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated || user?.role !== 'admin') {
+        navigate('/');
+        return;
+      }
+    }
+  }, [isAuthenticated, user, isLoading, navigate]);
+
+  // Block rendering for unauthorized users
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-96 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || user?.role !== 'admin') {
+    return null; // Will redirect via useEffect
+  }
   
   const criticalFixes: SecurityMetric[] = [
     {
