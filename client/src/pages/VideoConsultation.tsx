@@ -20,9 +20,11 @@ interface Appointment {
   zoomJoinUrl?: string;
   price: string;
   doctor?: {
-    firstName: string;
-    lastName: string;
     specialty: string;
+    user?: {
+      firstName: string;
+      lastName: string;
+    };
   };
   patient?: {
     firstName: string;
@@ -171,7 +173,7 @@ export default function VideoConsultation() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">Video Consultation</h1>
           <p className="text-muted-foreground">
-            Your secure video consultation with {appointment.doctor?.firstName} {appointment.doctor?.lastName}
+            Your secure video consultation with {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
           </p>
         </div>
 
@@ -188,7 +190,7 @@ export default function VideoConsultation() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Doctor:</span>
                 <span className="font-medium">
-                  Dr. {appointment.doctor?.firstName} {appointment.doctor?.lastName}
+                  Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName}
                 </span>
               </div>
               <div className="flex items-center justify-between">
