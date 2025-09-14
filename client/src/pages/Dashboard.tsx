@@ -90,42 +90,26 @@ export default function Dashboard() {
     }
   }, [user, verificationJustCompleted, toast]);
 
-  // More robust authentication check with better state management
+  // Redirect unauthenticated users to home page immediately
   useEffect(() => {
-    // Don't do anything while auth is loading
-    if (isLoading) return;
-    
-    // If authenticated, handle role-based redirects
-    if (isAuthenticated && user) {
+    if (!isLoading && !isAuthenticated) {
+      console.log('Dashboard: Unauthenticated access blocked, redirecting to home');
+      setLocation('/');
+    }
+  }, [isLoading, isAuthenticated, setLocation]);
+
+  // Redirect non-patients to appropriate dashboards
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && user) {
       if (user.role === 'doctor') {
         setLocation('/doctor-dashboard');
       } else if (user.role === 'admin') {
         setLocation('/admin-dashboard');
+      } else if (user.role !== 'patient') {
+        setLocation('/');
       }
-      // Patients stay on the regular dashboard
-      return;
     }
-    
-    // Only redirect to login if we're definitely not authenticated
-    // and the auth loading is complete
-    if (!isAuthenticated && !isLoading) {
-      // Give extra time for auth state to settle after navigation
-      const redirectTimer = setTimeout(() => {
-        // Re-check one more time before redirecting
-        if (!isAuthenticated && !isLoading) {
-          console.log('Dashboard: User not authenticated, redirecting to login');
-          toast({
-            title: "Please log in", 
-            description: "You need to be logged in to access the dashboard.",
-            variant: "destructive",
-          });
-          setLocation('/login-form');
-        }
-      }, 3000); // 3 second delay to ensure auth state is settled
-      
-      return () => clearTimeout(redirectTimer);
-    }
-  }, [isAuthenticated, isLoading, toast, user, setLocation]);
+  }, [isLoading, isAuthenticated, user, setLocation]);
 
   const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<any[]>({
     queryKey: ["/api/appointments"],
@@ -253,12 +237,22 @@ export default function Dashboard() {
 
 
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
+  }
+
+  // Block access for unauthenticated users
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
+
+  // Block access for non-patients
+  if (user?.role !== 'patient') {
+    return null; // Will redirect via useEffect
   }
 
   // Categorize appointments by timing

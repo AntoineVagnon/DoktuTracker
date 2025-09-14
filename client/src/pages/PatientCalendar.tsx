@@ -1,9 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calendar, Clock, Video, MapPin, CalendarDays, XCircle, FileText, Phone, Mail, Download } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 import { format, isSameDay, isWithinInterval, addMinutes } from "date-fns";
 import { cn } from "@/lib/utils";
 import GoogleStyleCalendar from "@/components/GoogleStyleCalendar";
@@ -45,9 +46,31 @@ interface AppointmentDocument {
 }
 
 export function PatientCalendar() {
-  const { user } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  // Redirect unauthenticated users to home page
+  React.useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      console.log('PatientCalendar: Unauthenticated access blocked, redirecting to home');
+      setLocation('/');
+    }
+  }, [isLoading, isAuthenticated, setLocation]);
+
+  // Redirect non-patients to appropriate dashboards
+  React.useEffect(() => {
+    if (!isLoading && isAuthenticated && user) {
+      if (user.role === 'doctor') {
+        setLocation('/doctor-dashboard');
+      } else if (user.role === 'admin') {
+        setLocation('/admin-dashboard');
+      } else if (user.role !== 'patient') {
+        setLocation('/');
+      }
+    }
+  }, [isLoading, isAuthenticated, user, setLocation]);
   const [view, setView] = useState<'day' | 'week' | 'month'>('week');
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [appointmentModal, setAppointmentModal] = useState({ isOpen: false, appointment: null as Appointment | null });
@@ -57,7 +80,7 @@ export function PatientCalendar() {
   });
 
   // Fetch patient's appointments
-  const { data: appointments = [], isLoading } = useQuery<Appointment[]>({
+  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<Appointment[]>({
     queryKey: ['/api/appointments'],
     enabled: !!user
   });
@@ -127,6 +150,16 @@ export function PatientCalendar() {
         </div>
       </div>
     );
+  }
+
+  // Block access for unauthenticated users
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
+
+  // Block access for non-patients
+  if (user?.role !== 'patient') {
+    return null; // Will redirect via useEffect
   }
 
   return (
