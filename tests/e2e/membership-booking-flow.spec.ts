@@ -82,10 +82,10 @@ test.describe('Membership Booking Flow', () => {
         
         // Fill in test card details
         const cardFrame = page.frameLocator('iframe[name*="card"]');
-        await cardFrame.fill('[placeholder*="1234"]', '4242424242424242');
-        await cardFrame.fill('[placeholder*="MM"]', '12');
-        await cardFrame.fill('[placeholder*="YY"]', '28');
-        await cardFrame.fill('[placeholder*="CVC"]', '123');
+        await cardFrame.locator('[placeholder*="1234"]').fill('4242424242424242');
+        await cardFrame.locator('[placeholder*="MM"]').fill('12');
+        await cardFrame.locator('[placeholder*="YY"]').fill('28');
+        await cardFrame.locator('[placeholder*="CVC"]').fill('123');
         
         // Submit payment
         await page.click('[data-testid="button-complete-payment"]');
@@ -250,10 +250,10 @@ test.describe('Membership Booking Flow', () => {
         // Complete payment flow
         await page.waitForSelector('[data-testid="stripe-payment-element"]');
         const cardFrame = page.frameLocator('iframe[name*="card"]');
-        await cardFrame.fill('[placeholder*="1234"]', '4242424242424242');
-        await cardFrame.fill('[placeholder*="MM"]', '12');
-        await cardFrame.fill('[placeholder*="YY"]', '28');
-        await cardFrame.fill('[placeholder*="CVC"]', '123');
+        await cardFrame.locator('[placeholder*="1234"]').fill('4242424242424242');
+        await cardFrame.locator('[placeholder*="MM"]').fill('12');
+        await cardFrame.locator('[placeholder*="YY"]').fill('28');
+        await cardFrame.locator('[placeholder*="CVC"]').fill('123');
         
         await page.click('[data-testid="button-complete-payment"]');
         await page.waitForURL('/membership/success*');
@@ -457,10 +457,10 @@ test.describe('Membership Booking Flow', () => {
         
         // Use card that will be declined
         const cardFrame = page.frameLocator('iframe[name*="card"]');
-        await cardFrame.fill('[placeholder*="1234"]', '4000000000000002');
-        await cardFrame.fill('[placeholder*="MM"]', '12');
-        await cardFrame.fill('[placeholder*="YY"]', '28');
-        await cardFrame.fill('[placeholder*="CVC"]', '123');
+        await cardFrame.locator('[placeholder*="1234"]').fill('4000000000000002');
+        await cardFrame.locator('[placeholder*="MM"]').fill('12');
+        await cardFrame.locator('[placeholder*="YY"]').fill('28');
+        await cardFrame.locator('[placeholder*="CVC"]').fill('123');
         
         await page.click('[data-testid="button-complete-payment"]');
         
@@ -512,6 +512,426 @@ test.describe('Membership Booking Flow', () => {
         
         // Should offer retry option
         await expect(page.locator('[data-testid="button-retry-booking"]')).toBeVisible();
+      });
+    });
+  });
+
+  test.describe('Membership Lifecycle Tests', () => {
+    test.describe('Logged In User - Full Membership Lifecycle', () => {
+      test('should complete full membership lifecycle: subscribe -> use -> cancel', async ({ page }) => {
+        await test.step('Setup: Register and login user', async () => {
+          await page.goto('/register');
+          await page.fill('[data-testid="input-email"]', testUser.email);
+          await page.fill('[data-testid="input-password"]', testUser.password);
+          await page.fill('[data-testid="input-firstName"]', testUser.firstName);
+          await page.fill('[data-testid="input-lastName"]', testUser.lastName);
+          await page.click('[data-testid="button-register"]');
+          await page.waitForURL('/patient/dashboard');
+        });
+
+        await test.step('Subscribe to monthly membership', async () => {
+          await page.goto('/membership');
+          await page.click('[data-testid="button-select-monthly"]');
+          
+          // Complete payment
+          await page.waitForSelector('[data-testid="stripe-payment-element"]');
+          const cardFrame = page.frameLocator('iframe[name*="card"]');
+          await cardFrame.locator('[placeholder*="1234"]').fill('4242424242424242');
+          await cardFrame.locator('[placeholder*="MM"]').fill('12');
+          await cardFrame.locator('[placeholder*="YY"]').fill('28');
+          await cardFrame.locator('[placeholder*="CVC"]').fill('123');
+          
+          await page.click('[data-testid="button-complete-payment"]');
+          await page.waitForURL('/membership/success*');
+          
+          // Verify subscription active
+          await page.goto('/patient/dashboard');
+          await expect(page.locator('[data-testid="subscription-status"]')).toContainText('Active');
+          await expect(page.locator('[data-testid="allowance-remaining"]')).toContainText('2');
+        });
+
+        await test.step('Use membership allowance', async () => {
+          // Book first appointment
+          await page.goto('/patient/calendar');
+          await page.click('[data-testid="doctor-card"]:first-child');
+          await page.click('[data-testid="time-slot"]:first-child');
+          await expect(page.locator('[data-testid="coverage-status"]')).toContainText('Covered by membership');
+          await page.click('[data-testid="button-confirm-booking"]');
+          
+          // Book second appointment
+          await page.goto('/patient/calendar');
+          await page.click('[data-testid="doctor-card"]:first-child');
+          await page.click('[data-testid="time-slot"]:nth-child(2)');
+          await page.click('[data-testid="button-confirm-booking"]');
+          
+          // Verify allowance exhausted
+          await page.goto('/patient/dashboard');
+          await expect(page.locator('[data-testid="allowance-remaining"]')).toContainText('0');
+          await expect(page.locator('[data-testid="allowance-used"]')).toContainText('2');
+        });
+
+        await test.step('Cancel membership', async () => {
+          // Navigate to membership management
+          await page.goto('/patient/dashboard');
+          await page.click('[data-testid="tab-membership"]');
+          await page.click('[data-testid="button-cancel-membership"]');
+          
+          // Confirm cancellation
+          await page.click('[data-testid="button-confirm-cancel"]');
+          await page.fill('[data-testid="input-cancel-reason"]', 'Testing cancellation flow');
+          await page.click('[data-testid="button-submit-cancel"]');
+          
+          // Verify cancellation
+          await expect(page.locator('[data-testid="cancellation-success"]')).toBeVisible();
+          await expect(page.locator('[data-testid="subscription-status"]')).toContainText('Cancelled');
+          await expect(page.locator('[data-testid="cancel-at-period-end"]')).toBeVisible();
+        });
+
+        await test.step('Verify no coverage after cancellation period', async () => {
+          // Simulate time passage (via API)
+          await page.evaluate(async (email) => {
+            await fetch('/api/test/simulate-period-end', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email })
+            });
+          }, testUser.email);
+          
+          // Try to book appointment
+          await page.goto('/patient/calendar');
+          await page.click('[data-testid="doctor-card"]:first-child');
+          await page.click('[data-testid="time-slot"]:first-child');
+          
+          // Should not be covered
+          await expect(page.locator('[data-testid="coverage-status"]')).toContainText('Pay per visit');
+          await expect(page.locator('[data-testid="subscription-expired"]')).toBeVisible();
+        });
+      });
+    });
+
+    test.describe('Unlogged User with Existing Account - Membership Lifecycle', () => {
+      test('should handle membership lifecycle for existing user', async ({ page }) => {
+        await test.step('Setup: Create existing user account', async () => {
+          // Create user via API (simulate existing account)
+          await page.evaluate(async (testUser) => {
+            await fetch('/api/test/create-user', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(testUser)
+            });
+          }, testUser);
+        });
+
+        await test.step('Navigate to membership page while unlogged', async () => {
+          await page.goto('/membership');
+          
+          // Should be redirected to login or shown login modal
+          await expect(page.locator('[data-testid="auth-required"]')).toBeVisible();
+          await expect(page.locator('[data-testid="login-to-continue"]')).toContainText('login to continue');
+        });
+
+        await test.step('Login with existing account', async () => {
+          await page.click('[data-testid="button-login"]');
+          await page.fill('[data-testid="input-email"]', testUser.email);
+          await page.fill('[data-testid="input-password"]', testUser.password);
+          await page.click('[data-testid="button-submit-login"]');
+          
+          // Should return to membership page
+          await page.waitForURL('/membership');
+          await expect(page.locator('[data-testid="membership-plans"]')).toBeVisible();
+        });
+
+        await test.step('Complete membership subscription', async () => {
+          await page.click('[data-testid="button-select-monthly"]');
+          
+          // Complete payment
+          await page.waitForSelector('[data-testid="stripe-payment-element"]');
+          const cardFrame = page.frameLocator('iframe[name*="card"]');
+          await cardFrame.locator('[placeholder*="1234"]').fill('4242424242424242');
+          await cardFrame.locator('[placeholder*="MM"]').fill('12');
+          await cardFrame.locator('[placeholder*="YY"]').fill('28');
+          await cardFrame.locator('[placeholder*="CVC"]').fill('123');
+          
+          await page.click('[data-testid="button-complete-payment"]');
+          await page.waitForURL('/membership/success*');
+        });
+
+        await test.step('Use and cancel membership', async () => {
+          // Use one appointment
+          await page.goto('/patient/calendar');
+          await page.click('[data-testid="doctor-card"]:first-child');
+          await page.click('[data-testid="time-slot"]:first-child');
+          await page.click('[data-testid="button-confirm-booking"]');
+          
+          // Cancel membership
+          await page.goto('/patient/dashboard');
+          await page.click('[data-testid="tab-membership"]');
+          await page.click('[data-testid="button-cancel-membership"]');
+          await page.click('[data-testid="button-confirm-cancel"]');
+          await page.fill('[data-testid="input-cancel-reason"]', 'Testing existing user flow');
+          await page.click('[data-testid="button-submit-cancel"]');
+          
+          await expect(page.locator('[data-testid="cancellation-success"]')).toBeVisible();
+        });
+      });
+    });
+
+    test.describe('Unlogged User - Create Account and Membership Lifecycle', () => {
+      test('should handle membership lifecycle for new user account creation', async ({ page }) => {
+        await test.step('Navigate to membership as unlogged user', async () => {
+          await page.goto('/membership');
+          
+          // Should prompt for account creation
+          await expect(page.locator('[data-testid="auth-required"]')).toBeVisible();
+          await expect(page.locator('[data-testid="create-account-cta"]')).toBeVisible();
+        });
+
+        await test.step('Create new account from membership page', async () => {
+          await page.click('[data-testid="button-create-account"]');
+          
+          // Fill registration form
+          await page.fill('[data-testid="input-email"]', testUser.email);
+          await page.fill('[data-testid="input-password"]', testUser.password);
+          await page.fill('[data-testid="input-firstName"]', testUser.firstName);
+          await page.fill('[data-testid="input-lastName"]', testUser.lastName);
+          await page.click('[data-testid="button-register"]');
+          
+          // Should return to membership page after registration
+          await page.waitForURL('/membership');
+          await expect(page.locator('[data-testid="membership-plans"]')).toBeVisible();
+        });
+
+        await test.step('Complete full membership lifecycle', async () => {
+          // Subscribe
+          await page.click('[data-testid="button-select-6month"]');
+          
+          await page.waitForSelector('[data-testid="stripe-payment-element"]');
+          const cardFrame = page.frameLocator('iframe[name*="card"]');
+          await cardFrame.locator('[placeholder*="1234"]').fill('4242424242424242');
+          await cardFrame.locator('[placeholder*="MM"]').fill('12');
+          await cardFrame.locator('[placeholder*="YY"]').fill('28');
+          await cardFrame.locator('[placeholder*="CVC"]').fill('123');
+          
+          await page.click('[data-testid="button-complete-payment"]');
+          await page.waitForURL('/membership/success*');
+          
+          // Use multiple appointments
+          for (let i = 0; i < 3; i++) {
+            await page.goto('/patient/calendar');
+            await page.click('[data-testid="doctor-card"]:first-child');
+            await page.click(`[data-testid="time-slot"]:nth-child(${i + 1})`);
+            await page.click('[data-testid="button-confirm-booking"]');
+          }
+          
+          // Verify usage
+          await page.goto('/patient/dashboard');
+          await expect(page.locator('[data-testid="allowance-remaining"]')).toContainText('9');
+          await expect(page.locator('[data-testid="allowance-used"]')).toContainText('3');
+          
+          // Cancel membership
+          await page.click('[data-testid="tab-membership"]');
+          await page.click('[data-testid="button-cancel-membership"]');
+          await page.click('[data-testid="button-confirm-cancel"]');
+          await page.fill('[data-testid="input-cancel-reason"]', 'Testing new user flow');
+          await page.click('[data-testid="button-submit-cancel"]');
+          
+          await expect(page.locator('[data-testid="cancellation-success"]')).toBeVisible();
+        });
+      });
+    });
+  });
+
+  test.describe('Membership Upgrade Scenarios', () => {
+    test('should handle upgrade from existing credit to 6-month membership', async ({ page }) => {
+      await test.step('Setup user with existing credit balance', async () => {
+        // Create user with credit via API
+        await page.evaluate(async (testUser) => {
+          await fetch('/api/test/create-user-with-credit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              ...testUser,
+              creditBalance: 70.00 // €70 credit (2 appointments worth)
+            })
+          });
+        }, testUser);
+        
+        // Login
+        await page.goto('/login');
+        await page.fill('[data-testid="input-email"]', testUser.email);
+        await page.fill('[data-testid="input-password"]', testUser.password);
+        await page.click('[data-testid="button-login"]');
+      });
+
+      await test.step('Verify existing credit balance', async () => {
+        await page.goto('/patient/dashboard');
+        
+        // Check credit balance
+        await expect(page.locator('[data-testid="credit-balance"]')).toContainText('€70.00');
+        await expect(page.locator('[data-testid="credit-note"]')).toContainText('available for appointments');
+        
+        // Should not have active membership
+        await expect(page.locator('[data-testid="subscription-status"]')).toContainText('No active subscription');
+      });
+
+      await test.step('Use some existing credit for appointments', async () => {
+        // Book appointment using credit
+        await page.goto('/patient/calendar');
+        await page.click('[data-testid="doctor-card"]:first-child');
+        await page.click('[data-testid="time-slot"]:first-child');
+        
+        // Should show credit coverage
+        await expect(page.locator('[data-testid="coverage-status"]')).toContainText('Covered by credit');
+        await expect(page.locator('[data-testid="patient-cost"]')).toContainText('€0.00');
+        await expect(page.locator('[data-testid="credit-deduction"]')).toContainText('€35.00 will be deducted');
+        
+        await page.click('[data-testid="button-confirm-booking"]');
+        
+        // Verify credit deduction
+        await page.goto('/patient/dashboard');
+        await expect(page.locator('[data-testid="credit-balance"]')).toContainText('€35.00');
+      });
+
+      await test.step('Navigate to membership upgrade', async () => {
+        await page.goto('/membership');
+        
+        // Should show upgrade options with credit information
+        await expect(page.locator('[data-testid="existing-credit-notice"]')).toBeVisible();
+        await expect(page.locator('[data-testid="existing-credit-notice"]')).toContainText('€35.00 credit');
+        await expect(page.locator('[data-testid="credit-conversion-info"]')).toBeVisible();
+      });
+
+      await test.step('Select 6-month membership upgrade', async () => {
+        await page.click('[data-testid="button-select-6month"]');
+        
+        // Should show upgrade confirmation with credit handling
+        await expect(page.locator('[data-testid="upgrade-summary"]')).toBeVisible();
+        await expect(page.locator('[data-testid="plan-cost"]')).toContainText('€219.00');
+        await expect(page.locator('[data-testid="existing-credit"]')).toContainText('€35.00');
+        await expect(page.locator('[data-testid="credit-application"]')).toContainText('Applied to first month');
+        await expect(page.locator('[data-testid="net-amount"]')).toContainText('€184.00');
+      });
+
+      await test.step('Complete upgrade payment', async () => {
+        await page.waitForSelector('[data-testid="stripe-payment-element"]');
+        const cardFrame = page.frameLocator('iframe[name*="card"]');
+        await cardFrame.locator('[placeholder*="1234"]').fill('4242424242424242');
+        await cardFrame.locator('[placeholder*="MM"]').fill('12');
+        await cardFrame.locator('[placeholder*="YY"]').fill('28');
+        await cardFrame.locator('[placeholder*="CVC"]').fill('123');
+        
+        await page.click('[data-testid="button-complete-upgrade"]');
+        await page.waitForURL('/membership/success*');
+        
+        // Verify upgrade success
+        await expect(page.locator('[data-testid="upgrade-success"]')).toBeVisible();
+        await expect(page.locator('[data-testid="credit-applied"]')).toContainText('€35.00 credit applied');
+      });
+
+      await test.step('Verify upgraded membership and credit handling', async () => {
+        await page.goto('/patient/dashboard');
+        
+        // Check new subscription
+        await expect(page.locator('[data-testid="subscription-status"]')).toContainText('Active');
+        await expect(page.locator('[data-testid="membership-plan"]')).toContainText('6-Month');
+        await expect(page.locator('[data-testid="allowance-remaining"]')).toContainText('12');
+        
+        // Credit should be converted/applied
+        await expect(page.locator('[data-testid="credit-balance"]')).toContainText('€0.00');
+        
+        // Should show credit conversion details
+        await page.click('[data-testid="tab-billing"]');
+        await expect(page.locator('[data-testid="credit-conversion-record"]')).toBeVisible();
+        await expect(page.locator('[data-testid="credit-conversion-record"]')).toContainText('€35.00 credit applied to membership');
+      });
+
+      await test.step('Verify booking uses membership allowance', async () => {
+        await page.goto('/patient/calendar');
+        await page.click('[data-testid="doctor-card"]:first-child');
+        await page.click('[data-testid="time-slot"]:first-child');
+        
+        // Should now use membership allowance, not credit
+        await expect(page.locator('[data-testid="coverage-status"]')).toContainText('Covered by membership');
+        await expect(page.locator('[data-testid="allowance-note"]')).toContainText('1 of 12 consultations');
+        
+        await page.click('[data-testid="button-confirm-booking"]');
+        
+        // Verify allowance consumption
+        await page.goto('/patient/dashboard');
+        await expect(page.locator('[data-testid="allowance-remaining"]')).toContainText('11');
+        await expect(page.locator('[data-testid="allowance-used"]')).toContainText('1');
+      });
+    });
+
+    test('should handle upgrade from monthly to 6-month membership', async ({ page }) => {
+      await test.step('Setup user with active monthly membership', async () => {
+        await page.evaluate(async (testUser) => {
+          await fetch('/api/test/setup-monthly-membership', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              email: testUser.email,
+              allowanceUsed: 1 // Used 1 of 2 monthly consultations
+            })
+          });
+        }, testUser);
+        
+        await page.goto('/login');
+        await page.fill('[data-testid="input-email"]', testUser.email);
+        await page.fill('[data-testid="input-password"]', testUser.password);
+        await page.click('[data-testid="button-login"]');
+      });
+
+      await test.step('View current monthly membership', async () => {
+        await page.goto('/patient/dashboard');
+        
+        await expect(page.locator('[data-testid="subscription-status"]')).toContainText('Active');
+        await expect(page.locator('[data-testid="membership-plan"]')).toContainText('Monthly');
+        await expect(page.locator('[data-testid="allowance-remaining"]')).toContainText('1');
+        await expect(page.locator('[data-testid="allowance-used"]')).toContainText('1');
+      });
+
+      await test.step('Navigate to upgrade options', async () => {
+        await page.click('[data-testid="button-upgrade-membership"]');
+        await page.waitForURL('/membership/upgrade*');
+        
+        // Should show current plan and upgrade options
+        await expect(page.locator('[data-testid="current-plan"]')).toContainText('Monthly Membership');
+        await expect(page.locator('[data-testid="upgrade-to-6month"]')).toBeVisible();
+        await expect(page.locator('[data-testid="upgrade-benefits"]')).toContainText('Save €51 per year');
+      });
+
+      await test.step('Process upgrade to 6-month plan', async () => {
+        await page.click('[data-testid="button-upgrade-to-6month"]');
+        
+        // Should show upgrade calculation
+        await expect(page.locator('[data-testid="upgrade-calculation"]')).toBeVisible();
+        await expect(page.locator('[data-testid="prorated-credit"]')).toContainText('Remaining monthly value');
+        await expect(page.locator('[data-testid="upgrade-cost"]')).toContainText('Additional payment');
+        
+        // Complete upgrade payment
+        await page.waitForSelector('[data-testid="stripe-payment-element"]');
+        const cardFrame = page.frameLocator('iframe[name*="card"]');
+        await cardFrame.locator('[placeholder*="1234"]').fill('4242424242424242');
+        await cardFrame.locator('[placeholder*="MM"]').fill('12');
+        await cardFrame.locator('[placeholder*="YY"]').fill('28');
+        await cardFrame.locator('[placeholder*="CVC"]').fill('123');
+        
+        await page.click('[data-testid="button-complete-upgrade"]');
+        await page.waitForURL('/membership/success*');
+      });
+
+      await test.step('Verify successful upgrade', async () => {
+        await page.goto('/patient/dashboard');
+        
+        // Should now show 6-month membership
+        await expect(page.locator('[data-testid="membership-plan"]')).toContainText('6-Month');
+        await expect(page.locator('[data-testid="allowance-remaining"]')).toContainText('11'); // Previous usage + new allowance
+        
+        // Check billing shows the upgrade
+        await page.click('[data-testid="tab-billing"]');
+        await expect(page.locator('[data-testid="upgrade-transaction"]')).toBeVisible();
+        await expect(page.locator('[data-testid="plan-change"]')).toContainText('Monthly → 6-Month');
       });
     });
   });
