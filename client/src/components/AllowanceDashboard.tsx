@@ -25,7 +25,7 @@ interface AllowanceStatus {
 export function AllowanceDashboard() {
   const { isAuthenticated, user } = useAuth();
 
-  const { data: allowanceData, isLoading } = useQuery<AllowanceStatus>({
+  const { data: allowanceData, isLoading, error } = useQuery<AllowanceStatus>({
     queryKey: ["/api/membership/allowance"],
     enabled: isAuthenticated && user?.role === "patient",
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
@@ -52,6 +52,23 @@ export function AllowanceDashboard() {
     );
   }
 
+  // Show error state if query failed
+  if (error) {
+    return (
+      <Card className="w-80 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-red-200 dark:border-red-700">
+        <CardContent className="p-4">
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="h-4 w-4 text-red-500" />
+            <div>
+              <p className="text-sm font-medium text-red-700 dark:text-red-300">Unable to Load Plan</p>
+              <p className="text-xs text-red-500 dark:text-red-400">Please refresh or try again later</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Show no subscription state
   if (!allowanceData?.hasAllowance || !allowanceData?.allowanceStatus) {
     return (
@@ -70,8 +87,11 @@ export function AllowanceDashboard() {
   }
 
   const allowance = allowanceData.allowanceStatus;
-  const usagePercentage = (allowance.allowanceUsed / allowance.allowanceGranted) * 100;
-  const daysUntilReset = differenceInDays(new Date(allowance.resetDate), new Date());
+  
+  // Handle edge cases for calculations
+  const safeAllowanceGranted = Math.max(allowance.allowanceGranted, 1);
+  const usagePercentage = Math.min(100, Math.max(0, (allowance.allowanceUsed / safeAllowanceGranted) * 100));
+  const daysUntilReset = Math.max(0, differenceInDays(new Date(allowance.resetDate), new Date()));
   
   // Determine colors based on usage
   const getStatusColor = () => {
@@ -111,11 +131,17 @@ export function AllowanceDashboard() {
 
               {/* Progress bar */}
               <div className="space-y-1">
-                <Progress 
-                  value={usagePercentage} 
-                  className="h-2 bg-gray-200 dark:bg-gray-700"
-                  data-testid="allowance-usage-progress"
-                />
+                <div className="relative">
+                  <Progress 
+                    value={usagePercentage} 
+                    className="h-2 bg-gray-200 dark:bg-gray-700"
+                    data-testid="allowance-usage-progress"
+                  />
+                  <div 
+                    className={`absolute top-0 left-0 h-2 rounded-full transition-all ${getProgressColor()}`}
+                    style={{ width: `${usagePercentage}%` }}
+                  />
+                </div>
                 <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                   <span>Used: {allowance.allowanceUsed}</span>
                   <span>Total: {allowance.allowanceGranted}</span>

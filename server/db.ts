@@ -10,19 +10,25 @@ if (!connectionString) {
   );
 }
 
-console.log('Connecting to Supabase database via pooler');
-console.log('Connection string format:', connectionString.replace(/:([^@]*?)@/, ':***@'));
+console.log('Connecting to database...');
 
-// Configure postgres client with proper settings for Supabase
-console.log('Creating database client...');
-
-const client = postgres(connectionString, { 
-  prepare: false,
-  ssl: 'require', // Force SSL for Supabase
+// Parse connection URL and use discrete connection parameters to avoid URL parsing issues
+const u = new URL(connectionString);
+const client = postgres({
+  host: u.hostname,
+  port: Number(u.port) || 5432,
+  database: u.pathname.slice(1),
+  username: decodeURIComponent(u.username),
+  password: decodeURIComponent(u.password || ''),
+  ssl: 'require', // Required for Supabase
+  prepare: false, // Required for pgbouncer/pooler
   max: 10,
   idle_timeout: 20,
   connect_timeout: 10,
   onnotice: () => {}, // Suppress notices
+  transform: {
+    undefined: null,
+  },
 });
 
 export const db = drizzle(client, { schema });
