@@ -3,11 +3,51 @@
  * Tests core membership service functions, allowance calculations, and coverage determination
  */
 
-const { describe, it, expect, beforeEach, afterEach, jest } = require('@jest/globals');
-const { addMonths, startOfMonth, endOfMonth } = require('date-fns');
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { addMonths, startOfMonth, endOfMonth } from 'date-fns';
 
-// Import the real membership service and schemas
-const { MembershipService } = require('../../server/services/membershipService');
+// Create a comprehensive mock for the database
+const createMockDb = () => ({
+  select: jest.fn().mockReturnValue({
+    from: jest.fn().mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        orderBy: jest.fn().mockReturnValue({
+          limit: jest.fn().mockResolvedValue([])
+        }),
+        limit: jest.fn().mockResolvedValue([])
+      }),
+      orderBy: jest.fn().mockReturnValue({
+        limit: jest.fn().mockResolvedValue([])
+      }),
+      limit: jest.fn().mockResolvedValue([])
+    })
+  }),
+  insert: jest.fn().mockReturnValue({
+    values: jest.fn().mockReturnValue({
+      returning: jest.fn().mockResolvedValue([])
+    })
+  }),
+  update: jest.fn().mockReturnValue({
+    set: jest.fn().mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        returning: jest.fn().mockResolvedValue([])
+      })
+    })
+  }),
+  delete: jest.fn().mockReturnValue({
+    where: jest.fn().mockResolvedValue({})
+  })
+});
+
+const mockDb = createMockDb();
+
+// Mock the database module before any other imports
+jest.unstable_mockModule('../../server/db.js', () => ({
+  db: mockDb
+}));
+
+// Now import the modules dynamically after mocking
+const { MembershipService } = await import('../../server/services/membershipService.js');
 const { 
   membershipPlans, 
   membershipSubscriptions, 
@@ -18,19 +58,7 @@ const {
   insertMembershipSubscriptionSchema,
   insertMembershipCycleSchema,
   insertMembershipAllowanceEventSchema
-} = require('../../shared/schema');
-
-// Mock database operations
-const mockDb = {
-  select: jest.fn(),
-  insert: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn()
-};
-
-jest.mock('../../server/db', () => ({
-  db: mockDb
-}));
+} = await import('../../shared/schema.js');
 
 // Mock Stripe for unit testing
 const mockStripe = {

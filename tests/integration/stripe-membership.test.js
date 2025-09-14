@@ -3,10 +3,10 @@
  * Tests real API endpoints with supertest, authentication, validation, and storage effects
  */
 
-const { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, jest } = require('@jest/globals');
-const request = require('supertest');
-const express = require('express');
-const { nanoid } = require('nanoid');
+import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, jest } from '@jest/globals';
+import request from 'supertest';
+import express from 'express';
+import { nanoid } from 'nanoid';
 
 // Import the actual app and dependencies
 let app, server;
@@ -139,7 +139,7 @@ describe('Stripe Membership Integration Tests', () => {
     }));
     
     // Import and register routes after mocking
-    const { registerRoutes } = require('../../server/routes');
+    const { registerRoutes } = await import('../../server/routes.js');
     server = await registerRoutes(app);
   });
 
@@ -606,7 +606,7 @@ describe('Stripe Membership Integration Tests', () => {
       }));
 
       // Re-register routes with failed auth
-      const { registerRoutes } = require('../../server/routes');
+      const { registerRoutes } = await import('../../server/routes.js');
       const testServer = await registerRoutes(unauthenticatedApp);
 
       await request(unauthenticatedApp)

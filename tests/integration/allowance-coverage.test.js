@@ -3,19 +3,19 @@
  * Tests real allowance tracking, consumption, restoration, and appointment coverage logic using membershipService
  */
 
-const { describe, it, expect, beforeEach, afterEach, jest } = require('@jest/globals');
-const { addMonths, startOfMonth, endOfMonth, isAfter, isBefore } = require('date-fns');
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { addMonths, startOfMonth, endOfMonth, isAfter, isBefore } from 'date-fns';
 
 // Import the real membership service and database setup
-const { MembershipService } = require('../../server/services/membershipService');
-const { 
+import { MembershipService } from '../../server/services/membershipService.js';
+import { 
   membershipCycles,
   membershipSubscriptions,
   membershipAllowanceEvents,
   appointmentCoverage,
   users,
   appointments
-} = require('../../shared/schema');
+} from '../../shared/schema.js';
 
 // Mock database with realistic query chain behavior
 const mockDb = {
@@ -25,7 +25,7 @@ const mockDb = {
   delete: jest.fn()
 };
 
-jest.mock('../../server/db', () => ({
+jest.mock('../../server/db.js', () => ({
   db: mockDb
 }));
 
