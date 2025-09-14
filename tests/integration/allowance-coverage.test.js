@@ -17,17 +17,9 @@ import {
   appointments
 } from '../../shared/schema.js';
 
-// Mock database with realistic query chain behavior
-const mockDb = {
-  select: jest.fn(),
-  insert: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn()
-};
-
-jest.mock('../../server/db.js', () => ({
-  db: mockDb
-}));
+// Use real database for integration testing (only mock external services like Stripe)
+import { db } from '../../server/db.js';
+import { eq, and } from 'drizzle-orm';
 
 // Mock Stripe for testing
 const mockStripe = {
@@ -43,10 +35,19 @@ describe('Membership Allowance and Coverage Integration Tests', () => {
   let testSubscription;
   let testUser;
   let testCycle;
+  let testSubscriptionId;
+  let testCycleId;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
     membershipService = new MembershipService(mockStripe);
+    
+    // Generate unique IDs for this test run
+    testSubscriptionId = 'test-sub-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    testCycleId = 'test-cycle-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    
+    // Clean up any existing test data
+    await cleanupTestData();
 
     // Setup realistic test data
     testUser = {
@@ -86,47 +87,80 @@ describe('Membership Allowance and Coverage Integration Tests', () => {
       updatedAt: new Date()
     };
 
-    // Setup database mock chains
-    setupDatabaseMocks();
+    // Create real test data in database
+    await setupTestData();
+  });
+  
+  afterEach(async () => {
+    // Clean up test data after each test
+    await cleanupTestData();
   });
 
-  function setupDatabaseMocks() {
-    // Default select chain
-    mockDb.select.mockReturnValue({
-      from: jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          limit: jest.fn().mockResolvedValue([testCycle]),
-          orderBy: jest.fn().mockReturnValue({
-            limit: jest.fn().mockResolvedValue([testCycle])
-          })
-        }),
-        orderBy: jest.fn().mockReturnValue({
-          limit: jest.fn().mockResolvedValue([testCycle])
-        }),
-        limit: jest.fn().mockResolvedValue([testCycle])
-      })
-    });
-
-    // Default insert chain
-    mockDb.insert.mockReturnValue({
-      values: jest.fn().mockReturnValue({
-        returning: jest.fn().mockResolvedValue([testCycle])
-      })
-    });
-
-    // Default update chain
-    mockDb.update.mockReturnValue({
-      set: jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          returning: jest.fn().mockResolvedValue([{
-            ...testCycle,
-            allowanceUsed: 1,
-            allowanceRemaining: 1,
-            updatedAt: new Date()
-          }])
-        })
-      })
-    });
+  async function cleanupTestData() {
+    try {
+      // Delete test data (in reverse dependency order to avoid foreign key issues)
+      await db.delete(membershipAllowanceEvents).where(eq(membershipAllowanceEvents.cycleId, testCycleId));
+      await db.delete(appointmentCoverage).where(eq(appointmentCoverage.subscriptionId, testSubscriptionId));
+      await db.delete(membershipCycles).where(eq(membershipCycles.id, testCycleId));
+      await db.delete(membershipSubscriptions).where(eq(membershipSubscriptions.id, testSubscriptionId));
+    } catch (error) {
+      // Ignore cleanup errors - test data may not exist yet
+    }
+  }
+  
+  async function setupTestData() {
+    try {
+      // Create test subscription in real database
+      const [subscription] = await db.insert(membershipSubscriptions).values({
+        id: testSubscriptionId,
+        patientId: 123,
+        planId: 'monthly-plan-uuid',
+        stripeSubscriptionId: 'sub_test123',
+        stripeCustomerId: 'cus_test123',
+        status: 'active',
+        currentPeriodStart: new Date('2025-01-01'),
+        currentPeriodEnd: new Date('2025-02-01'),
+        activatedAt: new Date('2025-01-01')
+      }).returning();
+      
+      testSubscription = subscription;
+      
+      // Create test cycle in real database
+      const [cycle] = await db.insert(membershipCycles).values({
+        id: testCycleId,
+        subscriptionId: testSubscriptionId,
+        cycleStart: new Date('2025-01-01'),
+        cycleEnd: new Date('2025-02-01'),
+        allowanceGranted: 2,
+        allowanceUsed: 0,
+        allowanceRemaining: 2,
+        resetDate: new Date('2025-02-01'),
+        isActive: true
+      }).returning();
+      
+      testCycle = cycle;
+    } catch (error) {
+      console.error('Error setting up test data:', error);
+      throw error;
+    }
+  }
+  
+  // Helper function to get current cycle from database
+  async function getCurrentCycle() {
+    const cycles = await db.select()
+      .from(membershipCycles)
+      .where(eq(membershipCycles.id, testCycleId))
+      .limit(1);
+    return cycles[0];
+  }
+  
+  // Helper function to get subscription from database  
+  async function getSubscription() {
+    const subscriptions = await db.select()
+      .from(membershipSubscriptions)
+      .where(eq(membershipSubscriptions.id, testSubscriptionId))
+      .limit(1);
+    return subscriptions[0];
   }
 
   describe('Allowance Tracking and Lifecycle', () => {
@@ -144,23 +178,21 @@ describe('Membership Allowance and Coverage Integration Tests', () => {
       expect(result.allowanceRemaining).toBe(2);
       expect(result.isActive).toBe(true);
 
-      // Verify database interactions
-      expect(mockDb.insert).toHaveBeenCalledWith(membershipCycles);
-      
-      const insertCall = mockDb.insert().values;
-      expect(insertCall).toHaveBeenCalledWith({
-        subscriptionId: 'sub_test123',
-        cycleStart: new Date('2025-01-01'),
-        cycleEnd: new Date('2025-02-01'),
-        allowanceGranted: 2,
-        allowanceUsed: 0,
-        allowanceRemaining: 2,
-        resetDate: new Date('2025-02-01'),
-        isActive: true
-      });
+      // Verify real database persistence effects
+      const cycleInDb = await getCurrentCycle();
+      expect(cycleInDb).toBeDefined();
+      expect(cycleInDb.subscriptionId).toBe('sub_test123');
+      expect(cycleInDb.allowanceGranted).toBe(2);
+      expect(cycleInDb.allowanceUsed).toBe(0);
+      expect(cycleInDb.allowanceRemaining).toBe(2);
+      expect(cycleInDb.isActive).toBe(true);
 
-      // Verify allowance grant event was logged
-      expect(mockDb.insert).toHaveBeenCalledWith(membershipAllowanceEvents);
+      // Verify allowance grant event was logged in real database
+      const events = await db.select()
+        .from(membershipAllowanceEvents)
+        .where(eq(membershipAllowanceEvents.cycleId, result.id));
+      expect(events.length).toBeGreaterThan(0);
+      expect(events[0].eventType).toBe('granted');
     });
 
     it('should track allowance consumption correctly', async () => {
