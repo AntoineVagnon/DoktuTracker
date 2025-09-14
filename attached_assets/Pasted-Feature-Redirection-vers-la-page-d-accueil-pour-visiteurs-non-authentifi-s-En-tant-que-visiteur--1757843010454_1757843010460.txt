@@ -1,0 +1,50 @@
+Feature: Redirection vers la page d'accueil pour visiteurs non authentifiés
+  En tant que visiteur non authentifié
+  Je veux être redirigé vers la page d'accueil si j'ouvre une URL protégée
+  Afin d'éviter d'atterrir sur une page inappropriée (ex. réservation) sans être connecté
+
+  Background:
+    Given je ne suis pas authentifié
+
+  Rule: Toute route protégée redirige vers la Home
+    Scenario Outline: Accès à une route protégée
+      When je navigue vers "<route_protegee>"
+      Then je suis redirigé vers "/"
+      And le statut HTTP de redirection est 302
+      And la page "Accueil" s'affiche
+      And je ne vois pas la page "Réserver un rendez-vous"
+
+      Examples:
+        | route_protegee                             |
+        | /dashboard                                 |
+        | /dashboard/patient                         |
+        | /settings/account                          |
+        | /appointments                              |
+        | /appointments/new?doctor=42&date=2025-09-16|
+
+  Rule: Les routes publiques restent accessibles sans redirection
+    Scenario Outline: Accès aux pages publiques
+      When j’ouvre "<route_publique>"
+      Then le statut HTTP est 200
+      And la page attendue s'affiche
+
+      Examples:
+        | route_publique     |
+        | /                  |
+        | /pricing           |
+        | /book              |
+        | /doctors/dr-kovac  |
+        | /faq               |
+
+  Rule: (Optionnel) Conserver la locale dans la redirection
+    Scenario Outline: Redirection vers la Home localisée
+      Given la locale active est "<locale>"
+      When je navigue vers "<route_locale_protegee>"
+      Then je suis redirigé vers "/<locale>/"
+      And le statut HTTP de redirection est 302
+
+      Examples:
+        | locale | route_locale_protegee                 |
+        | fr     | /fr/dashboard                         |
+        | de     | /de/settings/account                  |
+        | bs     | /bs/appointments?tab=upcoming         |
