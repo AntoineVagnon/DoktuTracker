@@ -99,6 +99,18 @@ export interface IStorage {
     status: string;
     paymentMethod: string;
   }): Promise<void>;
+  
+  getPaymentByAppointmentId(appointmentId: string): Promise<any | undefined>;
+  
+  recordRefund(refund: {
+    appointmentId: string;
+    paymentId: string;
+    stripeRefundId: string;
+    amount: string;
+    currency: string;
+    reason: string;
+    status: string;
+  }): Promise<void>;
 
   // Review operations
   createReview(review: InsertReview): Promise<Review>;
@@ -2324,6 +2336,34 @@ export class PostgresStorage implements IStorage {
       status: payment.status,
       paymentMethod: payment.paymentMethod,
     });
+  }
+
+  async getPaymentByAppointmentId(appointmentId: string): Promise<any | undefined> {
+    const [payment] = await db
+      .select()
+      .from(payments)
+      .where(eq(payments.appointmentId, appointmentId));
+    return payment;
+  }
+
+  async recordRefund(refund: {
+    appointmentId: string;
+    paymentId: string;
+    stripeRefundId: string;
+    amount: string;
+    currency: string;
+    reason: string;
+    status: string;
+  }): Promise<void> {
+    // Update the payment record with refund information
+    await db.update(payments)
+      .set({
+        status: 'refunded',
+        refundAmount: refund.amount,
+        refundReason: refund.reason,
+        updatedAt: new Date()
+      })
+      .where(eq(payments.id, refund.paymentId));
   }
 
   // Health Profile operations

@@ -923,6 +923,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Determine refund eligibility
       const refundEligible = appointment.status === 'paid' && timeDiffMinutes >= 60;
       
+      // Process actual refund if eligible
+      let refundResult = null;
+      if (refundEligible) {
+        try {
+          // Get the payment record to find Stripe payment intent ID
+          const paymentRecord = await storage.getPaymentByAppointmentId(appointmentId);
+          if (paymentRecord && paymentRecord.stripePaymentIntentId) {
+            console.log(`💰 Processing refund for appointment ${appointmentId}, payment intent: ${paymentRecord.stripePaymentIntentId}`);
+            
+            // Create refund with Stripe
+            const refund = await stripe.refunds.create({
+              payment_intent: paymentRecord.stripePaymentIntentId,
+              reason: 'requested_by_customer',
+              metadata: {
+                appointmentId: appointmentId,
+                cancelledBy: cancelledBy,
+                reason: reason || 'Appointment cancelled'
+              }
+            });
+            
+            console.log(`✅ Stripe refund created: ${refund.id}, amount: ${refund.amount}`);
+            
+            // Record refund in database
+            await storage.recordRefund({
+              appointmentId: appointmentId,
+              paymentId: paymentRecord.id,
+              stripeRefundId: refund.id,
+              amount: (refund.amount / 100).toString(), // Convert from cents
+              currency: refund.currency.toUpperCase(),
+              reason: reason || 'Appointment cancelled',
+              status: refund.status
+            });
+            
+            refundResult = {
+              refundId: refund.id,
+              amount: (refund.amount / 100).toString(),
+              currency: refund.currency.toUpperCase(),
+              status: refund.status
+            };
+            
+            console.log(`✅ Refund recorded in database for appointment ${appointmentId}`);
+          } else {
+            console.warn(`⚠️ No payment record found for appointment ${appointmentId}, cannot process refund`);
+          }
+        } catch (refundError) {
+          console.error('💰 Failed to process refund:', refundError);
+          // Don't fail the cancellation if refund fails, but log it
+        }
+      }
+      
       // Send cancellation email notification
       try {
         if (appointment.patient?.email) {
