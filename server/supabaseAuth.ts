@@ -39,14 +39,18 @@ export async function setupSupabaseAuth(app: Express) {
           console.log('Email mismatch detected - user exists in DB but not in Supabase');
           console.log('DB User found:', { id: dbUser.id, email: dbUser.email, role: dbUser.role });
           
-          // For test accounts with doktu domain, allow temporary bypass
+          // For test accounts with doktu domain, allow temporary bypass ONLY in development
           const isTestAccount = email.includes('@doktu.') || email.includes('@test') || email.includes('@example');
-          console.log('Is test account?', isTestAccount, 'for email:', email);
+          const isDevelopment = process.env.NODE_ENV === 'development';
+          const authTestBypass = process.env.AUTH_TEST_BYPASS === 'true';
           
-          if (isTestAccount) {
-            console.log('Allowing temporary bypass for test account:', email);
+          console.log('Is test account?', isTestAccount, 'for email:', email);
+          console.log('Environment:', { NODE_ENV: process.env.NODE_ENV, AUTH_TEST_BYPASS: process.env.AUTH_TEST_BYPASS });
+          
+          if (isTestAccount && isDevelopment && authTestBypass) {
+            console.log('🔓 SECURITY WARNING: Allowing test bypass for:', email, '(development only)');
             
-            // Create a temporary session for the test account
+            // Create a temporary session for the test account - DEVELOPMENT ONLY
             (req.session as any).supabaseSession = {
               access_token: 'temp_token_' + Date.now(),
               refresh_token: 'temp_refresh_' + Date.now(),
@@ -54,12 +58,12 @@ export async function setupSupabaseAuth(app: Express) {
               user: {
                 id: 'temp_user_' + dbUser.id,
                 email: dbUser.email,
-                role: dbUser.role
+                role: 'patient' // SECURITY: Force role to patient for test bypass
               }
             };
             (req.session as any).userId = 'temp_user_' + dbUser.id;
             
-            console.log('Temporary session created for test account');
+            console.log('Temporary session created for test account (development only)');
             
             // Save session
             await new Promise((resolve, reject) => {
@@ -75,10 +79,18 @@ export async function setupSupabaseAuth(app: Express) {
             });
             
             return res.json({ 
-              user: dbUser,
+              user: { ...dbUser, role: 'patient' }, // SECURITY: Force role to patient
               session: (req.session as any).supabaseSession,
-              message: 'Login successful (test mode - bypassed Supabase auth)',
-              testMode: true
+              message: 'Login successful (development test mode)',
+              testMode: true,
+              fallbackProfile: true
+            });
+          } else if (isTestAccount && !isDevelopment) {
+            // SECURITY: Explicitly reject test bypass in production
+            console.error('🔒 SECURITY: Test bypass attempted in production for:', email);
+            return res.status(401).json({ 
+              error: 'Authentication failed',
+              hint: 'Test accounts are not available in production'
             });
           }
           
@@ -111,18 +123,40 @@ export async function setupSupabaseAuth(app: Express) {
 
       // Get or create user profile in database
       // For login, find user by email since Supabase UUIDs don't match our integer IDs
-      let user = await storage.getUserByEmail(data.user.email || email);
-      if (!user) {
-        // For new users, determine role from user metadata or default to patient
-        const userRole = data.user.user_metadata?.role || 'patient';
-        user = await storage.upsertUser({
+      let user;
+      try {
+        user = await storage.getUserByEmail(data.user.email || email);
+        if (!user) {
+          // SECURITY: For new users, always default to patient role (don't trust metadata)
+          user = await storage.upsertUser({
+            email: data.user.email || email,
+            role: 'patient', // SECURITY: Always default to patient, require admin promotion for other roles
+            firstName: data.user.user_metadata?.first_name || null,
+            lastName: data.user.user_metadata?.last_name || null
+          });
+          console.log('Created new user profile:', { email: user.email, role: user.role });
+        } else {
+          console.log('Found existing user:', { email: user.email, role: user.role });
+        }
+      } catch (dbError: any) {
+        console.error('Database error during login - creating fallback user profile:', dbError.message);
+        // SECURITY: Create secure fallback user profile when database is unavailable
+        user = {
+          id: -1, // SECURITY: Use sentinel value to indicate fallback mode
           email: data.user.email || email,
-          role: userRole,
-          username: (data.user.email || email).split('@')[0]
-        });
-        console.log('Created new user profile:', { email: user.email, role: user.role });
-      } else {
-        console.log('Found existing user:', { email: user.email, role: user.role });
+          role: 'patient', // SECURITY: Always default to patient role in fallback mode
+          firstName: data.user.user_metadata?.first_name || null,
+          lastName: data.user.user_metadata?.last_name || null,
+          title: null,
+          phone: null,
+          profileImageUrl: null,
+          approved: false, // SECURITY: Default NOT approved for fallback users
+          stripeCustomerId: null,
+          stripeSubscriptionId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        console.log('🔒 Using SECURE fallback user profile for login:', { email: user.email, role: user.role, fallback: true });
       }
 
       // Save session before responding
@@ -138,11 +172,22 @@ export async function setupSupabaseAuth(app: Express) {
         });
       });
 
-      res.json({ 
+      // SECURITY: Add degraded state indicators for fallback mode
+      const response: any = { 
         user,
         session: data.session,
         message: 'Login successful' 
-      });
+      };
+      
+      // SECURITY: Indicate if we're in fallback mode
+      if (user.id === -1) {
+        response.fallbackProfile = true;
+        response.degradedAuth = true;
+        res.set('X-Auth-Degraded', 'true');
+        console.log('🔒 SECURITY: Responding with degraded auth indicators');
+      }
+      
+      res.json(response);
 
     } catch (error: any) {
       console.error('Login error:', error);
@@ -153,7 +198,8 @@ export async function setupSupabaseAuth(app: Express) {
   // Register endpoint
   app.post('/api/auth/register', async (req, res) => {
     try {
-      const { email, password, firstName, lastName, role = 'patient' } = req.body;
+      const { email, password, firstName, lastName } = req.body;
+      // SECURITY: Always force role to 'patient' - never trust client input for role assignment
 
       if (!email || !password) {
         return res.status(400).json({ error: 'Email and password required' });
@@ -175,7 +221,7 @@ export async function setupSupabaseAuth(app: Express) {
           data: {
             first_name: firstName,
             last_name: lastName,
-            role: role
+            role: 'patient' // SECURITY: Always set to patient - role promotion requires admin action
           }
         }
       });
@@ -190,14 +236,14 @@ export async function setupSupabaseAuth(app: Express) {
           email: data.user.email,
           firstName,
           lastName,
-          role
+          role: 'patient' // SECURITY: Always patient role
         });
         
         const user = await storage.upsertUser({
           email: data.user.email!,
           firstName,
           lastName,
-          role
+          role: 'patient' // SECURITY: Always set to patient - admin must promote roles manually
         });
         
         console.log('User created/updated:', user);
@@ -539,7 +585,7 @@ export async function setupSupabaseAuth(app: Express) {
       
       // Check if the new email is already in use
       const existingUser = await storage.getUserByEmail(newEmail);
-      if (existingUser && existingUser.id !== userId) {
+      if (existingUser && existingUser.id !== Number(userId)) {
         return res.status(400).json({ error: 'This email is already in use' });
       }
       

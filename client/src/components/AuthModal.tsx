@@ -201,15 +201,20 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="auth-backdrop backdrop-blur-sm">
-      {/* Backdrop click handler */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      {/* Backdrop click handler - only catches clicks outside modal */}
       <div 
         className="absolute inset-0"
         onClick={handleClose}
+        data-testid="modal-backdrop"
       />
       
-      {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md mx-4 p-6 z-10">
+      {/* Modal - prevent event bubbling to backdrop */}
+      <div 
+        className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md p-6 z-10"
+        onClick={(e) => e.stopPropagation()}
+        data-testid="auth-modal"
+      >
         {/* Close button */}
         <button
           onClick={handleClose}
