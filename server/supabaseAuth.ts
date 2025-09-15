@@ -777,8 +777,31 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
       
       console.log('Auth middleware - Test user validated:', testUser.email);
       
-      // Get user profile from database 
-      const userProfile = await storage.getUserByEmail(testUser.email);
+      // Get user profile from database with fallback for database errors
+      let userProfile;
+      try {
+        userProfile = await storage.getUserByEmail(testUser.email);
+      } catch (dbError: any) {
+        console.error('Auth middleware - Database error for test user:', dbError.message);
+        // Create fallback profile when database is unavailable
+        userProfile = {
+          id: -1, // Sentinel value for fallback
+          email: testUser.email,
+          role: 'patient', // Always default to patient for safety
+          firstName: null,
+          lastName: null,
+          title: null,
+          phone: null,
+          profileImageUrl: null,
+          approved: false, // Default to not approved for safety
+          stripeCustomerId: null,
+          stripeSubscriptionId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        console.log('Auth middleware - Using fallback profile for test user due to DB error');
+        res.set('X-Auth-Degraded', 'true');
+      }
       
       if (!userProfile) {
         console.log('Auth middleware - No user profile found for test user:', testUser.email);
@@ -820,8 +843,31 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
     console.log('Auth middleware - User validated:', user.email);
 
-    // Get user profile from database 
-    const userProfile = await storage.getUserByEmail(user.email!);
+    // Get user profile from database with fallback for database errors
+    let userProfile;
+    try {
+      userProfile = await storage.getUserByEmail(user.email!);
+    } catch (dbError: any) {
+      console.error('Auth middleware - Database error for user:', dbError.message);
+      // Create fallback profile when database is unavailable
+      userProfile = {
+        id: -1, // Sentinel value for fallback
+        email: user.email!,
+        role: 'patient', // Always default to patient for safety
+        firstName: user.user_metadata?.first_name || null,
+        lastName: user.user_metadata?.last_name || null,
+        title: null,
+        phone: null,
+        profileImageUrl: null,
+        approved: false, // Default to not approved for safety
+        stripeCustomerId: null,
+        stripeSubscriptionId: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      console.log('Auth middleware - Using fallback profile due to DB error');
+      res.set('X-Auth-Degraded', 'true');
+    }
     
     if (!userProfile) {
       console.log('Auth middleware - No user profile found for:', user.email);
