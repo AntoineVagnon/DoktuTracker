@@ -18,7 +18,7 @@ const client = postgres({
   host: u.hostname,
   port: Number(u.port) || 5432,
   database: u.pathname.slice(1),
-  username: decodeURIComponent(u.username),
+  user: decodeURIComponent(u.username),
   password: decodeURIComponent(u.password || ''),
   ssl: 'require', // Required for Supabase
   prepare: false, // Required for pgbouncer/pooler
