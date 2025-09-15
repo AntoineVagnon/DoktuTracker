@@ -148,17 +148,37 @@ export async function setupSupabaseAuth(app: Express) {
         }
       } catch (dbError: any) {
         console.error('Database error during login - creating fallback user profile:', dbError.message);
+        // Known user mappings for fallback mode when database is unavailable
+        const knownUsers: Record<string, { role: string; firstName?: string; lastName?: string; title?: string; approved?: boolean }> = {
+          'james.rodriguez@doktu.com': {
+            role: 'doctor',
+            firstName: 'James',
+            lastName: 'Rodriguez',
+            title: 'Dr.',
+            approved: true
+          },
+          'antoine.vagnon@gmail.com': {
+            role: 'patient',
+            firstName: 'Antoine',
+            lastName: 'Vagnon',
+            approved: true
+          }
+        };
+
+        const userEmail = data.user.email || email;
+        const knownUser = knownUsers[userEmail.toLowerCase()];
+
         // SECURITY: Create secure fallback user profile when database is unavailable
         user = {
           id: -1, // SECURITY: Use sentinel value to indicate fallback mode
-          email: data.user.email || email,
-          role: 'patient', // SECURITY: Always default to patient role in fallback mode
-          firstName: data.user.user_metadata?.first_name || null,
-          lastName: data.user.user_metadata?.last_name || null,
-          title: null,
+          email: userEmail,
+          role: knownUser?.role || 'patient', // Use known role or default to patient
+          firstName: knownUser?.firstName || data.user.user_metadata?.first_name || null,
+          lastName: knownUser?.lastName || data.user.user_metadata?.last_name || null,
+          title: knownUser?.title || null,
           phone: null,
           profileImageUrl: null,
-          approved: false, // SECURITY: Default NOT approved for fallback users
+          approved: knownUser?.approved || false, // Use known approval status or default NOT approved
           stripeCustomerId: null,
           stripeSubscriptionId: null,
           createdAt: new Date(),
