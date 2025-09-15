@@ -121,8 +121,8 @@ export default function Header() {
 
           {/* Right side - Auth buttons or User menu */}
           <div className="flex items-center space-x-4">
-            {/* Allowance Dashboard - only show for authenticated patients */}
-            {isAuthenticated && user?.role === "patient" && <AllowanceDashboard />}
+            {/* Allowance Dashboard - only show for authenticated patients with active subscriptions */}
+            {isAuthenticated && user?.role === "patient" && user?.stripeSubscriptionId && <AllowanceDashboard />}
             
             {!isAuthenticated ? (
               <>
