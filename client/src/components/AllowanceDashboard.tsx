@@ -27,7 +27,7 @@ export function AllowanceDashboard() {
 
   const { data: allowanceData, isLoading, error } = useQuery<AllowanceStatus>({
     queryKey: ["/api/membership/allowance"],
-    enabled: isAuthenticated && user?.role === "patient",
+    enabled: isAuthenticated && user?.role === "patient" && !!user?.stripeSubscriptionId,
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
   });
 

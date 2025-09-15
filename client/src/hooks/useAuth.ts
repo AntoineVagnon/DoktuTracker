@@ -11,6 +11,7 @@ export interface User {
   avatar_url?: string;
   role?: string;
   approved?: boolean;
+  stripeSubscriptionId?: string;
 }
 
 export function useAuth() {
