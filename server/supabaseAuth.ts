@@ -34,7 +34,15 @@ export async function setupSupabaseAuth(app: Express) {
         console.error('Supabase login error:', error.message);
         
         // Check if this is a mismatch issue - user exists in our DB but not in Supabase
-        const dbUser = await storage.getUserByEmail(email);
+        let dbUser;
+        try {
+          dbUser = await storage.getUserByEmail(email);
+        } catch (dbError: any) {
+          console.error('Database error during login user check:', dbError.message);
+          // If database is down, just return the Supabase error
+          return res.status(401).json({ error: error.message });
+        }
+        
         if (dbUser) {
           console.log('Email mismatch detected - user exists in DB but not in Supabase');
           console.log('DB User found:', { id: dbUser.id, email: dbUser.email, role: dbUser.role });
