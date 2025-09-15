@@ -86,12 +86,12 @@ export function AllowanceDashboard() {
     <Tooltip>
       <TooltipTrigger asChild>
         <Card 
-          className="w-80 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800 hover:shadow-md transition-shadow cursor-pointer"
+          className="w-64 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800 hover:shadow-md transition-shadow cursor-pointer"
           data-testid="allowance-dashboard-widget"
         >
-          <CardContent className="p-4">
-            <div className="space-y-3">
-              {/* Header with remaining consultations */}
+          <CardContent className="p-3">
+            <div className="space-y-2">
+              {/* Compact header with consultations and badge */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <CreditCard className="h-4 w-4 text-blue-600 dark:text-blue-400" />
@@ -105,39 +105,32 @@ export function AllowanceDashboard() {
                 </Badge>
               </div>
 
-              {/* Progress bar */}
-              <div className="space-y-1">
-                <div className="relative">
-                  <Progress 
-                    value={usagePercentage} 
-                    className="h-2 bg-gray-200 dark:bg-gray-700"
-                    data-testid="allowance-usage-progress"
-                  />
-                  <div 
-                    className={`absolute top-0 left-0 h-2 rounded-full transition-all ${getProgressColor()}`}
-                    style={{ width: `${usagePercentage}%` }}
-                  />
+              {/* Compact progress bar with inline stats */}
+              <div className="flex items-center space-x-3">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Progress 
+                      value={usagePercentage} 
+                      className="h-1.5 bg-gray-200 dark:bg-gray-700"
+                      data-testid="allowance-usage-progress"
+                    />
+                    <div 
+                      className={`absolute top-0 left-0 h-1.5 rounded-full transition-all ${getProgressColor()}`}
+                      style={{ width: `${usagePercentage}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                  <span>Used: {allowance.allowanceUsed}</span>
-                  <span>Total: {allowance.allowanceGranted}</span>
+                <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
+                  <span>{allowance.allowanceUsed}/{allowance.allowanceGranted}</span>
                 </div>
               </div>
 
-              {/* Cycle information */}
-              <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-                <div className="flex items-center space-x-1">
-                  <Clock className="h-3 w-3" />
-                  <span data-testid="cycle-reset-info">
-                    Resets in {daysUntilReset} day{daysUntilReset !== 1 ? 's' : ''}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Calendar className="h-3 w-3" />
-                  <span data-testid="cycle-end-date">
-                    {format(new Date(allowance.cycleEnd), "MMM d")}
-                  </span>
-                </div>
+              {/* Reset date only */}
+              <div className="flex items-center justify-center space-x-1 text-xs text-gray-600 dark:text-gray-400">
+                <Calendar className="h-3 w-3" />
+                <span data-testid="cycle-end-date">
+                  Reset on {format(new Date(allowance.cycleEnd), "MMM d")}
+                </span>
               </div>
             </div>
           </CardContent>
