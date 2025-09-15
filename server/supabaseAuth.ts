@@ -524,17 +524,34 @@ export async function setupSupabaseAuth(app: Express) {
   // Get current user endpoint
   app.get('/api/auth/user', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user?.id;
-      if (!userId) {
+      const user = req.user;
+      if (!user) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
 
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+      // Check if this is a fallback user (when database is unavailable)
+      if (user.id === -1) {
+        // Return the fallback user directly without database lookup
+        console.log('Returning fallback user profile (database unavailable)');
+        res.set('X-Auth-Degraded', 'true');
+        return res.json(user);
       }
 
-      res.json(user);
+      // For normal users, fetch fresh data from database
+      try {
+        const freshUser = await storage.getUser(user.id.toString());
+        if (!freshUser) {
+          // User not in database, return the authenticated user object
+          console.log('User not found in database, returning session user');
+          return res.json(user);
+        }
+        res.json(freshUser);
+      } catch (dbError: any) {
+        // Database error, return the user from session
+        console.error('Database error fetching user, returning session user:', dbError.message);
+        res.set('X-Auth-Degraded', 'true');
+        return res.json(user);
+      }
     } catch (error: any) {
       console.error('Get user error:', error);
       res.status(500).json({ message: 'Failed to fetch user' });
