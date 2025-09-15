@@ -52,38 +52,14 @@ export function AllowanceDashboard() {
     );
   }
 
-  // Show error state if query failed
+  // Don't show anything if query failed (user likely has no membership plan)
   if (error) {
-    return (
-      <Card className="w-80 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-red-200 dark:border-red-700">
-        <CardContent className="p-4">
-          <div className="flex items-center space-x-2">
-            <AlertCircle className="h-4 w-4 text-red-500" />
-            <div>
-              <p className="text-sm font-medium text-red-700 dark:text-red-300">Unable to Load Plan</p>
-              <p className="text-xs text-red-500 dark:text-red-400">Please refresh or try again later</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
-  // Show no subscription state
+  // Don't show anything if user has no subscription
   if (!allowanceData?.hasAllowance || !allowanceData?.allowanceStatus) {
-    return (
-      <Card className="w-80 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20 border-gray-200 dark:border-gray-700">
-        <CardContent className="p-4">
-          <div className="flex items-center space-x-2">
-            <AlertCircle className="h-4 w-4 text-gray-500" />
-            <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">No Active Plan</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Consider joining a membership</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   const allowance = allowanceData.allowanceStatus;

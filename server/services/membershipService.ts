@@ -422,7 +422,19 @@ export class MembershipService {
       return null;
     }
 
-    const cycle = await this.getCurrentAllowanceCycle(user.stripeSubscriptionId);
+    // First, get the membership subscription record using the Stripe subscription ID
+    const [subscription] = await db
+      .select()
+      .from(membershipSubscriptions)
+      .where(eq(membershipSubscriptions.stripeSubscriptionId, user.stripeSubscriptionId))
+      .limit(1);
+
+    if (!subscription) {
+      return null;
+    }
+
+    // Now use the subscription UUID to get the current cycle
+    const cycle = await this.getCurrentAllowanceCycle(subscription.id);
     if (!cycle) {
       return null;
     }
