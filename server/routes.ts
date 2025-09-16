@@ -686,56 +686,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/appointments", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const userId = user?.id; // Use the correct user ID from Supabase Auth middleware
+      const userId = user?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      console.log('🔍 Appointment creation request body:', req.body);
-      console.log('🔍 User ID from auth:', userId);
+      console.log('🔍 Booking request:', { 
+        userId, 
+        doctorId: req.body.doctorId, 
+        timeSlotId: req.body.timeSlotId,
+        appointmentDate: req.body.appointmentDate 
+      });
       
       const appointmentPrice = parseFloat(req.body.price || "35.00");
       const appointmentDate = new Date(req.body.appointmentDate);
       
-      // 💎 CHECK MEMBERSHIP COVERAGE FIRST
-      console.log('🎟️ Checking membership coverage for appointment...');
-      const coverageResult = await membershipService.checkAppointmentCoverage(
-        parseInt(userId), 
-        appointmentPrice, 
-        appointmentDate
-      );
-      
-      console.log('🎟️ Coverage result:', coverageResult);
-      
+      // 🔑 STEP 1: ALWAYS CREATE APPOINTMENT AS PENDING FIRST
       const appointmentDataInput = {
-        patientId: parseInt(userId), // Convert to integer to match schema
-        doctorId: parseInt(req.body.doctorId), // Convert to integer to match schema
-        appointmentDate: appointmentDate, // Convert string to Date
-        status: coverageResult.isCovered ? 'paid' : 'pending', // Set status based on coverage
+        patientId: parseInt(userId),
+        doctorId: parseInt(req.body.doctorId),
+        appointmentDate: appointmentDate,
+        status: 'pending', // Always start as pending, then upgrade to paid/confirmed if covered
         paymentIntentId: req.body.paymentIntentId || null,
         clientSecret: req.body.clientSecret || null,
         zoomMeetingId: req.body.zoomMeetingId || null,
         zoomJoinUrl: req.body.zoomJoinUrl || null,
         zoomStartUrl: req.body.zoomStartUrl || null,
         zoomPassword: req.body.zoomPassword || null,
-        slotId: req.body.timeSlotId || null, // Handle the timeSlotId from frontend
-        price: appointmentPrice.toFixed(2) // Handle the price from frontend
+        slotId: req.body.timeSlotId || null,
+        price: appointmentPrice.toFixed(2)
       };
       
-      console.log('🔍 Data prepared for schema validation:', appointmentDataInput);
+      console.log('🔍 Validating appointment data:', appointmentDataInput);
       
       let appointmentData;
       try {
         appointmentData = insertAppointmentSchema.parse(appointmentDataInput);
-        console.log('✅ Schema validation passed successfully');
+        console.log('✅ Schema validation passed');
       } catch (validationError: any) {
         console.error('❌ Schema validation failed:', validationError);
-        console.error('❌ Validation error details:', validationError.issues || validationError.message);
-        console.error('❌ Data that failed validation:', appointmentDataInput);
         throw new Error(`Schema validation failed: ${validationError.message || JSON.stringify(validationError)}`);
       }
       
-      // Cancel any existing pending appointments for this user to prevent multiple payment banners
+      // 🚫 Cancel existing pending appointments to prevent multiple payment banners
       const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
         apt.status === 'pending' || apt.status === 'pending_payment'
@@ -746,129 +739,232 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`🚫 Auto-cancelled previous ${pendingApt.status} appointment ${pendingApt.id} for user ${userId}`);
       }
       
-      // 💎 ATOMIC APPOINTMENT CREATION WITH MEMBERSHIP HANDLING
-      const appointment = await db.transaction(async (tx) => {
-        // Create transaction-bound storage instance
+      // 🔑 STEP 2: IDEMPOTENCY CHECK AND ATOMIC APPOINTMENT CREATION
+      const result = await db.transaction(async (tx) => {
         const txStorage = storage.with(tx);
         
-        // Create appointment within transaction
-        const createdAppointment = await txStorage.createAppointment(appointmentData);
-        
-        // Get user's subscription details within transaction
-        const patient = await txStorage.getUser(userId);
-        if (!patient?.stripeSubscriptionId) {
-          console.log('💰 No membership found, appointment requires direct payment');
-          return createdAppointment;
+        // 🛡️ IDEMPOTENCY GUARD 1: Check for existing appointments on this slot within last 5 minutes
+        if (appointmentData.slotId) {
+          const recentDuplicates = await tx
+            .select()
+            .from(appointments)
+            .where(
+              and(
+                eq(appointments.slotId, appointmentData.slotId),
+                eq(appointments.patientId, appointmentData.patientId),
+                sql`created_at > NOW() - INTERVAL '5 minutes'`,
+                sql`status != 'cancelled'`
+              )
+            )
+            .limit(1);
+            
+          if (recentDuplicates.length > 0) {
+            console.log(`🛡️ Idempotency guard: Found duplicate appointment ${recentDuplicates[0].id} for slot ${appointmentData.slotId}`);
+            throw new Error('DUPLICATE_APPOINTMENT_DETECTED');
+          }
         }
         
-        // Get membership subscription record using Stripe subscription ID
-        const [subscription] = await tx
-          .select()
-          .from(membershipSubscriptions)
-          .where(eq(membershipSubscriptions.stripeSubscriptionId, patient.stripeSubscriptionId))
-          .limit(1);
+        // 🛡️ IDEMPOTENCY GUARD 2: Check slot availability and lock it 
+        if (appointmentData.slotId) {
+          const [slotCheck] = await tx
+            .select()
+            .from(doctorTimeSlots)
+            .where(eq(doctorTimeSlots.id, appointmentData.slotId))
+            .for('update') // Lock the slot during transaction
+            .limit(1);
+            
+          if (!slotCheck) {
+            console.log(`🛡️ Slot ${appointmentData.slotId} not found`);
+            throw new Error('SLOT_NOT_FOUND');
+          }
           
-        if (!subscription) {
-          console.log('💰 No membership subscription found, appointment requires direct payment');
-          return createdAppointment;
-        }
-
-        // 🔒 ATOMIC ALLOWANCE DEDUCTION WITH PROPER LOCKING
-        // Use SELECT FOR UPDATE to lock the cycle and prevent race conditions
-        const [currentCycle] = await tx
-          .select()
-          .from(membershipCycles)
-          .where(
-            and(
-              eq(membershipCycles.subscriptionId, subscription.id),
-              eq(membershipCycles.isActive, true)
-            )
-          )
-          .for('update')
-          .limit(1);
-        
-        if (!currentCycle) {
-          console.log('💰 No active allowance cycle found, appointment requires direct payment');
-          return createdAppointment;
+          if (!slotCheck.isAvailable) {
+            console.log(`🛡️ Slot ${appointmentData.slotId} is already booked`);
+            throw new Error('SLOT_ALREADY_BOOKED');
+          }
         }
         
-        // Conditional update with race condition protection - only deduct if allowance available
-        const [updatedCycle] = await tx
-          .update(membershipCycles)
-          .set({
-            allowanceUsed: sql`${membershipCycles.allowanceUsed} + 1`,
-            allowanceRemaining: sql`${membershipCycles.allowanceRemaining} - 1`,
-            updatedAt: new Date()
-          })
-          .where(
-            and(
-              eq(membershipCycles.id, currentCycle.id),
-              sql`${membershipCycles.allowanceRemaining} >= 1`
-            )
-          )
-          .returning();
-
-        if (!updatedCycle) {
-          console.log('💰 Insufficient allowance remaining, appointment requires direct payment');
-          return createdAppointment;
-        }
-
-        console.log('🎟️ Appointment covered by membership, allowance consumed');
-
-        // Create allowance event log (within transaction)
-        const [allowanceEvent] = await tx
-          .insert(membershipAllowanceEvents)
-          .values({
-            subscriptionId: subscription.id,
-            cycleId: currentCycle.id,
-            eventType: 'consume',
-            appointmentId: createdAppointment.id,
-            allowanceChange: -1,
-            allowanceBefore: currentCycle.allowanceRemaining,
-            allowanceAfter: updatedCycle.allowanceRemaining,
-            reason: 'Appointment booking'
-          })
-          .returning();
-
-        // Create coverage record with idempotency (within transaction)
-        const coverageCreated = await txStorage.createAppointmentCoverageIfMissing({
-          appointmentId: createdAppointment.id,
-          subscriptionId: subscription.id,
-          cycleId: currentCycle.id,
-          allowanceEventId: allowanceEvent.id,
-          coverageType: 'full_coverage',
-          originalPrice: appointmentPrice.toFixed(2),
-          coveredAmount: appointmentPrice.toFixed(2),
-          patientPaid: '0.00'
-        });
-
-        if (!coverageCreated) {
-          console.log('⚡ Coverage already exists, skipping (idempotency protection)');
-        }
-
-        // Mark slot as unavailable since appointment is now covered/paid (within transaction)
-        if (createdAppointment.slotId) {
-          await txStorage.markSlotUnavailable(createdAppointment.slotId);
-          console.log(`🔒 Slot ${createdAppointment.slotId} marked as unavailable for membership-covered appointment`);
-        }
-
-        console.log('🎟️ Allowance consumed atomically:', {
-          allowanceUsed: updatedCycle.allowanceUsed,
-          allowanceRemaining: updatedCycle.allowanceRemaining
-        });
+        // Create pending appointment first
+        const createdAppointment = await txStorage.createAppointment(appointmentData);
+        console.log(`✅ Created pending appointment ${createdAppointment.id}`);
         
-        return createdAppointment;
+        // Initialize result structure
+        let coverageResult: any = null;
+        let clientSecret: string | null = null;
+        let paymentRequired = true;
+        
+        // 🎟️ TRY MEMBERSHIP COVERAGE FIRST
+        const patient = await txStorage.getUser(userId);
+        if (patient?.stripeSubscriptionId) {
+          console.log(`🔍 Checking membership for user ${userId} with subscription ${patient.stripeSubscriptionId}`);
+          
+          // Get membership subscription
+          const [subscription] = await tx
+            .select()
+            .from(membershipSubscriptions)
+            .where(eq(membershipSubscriptions.stripeSubscriptionId, patient.stripeSubscriptionId))
+            .limit(1);
+            
+          if (subscription) {
+            console.log(`🔍 Found subscription ${subscription.id}`);
+            
+            // Get current active cycle with lock
+            const [currentCycle] = await tx
+              .select()
+              .from(membershipCycles)
+              .where(
+                and(
+                  eq(membershipCycles.subscriptionId, subscription.id),
+                  eq(membershipCycles.isActive, true)
+                )
+              )
+              .for('update')
+              .limit(1);
+            
+            if (currentCycle && currentCycle.allowanceRemaining >= 1) {
+              console.log(`🎟️ Found cycle ${currentCycle.id} with ${currentCycle.allowanceRemaining} allowance remaining`);
+              
+              // Attempt allowance consumption
+              const [updatedCycle] = await tx
+                .update(membershipCycles)
+                .set({
+                  allowanceUsed: sql`${membershipCycles.allowanceUsed} + 1`,
+                  allowanceRemaining: sql`${membershipCycles.allowanceRemaining} - 1`,
+                  updatedAt: new Date()
+                })
+                .where(
+                  and(
+                    eq(membershipCycles.id, currentCycle.id),
+                    sql`${membershipCycles.allowanceRemaining} >= 1`
+                  )
+                )
+                .returning();
+
+              if (updatedCycle) {
+                console.log('🎟️ Successfully consumed allowance - appointment is covered!');
+                
+                // Log allowance event
+                const [allowanceEvent] = await tx
+                  .insert(membershipAllowanceEvents)
+                  .values({
+                    subscriptionId: subscription.id,
+                    cycleId: currentCycle.id,
+                    eventType: 'consume',
+                    appointmentId: createdAppointment.id,
+                    allowanceChange: -1,
+                    allowanceBefore: currentCycle.allowanceRemaining,
+                    allowanceAfter: updatedCycle.allowanceRemaining,
+                    reason: 'Appointment booking'
+                  })
+                  .returning();
+
+                // Create coverage record
+                await txStorage.createAppointmentCoverageIfMissing({
+                  appointmentId: createdAppointment.id,
+                  subscriptionId: subscription.id,
+                  cycleId: currentCycle.id,
+                  allowanceEventId: allowanceEvent.id,
+                  coverageType: 'full_coverage',
+                  originalPrice: appointmentPrice.toFixed(2),
+                  coveredAmount: appointmentPrice.toFixed(2),
+                  patientPaid: '0.00'
+                });
+
+                // Update appointment status to paid/confirmed
+                await tx
+                  .update(appointments)
+                  .set({ status: 'paid' })
+                  .where(eq(appointments.id, createdAppointment.id));
+
+                // Mark slot unavailable
+                if (createdAppointment.slotId) {
+                  await txStorage.markSlotUnavailable(createdAppointment.slotId);
+                  console.log(`🔒 Slot ${createdAppointment.slotId} marked unavailable`);
+                }
+
+                coverageResult = {
+                  isCovered: true,
+                  coverageType: 'full_coverage',
+                  originalPrice: appointmentPrice,
+                  coveredAmount: appointmentPrice,
+                  patientPaid: 0,
+                  allowanceDeducted: 1,
+                  remainingAllowance: updatedCycle.allowanceRemaining
+                };
+                
+                paymentRequired = false;
+                
+                console.log('🎟️ Membership coverage completed:', {
+                  subscriptionId: subscription.id,
+                  cycleId: currentCycle.id,
+                  allowanceRemaining: updatedCycle.allowanceRemaining,
+                  appointmentStatus: 'paid'
+                });
+              }
+            }
+          }
+        }
+        
+        // 💳 CREATE STRIPE PAYMENT INTENT IF PAYMENT REQUIRED
+        if (paymentRequired) {
+          console.log('💰 Membership not available/insufficient - creating Stripe PaymentIntent');
+          
+          try {
+            const paymentIntent = await stripe.paymentIntents.create({
+              amount: Math.round(appointmentPrice * 100), // Convert to cents
+              currency: 'eur',
+              metadata: {
+                appointmentId: createdAppointment.id.toString(),
+                patientId: userId,
+                doctorId: req.body.doctorId
+              }
+            });
+            
+            clientSecret = paymentIntent.client_secret;
+            
+            // Update appointment with payment intent
+            await tx
+              .update(appointments)
+              .set({ 
+                paymentIntentId: paymentIntent.id,
+                clientSecret: paymentIntent.client_secret 
+              })
+              .where(eq(appointments.id, createdAppointment.id));
+              
+            console.log(`💳 Created PaymentIntent ${paymentIntent.id} for appointment ${createdAppointment.id}`);
+            
+            coverageResult = {
+              isCovered: false,
+              coverageType: 'no_coverage',
+              originalPrice: appointmentPrice,
+              coveredAmount: 0,
+              patientPaid: appointmentPrice,
+              allowanceDeducted: 0,
+              remainingAllowance: 0
+            };
+            
+          } catch (stripeError) {
+            console.error('❌ Failed to create Stripe PaymentIntent:', stripeError);
+            throw new Error('Failed to create payment intent');
+          }
+        }
+        
+        return {
+          appointment: { ...createdAppointment, status: paymentRequired ? 'pending' : 'paid' },
+          coverageResult,
+          clientSecret,
+          paymentRequired
+        };
       });
       
-      // Send email notifications after appointment creation
+      // 📧 SEND EMAIL NOTIFICATIONS AFTER SUCCESSFUL APPOINTMENT CREATION
       try {
-        // Get patient and doctor details for email notifications
         const patient = await storage.getUser(appointmentData.patientId.toString());
         const doctor = await storage.getDoctor(appointmentData.doctorId);
         
         if (patient && doctor && doctor.user) {
           const appointmentDate = appointmentData.appointmentDate.toISOString().split('T')[0];
-          const appointmentTime = appointmentData.appointmentDate.toISOString().split('T')[1].substring(0, 5); // Get HH:MM format
+          const appointmentTime = appointmentData.appointmentDate.toISOString().split('T')[1].substring(0, 5);
           
           // Send confirmation email to patient
           emailService.sendAppointmentConfirmation({
@@ -879,7 +975,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             appointmentDate,
             appointmentTime,
             consultationPrice: doctor.consultationPrice,
-            appointmentId: appointment.id.toString()
+            appointmentId: result.appointment.id.toString()
           });
           
           // Send notification email to doctor
@@ -890,30 +986,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
             appointmentDate,
             appointmentTime,
             consultationPrice: doctor.consultationPrice,
-            appointmentId: appointment.id.toString()
+            appointmentId: result.appointment.id.toString()
           });
           
-          console.log(`📧 Email notifications sent for appointment ${appointment.id}`);
+          console.log(`📧 Email notifications sent for appointment ${result.appointment.id}`);
         }
       } catch (emailError) {
         console.error('📧 Failed to send email notifications:', emailError);
         // Don't fail the appointment creation if email fails
       }
       
-      // Return appointment with coverage information for frontend routing
-      res.json({
-        ...appointment,
-        coverageResult: {
-          isCovered: coverageResult.isCovered,
-          coverageType: coverageResult.coverageType,
-          patientPaid: coverageResult.patientPaid,
-          remainingAllowance: coverageResult.remainingAllowance,
-          reason: coverageResult.reason
+      // 🔄 RETURN STRUCTURED RESPONSE FOR FRONTEND ROUTING
+      const response = {
+        appointmentId: result.appointment.id,
+        status: result.appointment.status,
+        coverageResult: result.coverageResult,
+        clientSecret: result.clientSecret,
+        paymentRequired: result.paymentRequired,
+        // Include appointment details for confirmation page
+        appointment: {
+          id: result.appointment.id,
+          patientId: result.appointment.patientId,
+          doctorId: result.appointment.doctorId,
+          appointmentDate: result.appointment.appointmentDate,
+          status: result.appointment.status,
+          price: result.appointment.price
         }
+      };
+      
+      console.log('✅ Booking completed successfully:', {
+        appointmentId: result.appointment.id,
+        status: result.appointment.status,
+        isCovered: result.coverageResult?.isCovered || false,
+        paymentRequired: result.paymentRequired
       });
-    } catch (error) {
+      
+      res.json(response);
+    } catch (error: any) {
       console.error("Error creating appointment:", error);
-      res.status(500).json({ message: "Failed to create appointment" });
+      
+      // 🛡️ Handle idempotency guard errors with specific messages
+      if (error.message === 'DUPLICATE_APPOINTMENT_DETECTED') {
+        return res.status(409).json({ 
+          error: "DUPLICATE_APPOINTMENT",
+          message: "You already have a recent appointment for this slot. Please check your bookings." 
+        });
+      }
+      
+      if (error.message === 'SLOT_NOT_FOUND') {
+        return res.status(404).json({ 
+          error: "SLOT_NOT_FOUND",
+          message: "The selected time slot is no longer available." 
+        });
+      }
+      
+      if (error.message === 'SLOT_ALREADY_BOOKED') {
+        return res.status(409).json({ 
+          error: "SLOT_UNAVAILABLE",
+          message: "This time slot has just been booked by another patient. Please select a different time." 
+        });
+      }
+      
+      // Handle Stripe errors
+      if (error.message === 'Failed to create payment intent') {
+        return res.status(500).json({ 
+          error: "PAYMENT_SETUP_FAILED",
+          message: "Unable to set up payment. Please try again." 
+        });
+      }
+      
+      // Generic error fallback
+      res.status(500).json({ 
+        error: "BOOKING_FAILED",
+        message: "Failed to create appointment. Please try again." 
+      });
     }
   });
   
@@ -1659,40 +1805,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get current user endpoint
-  app.get("/api/auth/user", async (req, res) => {
-    try {
-      const session = req.session.supabaseSession;
-
-      if (!session || !session.access_token) {
-        return res.status(401).json({ error: "Not authenticated" });
-      }
-
-      // Verify current token with Supabase
-      const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
-
-      if (error || !user) {
-        return res.status(401).json({ error: "Invalid token" });
-      }
-
-      // Get user from database or create if doesn't exist
-      let dbUser = await storage.getUser(user.id);
-      
-      if (!dbUser) {
-        // Create user if doesn't exist (for Supabase users)
-        dbUser = await storage.upsertUser({
-          id: parseInt(user.id),
-          email: user.email,
-          role: 'patient' // Default role
-        });
-      }
-
-      res.json(dbUser);
-    } catch (error: any) {
-      console.error("Get user error:", error);
-      res.status(401).json({ error: "Authentication failed" });
-    }
-  });
 
   // Change email endpoint
   app.put("/api/auth/change-email", isAuthenticated, async (req, res) => {
