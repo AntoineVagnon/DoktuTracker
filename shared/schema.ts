@@ -12,7 +12,9 @@ import {
   boolean,
   time,
   date,
+  unique,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -684,7 +686,10 @@ export const membershipAllowanceEvents = pgTable("membership_allowance_events", 
   reason: varchar("reason"), // cycle_start, booking_confirmed, early_cancel, doctor_cancel
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  // Unique constraint to prevent duplicate restore events for same appointment
+  uniqueAppointmentRestore: unique("unique_appointment_restore").on(table.appointmentId, table.eventType)
+}));
 
 // Appointment Coverage (tracks if appointment is covered by membership)
 export const appointmentCoverage = pgTable("appointment_coverage", {

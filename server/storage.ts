@@ -1348,10 +1348,22 @@ export class PostgresStorage implements IStorage {
     await this.dbConnection.transaction(async (tx) => {
       const txStorage = this.with(tx);
       
-      // Get appointment details
-      const [appointment] = await tx.select().from(appointments).where(eq(appointments.id, parseInt(id)));
+      // 🔒 ATOMIC CANCELLATION: Get appointment and coverage details with locking
+      const [appointment] = await tx
+        .select()
+        .from(appointments)
+        .where(eq(appointments.id, parseInt(id)))
+        .for('update') // Lock appointment row
+        .limit(1);
+      
       if (!appointment) {
         throw new Error(`Appointment ${id} not found`);
+      }
+
+      // Check eligibility: only allow cancellation if not already cancelled
+      if (appointment.status === 'cancelled') {
+        console.log(`⚠️ Appointment ${id} already cancelled, no further action needed`);
+        return; // Early exit - no changes needed
       }
 
       // Check if this appointment was covered by membership
@@ -1374,53 +1386,91 @@ export class PostgresStorage implements IStorage {
 
       // 💳 RESTORE CREDIT IF APPOINTMENT WAS MEMBERSHIP-COVERED
       if (coverage && coverage.coverageType === 'full_coverage') {
-        console.log(`🔄 Restoring membership credit for cancelled appointment ${id}`);
+        console.log(`🔄 Starting credit restoration for membership-covered appointment ${id}`);
         
-        // Get the current active cycle (lock it to prevent races)
-        const [currentCycle] = await tx
-          .select()
-          .from(membershipCycles)
-          .where(
-            and(
-              eq(membershipCycles.subscriptionId, coverage.subscriptionId),
-              eq(membershipCycles.isActive, true)
-            )
-          )
-          .for('update')
-          .limit(1);
-
-        if (currentCycle) {
-          // Restore the credit atomically
-          const [updatedCycle] = await tx
-            .update(membershipCycles)
-            .set({
-              allowanceUsed: sql`${membershipCycles.allowanceUsed} - 1`,
-              allowanceRemaining: sql`${membershipCycles.allowanceRemaining} + 1`,
-              updatedAt: new Date()
-            })
-            .where(eq(membershipCycles.id, currentCycle.id))
-            .returning();
-
-          // Create audit trail for credit restoration
-          await tx
+        // 🔒 ATOMIC IDEMPOTENCY: Try to insert restore event - if it fails, credit was already restored
+        let restoreEventCreated;
+        try {
+          [restoreEventCreated] = await tx
             .insert(membershipAllowanceEvents)
             .values({
               subscriptionId: coverage.subscriptionId,
-              cycleId: coverage.cycleId,
+              cycleId: coverage.cycleId, // Target the ORIGINAL cycle where credit was consumed
               eventType: 'restore',
               appointmentId: parseInt(id),
               allowanceChange: 1,
-              allowanceBefore: currentCycle.allowanceRemaining,
-              allowanceAfter: updatedCycle.allowanceRemaining,
-              reason: `Appointment cancellation: ${reason}`
-            });
+              allowanceBefore: 0, // Will update after we know the actual values
+              allowanceAfter: 0,  // Will update after we know the actual values
+              reason: `Appointment cancellation by ${actorRole}: ${reason}`
+            })
+            .returning();
+        } catch (error) {
+          if (error?.code === '23505') { // PostgreSQL unique violation
+            console.log(`⚠️ Credit already restored for appointment ${id} (concurrent cancellation)`);
+            restoreEventCreated = null;
+          } else {
+            throw error; // Re-throw unexpected errors
+          }
+        }
 
-          console.log(`🎟️ Credit restored successfully:`, {
-            allowanceUsed: updatedCycle.allowanceUsed,
-            allowanceRemaining: updatedCycle.allowanceRemaining
-          });
-        } else {
-          console.warn(`⚠️ No active membership cycle found for credit restoration of appointment ${id}`);
+        // Only proceed with credit restoration if we successfully created the event
+        if (restoreEventCreated) {
+          // 🔒 RESTORE TO CORRECT CYCLE: Target the original cycle where credit was consumed
+          const [targetCycle] = await tx
+            .select()
+            .from(membershipCycles)
+            .where(eq(membershipCycles.id, coverage.cycleId))
+            .for('update')
+            .limit(1);
+
+          if (!targetCycle) {
+            console.warn(`⚠️ Original cycle ${coverage.cycleId} not found for restoration`);
+            // Clean up the event we just created since we can't complete the restoration
+            await tx
+              .delete(membershipAllowanceEvents)
+              .where(eq(membershipAllowanceEvents.id, restoreEventCreated.id));
+          } else {
+            // 🔒 SAFE CREDIT RESTORATION with proper bounds checking
+            const [updatedCycle] = await tx
+              .update(membershipCycles)
+              .set({
+                allowanceUsed: sql`GREATEST(0, ${membershipCycles.allowanceUsed} - 1)`,
+                allowanceRemaining: sql`LEAST(${membershipCycles.allowanceGranted}, ${membershipCycles.allowanceRemaining} + 1)`,
+                updatedAt: new Date()
+              })
+              .where(
+                and(
+                  eq(membershipCycles.id, targetCycle.id),
+                  sql`${membershipCycles.allowanceUsed} > 0` // Only restore if there's usage to restore
+                )
+              )
+              .returning();
+
+            if (!updatedCycle) {
+              console.warn(`⚠️ No allowance usage to restore for appointment ${id} in cycle ${coverage.cycleId}`);
+              // Clean up the event since restoration failed
+              await tx
+                .delete(membershipAllowanceEvents)
+                .where(eq(membershipAllowanceEvents.id, restoreEventCreated.id));
+            } else {
+              // ✅ UPDATE AUDIT TRAIL with actual before/after values
+              await tx
+                .update(membershipAllowanceEvents)
+                .set({
+                  allowanceBefore: targetCycle.allowanceRemaining,
+                  allowanceAfter: updatedCycle.allowanceRemaining
+                })
+                .where(eq(membershipAllowanceEvents.id, restoreEventCreated.id));
+
+              console.log(`🎟️ Credit restored successfully:`, {
+                appointmentId: id,
+                cycleId: coverage.cycleId,
+                allowanceUsed: updatedCycle.allowanceUsed,
+                allowanceRemaining: updatedCycle.allowanceRemaining,
+                actor: `${actorRole} (${actorId})`
+              });
+            }
+          }
         }
 
         // Mark slot as available again
