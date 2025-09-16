@@ -198,6 +198,7 @@ export default function Checkout() {
           const appointmentResponse = await fetch('/api/appointments', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
               doctorId: doctorId.toString(),
               timeSlotId: heldSlotData.heldSlot.id,
