@@ -208,7 +208,13 @@ export default function Checkout() {
           });
 
           if (!appointmentResponse.ok) {
-            throw new Error('Failed to create appointment');
+            const errorData = await appointmentResponse.text();
+            console.error('❌ Appointment creation failed:', {
+              status: appointmentResponse.status,
+              statusText: appointmentResponse.statusText,
+              errorData
+            });
+            throw new Error(`Failed to create appointment: ${appointmentResponse.status} ${errorData}`);
           }
 
           appointmentData = await appointmentResponse.json();
