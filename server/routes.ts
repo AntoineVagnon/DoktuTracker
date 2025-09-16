@@ -27,7 +27,7 @@ import {
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
-import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema, doctorTimeSlots } from "@shared/schema";
+import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema, doctorTimeSlots, membershipSubscriptions } from "@shared/schema";
 import { z } from "zod";
 import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
 import { setupSlotRoutes } from "./routes/slots";
@@ -752,26 +752,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (coverageResult.isCovered) {
         console.log('🎟️ Appointment covered by membership, consuming allowance...');
         
-        // Get user's subscription ID
+        // Get user's subscription ID  
         const patient = await storage.getUser(userId);
         if (patient?.stripeSubscriptionId) {
-          const consumeResult = await membershipService.consumeAllowance(
-            patient.stripeSubscriptionId,
-            appointment.id,
-            appointmentPrice
-          );
-          
-          console.log('🎟️ Allowance consumption result:', consumeResult);
-          
-          // Mark slot as unavailable since appointment is now paid
-          if (appointment.slotId) {
-            await db.update(doctorTimeSlots)
-              .set({ isAvailable: false, updatedAt: new Date() })
-              .where(eq(doctorTimeSlots.id, appointment.slotId));
-            console.log(`🔒 Slot ${appointment.slotId} marked as unavailable for paid membership appointment`);
+          // First get the membership subscription record using the Stripe subscription ID
+          const [subscription] = await db
+            .select()
+            .from(membershipSubscriptions)
+            .where(eq(membershipSubscriptions.stripeSubscriptionId, patient.stripeSubscriptionId))
+            .limit(1);
+            
+          if (subscription) {
+            const consumeResult = await membershipService.consumeAllowance(
+              subscription.id, // Use the UUID from membershipSubscriptions table, not Stripe ID
+              appointment.id,
+              appointmentPrice
+            );
+            
+            console.log('🎟️ Allowance consumption result:', consumeResult);
+            
+            // Mark slot as unavailable since appointment is now paid
+            if (appointment.slotId) {
+              await db.update(doctorTimeSlots)
+                .set({ isAvailable: false, updatedAt: new Date() })
+                .where(eq(doctorTimeSlots.id, appointment.slotId));
+              console.log(`🔒 Slot ${appointment.slotId} marked as unavailable for paid membership appointment`);
+            }
+          } else {
+            console.error('❌ Membership subscription record not found for patient');
           }
         } else {
-          console.error('❌ User has coverage but no subscription ID found');
+          console.error('❌ User has coverage but no Stripe subscription ID found');
         }
       }
       
