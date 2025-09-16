@@ -124,6 +124,18 @@ export default function Membership() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
 
+  // Helper function to check if a plan matches the user's current subscription
+  const isCurrentPlan = (plan: MembershipPlan, userSubscription: any): boolean => {
+    if (!userSubscription) return false;
+    
+    // Check if the plan matches the subscription plan
+    // This checks by comparing the billing interval since we only have one plan per interval
+    const planInterval = plan.billingInterval === '6_months' ? '6_months' : 'month';
+    const subInterval = userSubscription.interval === 'month' ? 'month' : '6_months';
+    
+    return planInterval === subInterval;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -394,10 +406,10 @@ export default function Membership() {
                 <Button 
                   onClick={() => handleSubscribe(plan)}
                   className={`w-full ${plan.featured ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
-                  disabled={isLoading || !!subscription}
+                  disabled={isLoading || (!!subscription && isCurrentPlan(plan, subscription))}
                   size="lg"
                 >
-                  {subscription ? 'Already Subscribed' : 'Choose This Plan'}
+                  {subscription && isCurrentPlan(plan, subscription) ? 'Already Subscribed' : 'Choose This Plan'}
                 </Button>
 
                 {plan.billingInterval === '6_months' && (
