@@ -127,14 +127,30 @@ export default function Membership() {
 
   // Helper function to check if a plan matches the user's current subscription
   const isCurrentPlan = (plan: MembershipPlan, userSubscription: any): boolean => {
-    if (!userSubscription) return false;
+    console.log('🔍 Membership Page - Checking if current plan:', {
+      planName: plan.name,
+      planBillingInterval: plan.billingInterval,
+      userSubscription,
+      hasSubscription: !!userSubscription
+    });
+
+    if (!userSubscription) {
+      console.log('❌ No subscription found');
+      return false;
+    }
     
-    // Check if the plan matches the subscription plan
-    // This checks by comparing the billing interval since we only have one plan per interval
-    const planInterval = plan.billingInterval === '6_months' ? '6_months' : 'month';
-    const subInterval = userSubscription.interval === 'month' ? 'month' : '6_months';
+    // Check if the plan matches the subscription plan by comparing interval count
+    // 6-month subscriptions have intervalCount: 6, monthly have intervalCount: 1
+    const planIntervalCount = plan.billingInterval === '6_months' ? 6 : 1;
+    const subIntervalCount = userSubscription.intervalCount || 1;
     
-    return planInterval === subInterval;
+    console.log('📊 Interval comparison:', {
+      planIntervalCount,
+      subIntervalCount,
+      matches: planIntervalCount === subIntervalCount
+    });
+    
+    return planIntervalCount === subIntervalCount;
   };
 
   useEffect(() => {
@@ -411,7 +427,20 @@ export default function Membership() {
                   disabled={isLoading || (!!subscription && isCurrentPlan(plan, subscription))}
                   size="lg"
                 >
-                  {subscription && isCurrentPlan(plan, subscription) ? 'Already Subscribed' : 'Choose This Plan'}
+                  {(() => {
+                    const hasSubscription = !!subscription;
+                    const isCurrent = isCurrentPlan(plan, subscription);
+                    const buttonText = subscription && isCurrentPlan(plan, subscription) ? 'Already Subscribed' : 'Choose This Plan';
+                    
+                    console.log('🔘 Button render for', plan.name, {
+                      hasSubscription,
+                      isCurrent, 
+                      buttonText,
+                      subscriptionExists: !!subscription
+                    });
+                    
+                    return buttonText;
+                  })()}
                 </Button>
 
                 {plan.billingInterval === '6_months' && (
