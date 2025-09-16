@@ -137,10 +137,10 @@ export default function TestLogin() {
           <Card className="rounded-2xl shadow-lg">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-center">
-                Supabase Login Test
+                Welcome to Doktu
               </CardTitle>
               <p className="text-gray-600 text-center">
-                Test authentication with your Supabase credentials
+                Book a meeting in 2 min
               </p>
             </CardHeader>
 
@@ -188,58 +188,10 @@ export default function TestLogin() {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Signing In..." : "Sign In"}
+                  {isLoading ? "Signing In..." : "Sign"}
                 </Button>
               </form>
               
-              <div className="text-center">
-                <button
-                  onClick={async () => {
-                    try {
-                      const response = await fetch('/api/auth/reset-password', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: formData.email })
-                      });
-                      const data = await response.json();
-                      
-                      if (response.ok) {
-                        toast({
-                          title: "Password Reset Sent",
-                          description: "Check your email for password reset instructions",
-                        });
-                      } else {
-                        toast({
-                          title: "Reset Failed", 
-                          description: data.error,
-                          variant: "destructive"
-                        });
-                      }
-                    } catch (error) {
-                      console.error('Reset error:', error);
-                    }
-                  }}
-                  className="text-sm text-blue-600 hover:text-blue-500 underline"
-                >
-                  Forgot your password? Reset it
-                </button>
-                
-                <p className="text-xs text-gray-500 mt-2">
-                  After receiving the email, if the reset link doesn't work, manually go to:
-                  <br />
-                  <strong>/password-reset</strong> and paste the tokens from the URL hash
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Button 
-                  onClick={testCurrentUser}
-                  variant="outline"
-                  className="w-full"
-                >
-                  Test Current User
-                </Button>
-              </div>
 
               {loginResult && (
                 <div className="mt-6 p-4 bg-gray-100 rounded-lg">
