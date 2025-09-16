@@ -664,11 +664,11 @@ export default function Membership() {
                 <Button 
                   onClick={() => handleSubscribe(plan)}
                   className={`w-full ${plan.featured ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
-                  disabled={isLoading || (!!subscription && isCurrentPlan(plan, subscription))}
+                  disabled={isLoading || !!subscription}
                   size="lg"
                   data-testid={subscription && isCurrentPlan(plan, subscription) ? "button-already-subscribed" : "button-choose-plan"}
                 >
-                  {subscription && isCurrentPlan(plan, subscription) ? 'Already Subscribed' : 'Choose This Plan'}
+                  {subscription && isCurrentPlan(plan, subscription) ? 'Already Subscribed' : (subscription ? 'You Have an Active Plan' : 'Choose This Plan')}
                 </Button>
 
                 {/* Cancel button - only show for current subscription */}
