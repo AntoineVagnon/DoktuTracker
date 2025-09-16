@@ -32,7 +32,7 @@ import { z } from "zod";
 import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
 import { setupSlotRoutes } from "./routes/slots";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import { notificationService, TriggerCode } from "./services/notificationService";
 import { emailService } from "./emailService";
 import { zoomService } from "./services/zoomService";
@@ -746,45 +746,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`🚫 Auto-cancelled previous ${pendingApt.status} appointment ${pendingApt.id} for user ${userId}`);
       }
       
-      const appointment = await storage.createAppointment(appointmentData);
-      
-      // 💎 IF COVERED BY MEMBERSHIP, CONSUME ALLOWANCE AND MARK SLOT AS UNAVAILABLE
-      if (coverageResult.isCovered) {
-        console.log('🎟️ Appointment covered by membership, consuming allowance...');
+      // 💎 ATOMIC APPOINTMENT CREATION WITH MEMBERSHIP HANDLING
+      const appointment = await db.transaction(async (tx) => {
+        // Create transaction-bound storage instance
+        const txStorage = storage.with(tx);
         
-        // Get user's subscription ID  
-        const patient = await storage.getUser(userId);
-        if (patient?.stripeSubscriptionId) {
-          // First get the membership subscription record using the Stripe subscription ID
-          const [subscription] = await db
-            .select()
-            .from(membershipSubscriptions)
-            .where(eq(membershipSubscriptions.stripeSubscriptionId, patient.stripeSubscriptionId))
-            .limit(1);
-            
-          if (subscription) {
-            const consumeResult = await membershipService.consumeAllowance(
-              subscription.id, // Use the UUID from membershipSubscriptions table, not Stripe ID
-              appointment.id,
-              appointmentPrice
-            );
-            
-            console.log('🎟️ Allowance consumption result:', consumeResult);
-            
-            // Mark slot as unavailable since appointment is now paid
-            if (appointment.slotId) {
-              await db.update(doctorTimeSlots)
-                .set({ isAvailable: false, updatedAt: new Date() })
-                .where(eq(doctorTimeSlots.id, appointment.slotId));
-              console.log(`🔒 Slot ${appointment.slotId} marked as unavailable for paid membership appointment`);
-            }
-          } else {
-            console.error('❌ Membership subscription record not found for patient');
-          }
-        } else {
-          console.error('❌ User has coverage but no Stripe subscription ID found');
+        // Create appointment within transaction
+        const createdAppointment = await txStorage.createAppointment(appointmentData);
+        
+        // Get user's subscription details within transaction
+        const patient = await txStorage.getUser(userId);
+        if (!patient?.stripeSubscriptionId) {
+          console.log('💰 No membership found, appointment requires direct payment');
+          return createdAppointment;
         }
-      }
+        
+        // Get membership subscription record using Stripe subscription ID
+        const [subscription] = await tx
+          .select()
+          .from(membershipSubscriptions)
+          .where(eq(membershipSubscriptions.stripeSubscriptionId, patient.stripeSubscriptionId))
+          .limit(1);
+          
+        if (!subscription) {
+          console.log('💰 No membership subscription found, appointment requires direct payment');
+          return createdAppointment;
+        }
+
+        // 🔒 ATOMIC ALLOWANCE DEDUCTION WITH PROPER LOCKING
+        // Use SELECT FOR UPDATE to lock the cycle and prevent race conditions
+        const [currentCycle] = await tx
+          .select()
+          .from(membershipCycles)
+          .where(
+            and(
+              eq(membershipCycles.subscriptionId, subscription.id),
+              eq(membershipCycles.isActive, true)
+            )
+          )
+          .for('update')
+          .limit(1);
+        
+        if (!currentCycle) {
+          console.log('💰 No active allowance cycle found, appointment requires direct payment');
+          return createdAppointment;
+        }
+        
+        // Conditional update with race condition protection - only deduct if allowance available
+        const [updatedCycle] = await tx
+          .update(membershipCycles)
+          .set({
+            allowanceUsed: sql`${membershipCycles.allowanceUsed} + 1`,
+            allowanceRemaining: sql`${membershipCycles.allowanceRemaining} - 1`,
+            updatedAt: new Date()
+          })
+          .where(
+            and(
+              eq(membershipCycles.id, currentCycle.id),
+              sql`${membershipCycles.allowanceRemaining} >= 1`
+            )
+          )
+          .returning();
+
+        if (!updatedCycle) {
+          console.log('💰 Insufficient allowance remaining, appointment requires direct payment');
+          return createdAppointment;
+        }
+
+        console.log('🎟️ Appointment covered by membership, allowance consumed');
+
+        // Create allowance event log (within transaction)
+        const [allowanceEvent] = await tx
+          .insert(membershipAllowanceEvents)
+          .values({
+            subscriptionId: subscription.id,
+            cycleId: currentCycle.id,
+            eventType: 'consume',
+            appointmentId: createdAppointment.id,
+            allowanceChange: -1,
+            allowanceBefore: currentCycle.allowanceRemaining,
+            allowanceAfter: updatedCycle.allowanceRemaining,
+            reason: 'Appointment booking'
+          })
+          .returning();
+
+        // Create coverage record with idempotency (within transaction)
+        const coverageCreated = await txStorage.createAppointmentCoverageIfMissing({
+          appointmentId: createdAppointment.id,
+          subscriptionId: subscription.id,
+          cycleId: currentCycle.id,
+          allowanceEventId: allowanceEvent.id,
+          coverageType: 'full_coverage',
+          originalPrice: appointmentPrice.toFixed(2),
+          coveredAmount: appointmentPrice.toFixed(2),
+          patientPaid: '0.00'
+        });
+
+        if (!coverageCreated) {
+          console.log('⚡ Coverage already exists, skipping (idempotency protection)');
+        }
+
+        // Mark slot as unavailable since appointment is now covered/paid (within transaction)
+        if (createdAppointment.slotId) {
+          await txStorage.markSlotUnavailable(createdAppointment.slotId);
+          console.log(`🔒 Slot ${createdAppointment.slotId} marked as unavailable for membership-covered appointment`);
+        }
+
+        console.log('🎟️ Allowance consumed atomically:', {
+          allowanceUsed: updatedCycle.allowanceUsed,
+          allowanceRemaining: updatedCycle.allowanceRemaining
+        });
+        
+        return createdAppointment;
+      });
       
       // Send email notifications after appointment creation
       try {

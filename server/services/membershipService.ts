@@ -412,7 +412,7 @@ export class MembershipService {
     const [subscription] = await db
       .select()
       .from(membershipSubscriptions)
-      .where(eq(membershipSubscriptions.stripeSubscriptionId, subscriptionId))
+      .where(eq(membershipSubscriptions.id, subscriptionId))
       .limit(1);
 
     if (!subscription) {

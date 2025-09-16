@@ -16,6 +16,10 @@ import {
   smsNotifications,
   pushNotifications,
   notificationPreferences,
+  membershipSubscriptions,
+  membershipCycles,
+  membershipAllowanceEvents,
+  appointmentCoverage,
   type UpsertUser,
   type User,
   type Doctor,
@@ -37,6 +41,11 @@ import {
 import { db } from "./db";
 import { eq, desc, asc, and, gte, lte, lt, isNull, or, count, avg, sql, inArray } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
+import type { PgDatabase } from "drizzle-orm/pg-core";
+import type { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
+
+// Type for database connection that can be db or transaction
+type DbLike = PgDatabase<NodePgQueryResultHKT, any, any>;
 import { nanoid } from "nanoid";
 import { format } from "date-fns";
 
@@ -257,8 +266,18 @@ export interface IStorage {
 
 // PostgreSQL Storage Implementation
 export class PostgresStorage implements IStorage {
+  private readonly dbConnection: DbLike;
+  
+  constructor(dbConnection: DbLike = db) {
+    this.dbConnection = dbConnection;
+  }
+  
+  // Create transaction-bound storage instance
+  with(tx: DbLike): PostgresStorage {
+    return new PostgresStorage(tx);
+  }
   async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, parseInt(id)));
+    const [user] = await this.dbConnection.select().from(users).where(eq(users.id, parseInt(id)));
     console.log('📱 getUser result:', { id, user });
     return user;
   }
@@ -348,7 +367,7 @@ export class PostgresStorage implements IStorage {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
+    const [user] = await this.dbConnection.select().from(users).where(eq(users.email, email));
     return user;
   }
 
@@ -1199,8 +1218,40 @@ export class PostgresStorage implements IStorage {
   }
 
   async createAppointment(appointment: InsertAppointment): Promise<Appointment> {
-    const [newAppointment] = await db.insert(appointments).values(appointment).returning();
+    const [newAppointment] = await this.dbConnection.insert(appointments).values(appointment).returning();
     return newAppointment;
+  }
+
+  // Create appointment coverage with idempotency (ON CONFLICT DO NOTHING)
+  async createAppointmentCoverageIfMissing(coverageData: {
+    appointmentId: number;
+    subscriptionId: string;
+    cycleId: string;
+    allowanceEventId: string;
+    coverageType: string;
+    originalPrice: string;
+    coveredAmount: string;
+    patientPaid: string;
+  }): Promise<boolean> {
+    try {
+      const [coverage] = await this.dbConnection
+        .insert(appointmentCoverage)
+        .values(coverageData)
+        .onConflictDoNothing({ target: appointmentCoverage.appointmentId })
+        .returning();
+      return !!coverage; // Returns true if inserted, false if conflict (already exists)
+    } catch (error) {
+      console.error('❌ Error creating appointment coverage:', error);
+      return false;
+    }
+  }
+
+  // Mark slot as unavailable (within transaction)
+  async markSlotUnavailable(slotId: string): Promise<void> {
+    await this.dbConnection
+      .update(doctorTimeSlots)
+      .set({ isAvailable: false, updatedAt: new Date() })
+      .where(eq(doctorTimeSlots.id, slotId));
   }
 
   async updateAppointmentStatus(id: string, status: string, paymentIntentId?: string): Promise<void> {
