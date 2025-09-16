@@ -29,6 +29,49 @@ export default function Landing() {
     queryKey: ["/api/doctors"],
   });
 
+  // Get subscription data to disable buttons for current/inferior plans
+  const { data: subscriptionData } = useQuery<{
+    hasSubscription: boolean;
+    subscription?: {
+      id: string;
+      status: string;
+      planId: string;
+      planName: string;
+      interval: string;
+      intervalCount: number;
+    };
+  }>({
+    queryKey: ["/api/membership/subscription"],
+    enabled: isAuthenticated,
+  });
+
+  // Helper function to determine if a pricing button should be disabled
+  const isButtonDisabled = (planName: string): boolean => {
+    if (!isAuthenticated || !subscriptionData?.hasSubscription) {
+      return false; // No subscription, enable all buttons
+    }
+
+    const subscription = subscriptionData.subscription;
+    if (!subscription) return false;
+
+    // Get current subscription type
+    const hasMonthlySubscription = subscription.intervalCount === 1;
+    const hasSixMonthSubscription = subscription.intervalCount === 6;
+
+    // Disable logic:
+    if (hasMonthlySubscription) {
+      // User has monthly subscription - disable pay-per-visit and monthly
+      return planName === "Pay-per-visit" || planName === "Monthly Membership";
+    }
+    
+    if (hasSixMonthSubscription) {
+      // User has 6-month subscription - disable all buttons (they have the highest plan)
+      return true;
+    }
+
+    return false;
+  };
+
   useEffect(() => {
     // Track homepage visit
     analytics.trackPageView('homepage');
@@ -545,13 +588,14 @@ export default function Landing() {
 
                     <Button
                       variant={plan.popular ? "secondary" : plan.buttonVariant}
+                      disabled={isButtonDisabled(plan.name)}
                       className={`w-full ${
                         plan.popular 
                           ? "bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" 
                           : plan.buttonVariant === "outline" 
                             ? "border-2 border-[hsl(207,100%,52%)] text-[hsl(207,100%,52%)] hover:bg-[hsl(207,100%,97%)]"
                             : ""
-                      }`}
+                      } ${isButtonDisabled(plan.name) ? "opacity-50 cursor-not-allowed" : ""}`}
                       aria-label={`${plan.buttonText} – ${plan.price} ${plan.period}`}
                       onClick={() => {
                         // Track pricing card CTA click
