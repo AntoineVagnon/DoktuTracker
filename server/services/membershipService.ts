@@ -311,8 +311,28 @@ export class MembershipService {
       };
     }
 
-    // Get current allowance cycle
-    const cycle = await this.getCurrentAllowanceCycle(user.stripeSubscriptionId);
+    // First, get the membership subscription record using the Stripe subscription ID
+    const [subscription] = await db
+      .select()
+      .from(membershipSubscriptions)
+      .where(eq(membershipSubscriptions.stripeSubscriptionId, user.stripeSubscriptionId))
+      .limit(1);
+
+    if (!subscription) {
+      return {
+        isCovered: false,
+        coverageType: 'no_coverage',
+        originalPrice: appointmentPrice,
+        coveredAmount: 0,
+        patientPaid: appointmentPrice,
+        allowanceDeducted: 0,
+        remainingAllowance: 0,
+        reason: 'No membership subscription record found'
+      };
+    }
+
+    // Get current allowance cycle using the subscription UUID
+    const cycle = await this.getCurrentAllowanceCycle(subscription.id);
     
     if (!cycle || !cycle.isActive) {
       return {

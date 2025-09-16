@@ -728,9 +728,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         appointmentData = insertAppointmentSchema.parse(appointmentDataInput);
         console.log('✅ Schema validation passed successfully');
-      } catch (validationError) {
+      } catch (validationError: any) {
         console.error('❌ Schema validation failed:', validationError);
-        throw new Error(`Schema validation failed: ${JSON.stringify(validationError)}`);
+        console.error('❌ Validation error details:', validationError.issues || validationError.message);
+        console.error('❌ Data that failed validation:', appointmentDataInput);
+        throw new Error(`Schema validation failed: ${validationError.message || JSON.stringify(validationError)}`);
       }
       
       // Cancel any existing pending appointments for this user to prevent multiple payment banners
