@@ -1344,27 +1344,116 @@ export class PostgresStorage implements IStorage {
   }
 
   async cancelAppointment(id: string, cancelledBy: string, reason: string, actorId: number, actorRole: string): Promise<void> {
-    const [appointment] = await db.select().from(appointments).where(eq(appointments.id, parseInt(id)));
-    
-    await db
-      .update(appointments)
-      .set({ 
-        status: "cancelled", 
-        cancelledBy, 
-        cancelReason: reason,
-        updatedAt: new Date() 
-      })
-      .where(eq(appointments.id, parseInt(id)));
+    // 🔄 ATOMIC APPOINTMENT CANCELLATION WITH CREDIT RECOVERY
+    await this.dbConnection.transaction(async (tx) => {
+      const txStorage = this.with(tx);
+      
+      // Get appointment details
+      const [appointment] = await tx.select().from(appointments).where(eq(appointments.id, parseInt(id)));
+      if (!appointment) {
+        throw new Error(`Appointment ${id} not found`);
+      }
 
-    // Log the change
-    await db.insert(appointmentChanges).values({
-      appointmentId: parseInt(id),
-      action: "cancel",
-      actorId,
-      actorRole,
-      reason,
-      before: { status: appointment.status },
-      after: { status: "cancelled", cancelledBy, cancelReason: reason },
+      // Check if this appointment was covered by membership
+      const [coverage] = await tx
+        .select()
+        .from(appointmentCoverage)
+        .where(eq(appointmentCoverage.appointmentId, parseInt(id)))
+        .limit(1);
+
+      // Update appointment status
+      await tx
+        .update(appointments)
+        .set({ 
+          status: "cancelled", 
+          cancelledBy, 
+          cancelReason: reason,
+          updatedAt: new Date() 
+        })
+        .where(eq(appointments.id, parseInt(id)));
+
+      // 💳 RESTORE CREDIT IF APPOINTMENT WAS MEMBERSHIP-COVERED
+      if (coverage && coverage.coverageType === 'full_coverage') {
+        console.log(`🔄 Restoring membership credit for cancelled appointment ${id}`);
+        
+        // Get the current active cycle (lock it to prevent races)
+        const [currentCycle] = await tx
+          .select()
+          .from(membershipCycles)
+          .where(
+            and(
+              eq(membershipCycles.subscriptionId, coverage.subscriptionId),
+              eq(membershipCycles.isActive, true)
+            )
+          )
+          .for('update')
+          .limit(1);
+
+        if (currentCycle) {
+          // Restore the credit atomically
+          const [updatedCycle] = await tx
+            .update(membershipCycles)
+            .set({
+              allowanceUsed: sql`${membershipCycles.allowanceUsed} - 1`,
+              allowanceRemaining: sql`${membershipCycles.allowanceRemaining} + 1`,
+              updatedAt: new Date()
+            })
+            .where(eq(membershipCycles.id, currentCycle.id))
+            .returning();
+
+          // Create audit trail for credit restoration
+          await tx
+            .insert(membershipAllowanceEvents)
+            .values({
+              subscriptionId: coverage.subscriptionId,
+              cycleId: coverage.cycleId,
+              eventType: 'restore',
+              appointmentId: parseInt(id),
+              allowanceChange: 1,
+              allowanceBefore: currentCycle.allowanceRemaining,
+              allowanceAfter: updatedCycle.allowanceRemaining,
+              reason: `Appointment cancellation: ${reason}`
+            });
+
+          console.log(`🎟️ Credit restored successfully:`, {
+            allowanceUsed: updatedCycle.allowanceUsed,
+            allowanceRemaining: updatedCycle.allowanceRemaining
+          });
+        } else {
+          console.warn(`⚠️ No active membership cycle found for credit restoration of appointment ${id}`);
+        }
+
+        // Mark slot as available again
+        if (appointment.timeSlotId) {
+          await tx
+            .update(doctorTimeSlots)
+            .set({ isAvailable: true, updatedAt: new Date() })
+            .where(eq(doctorTimeSlots.id, appointment.timeSlotId));
+          console.log(`🔓 Slot ${appointment.timeSlotId} marked as available after cancellation`);
+        }
+      } else {
+        console.log(`💰 Appointment ${id} was not membership-covered, no credit restoration needed`);
+        
+        // Still mark slot as available for non-membership appointments
+        if (appointment.timeSlotId) {
+          await tx
+            .update(doctorTimeSlots)
+            .set({ isAvailable: true, updatedAt: new Date() })
+            .where(eq(doctorTimeSlots.id, appointment.timeSlotId));
+          console.log(`🔓 Slot ${appointment.timeSlotId} marked as available after cancellation`);
+        }
+      }
+
+      // Log the change
+      await tx.insert(appointmentChanges).values({
+        appointmentId: parseInt(id),
+        action: "cancel",
+        actorId,
+        actorRole,
+        reason,
+        before: { status: appointment.status },
+        after: { status: "cancelled", cancelledBy, cancelReason: reason },
+      });
     });
   }
 
