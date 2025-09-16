@@ -37,6 +37,7 @@ import { notificationService, TriggerCode } from "./services/notificationService
 import { emailService } from "./emailService";
 import { zoomService } from "./services/zoomService";
 import { registerMembershipRoutes } from "./routes/membershipRoutes";
+import { membershipService } from "./services/membershipService";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -693,11 +694,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('🔍 Appointment creation request body:', req.body);
       console.log('🔍 User ID from auth:', userId);
       
+      const appointmentPrice = parseFloat(req.body.price || "35.00");
+      const appointmentDate = new Date(req.body.appointmentDate);
+      
+      // 💎 CHECK MEMBERSHIP COVERAGE FIRST
+      console.log('🎟️ Checking membership coverage for appointment...');
+      const coverageResult = await membershipService.checkAppointmentCoverage(
+        parseInt(userId), 
+        appointmentPrice, 
+        appointmentDate
+      );
+      
+      console.log('🎟️ Coverage result:', coverageResult);
+      
       const appointmentDataInput = {
         patientId: parseInt(userId), // Convert to integer to match schema
         doctorId: parseInt(req.body.doctorId), // Convert to integer to match schema
-        appointmentDate: new Date(req.body.appointmentDate), // Convert string to Date
-        status: req.body.status || 'pending',
+        appointmentDate: appointmentDate, // Convert string to Date
+        status: coverageResult.isCovered ? 'paid' : 'pending', // Set status based on coverage
         paymentIntentId: req.body.paymentIntentId || null,
         clientSecret: req.body.clientSecret || null,
         zoomMeetingId: req.body.zoomMeetingId || null,
@@ -705,7 +719,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         zoomStartUrl: req.body.zoomStartUrl || null,
         zoomPassword: req.body.zoomPassword || null,
         slotId: req.body.timeSlotId || null, // Handle the timeSlotId from frontend
-        price: req.body.price || "35.00" // Handle the price from frontend
+        price: appointmentPrice.toFixed(2) // Handle the price from frontend
       };
       
       console.log('🔍 Data prepared for schema validation:', appointmentDataInput);
@@ -719,10 +733,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new Error(`Schema validation failed: ${JSON.stringify(validationError)}`);
       }
       
-      // Cancel any existing pending/pending_payment appointments for this user to prevent multiple payment banners
+      // Cancel any existing pending appointments for this user to prevent multiple payment banners
       const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
-        apt.status === 'pending_payment' || apt.status === 'pending'
+        apt.status === 'pending'
       );
       
       for (const pendingApt of pendingAppointments) {
@@ -731,6 +745,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const appointment = await storage.createAppointment(appointmentData);
+      
+      // 💎 IF COVERED BY MEMBERSHIP, CONSUME ALLOWANCE AND MARK SLOT AS UNAVAILABLE
+      if (coverageResult.isCovered) {
+        console.log('🎟️ Appointment covered by membership, consuming allowance...');
+        
+        // Get user's subscription ID
+        const patient = await storage.getUser(userId);
+        if (patient?.stripeSubscriptionId) {
+          const consumeResult = await membershipService.consumeAllowance(
+            patient.stripeSubscriptionId,
+            appointment.id,
+            appointmentPrice
+          );
+          
+          console.log('🎟️ Allowance consumption result:', consumeResult);
+          
+          // Mark slot as unavailable since appointment is now paid
+          if (appointment.slotId) {
+            await db.update(doctorTimeSlots)
+              .set({ isAvailable: false, updatedAt: new Date() })
+              .where(eq(doctorTimeSlots.id, appointment.slotId));
+            console.log(`🔒 Slot ${appointment.slotId} marked as unavailable for paid membership appointment`);
+          }
+        } else {
+          console.error('❌ User has coverage but no subscription ID found');
+        }
+      }
       
       // Send email notifications after appointment creation
       try {
@@ -772,7 +813,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Don't fail the appointment creation if email fails
       }
       
-      res.json(appointment);
+      // Return appointment with coverage information for frontend routing
+      res.json({
+        ...appointment,
+        coverageResult: {
+          isCovered: coverageResult.isCovered,
+          coverageType: coverageResult.coverageType,
+          patientPaid: coverageResult.patientPaid,
+          remainingAllowance: coverageResult.remainingAllowance,
+          reason: coverageResult.reason
+        }
+      });
     } catch (error) {
       console.error("Error creating appointment:", error);
       res.status(500).json({ message: "Failed to create appointment" });
@@ -1088,10 +1139,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         zoomPassword: null
       };
       
-      // Cancel any existing pending/pending_payment appointments for this user to prevent multiple payment banners
+      // Cancel any existing pending appointments for this user to prevent multiple payment banners
       const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
-        apt.status === 'pending_payment' || apt.status === 'pending'
+        apt.status === 'pending'
       );
       
       for (const pendingApt of pendingAppointments) {
@@ -1129,7 +1180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Update appointment with session ID
-      await storage.updateAppointmentStatus(appointment.id, "pending_payment", session.id);
+      await storage.updateAppointmentStatus(appointment.id, "pending", session.id);
       
       console.log(`🔒 Secure checkout session created: ${session.id}, Real price: €${realPrice}`);
       
@@ -1947,6 +1998,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Prevent payment intent creation for already paid appointments
+      if (appointment.status === 'paid') {
+        return res.status(400).json({ 
+          error: "Appointment is already paid",
+          code: "APPOINTMENT_ALREADY_PAID"
+        });
+      }
+
       // Get doctor details to retrieve the REAL price from database
       const doctor = await storage.getDoctor(appointment.doctorId);
       if (!doctor) {
@@ -1982,8 +2041,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
       });
 
-      // Update appointment status to pending_payment
-      await storage.updateAppointmentStatus(appointmentId, "pending_payment", paymentIntent.id);
+      // Update appointment status to pending
+      await storage.updateAppointmentStatus(appointmentId, "pending", paymentIntent.id);
 
       res.json({
         clientSecret: paymentIntent.client_secret,
@@ -2169,7 +2228,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
-        apt.status === 'pending_payment' || apt.status === 'pending'
+        apt.status === 'pending'
       );
       
       console.log(`Found ${pendingAppointments.length} pending appointments to clean up`);

@@ -124,6 +124,36 @@ export default function Checkout() {
           appointmentData = await existingAppointmentResponse.json();
           console.log('🔄 Fetched appointment data:', appointmentData);
           
+          // 💎 CHECK IF EXISTING APPOINTMENT IS ALREADY PAID/COVERED
+          if (appointmentData.status === 'paid') {
+            console.log('🎟️ Existing appointment is already paid! Redirecting to dashboard...');
+            toast({
+              title: "Appointment Already Confirmed!",
+              description: "Your appointment is already booked and confirmed.",
+            });
+            
+            // Redirect to dashboard after short delay
+            setTimeout(() => {
+              setLocation('/dashboard');
+            }, 1500);
+            return;
+          }
+          
+          // Also check coverage result if available
+          if (appointmentData.coverageResult?.isCovered) {
+            console.log('🎟️ Existing appointment covered by membership! Redirecting to dashboard...');
+            toast({
+              title: "Appointment Confirmed!",
+              description: `Your appointment has been booked using your membership credits. ${appointmentData.coverageResult.remainingAllowance} credits remaining.`,
+            });
+            
+            // Redirect to dashboard after short delay
+            setTimeout(() => {
+              setLocation('/dashboard');
+            }, 1500);
+            return;
+          }
+          
           // Calculate time remaining from original appointment creation time
           const createdAt = new Date(appointmentData.createdAt);
           const originalExpiresAt = new Date(createdAt.getTime() + 15 * 60 * 1000); // 15 minutes from original creation
@@ -183,6 +213,23 @@ export default function Checkout() {
 
           appointmentData = await appointmentResponse.json();
           
+          // 💎 CHECK IF APPOINTMENT IS COVERED BY MEMBERSHIP
+          console.log('🎟️ Checking appointment coverage result:', appointmentData.coverageResult);
+          
+          if (appointmentData.coverageResult?.isCovered) {
+            console.log('🎟️ Appointment covered by membership! Redirecting to dashboard...');
+            toast({
+              title: "Appointment Confirmed!",
+              description: `Your appointment has been booked using your membership credits. ${appointmentData.coverageResult.remainingAllowance} credits remaining.`,
+            });
+            
+            // Redirect to dashboard after short delay
+            setTimeout(() => {
+              setLocation('/dashboard');
+            }, 1500);
+            return;
+          }
+          
           // Calculate time remaining from new appointment creation time
           const createdAt = new Date(appointmentData.createdAt);
           const expiresAt = new Date(createdAt.getTime() + 15 * 60 * 1000); // 15 minutes from creation
@@ -198,19 +245,23 @@ export default function Checkout() {
           }
         }
 
-        // Create payment intent
-        const paymentResponse = await fetch('/api/payment/create-intent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            appointmentId: appointmentData.id,
-            amount: parseFloat(price)
-          })
-        });
+        // Create payment intent only if appointment is not already paid and not covered by membership
+        if (appointmentData.status !== 'paid' && !appointmentData.coverageResult?.isCovered) {
+          const paymentResponse = await fetch('/api/payment/create-intent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              appointmentId: appointmentData.id,
+              amount: parseFloat(price)
+            })
+          });
 
-        const paymentData = await paymentResponse.json();
-        if (paymentData.clientSecret) {
-          setClientSecret(paymentData.clientSecret);
+          const paymentData = await paymentResponse.json();
+          if (paymentData.clientSecret) {
+            setClientSecret(paymentData.clientSecret);
+          }
+        } else {
+          console.log('💎 Skipping payment intent creation - appointment already paid or covered');
         }
 
         setIsLoading(false);
