@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from 'wouter';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import Header from "@/components/Header";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
@@ -19,6 +20,79 @@ if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
   throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
 }
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+interface CancelSubscriptionDialogProps {
+  planName: string;
+  onCancel: () => Promise<{ success: boolean }>;
+  isCancelling: boolean;
+}
+
+const CancelSubscriptionDialog = ({ planName, onCancel, isCancelling }: CancelSubscriptionDialogProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleConfirmCancel = async () => {
+    if (isProcessing) return; // Prevent double-clicks
+    
+    setIsProcessing(true);
+    try {
+      const result = await onCancel();
+      if (result.success) {
+        setIsOpen(false); // Close dialog on success
+      }
+      // On failure, keep dialog open so user can retry
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialogTrigger asChild>
+        <Button 
+          variant="outline" 
+          className="w-full mt-2 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+          disabled={isCancelling}
+          data-testid="button-cancel-subscription"
+        >
+          Cancel Subscription
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent data-testid="dialog-cancel-confirmation">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Cancel Your Subscription?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to cancel your {planName} subscription? Please note:
+            <br /><br />
+            • Your subscription will remain active until the end of your current billing period
+            <br />
+            • You'll continue to have access to all features until then
+            <br />
+            • No refunds will be provided for the unused portion
+            <br />
+            • You can resubscribe at any time
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel 
+            disabled={isProcessing}
+            data-testid="button-cancel-dialog-cancel"
+          >
+            Keep Subscription
+          </AlertDialogCancel>
+          <Button
+            onClick={handleConfirmCancel}
+            disabled={isProcessing}
+            className="bg-red-600 hover:bg-red-700 disabled:opacity-50"
+            data-testid="button-cancel-dialog-confirm"
+          >
+            {isProcessing ? "Cancelling..." : "Yes, Cancel Subscription"}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
 
 interface MembershipPlan {
   id: string;
@@ -121,6 +195,7 @@ export default function Membership() {
   const [selectedPlan, setSelectedPlan] = useState<MembershipPlan | null>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isCancelling, setIsCancelling] = useState(false);
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
@@ -213,6 +288,71 @@ export default function Membership() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to cancel your subscription",
+        variant: "default",
+      });
+      return { success: false };
+    }
+
+    try {
+      setIsCancelling(true);
+      const response = await apiRequest("POST", "/api/membership/cancel");
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast({
+            title: "Authentication Required",
+            description: "Please log in again to cancel your subscription",
+            variant: "destructive",
+          });
+          setTimeout(() => setLocation('/login?redirect=/membership'), 2000);
+          return { success: false };
+        }
+        throw new Error(`Server error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast({
+          title: "Subscription Cancelled",
+          description: "Your subscription will be cancelled at the end of the current billing period. You'll continue to have access until then.",
+          variant: "default",
+        });
+        
+        // Refresh subscription data to show cancellation status
+        try {
+          const subscriptionResponse = await apiRequest("GET", "/api/membership/subscription");
+          const subscriptionData = await subscriptionResponse.json();
+          setSubscription(subscriptionData.subscription);
+        } catch (subError) {
+          console.log("Failed to refresh subscription data after cancellation");
+        }
+        return { success: true };
+      } else {
+        const errorMessage = data.error || "Failed to cancel subscription";
+        throw new Error(errorMessage);
+      }
+    } catch (error: any) {
+      console.error("Error cancelling subscription:", error);
+      const errorMessage = error.message?.includes('Server error') 
+        ? "Server error occurred. Please try again later."
+        : "Failed to cancel subscription. Please try again.";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      return { success: false };
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -410,9 +550,19 @@ export default function Membership() {
                   className={`w-full ${plan.featured ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
                   disabled={isLoading || (!!subscription && isCurrentPlan(plan, subscription))}
                   size="lg"
+                  data-testid={subscription && isCurrentPlan(plan, subscription) ? "button-already-subscribed" : "button-choose-plan"}
                 >
                   {subscription && isCurrentPlan(plan, subscription) ? 'Already Subscribed' : 'Choose This Plan'}
                 </Button>
+
+                {/* Cancel button - only show for current subscription */}
+                {subscription && isCurrentPlan(plan, subscription) && (
+                  <CancelSubscriptionDialog 
+                    planName={plan.name}
+                    onCancel={handleCancel}
+                    isCancelling={isCancelling}
+                  />
+                )}
 
                 {plan.billingInterval === '6_months' && (
                   <p className="text-xs text-gray-500 text-center">
