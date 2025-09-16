@@ -158,16 +158,6 @@ export function MembershipChip() {
               <Settings className="h-4 w-4 mr-2" />
               Manage plan
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full justify-start"
-              onClick={() => setLocation('/dashboard')}
-              data-testid="button-usage-history"
-            >
-              <History className="h-4 w-4 mr-2" />
-              Usage history
-            </Button>
             {allowance.allowanceRemaining === 0 && (
               <Button 
                 size="sm" 
