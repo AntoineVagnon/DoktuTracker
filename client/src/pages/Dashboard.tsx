@@ -29,6 +29,7 @@ import { PostConsultationSurvey } from "@/components/PostConsultationSurvey";
 import { CalendarView } from "@/components/CalendarView";
 import { PatientCalendar } from "@/pages/PatientCalendar";
 import { calculateHealthProfileCompletion } from "@/lib/healthProfileUtils";
+import { MembershipChip } from "@/components/MembershipChip";
 
 // Function to check if appointment is currently joinable (within 10 minutes of start time)
 function isAppointmentJoinable(appointmentDate: string): boolean {
@@ -469,14 +470,17 @@ export default function Dashboard() {
             <p className="text-gray-600 text-sm sm:text-base">Welcome back, {user?.firstName || "Patient"}</p>
           </div>
 
-          <Button 
-            onClick={handleBookAppointment}
-            className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] h-11 w-full sm:w-auto"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            <span className="hidden sm:inline">Book New Appointment</span>
-            <span className="sm:hidden">Book Appointment</span>
-          </Button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <MembershipChip />
+            <Button 
+              onClick={handleBookAppointment}
+              className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] h-11 w-full sm:w-auto"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Book New Appointment</span>
+              <span className="sm:hidden">Book Appointment</span>
+            </Button>
+          </div>
         </div>
 
         {/* Incomplete subscription banner */}
