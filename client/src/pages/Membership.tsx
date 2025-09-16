@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from 'wouter';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import Header from "@/components/Header";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
@@ -270,6 +271,7 @@ export default function Membership() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       <div className="container mx-auto px-4 py-8">
         {/* Authentication Alert */}
         {!isAuthenticated && (
