@@ -195,6 +195,32 @@ export default function Checkout() {
           const verifyLocal = new Date(appointmentDateUTC.toISOString());
           console.log('🕐 Verification - stored UTC converted back to local:', verifyLocal.toLocaleString());
           
+          // TEST: Try the conflict-free endpoint first
+          console.log("🧪 Testing conflict-free endpoint first...");
+          try {
+            const testResponse = await fetch("/api/appointments/create", {
+              method: "POST",
+              headers: { 
+                "Content-Type": "application/json"
+              },
+              credentials: 'include',
+              body: JSON.stringify({ test: true })
+            });
+            
+            const testResult = await testResponse.json();
+            console.log("🧪 Test endpoint result:", testResult);
+            
+            if (testResponse.ok) {
+              console.log("✅ Conflict-free endpoint works! Issue is specifically with /api/appointments");
+            } else {
+              console.log("❌ Even conflict-free endpoint fails - deeper routing issue");
+            }
+          } catch (testError) {
+            console.log("❌ Test endpoint failed:", testError);
+          }
+          
+          // Now try the original endpoint
+          console.log("🔄 Attempting original /api/appointments endpoint...");
           const appointmentResponse = await fetch('/api/appointments', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

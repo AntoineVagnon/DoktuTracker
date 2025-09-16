@@ -72,8 +72,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerMembershipRoutes(app);
   
   // ============================================================================
+  // TRACER MIDDLEWARE - TO IDENTIFY ROUTE INTERCEPTION (TEMPORARY DEBUG)
+  // ============================================================================
+  app.use('/api/appointments', (req, res, next) => {
+    console.log('🔍 TRACER: appointments base intercepted', {
+      method: req.method,
+      url: req.url,
+      path: req.path,
+      originalUrl: req.originalUrl,
+      timestamp: new Date().toISOString()
+    });
+    next();
+  });
+  
+  // ============================================================================
   // CRITICAL: APPOINTMENT ROUTES MUST BE DEFINED BEFORE BROAD ROOT ROUTERS
   // ============================================================================
+  
+  // TEMPORARY: Conflict-free endpoint for testing
+  app.post("/api/appointments/create", (req, res, next) => {
+    console.log('🟢 POST /api/appointments/create - REQUEST RECEIVED', { 
+      method: req.method, 
+      url: req.url,
+      headers: req.headers['content-type'],
+      hasBody: !!req.body
+    });
+    next();
+  }, isAuthenticated, async (req, res) => {
+    // Just return a test response to confirm route is working
+    try {
+      const user = req.user as any;
+      const userId = user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      res.json({
+        success: true,
+        message: "TEMPORARY: Conflict-free endpoint working!",
+        testData: { userId, timestamp: new Date() }
+      });
+      
+    } catch (error: any) {
+      console.error("🚨 Test endpoint error:", error);
+      res.status(500).json({ 
+        error: "TEST_FAILED",
+        message: "Test endpoint failed" 
+      });
+    }
+  });
   
   // POST /api/appointments - Create new appointment (MUST BE BEFORE BROAD ROUTERS)
   app.post("/api/appointments", (req, res, next) => {
