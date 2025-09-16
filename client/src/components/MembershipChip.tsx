@@ -152,7 +152,8 @@ export function MembershipChip() {
               variant="outline" 
               size="sm" 
               className="w-full justify-start"
-              onClick={() => setLocation('/settings?tab=membership')}
+              onClick={() => setLocation('/membership')}
+              data-testid="button-manage-plan"
             >
               <Settings className="h-4 w-4 mr-2" />
               Manage plan
@@ -161,7 +162,8 @@ export function MembershipChip() {
               variant="outline" 
               size="sm" 
               className="w-full justify-start"
-              onClick={() => setLocation('/membership/history')}
+              onClick={() => setLocation('/dashboard')}
+              data-testid="button-usage-history"
             >
               <History className="h-4 w-4 mr-2" />
               Usage history
@@ -170,7 +172,8 @@ export function MembershipChip() {
               <Button 
                 size="sm" 
                 className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]"
-                onClick={() => setLocation('/membership/add-credits')}
+                onClick={() => setLocation('/membership')}
+                data-testid="button-add-credits"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add credits
