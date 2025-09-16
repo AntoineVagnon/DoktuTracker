@@ -27,7 +27,7 @@ import {
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
-import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema, doctorTimeSlots, membershipSubscriptions } from "@shared/schema";
+import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema, doctorTimeSlots, membershipSubscriptions, membershipCycles, membershipAllowanceEvents, appointmentCoverage, appointments } from "@shared/schema";
 import { z } from "zod";
 import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
 import { setupSlotRoutes } from "./routes/slots";

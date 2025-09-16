@@ -43,9 +43,11 @@ import { eq, desc, asc, and, gte, lte, lt, isNull, or, count, avg, sql, inArray 
 import { alias } from "drizzle-orm/pg-core";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 import type { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
+import type { PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";
+import type { PgTransaction } from "drizzle-orm/pg-core";
 
-// Type for database connection that can be db or transaction
-type DbLike = PgDatabase<NodePgQueryResultHKT, any, any>;
+// Type for database connection that can be db or transaction (supports both NodePg and PostgresJS)
+type DbLike = PgDatabase<NodePgQueryResultHKT, any, any> | PgDatabase<PostgresJsQueryResultHKT, any, any> | PgTransaction<PostgresJsQueryResultHKT, any, any>;
 import { nanoid } from "nanoid";
 import { format } from "date-fns";
 
