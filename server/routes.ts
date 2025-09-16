@@ -3394,6 +3394,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reactivate subscription (cancel the cancellation)
+  app.post("/api/membership/reactivate", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const user = req.user;
+      
+      // Check if user has an active subscription that's set to cancel
+      if (!user.stripeSubscriptionId) {
+        return res.status(400).json({ error: "No active subscription found" });
+      }
+      
+      try {
+        // Get current subscription to check if it's scheduled for cancellation
+        const currentSubscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+        
+        if (!currentSubscription.cancel_at_period_end) {
+          return res.status(400).json({ error: "Subscription is not scheduled for cancellation" });
+        }
+        
+        // Reactivate subscription by setting cancel_at_period_end to false
+        const subscription = await stripe.subscriptions.update(
+          user.stripeSubscriptionId,
+          {
+            cancel_at_period_end: false
+          }
+        );
+        
+        console.log(`Subscription ${subscription.id} reactivated (cancellation cancelled)`);
+        
+        res.json({ 
+          success: true,
+          message: "Subscription has been reactivated. Your plan will continue as normal.",
+          currentPeriodEnd: subscription.current_period_end
+        });
+      } catch (stripeError) {
+        console.error("Stripe reactivation error:", stripeError);
+        return res.status(500).json({ error: "Failed to reactivate subscription with payment provider" });
+      }
+      
+    } catch (error) {
+      console.error("Error reactivating subscription:", error);
+      res.status(500).json({ error: "Failed to reactivate subscription" });
+    }
+  });
+
   // Stripe webhook handler for subscription events
   app.post("/api/webhooks/stripe", async (req, res) => {
     const sig = req.headers['stripe-signature'];

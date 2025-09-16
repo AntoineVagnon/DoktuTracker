@@ -60,6 +60,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/register" component={Register} />
+      <Route path="/login" component={AuthChoice} />
+      <Route path="/auth/oidc" component={AuthChoice} />
       <Route path="/auth-choice" component={AuthChoice} />
       <Route path="/register-form" component={RegisterForm} />
       <Route path="/login-form" component={LoginForm} />

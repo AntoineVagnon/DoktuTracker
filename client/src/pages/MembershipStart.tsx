@@ -15,11 +15,11 @@ import { analytics } from "@/lib/analytics";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 if (!stripeKey) {
-  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
+  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLISHABLE_KEY');
 }
-console.log("Loading Stripe with public key:", stripeKey.substring(0, 10) + "...");
+console.log("Loading Stripe with publishable key:", stripeKey.substring(0, 10) + "...");
 const stripePromise = loadStripe(stripeKey);
 
 interface PlanDetails {

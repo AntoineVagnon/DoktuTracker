@@ -23,20 +23,26 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 interface CancelSubscriptionDialogProps {
   planName: string;
+  subscription: any;
   onCancel: () => Promise<{ success: boolean }>;
+  onReactivate: () => Promise<{ success: boolean }>;
   isCancelling: boolean;
 }
 
-const CancelSubscriptionDialog = ({ planName, onCancel, isCancelling }: CancelSubscriptionDialogProps) => {
+const CancelSubscriptionDialog = ({ planName, subscription, onCancel, onReactivate, isCancelling }: CancelSubscriptionDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleConfirmCancel = async () => {
+  // Check if subscription is scheduled for cancellation
+  const isScheduledForCancellation = subscription?.cancelAtPeriodEnd || subscription?.cancel_at_period_end;
+  const cancellationDate = subscription?.currentPeriodEnd || subscription?.current_period_end;
+
+  const handleConfirmAction = async () => {
     if (isProcessing) return; // Prevent double-clicks
     
     setIsProcessing(true);
     try {
-      const result = await onCancel();
+      const result = isScheduledForCancellation ? await onReactivate() : await onCancel();
       if (result.success) {
         setIsOpen(false); // Close dialog on success
       }
@@ -46,47 +52,92 @@ const CancelSubscriptionDialog = ({ planName, onCancel, isCancelling }: CancelSu
     }
   };
 
+  // Format cancellation date for display
+  const formatCancellationDate = (timestamp: number | string) => {
+    const date = new Date(typeof timestamp === 'string' ? parseInt(timestamp) * 1000 : timestamp * 1000);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long', 
+      day: 'numeric'
+    });
+  };
+
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button 
           variant="outline" 
-          className="w-full mt-2 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+          className={`w-full mt-2 ${
+            isScheduledForCancellation 
+              ? 'border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700'
+              : 'border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700'
+          }`}
           disabled={isCancelling}
-          data-testid="button-cancel-subscription"
+          data-testid={isScheduledForCancellation ? "button-reactivate-subscription" : "button-cancel-subscription"}
         >
-          Cancel Subscription
+          {isScheduledForCancellation 
+            ? `Reactivate - Cancels ${cancellationDate ? formatCancellationDate(cancellationDate) : 'at period end'}`
+            : 'Cancel Subscription'
+          }
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent data-testid="dialog-cancel-confirmation">
+      <AlertDialogContent data-testid={isScheduledForCancellation ? "dialog-reactivate-confirmation" : "dialog-cancel-confirmation"}>
         <AlertDialogHeader>
-          <AlertDialogTitle>Cancel Your Subscription?</AlertDialogTitle>
+          <AlertDialogTitle>
+            {isScheduledForCancellation ? 'Reactivate Your Subscription?' : 'Cancel Your Subscription?'}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to cancel your {planName} subscription? Please note:
-            <br /><br />
-            • Your subscription will remain active until the end of your current billing period
-            <br />
-            • You'll continue to have access to all features until then
-            <br />
-            • No refunds will be provided for the unused portion
-            <br />
-            • You can resubscribe at any time
+            {isScheduledForCancellation ? (
+              <>
+                Your {planName} subscription is currently scheduled to be cancelled on{' '}
+                <strong>{cancellationDate ? formatCancellationDate(cancellationDate) : 'your period end date'}</strong>.
+                <br /><br />
+                By reactivating:
+                <br />
+                • Your subscription will continue automatically
+                <br />
+                • You'll maintain access to all features
+                <br />
+                • Regular billing will resume at the next period
+                <br />
+                • You can cancel again at any time
+              </>
+            ) : (
+              <>
+                Are you sure you want to cancel your {planName} subscription? Please note:
+                <br /><br />
+                • Your subscription will remain active until the end of your current billing period
+                <br />
+                • You'll continue to have access to all features until then
+                <br />
+                • No refunds will be provided for the unused portion
+                <br />
+                • You can resubscribe at any time
+              </>
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel 
             disabled={isProcessing}
-            data-testid="button-cancel-dialog-cancel"
+            data-testid={isScheduledForCancellation ? "button-reactivate-dialog-cancel" : "button-cancel-dialog-cancel"}
           >
-            Keep Subscription
+            {isScheduledForCancellation ? 'Keep Scheduled Cancellation' : 'Keep Subscription'}
           </AlertDialogCancel>
           <Button
-            onClick={handleConfirmCancel}
+            onClick={handleConfirmAction}
             disabled={isProcessing}
-            className="bg-red-600 hover:bg-red-700 disabled:opacity-50"
-            data-testid="button-cancel-dialog-confirm"
+            className={`disabled:opacity-50 ${
+              isScheduledForCancellation 
+                ? 'bg-green-600 hover:bg-green-700'
+                : 'bg-red-600 hover:bg-red-700'
+            }`}
+            data-testid={isScheduledForCancellation ? "button-reactivate-dialog-confirm" : "button-cancel-dialog-confirm"}
           >
-            {isProcessing ? "Cancelling..." : "Yes, Cancel Subscription"}
+            {isProcessing 
+              ? (isScheduledForCancellation ? "Reactivating..." : "Cancelling...") 
+              : (isScheduledForCancellation ? "Yes, Reactivate Subscription" : "Yes, Cancel Subscription")
+            }
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -356,6 +407,71 @@ export default function Membership() {
     }
   };
 
+  const handleReactivate = async () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to reactivate your subscription",
+        variant: "default",
+      });
+      return { success: false };
+    }
+
+    try {
+      setIsCancelling(true);
+      const response = await apiRequest("POST", "/api/membership/reactivate");
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast({
+            title: "Authentication Required",
+            description: "Please log in again to reactivate your subscription",
+            variant: "destructive",
+          });
+          setTimeout(() => setLocation('/login?redirect=/membership'), 2000);
+          return { success: false };
+        }
+        throw new Error(`Server error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast({
+          title: "Subscription Reactivated",
+          description: "Your subscription has been reactivated and will continue as normal.",
+          variant: "default",
+        });
+        
+        // Refresh subscription data to show updated status
+        try {
+          const subscriptionResponse = await apiRequest("GET", "/api/membership/subscription");
+          const subscriptionData = await subscriptionResponse.json();
+          setSubscription(subscriptionData.subscription);
+        } catch (subError) {
+          console.log("Failed to refresh subscription data after reactivation");
+        }
+        return { success: true };
+      } else {
+        const errorMessage = data.error || "Failed to reactivate subscription";
+        throw new Error(errorMessage);
+      }
+    } catch (error: any) {
+      console.error("Error reactivating subscription:", error);
+      const errorMessage = error.message?.includes('Server error') 
+        ? "Server error occurred. Please try again later."
+        : "Failed to reactivate subscription. Please try again.";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      return { success: false };
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   const benefits = [
     { icon: Users, text: "Access to certified European doctors" },
     { icon: Calendar, text: "Easy appointment scheduling" },
@@ -559,7 +675,9 @@ export default function Membership() {
                 {subscription && isCurrentPlan(plan, subscription) && (
                   <CancelSubscriptionDialog 
                     planName={plan.name}
+                    subscription={subscription}
                     onCancel={handleCancel}
+                    onReactivate={handleReactivate}
                     isCancelling={isCancelling}
                   />
                 )}
