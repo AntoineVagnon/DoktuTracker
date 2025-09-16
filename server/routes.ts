@@ -736,7 +736,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Cancel any existing pending appointments for this user to prevent multiple payment banners
       const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
-        apt.status === 'pending'
+        apt.status === 'pending' || apt.status === 'pending_payment'
       );
       
       for (const pendingApt of pendingAppointments) {
@@ -1142,7 +1142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Cancel any existing pending appointments for this user to prevent multiple payment banners
       const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
-        apt.status === 'pending'
+        apt.status === 'pending' || apt.status === 'pending_payment'
       );
       
       for (const pendingApt of pendingAppointments) {
@@ -2202,6 +2202,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ADMIN: Convert pending/pending_payment appointment to use membership credits
+  app.post("/api/admin/convert-appointment-to-membership", isAuthenticated, async (req, res) => {
+    try {
+      const { appointmentId } = req.body;
+      const userId = parseInt(req.user.id);
+      
+      if (!appointmentId) {
+        return res.status(400).json({ error: "appointmentId required" });
+      }
+      
+      // Get the appointment
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment) {
+        return res.status(404).json({ error: "Appointment not found" });
+      }
+      
+      // Verify it belongs to the user
+      if (appointment.patientId !== userId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+      
+      // Check if appointment can be converted (pending or pending_payment)
+      if (appointment.status !== 'pending' && appointment.status !== 'pending_payment') {
+        return res.status(400).json({ error: "Appointment cannot be converted - wrong status" });
+      }
+      
+      // Check membership coverage
+      const coverageResult = await membershipService.checkAppointmentCoverage(userId, 35.00);
+      
+      if (!coverageResult.isCovered) {
+        return res.status(400).json({ 
+          error: "No membership coverage available",
+          details: coverageResult 
+        });
+      }
+      
+      // Convert appointment: consume allowance and mark as paid
+      await membershipService.consumeAllowance(userId, appointmentId, 35.00);
+      await storage.updateAppointmentStatus(appointmentId, "paid");
+      
+      // Mark slot as unavailable 
+      if (appointment.slotId) {
+        await storage.markSlotUnavailable(appointment.slotId);
+      }
+      
+      console.log(`✅ Converted appointment ${appointmentId} to use membership credits for user ${userId}`);
+      
+      res.json({ 
+        success: true, 
+        message: `Appointment ${appointmentId} converted to use membership credits`,
+        appointmentId,
+        creditsUsed: 1,
+        remainingCredits: coverageResult.remainingCredits - 1
+      });
+    } catch (error) {
+      console.error("Error converting appointment to membership:", error);
+      res.status(500).json({ error: "Failed to convert appointment" });
+    }
+  });
+
   // ADMIN: Clean up pending appointments for user (temporary fix for banner issue)
   app.post("/api/admin/cleanup-pending-user", async (req, res) => {
     try {
@@ -2228,7 +2288,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const userAppointments = await storage.getAppointments(userId);
       const pendingAppointments = userAppointments.filter(apt => 
-        apt.status === 'pending'
+        apt.status === 'pending' || apt.status === 'pending_payment'
       );
       
       console.log(`Found ${pendingAppointments.length} pending appointments to clean up`);
