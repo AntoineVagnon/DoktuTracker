@@ -1,0 +1,135 @@
+Quick diagnosis
+
+Discoverability is low (floating popover in the avatar area).
+
+Copy is ambiguous: “3 of 3 remaining • Available” + a bar with “0/3” is hard to parse.
+
+Not connected to key actions (Book, Calendar, Empty state).
+
+Product goals
+
+Clarity at-a-glance → Nudge to use credits → Zero surprises (billing/depletion) → Consistency across pages → Accessible.
+
+UI recommendations (where & how)
+1) App header (always visible)
+
+Inline Usage Chip next to the “Book New Appointment” CTA:
+● 3 credits left • Resets Sep 30
+
+Chip shows number first (what users care about), not a fraction.
+
+When ≤1 credit: chip turns warning color and adds Last credit.
+
+When 0: chip turns danger and the Book button text changes to Add credits to book.
+
+Popover on chip click/hover (progressive disclosure):
+
+Plan name + cycle dates
+
+Usage meter (3 used of 3 / 0 left) with textual label for accessibility
+
+Next reset + next charge date (if paid)
+
+Actions: Manage plan, Usage history, Add credits
+
+Secondary: FAQs link
+
+2) Appointments > Empty state
+
+Replace the single empty card with a value-oriented empty state:
+
+Illustration + line: “You have 3 credits ready — book your next visit in 2 minutes.”
+
+Primary: Book an appointment (same CTA) with a small badge “3”.
+
+Secondary: See doctors (if that’s a separate list).
+
+If 0 credits: copy flips to “No credits left” + Add credits (primary) and Browse doctors (secondary).
+
+3) “Book New Appointment” flow
+
+Pre-flight banner at the top of the modal/flow:
+
+3 credits left • Resets in 12 days
+
+If 0: show inline paywall card with two options: Add credits or One-off purchase. Don’t dead-end the user.
+
+On confirmation screen: subtle “This will use 1 credit” line.
+
+4) Settings tab → “Membership & Billing”
+
+Full page with: plan, cycle, payment method, invoices, usage history, add/remove credits, upgrade/downgrade.
+
+Widget anatomy (spec)
+
+Chip states
+
+Default: ● {n} credits left
+
+Low (≤1): ● Last credit
+
+Depleted: ● 0 credits • Add credits
+
+Progress indicator
+
+Linear bar with text: Used 0 of 3 (never rely on color alone).
+
+SR-only label: “You have 3 monthly credits; 0 used; resets Sep 30.”
+
+Color tokens
+
+Neutral for default, Warning for low, Danger for 0; keep WCAG AA contrast.
+
+Copy improvements
+
+Replace “3 of 3 remaining • Available” with “3 credits left”.
+
+Replace “Reset on Sep 30” with “Resets Sep 30” (and countdown on hover: “in 12 days”).
+
+Payment failure state: “Payment issue — update card to keep booking.”
+
+UX behaviors & edge cases
+
+Trial: “Trial • 3 credits left • Ends Sep 30.”
+
+Rollover (if supported): show 3 left (1 rollover).
+
+Family/Employer plans: show payer tag (e.g., “Covered by ACME Corp”) and what’s included.
+
+Doctor exceptions (if some consume 2 credits): warn at selection: “This visit uses 2 credits.”
+
+Grace period: if cycle ended but appointment already booked, do not block; communicate clearly.
+
+Notifications (lightweight)
+
+In-app toast after booking: “Booked — 2 credits left.”
+
+When 1 credit left: dismissible banner in dashboard for that session.
+
+72h before reset & you still have credits: subtle reminder (“Book before reset?”) — never spam.
+
+Accessibility & internationalization
+
+Bar + numeric labels (not color-only).
+
+Announce changes (ARIA live) when credits update after booking.
+
+Localize dates (“30 Sep” vs “Sep 30”) and pluralization (“1 credit left”).
+
+Performance & responsive
+
+Chip collapses to an icon with 3 badge on mobile; full text in popover.
+
+Keep all membership data in one lightweight request cached in context; update optimistically after booking.
+
+Metrics to track
+
+Chip CTR, popover CTR → Manage plan CTR
+
+Book CTA CTR when credits >0 vs =0
+
+Conversion on Add credits / One-off
+
+Drop-offs after paywall
+
+Support tickets about billing/limits (should fall).
