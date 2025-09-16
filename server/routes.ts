@@ -1023,7 +1023,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(response);
     } catch (error: any) {
-      console.error("Error creating appointment:", error);
+      console.error("🚨 DETAILED Error creating appointment:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        fullError: error
+      });
       
       // 🛡️ Handle idempotency guard errors with specific messages
       if (error.message === 'DUPLICATE_APPOINTMENT_DETECTED') {
