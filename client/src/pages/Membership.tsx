@@ -127,28 +127,12 @@ export default function Membership() {
 
   // Helper function to check if a plan matches the user's current subscription
   const isCurrentPlan = (plan: MembershipPlan, userSubscription: any): boolean => {
-    console.log('🔍 Membership Page - Checking if current plan:', {
-      planName: plan.name,
-      planBillingInterval: plan.billingInterval,
-      userSubscription,
-      hasSubscription: !!userSubscription
-    });
-
-    if (!userSubscription) {
-      console.log('❌ No subscription found');
-      return false;
-    }
+    if (!userSubscription) return false;
     
     // Check if the plan matches the subscription plan by comparing interval count
     // 6-month subscriptions have intervalCount: 6, monthly have intervalCount: 1
     const planIntervalCount = plan.billingInterval === '6_months' ? 6 : 1;
     const subIntervalCount = userSubscription.intervalCount || 1;
-    
-    console.log('📊 Interval comparison:', {
-      planIntervalCount,
-      subIntervalCount,
-      matches: planIntervalCount === subIntervalCount
-    });
     
     return planIntervalCount === subIntervalCount;
   };
@@ -427,20 +411,7 @@ export default function Membership() {
                   disabled={isLoading || (!!subscription && isCurrentPlan(plan, subscription))}
                   size="lg"
                 >
-                  {(() => {
-                    const hasSubscription = !!subscription;
-                    const isCurrent = isCurrentPlan(plan, subscription);
-                    const buttonText = subscription && isCurrentPlan(plan, subscription) ? 'Already Subscribed' : 'Choose This Plan';
-                    
-                    console.log('🔘 Button render for', plan.name, {
-                      hasSubscription,
-                      isCurrent, 
-                      buttonText,
-                      subscriptionExists: !!subscription
-                    });
-                    
-                    return buttonText;
-                  })()}
+                  {subscription && isCurrentPlan(plan, subscription) ? 'Already Subscribed' : 'Choose This Plan'}
                 </Button>
 
                 {plan.billingInterval === '6_months' && (
