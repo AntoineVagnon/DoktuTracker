@@ -238,7 +238,7 @@ export function securityAudit(req: Request, res: Response, next: NextFunction) {
   if (req.url.includes('/api/auth/') || 
       req.url.includes('/api/doctors/') ||
       req.url.includes('/api/bookings/') ||
-      req.url.includes('/api/appointments/')) {
+      req.url.includes('/api/appointments')) {
     console.log('[SECURITY AUDIT]', securityEvent);
   }
   

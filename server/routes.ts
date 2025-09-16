@@ -683,7 +683,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/appointments", isAuthenticated, async (req, res) => {
+  app.post("/api/appointments", (req, res, next) => {
+    console.log('🟢 POST /api/appointments - REQUEST RECEIVED', { 
+      method: req.method, 
+      url: req.url,
+      headers: req.headers['content-type'],
+      hasBody: !!req.body
+    });
+    next();
+  }, isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
       const userId = user?.id;
