@@ -218,35 +218,7 @@ export function registerMembershipRoutes(app: Express) {
     }
   });
 
-  // Reactivate a cancelled subscription
-  app.post("/api/membership/reactivate", strictLimiter, isAuthenticated, async (req, res) => {
-    try {
-      if (!req.user) {
-        return res.status(401).json({ error: "User not authenticated" });
-      }
-      const userId = parseInt(req.user.id);
-      const user = req.user;
-
-      if (!user?.stripeSubscriptionId) {
-        return res.status(400).json({ error: "No subscription found to reactivate" });
-      }
-
-      // Note: In a full implementation, this would:
-      // 1. Check if subscription is in cancelled state
-      // 2. Update Stripe subscription to remove cancellation
-      // 3. Reactivate allowance cycles if needed
-      // 4. Send reactivation notifications
-
-      res.json({
-        success: false,
-        message: "Subscription reactivation not fully implemented yet",
-        subscriptionId: user.stripeSubscriptionId
-      });
-    } catch (error) {
-      console.error("Error reactivating subscription:", error);
-      res.status(500).json({ error: "Failed to reactivate subscription" });
-    }
-  });
+  // Note: Reactivate endpoint is implemented in server/routes.ts
 
   // Get membership recommendations for user
   app.get("/api/membership/recommendations", isAuthenticated, async (req, res) => {
