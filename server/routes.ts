@@ -57,6 +57,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ============================================================================
   // TOP-LEVEL TRACER - FIRST MIDDLEWARE TO PROVE NO INTERCEPTION
   // ============================================================================
+  // Diagnostic endpoint to verify single server instance
+  app.get('/api/diag', (req, res) => {
+    res.json({
+      pid: process.pid,
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      serverInstanceId: globalThis.__serverListening ? 'primary' : 'unknown'
+    });
+  });
+
   app.all('/api/appointments*', (req, res, next) => {
     console.log('🚨🚨 [TOP TRACER] 🚨🚨', req.method, req.originalUrl, req.headers['content-type']);
     console.log('🚨🚨 [TOP TRACER] Body present:', !!req.body, 'Body size:', req.body ? Object.keys(req.body).length : 0);

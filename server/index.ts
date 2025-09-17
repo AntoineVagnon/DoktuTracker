@@ -71,6 +71,12 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
+  // Prevent multiple server instances - critical for dev stability
+  if (globalThis.__serverListening) {
+    log('⚠️ Server already listening, skipping duplicate listener');
+    return;
+  }
+
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
@@ -78,8 +84,9 @@ app.use((req, res, next) => {
   server.listen({
     port,
     host: "0.0.0.0",
-    reusePort: true,
+    // Remove reusePort to prevent multiple server instances
   }, () => {
     log(`serving on port ${port}`);
+    globalThis.__serverListening = true;
   });
 })();
