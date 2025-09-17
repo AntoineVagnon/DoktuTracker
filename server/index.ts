@@ -66,7 +66,11 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  await registerRoutes(app);
+  
+  // Create single HTTP server instance (moved from routes.ts)
+  const { createServer } = await import('http');
+  const server = createServer(app);
 
   // ============================================================================
   // LAST-CHANCE API FALLTHROUGH TRACER

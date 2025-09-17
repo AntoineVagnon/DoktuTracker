@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
+// Removed createServer import - server creation now handled by index.ts
 import multer from "multer";
 import {
   ObjectStorageService,
@@ -47,7 +47,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-06-20",
 });
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<void> {
   // ============================================================================
   // EMERGENCY DEBUG - ULTRA-SIMPLE LOG TO TEST IF ANYTHING WORKS
   // ============================================================================
@@ -4161,6 +4161,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Apply global error handler (must be last)
   app.use(errorHandler);
   
-  const httpServer = createServer(app);
-  return httpServer;
+  console.log('✅ All routes registered successfully');
 }
