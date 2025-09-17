@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { isAuthenticated } from '../supabaseAuth';
-import { sendEmail } from '../services/emailService';
+import { EmailService } from '../emailService';
 import { getTemplate } from '../services/emailTemplates';
 import { db } from '../db';
 import { appointments, users, doctors } from '@shared/schema';
@@ -40,12 +40,12 @@ router.post('/test', isAuthenticated, requireAdmin, async (req, res) => {
     
     const template = getTemplate(type, templateData);
     
-    // Send test email
-    await sendEmail({
-      to: email,
-      subject: template.subject,
-      html: template.html,
-      text: template.text
+    // Send test email using working email service
+    const emailService = new EmailService();
+    await emailService.sendWelcomeEmail({
+      email,
+      firstName: 'Test User',
+      userType: 'patient'
     });
     
     res.json({
@@ -95,6 +95,7 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
         },
         doctor: {
           id: doctors.id,
+          title: doctors.title,
           firstName: doctors.firstName,
           lastName: doctors.lastName,
           specialization: doctors.specialization
@@ -127,11 +128,12 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
         // Use existing booking_reminder_24h template
         const template = getTemplate('booking_reminder_24h', templateData);
         
-        await sendEmail({
-          to: appointment.patient.email,
-          subject: template.subject,
-          html: template.html,
-          text: template.text
+        const emailService = new EmailService();
+        await emailService.sendAppointmentReminder({
+          patientEmail: appointment.patient.email,
+          patientName: appointment.patient.firstName || 'Patient',
+          doctorName: `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`,
+          appointmentDate: appointment.appointmentDate
         });
         
         sentCount++;

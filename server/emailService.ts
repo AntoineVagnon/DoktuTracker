@@ -105,11 +105,13 @@ export class EmailService {
       return true;
     } catch (error: any) {
       console.error('❌ SendGrid email error:', error);
+      console.error('❌ SendGrid error code:', error.code);
+      console.error('❌ SendGrid status code:', error.response?.status);
       
       // Check for specific SendGrid errors
       if (error.response?.body?.errors) {
         const sgErrors = error.response.body.errors;
-        console.error('📧 SendGrid specific errors:', sgErrors);
+        console.error('📧 SendGrid detailed errors:', JSON.stringify(sgErrors, null, 2));
         
         // Check for sender verification issues
         if (sgErrors.some((err: any) => err.message?.includes('sender identity') || err.message?.includes('verified'))) {
@@ -119,8 +121,13 @@ export class EmailService {
         }
       }
       
+      // Log more detailed error information
+      if (error.response?.body) {
+        console.error('❌ Full SendGrid response body:', JSON.stringify(error.response.body, null, 2));
+      }
+      
       // For other errors, throw to let the caller handle it
-      throw new Error(`Email sending failed: ${error.message}`);
+      throw new Error(`Email sending failed: ${error.message} (Status: ${error.response?.status || 'unknown'})`);
     }
   }
 
