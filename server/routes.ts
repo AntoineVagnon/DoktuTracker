@@ -48,6 +48,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // ============================================================================
+  // TOP-LEVEL TRACER - FIRST MIDDLEWARE TO PROVE NO INTERCEPTION
+  // ============================================================================
+  app.all('/api/appointments*', (req, res, next) => {
+    console.log('[TOP TRACER]', req.method, req.originalUrl, req.headers['content-type']);
+    console.log('[TOP TRACER] Body present:', !!req.body, 'Body size:', req.body ? Object.keys(req.body).length : 0);
+    console.error('[TOP TRACER ERROR LOG]', req.method, req.originalUrl);
+    next();
+  });
+
   // Apply security middleware globally
   app.use(helmetConfig);
   app.use(additionalSecurityHeaders);
@@ -136,6 +146,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }, async (req, res) => {
     try {
+      // 🛡️ EXPLICIT GUARDS FOR DEBUGGING
+      console.log('🔍 Content-Type check:', req.headers['content-type']);
+      console.log('🔍 Request is JSON:', req.is('application/json'));
+      console.log('🔍 Body present:', !!req.body);
+      console.log('🔍 Body contents:', req.body);
+      
+      if (!req.is('application/json')) {
+        console.error('❌ Wrong Content-Type:', req.headers['content-type']);
+        return res.status(415).json({ error: 'UNSUPPORTED_MEDIA_TYPE', message: 'Content-Type must be application/json' });
+      }
+      
+      if (!req.body) {
+        console.error('❌ Empty request body');
+        return res.status(400).json({ error: 'EMPTY_BODY', message: 'Request body is required' });
+      }
+      
       const user = req.user as any;
       const userId = user?.id;
       if (!userId) {
@@ -480,6 +506,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: error.name,
         fullError: error
       });
+      
+      // 🔍 ARCHITECT DEBUGGING: Log exact stack trace
+      console.error("🔍 FULL STACK TRACE:", error.stack);
+      console.error("🔍 ERROR AT LINE:", error.stack?.split('\n')[1]);
       
       // 🛡️ Handle idempotency guard errors with specific messages
       if (error.message === 'DUPLICATE_APPOINTMENT_DETECTED') {
