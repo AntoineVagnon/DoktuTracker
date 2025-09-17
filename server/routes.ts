@@ -4606,6 +4606,10 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Register email routes
+  const { emailRouter } = await import('./routes/emails');
+  app.use('/api/emails', emailRouter);
+
   // Register membership routes
   registerMembershipRoutes(app);
 
