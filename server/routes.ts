@@ -558,9 +558,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Generic error fallback
+      // 🔍 ARCHITECT DEBUGGING: Add unique header to identify handler
+      res.set('X-Handler', 'appointments-v2');
+      res.set('X-Process-PID', process.pid.toString());
+      
       res.status(500).json({ 
         error: "BOOKING_FAILED",
-        message: "Failed to create appointment. Please try again." 
+        message: "Failed to create appointment. Please try again.",
+        debug: {
+          pid: process.pid,
+          timestamp: new Date().toISOString()
+        }
       });
     }
   });

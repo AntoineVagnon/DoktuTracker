@@ -5,6 +5,20 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 app.set("trust proxy", 1); // Trust first proxy (required for rate limiting behind proxy/load balancer)
+
+// ============================================================================
+// GUARANTEED REQUEST VISIBILITY - ABSOLUTE TOP PRIORITY
+// ============================================================================
+app.use((req, res, next) => {
+  const start = Date.now();
+  const url = req.originalUrl;
+  console.log(`[REQ] ${req.method} ${url}`);
+  res.on('finish', () => {
+    console.log(`[RES] ${req.method} ${url} -> ${res.statusCode} in ${Date.now() - start}ms`);
+  });
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -53,6 +67,14 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // ============================================================================
+  // LAST-CHANCE API FALLTHROUGH TRACER
+  // ============================================================================
+  app.use('/api', (req, _res, next) => {
+    console.log('API fallthrough:', req.method, req.originalUrl);
+    next();
+  });
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
