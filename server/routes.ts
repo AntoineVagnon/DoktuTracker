@@ -1690,14 +1690,13 @@ export async function registerRoutes(app: Express): Promise<void> {
       let refundResult = null;
       if (refundEligible) {
         try {
-          // Get the payment record to find Stripe payment intent ID
-          const paymentRecord = await storage.getPaymentByAppointmentId(appointmentId);
-          if (paymentRecord && paymentRecord.stripePaymentIntentId) {
-            console.log(`💰 Processing refund for appointment ${appointmentId}, payment intent: ${paymentRecord.stripePaymentIntentId}`);
+          // Use the payment intent ID directly from the appointment record
+          if (appointment.paymentIntentId) {
+            console.log(`💰 Processing refund for appointment ${appointmentId}, payment intent: ${appointment.paymentIntentId}`);
             
             // Create refund with Stripe
             const refund = await stripe.refunds.create({
-              payment_intent: paymentRecord.stripePaymentIntentId,
+              payment_intent: appointment.paymentIntentId,
               reason: 'requested_by_customer',
               metadata: {
                 appointmentId: appointmentId,
@@ -1708,16 +1707,21 @@ export async function registerRoutes(app: Express): Promise<void> {
             
             console.log(`✅ Stripe refund created: ${refund.id}, amount: ${refund.amount}`);
             
-            // Record refund in database
-            await storage.recordRefund({
-              appointmentId: appointmentId,
-              paymentId: paymentRecord.id,
-              stripeRefundId: refund.id,
-              amount: (refund.amount / 100).toString(), // Convert from cents
-              currency: refund.currency.toUpperCase(),
-              reason: reason || 'Appointment cancelled',
-              status: refund.status
-            });
+            // Record refund in database (optional - could create refunds table in future)
+            try {
+              await storage.recordRefund({
+                appointmentId: appointmentId,
+                paymentId: appointmentId, // Use appointmentId as paymentId for now
+                stripeRefundId: refund.id,
+                amount: (refund.amount / 100).toString(), // Convert from cents
+                currency: refund.currency.toUpperCase(),
+                reason: reason || 'Appointment cancelled',
+                status: refund.status
+              });
+              console.log(`✅ Refund recorded in database for appointment ${appointmentId}`);
+            } catch (dbError) {
+              console.warn(`⚠️ Could not record refund in database: ${dbError}, but Stripe refund was successful`);
+            }
             
             refundResult = {
               refundId: refund.id,
@@ -1726,9 +1730,9 @@ export async function registerRoutes(app: Express): Promise<void> {
               status: refund.status
             };
             
-            console.log(`✅ Refund recorded in database for appointment ${appointmentId}`);
+            console.log(`✅ Stripe refund processed successfully for appointment ${appointmentId}`);
           } else {
-            console.warn(`⚠️ No payment record found for appointment ${appointmentId}, cannot process refund`);
+            console.warn(`⚠️ No payment intent found for appointment ${appointmentId}, cannot process refund`);
           }
         } catch (refundError) {
           console.error('💰 Failed to process refund:', refundError);
