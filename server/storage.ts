@@ -56,7 +56,7 @@ export interface IStorage {
   // User operations (required for Supabase Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
-  updateUser(id: string, updates: Partial<User>): Promise<User>;
+  updateUser(id: number, updates: Partial<User>): Promise<User>;
   deleteUser(id: string): Promise<void>;
 
   // Custom auth operations for booking flow
@@ -65,8 +65,8 @@ export interface IStorage {
 
   // Doctor operations
   getDoctors(): Promise<(Doctor & { user: User })[]>;
-  getDoctor(id: string): Promise<(Doctor & { user: User }) | undefined>;
-  getDoctorByUserId(userId: string): Promise<Doctor | undefined>;
+  getDoctor(id: number): Promise<(Doctor & { user: User }) | undefined>;
+  getDoctorByUserId(userId: number): Promise<Doctor | undefined>;
   getDoctorByEmail(email: string): Promise<(Doctor & { user: User }) | undefined>;
   createDoctor(doctor: InsertDoctor): Promise<Doctor>;
   updateDoctorOnlineStatus(doctorId: string, isOnline: boolean): Promise<void>;
@@ -90,15 +90,15 @@ export interface IStorage {
   getHeldSlot(sessionId: string): Promise<TimeSlot | undefined>;
 
   // Appointment operations
-  getAppointments(patientId?: string, doctorId?: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User })[]>;
-  getAppointment(id: string): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User }) | undefined>;
+  getAppointments(patientId?: number, doctorId?: number): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User })[]>;
+  getAppointment(id: number): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User }) | undefined>;
   getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<(Appointment & { doctor: Doctor & { user: User }, patient: User })[]>;
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
-  updateAppointmentStatus(id: string, status: string, paymentIntentId?: string): Promise<void>;
-  updateAppointmentPayment(id: string, paymentIntentId: string): Promise<void>;
+  updateAppointmentStatus(id: number, status: string, paymentIntentId?: string): Promise<void>;
+  updateAppointmentPayment(id: number, paymentIntentId: string): Promise<void>;
   updateAppointment(id: number, updates: Partial<Appointment>): Promise<void>;
-  rescheduleAppointment(id: string, newSlotId: string, reason: string, actorId: number, actorRole: string): Promise<void>;
-  cancelAppointment(id: string, cancelledBy: string, reason: string, actorId: number, actorRole: string): Promise<void>;
+  rescheduleAppointment(id: number, newSlotId: string, reason: string, actorId: number, actorRole: string): Promise<void>;
+  cancelAppointment(id: number, cancelledBy: string, reason: string, actorId: number, actorRole: string): Promise<void>;
   
   // Payment operations
   recordPayment(payment: {
@@ -125,7 +125,7 @@ export interface IStorage {
 
   // Review operations
   createReview(review: InsertReview): Promise<Review>;
-  getDoctorReviews(doctorId: string): Promise<(Review & { patient: User })[]>;
+  getDoctorReviews(doctorId: number): Promise<(Review & { patient: User })[]>;
 
   // Health Profile operations
   getHealthProfile(patientId: number): Promise<HealthProfile | undefined>;
@@ -446,9 +446,8 @@ export class PostgresStorage implements IStorage {
     }
   }
 
-  async updateUser(id: string, updates: Partial<User>): Promise<User> {
-    const userId = parseInt(id);
-    if (isNaN(userId)) {
+  async updateUser(id: number, updates: Partial<User>): Promise<User> {
+    if (!id || id <= 0) {
       throw new Error('Invalid user ID');
     }
 
