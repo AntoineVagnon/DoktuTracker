@@ -24,7 +24,6 @@ import { BannerSystem } from "@/components/BannerSystem";
 import { HealthProfileSidebar } from "@/components/HealthProfileSidebar";
 import { DocumentLibraryPanel } from "@/components/DocumentLibraryPanel";
 import { AppointmentActionsModal } from "@/components/AppointmentActionsModal";
-import { VideoConsultation } from "@/components/VideoConsultation";
 import { PostConsultationSurvey } from "@/components/PostConsultationSurvey";
 import { CalendarView } from "@/components/CalendarView";
 import { PatientCalendar } from "@/pages/PatientCalendar";
@@ -504,21 +503,36 @@ export default function Dashboard() {
           </Alert>
         )}
 
-        {/* Live Appointments Banner - Compact */}
+        {/* Live Appointments Banner - Navigation to full page */}
         {live.length > 0 && (
           <div className="mb-4 space-y-4">
             {live.map((appointment: any) => (
-              <VideoConsultation 
-                key={appointment.id}
-                appointment={appointment}
-                userRole="patient"
-                onStatusUpdate={(status) => {
-                  if (status === 'ended') {
-                    setSurveyAppointment(appointment);
-                    setShowPostCallSurvey(true);
-                  }
-                }}
-              />
+              <div key={appointment.id} className="border border-blue-200 bg-blue-50/50 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Video className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <h3 className="font-medium">Video Consultation</h3>
+                      <p className="text-sm text-gray-600">
+                        Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName} • {appointment.doctor?.specialty}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {new Date(appointment.appointmentDate).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => setLocation(`/video-consultation/${appointment.id}`)}
+                    data-testid="button-join-video-call"
+                  >
+                    <Video className="h-4 w-4 mr-2" />
+                    Join Video Call
+                  </Button>
+                </div>
+              </div>
             ))}
           </div>
         )}
