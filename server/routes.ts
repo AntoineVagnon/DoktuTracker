@@ -399,43 +399,46 @@ export async function registerRoutes(app: Express): Promise<void> {
         };
       });
       
-      // 📧 SEND EMAIL NOTIFICATIONS AFTER SUCCESSFUL APPOINTMENT CREATION
-      try {
-        const patient = await storage.getUser(appointmentData.patientId.toString());
-        const doctor = await storage.getDoctor(appointmentData.doctorId);
-        
-        if (patient && doctor && doctor.user) {
-          const appointmentDate = appointmentData.appointmentDate.toISOString().split('T')[0];
-          const appointmentTime = appointmentData.appointmentDate.toISOString().split('T')[1].substring(0, 5);
+      // 📧 SEND EMAIL NOTIFICATIONS ONLY FOR IMMEDIATELY PAID APPOINTMENTS (MEMBERSHIP COVERAGE)
+      // For unpaid appointments, emails will be sent during payment confirmation instead
+      if (!result.paymentRequired) {
+        try {
+          const patient = await storage.getUser(appointmentData.patientId.toString());
+          const doctor = await storage.getDoctor(appointmentData.doctorId);
           
-          // Send confirmation email to patient
-          emailService.sendAppointmentConfirmation({
-            patientEmail: patient.email!,
-            patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
-            doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
-            specialty: doctor.specialty,
-            appointmentDate,
-            appointmentTime,
-            consultationPrice: doctor.consultationPrice,
-            appointmentId: result.appointment.id.toString()
-          });
-          
-          // Send notification email to doctor
-          emailService.sendDoctorNewAppointmentNotification({
-            doctorEmail: doctor.user.email!,
-            doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
-            patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
-            appointmentDate,
-            appointmentTime,
-            consultationPrice: doctor.consultationPrice,
-            appointmentId: result.appointment.id.toString()
-          });
-          
-          console.log(`📧 Email notifications sent for appointment ${result.appointment.id}`);
+          if (patient && doctor && doctor.user) {
+            const appointmentDate = appointmentData.appointmentDate.toISOString().split('T')[0];
+            const appointmentTime = appointmentData.appointmentDate.toISOString().split('T')[1].substring(0, 5);
+            
+            // Send confirmation email to patient
+            await emailService.sendAppointmentConfirmation({
+              patientEmail: patient.email!,
+              patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+              doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+              specialty: doctor.specialty,
+              appointmentDate,
+              appointmentTime,
+              consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+              appointmentId: result.appointment.id.toString()
+            });
+            
+            // Send notification email to doctor
+            await emailService.sendDoctorNewAppointmentNotification({
+              doctorEmail: doctor.user.email!,
+              doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+              patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+              appointmentDate,
+              appointmentTime,
+              consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+              appointmentId: result.appointment.id.toString()
+            });
+            
+            console.log(`📧 Email notifications sent for immediately paid appointment ${result.appointment.id}`);
+          }
+        } catch (emailError) {
+          console.error('📧 Failed to send email notifications for paid appointment:', emailError);
+          // Don't fail the appointment creation if email fails
         }
-      } catch (emailError) {
-        console.error('📧 Failed to send email notifications:', emailError);
-        // Don't fail the appointment creation if email fails
       }
       
       // 🔄 RETURN STRUCTURED RESPONSE FOR FRONTEND ROUTING
@@ -827,43 +830,46 @@ export async function registerRoutes(app: Express): Promise<void> {
         };
       });
       
-      // 📧 SEND EMAIL NOTIFICATIONS AFTER SUCCESSFUL APPOINTMENT CREATION
-      try {
-        const patient = await storage.getUser(appointmentData.patientId.toString());
-        const doctor = await storage.getDoctor(appointmentData.doctorId);
-        
-        if (patient && doctor && doctor.user) {
-          const appointmentDate = appointmentData.appointmentDate.toISOString().split('T')[0];
-          const appointmentTime = appointmentData.appointmentDate.toISOString().split('T')[1].substring(0, 5);
+      // 📧 SEND EMAIL NOTIFICATIONS ONLY FOR IMMEDIATELY PAID APPOINTMENTS (MEMBERSHIP COVERAGE)
+      // For unpaid appointments, emails will be sent during payment confirmation instead
+      if (!result.paymentRequired) {
+        try {
+          const patient = await storage.getUser(appointmentData.patientId.toString());
+          const doctor = await storage.getDoctor(appointmentData.doctorId);
           
-          // Send confirmation email to patient
-          emailService.sendAppointmentConfirmation({
-            patientEmail: patient.email!,
-            patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
-            doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
-            specialty: doctor.specialty,
-            appointmentDate,
-            appointmentTime,
-            consultationPrice: doctor.consultationPrice,
-            appointmentId: result.appointment.id.toString()
-          });
-          
-          // Send notification email to doctor
-          emailService.sendDoctorNewAppointmentNotification({
-            doctorEmail: doctor.user.email!,
-            doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
-            patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
-            appointmentDate,
-            appointmentTime,
-            consultationPrice: doctor.consultationPrice,
-            appointmentId: result.appointment.id.toString()
-          });
-          
-          console.log(`📧 Email notifications sent for appointment ${result.appointment.id}`);
+          if (patient && doctor && doctor.user) {
+            const appointmentDate = appointmentData.appointmentDate.toISOString().split('T')[0];
+            const appointmentTime = appointmentData.appointmentDate.toISOString().split('T')[1].substring(0, 5);
+            
+            // Send confirmation email to patient
+            await emailService.sendAppointmentConfirmation({
+              patientEmail: patient.email!,
+              patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+              doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+              specialty: doctor.specialty,
+              appointmentDate,
+              appointmentTime,
+              consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+              appointmentId: result.appointment.id.toString()
+            });
+            
+            // Send notification email to doctor
+            await emailService.sendDoctorNewAppointmentNotification({
+              doctorEmail: doctor.user.email!,
+              doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+              patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+              appointmentDate,
+              appointmentTime,
+              consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+              appointmentId: result.appointment.id.toString()
+            });
+            
+            console.log(`📧 Email notifications sent for immediately paid appointment ${result.appointment.id}`);
+          }
+        } catch (emailError) {
+          console.error('📧 Failed to send email notifications for paid appointment:', emailError);
+          // Don't fail the appointment creation if email fails
         }
-      } catch (emailError) {
-        console.error('📧 Failed to send email notifications:', emailError);
-        // Don't fail the appointment creation if email fails
       }
       
       // 🔄 RETURN STRUCTURED RESPONSE FOR FRONTEND ROUTING
@@ -2839,6 +2845,45 @@ export async function registerRoutes(app: Express): Promise<void> {
           } catch (notificationError) {
             console.error(`⚠️ Failed to schedule confirmation notification for appointment ${appointment.id}:`, notificationError);
             // Don't fail payment confirmation if notification fails
+          }
+          
+          // 📧 SEND EMAIL NOTIFICATIONS AFTER SUCCESSFUL PAYMENT CONFIRMATION
+          try {
+            const patient = await storage.getUser(appointment.patientId.toString());
+            const doctor = await storage.getDoctor(appointment.doctorId);
+            
+            if (patient && doctor && doctor.user) {
+              const appointmentDate = appointment.appointmentDate.toISOString().split('T')[0];
+              const appointmentTime = appointment.appointmentDate.toISOString().split('T')[1].substring(0, 5);
+              
+              // Send confirmation email to patient
+              await emailService.sendAppointmentConfirmation({
+                patientEmail: patient.email!,
+                patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+                doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+                specialty: doctor.specialty,
+                appointmentDate,
+                appointmentTime,
+                consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+                appointmentId: appointment.id.toString()
+              });
+              
+              // Send notification email to doctor
+              await emailService.sendDoctorNewAppointmentNotification({
+                doctorEmail: doctor.user.email!,
+                doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+                patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+                appointmentDate,
+                appointmentTime,
+                consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+                appointmentId: appointment.id.toString()
+              });
+              
+              console.log(`📧 Email confirmations sent after payment for appointment ${appointment.id}`);
+            }
+          } catch (emailError) {
+            console.error('📧 Failed to send email confirmations after payment:', emailError);
+            // Don't fail the payment confirmation if email fails
           }
         }
 
