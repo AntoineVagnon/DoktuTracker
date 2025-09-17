@@ -219,9 +219,9 @@ export default function Checkout() {
             console.log("❌ Test endpoint failed:", testError);
           }
           
-          // Now try the original endpoint
-          console.log("🔄 Attempting original /api/appointments endpoint...");
-          const appointmentResponse = await fetch('/api/appointments', {
+          // Use the working endpoint (conflict-free)
+          console.log("🔄 Using working /api/appointments/create endpoint...");
+          const appointmentResponse = await fetch('/api/appointments/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
