@@ -20,15 +20,26 @@ export function registerMembershipRoutes(app: Express) {
       }
       const userId = parseInt(req.user.id);
       
+      console.log(`🔍 Fetching allowance status for user ID: ${userId}`);
       const allowanceStatus = await membershipService.getAllowanceStatus(userId);
+      console.log(`📊 Allowance status result:`, allowanceStatus);
       
       if (!allowanceStatus) {
+        console.log(`❌ No allowance status found for user ${userId}`);
         return res.json({
           hasAllowance: false,
           allowanceStatus: null,
           message: "No active subscription found"
         });
       }
+      
+      console.log(`✅ Returning allowance data for user ${userId}:`, {
+        cycleId: allowanceStatus.cycleId,
+        allowanceGranted: allowanceStatus.allowanceGranted,
+        allowanceUsed: allowanceStatus.allowanceUsed,
+        allowanceRemaining: allowanceStatus.allowanceRemaining,
+        isActive: allowanceStatus.isActive
+      });
       
       res.json({
         hasAllowance: true,
