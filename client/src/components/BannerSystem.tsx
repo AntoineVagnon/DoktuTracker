@@ -242,11 +242,8 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
           primaryAction: {
             label: 'Complete Payment',
             onClick: () => {
-              // Build checkout URL with appointment data
+              // Build checkout URL with appointment data - use appointmentId only to avoid time corruption
               const checkoutUrl = `/checkout?` + new URLSearchParams({
-                doctorId: latestPendingPayment.doctorId.toString(),
-                slot: latestPendingPayment.appointmentDate,
-                price: latestPendingPayment.price,
                 appointmentId: latestPendingPayment.id.toString()
               }).toString();
               console.log('🔥 Banner Click - Navigating to checkout:', { 
