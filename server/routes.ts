@@ -62,18 +62,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Supabase authentication
   await setupSupabaseAuth(app);
 
-  // Register document library routes
-  registerDocumentLibraryRoutes(app);
-  
-  // Register slot management routes
-  setupSlotRoutes(app);
-  
-  // Register additional membership routes
-  registerMembershipRoutes(app);
-  
   // ============================================================================
+  // CRITICAL: APPOINTMENT ROUTES FIRST - BEFORE ALL OTHER ROUTE MODULES
+  // ============================================================================
+  
   // TRACER MIDDLEWARE - TO IDENTIFY ROUTE INTERCEPTION (TEMPORARY DEBUG)
-  // ============================================================================
   app.use('/api/appointments', (req, res, next) => {
     console.log('🔍 TRACER: appointments base intercepted', {
       method: req.method,
@@ -84,10 +77,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
     next();
   });
-  
-  // ============================================================================
-  // CRITICAL: APPOINTMENT ROUTES MUST BE DEFINED BEFORE BROAD ROOT ROUTERS
-  // ============================================================================
   
   // TEMPORARY: Conflict-free endpoint for testing
   app.post("/api/appointments/create", (req, res, next) => {

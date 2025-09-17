@@ -58,10 +58,6 @@ localPort = 33767
 externalPort = 6800
 
 [[ports]]
-localPort = 34375
-externalPort = 8081
-
-[[ports]]
 localPort = 34571
 externalPort = 4200
 
@@ -86,6 +82,10 @@ localPort = 41607
 externalPort = 6000
 
 [[ports]]
+localPort = 42315
+externalPort = 8081
+
+[[ports]]
 localPort = 42493
 externalPort = 5000
 
@@ -102,3 +102,4 @@ localPort = 46377
 externalPort = 5173
 
 [agent]
+integrations = ["javascript_stripe:1.0.0", "javascript_log_in_with_replit:1.0.0"]
