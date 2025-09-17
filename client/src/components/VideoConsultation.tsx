@@ -150,18 +150,7 @@ export function VideoConsultation({ appointment, userRole, onStatusUpdate }: Vid
         {canJoin && minutesSinceStart > 5 && !doctorJoined && (
           <div className="flex items-center gap-2 text-sm text-yellow-700 mt-2">
             <AlertCircle className="h-4 w-4 text-yellow-600" />
-            <span>Doctor is running late • They should join shortly</span>
-            {minutesSinceStart > 15 && (
-              <>
-                <Button size="sm" variant="link" className="text-xs h-auto p-0 text-yellow-700 underline">
-                  Reschedule (no charge)
-                </Button>
-                <span>or</span>
-                <Button size="sm" variant="link" className="text-xs h-auto p-0 text-yellow-700 underline">
-                  Get refund + €10 credit
-                </Button>
-              </>
-            )}
+            <span>Doctor is running late</span>
           </div>
         )}
 
