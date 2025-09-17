@@ -49,12 +49,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // ============================================================================
+  // EMERGENCY DEBUG - ULTRA-SIMPLE LOG TO TEST IF ANYTHING WORKS
+  // ============================================================================
+  console.log('🚨🚨🚨 SERVER ROUTES LOADING - THIS SHOULD ALWAYS APPEAR 🚨🚨🚨');
+  console.error('🚨🚨🚨 SERVER ROUTES ERROR LOG - THIS SHOULD ALWAYS APPEAR 🚨🚨🚨');
+  
+  // ============================================================================
   // TOP-LEVEL TRACER - FIRST MIDDLEWARE TO PROVE NO INTERCEPTION
   // ============================================================================
   app.all('/api/appointments*', (req, res, next) => {
-    console.log('[TOP TRACER]', req.method, req.originalUrl, req.headers['content-type']);
-    console.log('[TOP TRACER] Body present:', !!req.body, 'Body size:', req.body ? Object.keys(req.body).length : 0);
-    console.error('[TOP TRACER ERROR LOG]', req.method, req.originalUrl);
+    console.log('🚨🚨 [TOP TRACER] 🚨🚨', req.method, req.originalUrl, req.headers['content-type']);
+    console.log('🚨🚨 [TOP TRACER] Body present:', !!req.body, 'Body size:', req.body ? Object.keys(req.body).length : 0);
+    console.error('🚨🚨 [TOP TRACER ERROR LOG] 🚨🚨', req.method, req.originalUrl);
     next();
   });
 
