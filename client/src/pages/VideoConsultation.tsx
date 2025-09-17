@@ -56,7 +56,7 @@ export default function VideoConsultation() {
   // Fetch Zoom meeting details
   const { data: zoomDetails, isLoading: zoomLoading } = useQuery<ZoomMeetingDetails>({
     queryKey: [`/api/appointments/${appointmentId}/zoom`],
-    enabled: !!appointmentId && appointment?.status === 'paid',
+    enabled: !!appointmentId && (appointment?.status === 'paid' || appointment?.status === 'confirmed'),
     retry: 1
   });
 
