@@ -314,6 +314,16 @@ export async function registerRoutes(app: Express): Promise<void> {
                   console.log(`🔒 Slot ${createdAppointment.slotId} marked unavailable`);
                 }
 
+                // Create Zoom meeting for immediately covered appointment (outside transaction)
+                setTimeout(async () => {
+                  try {
+                    await zoomService.createMeeting(createdAppointment.id);
+                    console.log(`✅ Immediate coverage: Zoom meeting created for appointment ${createdAppointment.id}`);
+                  } catch (error) {
+                    console.error(`❌ Immediate coverage: Failed to create Zoom meeting for appointment ${createdAppointment.id}:`, error);
+                  }
+                }, 100);
+
                 coverageResult = {
                   isCovered: true,
                   coverageType: 'full_coverage',
@@ -732,6 +742,16 @@ export async function registerRoutes(app: Express): Promise<void> {
                   console.log(`🔒 Slot ${createdAppointment.slotId} marked unavailable`);
                 }
 
+                // Create Zoom meeting for immediately covered appointment (outside transaction)
+                setTimeout(async () => {
+                  try {
+                    await zoomService.createMeeting(createdAppointment.id);
+                    console.log(`✅ Immediate coverage: Zoom meeting created for appointment ${createdAppointment.id}`);
+                  } catch (error) {
+                    console.error(`❌ Immediate coverage: Failed to create Zoom meeting for appointment ${createdAppointment.id}:`, error);
+                  }
+                }, 100);
+
                 coverageResult = {
                   isCovered: true,
                   coverageType: 'full_coverage',
@@ -1136,6 +1156,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       });
     }
   });
+
 
   // Configure multer for file uploads (in-memory storage for processing before cloud upload)
   const upload = multer({
@@ -2924,6 +2945,16 @@ export async function registerRoutes(app: Express): Promise<void> {
       await membershipService.consumeAllowance(userId, appointmentId, 35.00);
       await storage.updateAppointmentStatus(appointmentId, "paid");
       
+      // Create Zoom meeting for the paid appointment
+      try {
+        if (!appointment.zoomJoinUrl) {
+          await zoomService.createMeeting(appointmentId);
+          console.log(`✅ Zoom meeting created for appointment ${appointmentId}`);
+        }
+      } catch (error) {
+        console.error(`❌ Failed to create Zoom meeting for appointment ${appointmentId}:`, error);
+      }
+      
       // Mark slot as unavailable 
       if (appointment.slotId) {
         await storage.markSlotUnavailable(appointment.slotId);
@@ -3061,9 +3092,20 @@ export async function registerRoutes(app: Express): Promise<void> {
         if (appointmentId) {
           await storage.updateAppointmentStatus(appointmentId, "paid");
           
-          // Mark corresponding slot as unavailable
+          // Get appointment details
           const appointment = await storage.getAppointment(appointmentId);
           if (appointment) {
+            // Create Zoom meeting for the paid appointment
+            try {
+              if (!appointment.zoomJoinUrl) {
+                await zoomService.createMeeting(appointmentId);
+                console.log(`✅ Webhook: Zoom meeting created for appointment ${appointmentId}`);
+              }
+            } catch (error) {
+              console.error(`❌ Webhook: Failed to create Zoom meeting for appointment ${appointmentId}:`, error);
+            }
+            
+            // Mark corresponding slot as unavailable
             const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
             const appointmentDate = new Date(appointment.appointmentDate);
             const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format (local time)
