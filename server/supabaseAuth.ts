@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Express, RequestHandler } from 'express';
 import { storage } from './storage';
 import './types'; // Import session types
+import { emailService } from './emailService';
 
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
   throw new Error('SUPABASE_URL and SUPABASE_KEY must be set');
@@ -275,6 +276,19 @@ export async function setupSupabaseAuth(app: Express) {
         });
         
         console.log('User created/updated:', user);
+
+        // 📧 SEND WELCOME EMAIL AFTER SUCCESSFUL REGISTRATION
+        try {
+          await emailService.sendWelcomeEmail({
+            email: user.email,
+            firstName: user.firstName ?? firstName ?? 'Patient',
+            userType: 'patient'
+          });
+          console.log(`📧 Welcome email sent to ${user.email}`);
+        } catch (emailError) {
+          console.error('📧 Failed to send welcome email:', emailError);
+          // Don't fail registration if email sending fails
+        }
 
         // Store session if user is confirmed
         if (data.session) {

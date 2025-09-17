@@ -63,6 +63,12 @@ mailService.setApiKey(process.env.SENDGRID_API_KEY);
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@doktu.com';
 const FROM_NAME = 'Doktu Medical Platform';
 
+// Check if we have a verified sender email
+const SENDGRID_TRIAL_MODE = !process.env.SENDGRID_FROM_EMAIL;
+if (SENDGRID_TRIAL_MODE) {
+  console.log('📧 SendGrid running in TRIAL MODE - emails will be logged but not sent (SENDGRID_FROM_EMAIL not configured)');
+}
+
 export interface EmailParams {
   to: string;
   subject: string;
