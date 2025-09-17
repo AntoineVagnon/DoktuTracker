@@ -31,7 +31,7 @@ export function MembershipChip() {
 
   const { data: allowanceData, isLoading, error } = useQuery<AllowanceStatus>({
     queryKey: ["/api/membership/allowance"],
-    enabled: isAuthenticated && user?.role === "patient" && !!user?.stripeSubscriptionId,
+    enabled: isAuthenticated && user?.role === "patient",
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
   });
 
@@ -70,6 +70,20 @@ export function MembershipChip() {
 
   // Don't show anything if query failed or user has no subscription
   if (error || !allowanceData?.hasAllowance || !allowanceData?.allowanceStatus) {
+    // If subscription data shows an active subscription but allowance failed, show a simple fallback
+    if (subscriptionData?.hasSubscription && subscriptionData?.subscription?.status === 'active') {
+      return (
+        <Button
+          variant="ghost"
+          className="h-8 px-3 py-1 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800 transition-colors"
+          onClick={() => setLocation('/membership')}
+          data-testid="membership-chip-fallback"
+        >
+          <CreditCard className="h-3 w-3 mr-1.5" />
+          <span>View Membership</span>
+        </Button>
+      );
+    }
     return null;
   }
 
