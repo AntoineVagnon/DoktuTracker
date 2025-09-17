@@ -117,10 +117,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       method: req.method, 
       url: req.url,
       headers: req.headers['content-type'],
-      hasBody: !!req.body
+      hasBody: !!req.body,
+      session: !!req.session,
+      sessionData: req.session ? Object.keys(req.session) : 'no session'
     });
     next();
-  }, isAuthenticated, async (req, res) => {
+  }, (req, res, next) => {
+    console.log('🔍 Before isAuthenticated middleware');
+    isAuthenticated(req, res, (err) => {
+      if (err) {
+        console.error('🚨 isAuthenticated middleware error:', err);
+        return next(err);
+      }
+      console.log('✅ isAuthenticated middleware passed');
+      next();
+    });
+  }, async (req, res) => {
     try {
       const user = req.user as any;
       const userId = user?.id;
