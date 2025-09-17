@@ -66,6 +66,15 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // ============================================================================
+  // EMERGENCY TRACER FOR /api/appointments* - BEFORE VITE SETUP
+  // ============================================================================
+  app.all('/api/appointments*', (req, _res, next) => {
+    console.log('🚨🚨 [EMERGENCY INDEX TRACER] 🚨🚨', req.method, req.originalUrl);
+    console.error('🚨🚨 [EMERGENCY INDEX ERROR LOG] 🚨🚨', req.method, req.originalUrl);
+    next();
+  });
+
   await registerRoutes(app);
   
   // Create single HTTP server instance (moved from routes.ts)
@@ -73,8 +82,12 @@ app.use((req, res, next) => {
   const server = createServer(app);
   
   // ============================================================================
-  // NODE-LEVEL REQUEST TRACER - CANNOT BE BYPASSED BY ANY MIDDLEWARE
+  // HARDENED NODE-LEVEL REQUEST TRACER - PREPENDED TO GUARANTEE VISIBILITY
   // ============================================================================
+  server.prependListener('request', (req) => {
+    console.log(`[SRV-PREPEND] ${req.method} ${req.url}`);
+  });
+  
   server.on('request', (req) => {
     console.log(`[SRV] ${req.method} ${req.url}`);
   });
