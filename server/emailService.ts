@@ -59,8 +59,8 @@ function generateICSContent({
 const mailService = new MailService();
 mailService.setApiKey(process.env.SENDGRID_API_KEY);
 
-// Email templates configuration
-const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@doktu.com';
+// Email templates configuration  
+const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@doktu.co';
 const FROM_NAME = 'Doktu Medical Platform';
 
 export interface EmailParams {
