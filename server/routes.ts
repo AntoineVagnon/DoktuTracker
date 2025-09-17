@@ -3510,89 +3510,9 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Notification Routes
-  // Email notification endpoints
-  app.post("/api/emails/test", async (req, res) => {
-    try {
-      const { email, type = 'welcome' } = req.body;
-      
-      if (!email) {
-        return res.status(400).json({ error: "Email address is required" });
-      }
-      
-      let result = false;
-      
-      if (type === 'welcome') {
-        result = await emailService.sendWelcomeEmail({
-          email,
-          firstName: 'Test User',
-          userType: 'patient'
-        });
-      }
-      
-      res.json({ 
-        success: result, 
-        message: result ? "Test email sent successfully" : "Failed to send test email" 
-      });
-    } catch (error) {
-      console.error("Error sending test email:", error);
-      res.status(500).json({ error: "Failed to send test email" });
-    }
-  });
+  // Email routes are handled by the emailRouter mounted later
 
-  // Send appointment reminders for appointments in the next 24 hours
-  app.post("/api/emails/send-reminders", isAuthenticated, async (req, res) => {
-    try {
-      const user = req.user as any;
-      if (user.role !== 'admin') {
-        return res.status(403).json({ error: "Admin access required" });
-      }
-      
-      // Get upcoming appointments (next 24-48 hours for reminders)
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(0, 0, 0, 0);
-      
-      const dayAfter = new Date(tomorrow);
-      dayAfter.setDate(dayAfter.getDate() + 1);
-      
-      const upcomingAppointments = await storage.getAppointmentsByDateRange(tomorrow, dayAfter);
-      
-      let remindersSent = 0;
-      
-      for (const appointment of upcomingAppointments) {
-        if (appointment.status === 'paid' && appointment.patient?.email) {
-          try {
-            const appointmentDate = appointment.appointmentDate.toISOString().split('T')[0];
-            const appointmentTime = appointment.appointmentDate.toTimeString().split(' ')[0];
-            
-            await emailService.sendAppointmentReminder({
-              patientEmail: appointment.patient.email,
-              patientName: `${appointment.patient.firstName || ''} ${appointment.patient.lastName || ''}`.trim() || 'Patient',
-              doctorName: `${appointment.doctor.user?.firstName || ''} ${appointment.doctor.user?.lastName || ''}`.trim() || 'Doctor',
-              specialty: appointment.doctor.specialty,
-              appointmentDate,
-              appointmentTime,
-              appointmentId: appointment.id.toString()
-            });
-            
-            remindersSent++;
-          } catch (emailError) {
-            console.error(`Failed to send reminder for appointment ${appointment.id}:`, emailError);
-          }
-        }
-      }
-      
-      res.json({ 
-        success: true, 
-        remindersSent,
-        totalAppointments: upcomingAppointments.length,
-        message: `${remindersSent} reminder emails sent successfully` 
-      });
-    } catch (error) {
-      console.error("Error sending reminder emails:", error);
-      res.status(500).json({ error: "Failed to send reminder emails" });
-    }
-  });
+  // Email reminder routes are handled by the emailRouter mounted later
 
   app.get("/api/admin/notifications", isAuthenticated, async (req, res) => {
     try {

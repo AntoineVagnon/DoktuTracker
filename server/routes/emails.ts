@@ -6,6 +6,7 @@ import { getTemplate } from '../services/emailTemplates';
 import { db } from '../db';
 import { appointments, users, doctors } from '@shared/schema';
 import { eq, and, gte, lt, or } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 
 // Admin authorization middleware
 const requireAdmin = async (req: any, res: any, next: any) => {
@@ -30,18 +31,24 @@ const testEmailSchema = z.object({
 // POST /api/emails/test
 router.post('/test', isAuthenticated, requireAdmin, async (req, res) => {
   try {
+    console.log('📧 Email test endpoint called');
     const { email, type } = testEmailSchema.parse(req.body);
+    console.log('📧 Parsed request body:', { email, type });
     
     // Get email template
     const templateData = {
       first_name: 'Test User',
       last_name: 'Account'
     };
+    console.log('📧 Template data prepared:', templateData);
     
     const template = getTemplate(type, templateData);
+    console.log('📧 Template retrieved successfully');
     
     // Send test email using working email service
+    console.log('📧 Creating EmailService instance');
     const emailService = new EmailService();
+    console.log('📧 Calling sendWelcomeEmail');
     await emailService.sendWelcomeEmail({
       email,
       firstName: 'Test User',
@@ -82,6 +89,9 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
     const dayAfter = new Date(tomorrow);
     dayAfter.setDate(dayAfter.getDate() + 1);
     
+    // Create alias for doctor users to distinguish from patient users
+    const doctorUsers = alias(users, 'doctorUsers');
+    
     // Fetch appointments for tomorrow that are paid/confirmed
     const tomorrowAppointments = await db
       .select({
@@ -95,15 +105,16 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
         },
         doctor: {
           id: doctors.id,
-          title: doctors.title,
-          firstName: doctors.firstName,
-          lastName: doctors.lastName,
-          specialization: doctors.specialization
+          title: doctorUsers.title,
+          firstName: doctorUsers.firstName,
+          lastName: doctorUsers.lastName,
+          specialty: doctors.specialty
         }
       })
       .from(appointments)
       .innerJoin(users, eq(appointments.patientId, users.id))
       .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
+      .innerJoin(doctorUsers, eq(doctors.userId, doctorUsers.id))
       .where(
         and(
           gte(appointments.appointmentDate, tomorrow),
@@ -121,7 +132,11 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
         const templateData = {
           patient_first_name: appointment.patient.firstName,
           doctor_name: `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`,
-          appointment_datetime_local: appointment.appointmentDate.toLocaleString(),
+          appointment_datetime_local: appointment.appointmentDate.toLocaleString('en-US', {
+            timeZone: 'Europe/Paris',
+            dateStyle: 'full',
+            timeStyle: 'short'
+          }),
           join_link: `${process.env.APP_URL || process.env.VITE_APP_URL || 'http://localhost:5000'}/consultation/${appointment.id}`
         };
         
@@ -130,10 +145,13 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
         
         const emailService = new EmailService();
         await emailService.sendAppointmentReminder({
-          patientEmail: appointment.patient.email,
+          patientEmail: appointment.patient.email || '',
           patientName: appointment.patient.firstName || 'Patient',
           doctorName: `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`,
-          appointmentDate: appointment.appointmentDate
+          specialty: appointment.doctor.specialty || '',
+          appointmentDate: appointment.appointmentDate.toLocaleDateString(),
+          appointmentTime: appointment.appointmentDate.toLocaleTimeString(),
+          appointmentId: appointment.id.toString()
         });
         
         sentCount++;
