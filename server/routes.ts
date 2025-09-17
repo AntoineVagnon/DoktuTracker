@@ -75,6 +75,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       originalUrl: req.originalUrl,
       timestamp: new Date().toISOString()
     });
+    console.log('========== APPOINTMENTS TRACER ==========');
+    console.error('========== APPOINTMENTS TRACER ERROR LOG ==========');
     next();
   });
   

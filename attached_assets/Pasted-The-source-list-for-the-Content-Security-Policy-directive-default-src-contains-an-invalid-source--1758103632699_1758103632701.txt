@@ -1,0 +1,961 @@
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+stripe.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+value @ stripe.js:1
+recaptcha__fr.js:122 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:122
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+stripe.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+value @ stripe.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+recaptcha__fr.js:122 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:122
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+recaptcha__fr.js:122 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:122
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+recaptcha__fr.js:122 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:122
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+recaptcha__fr.js:122 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:122
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+recaptcha__fr.js:122 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:122
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:122 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:122
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:122 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:122
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:122 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:122
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+recaptcha__fr.js:498 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+(anonymous) @ recaptcha__fr.js:498
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+e @ framework-8c57d7014dc04c0f.js:1
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+DoktuTracker:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+DoktuTracker:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+DoktuTracker:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+_app-014a1ffdcde2d552.js:38 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+cdn.segment.com/next-integrations/integrations/google-analytics/2.18.6/google-analytics.dynamic.js.gz:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+_app-014a1ffdcde2d552.js:38 Google Analytics Error: Failed to load https://cdn.segment.com/next-integrations/integrations/google-analytics/2.18.6/google-analytics.dynamic.js.gz
+    at o.onerror (load-script.ts:53:24)
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+www.googletagmanager.com/gtag/js?id=AW-11411994397:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+_app-014a1ffdcde2d552.js:38 [LaunchDarkly] LaunchDarkly client initialized
+DoktuTracker:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'battery'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-8c57d7014dc04c0f.js:1
+framework-8c57d7014dc04c0f.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-8c57d7014dc04c0f.js:1
+6504-ea5feb8c9fb9357e.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSXZmQ2x4Z1lTQmdqY2pLYkdCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...XpSVEF6ZEVaek4yWjVXVEo1TTNSWlQxRmhUWFJDTlhBbE1rSklVMDV6VFVvbE1rSjRSRGN5TW1SUmRESnpSMlpxVFU1cEpUSkdaMlpuY0hocVRIRkZOakZYWjJoelUzRTRTRlZaU0RkcFJXazFRMWd5YVZNbE1rSlJXRnByVVhWTmRGZHlSRUlsTWtaNmRITnVNVEoxSlRKQ2JVZE9aVk5PVEhSMGJEaFRjRzVUU1dkWWNsSk1WRmhzWTNWMk1XNDJkV2hTZEZFemQySkZUM2xzUWtWNk1pVXlSazVYWVdKdVVURndWbTVJZG5jd2JFNUNhVFZRZFhOMFJtUlllVUp2YlVkNU0yTm5abUZhVFhGc01UbFRkRTFuSlRORUpUTkWLkpGQdAFu1pfBdkFzJstlxeydaNohqhKbl2yg92ZbcIOhe4vTYqLnKnjVjDwnyuTvB0qJcKrCh3C4JyIChzwK.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-ea5feb8c9fb9357e.js:1
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Afetch%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3Ae46486c5&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=30d5d984-da22-4cf9-a9a5-e3f71295b02a:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+securetoken.googleapis.com/v1/token?key=AIzaSyARAzVTWc_KOBojIholLo2wzwNOQ6VKcB8:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+api.sorryapp.com/v1/pages/27c7b5fc:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+_app-014a1ffdcde2d552.js:38 Failed when connecting: Connection closed (code: 1006)
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 Failed when connecting: Connection closed (code: 1006)
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+5333.3c4fde7318156009.js:1 WebSocket connection to 'wss://0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev:5900/' failed: WebSocket is closed before the connection is established.
+value @ 5333.3c4fde7318156009.js:1
+_app-014a1ffdcde2d552.js:38 task queue exceeded allotted deadline by 236ms
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 task queue exceeded allotted deadline by 450ms
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 task queue exceeded allotted deadline by 485ms
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 task queue exceeded allotted deadline by 483ms
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+6504-ea5feb8c9fb9357e.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSWdKZW14Z1lTQmdpZnM2YkdCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...dlVIWXlXV1Z3UlNVeVFrSkRhRTVGY2sxUGRuTlpZMkZ4TmtsUFUweHhRVk5rWW1WdmFXUjVlaVV5UWpkbFpYRXpjMnBqSlRKQ1MySm1aRTluZEZGSE1HOUtKVEpDTm1OSE1tNTNUMmhLYmxORE9GZDNUVTl4UjI5bGFGcDJWVEI1T0cxQ1ExVmhNMmszWVRWaFFYazNTM2RLTUZsVFkyTm5PR1JPYm0xaU5HcG1aMVoxYkVwMFQxSlhiVGhvZUZsdlJHY3hNR0oyZVc1RU1FOXBUME5NVUc0NFJGRlVUbFl6YW0xWlJEbElORVZCWjIxWWJFaGpRVkJRVW5CMVJWQkRTRzlQYldsTWRWUmhiMlZUT0dNNFZsRWxNMFFsTTBRPeHmcWw--73x2xvaMSdIw67lbx0czKaBkNkXlrSMe4g7DE0dk6O92CcmCvhr08p3F6T--zondAmOM06nb1TB5AU.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-ea5feb8c9fb9357e.js:1
+stallwart.build.js:1 stallwart: failed ping 1
+/data/repls/0e26a2af-25b7-4712-bcf1-e62087ea5bb2/get_connection_metadata:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+_app-014a1ffdcde2d552.js:38 Failed when connecting: Connection closed (code: 1006)
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 Failed when connecting: Connection closed (code: 1006)
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+6504-ea5feb8c9fb9357e.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSWtMV214Z1lTQmdpdjBhYkdCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...HUW1GNFJHbFZPSEpYVUVST1IxbERiM2RRTnlVeVFtWkZKVEpHUTFjeU1HTlZaWFpTZDBoeFdHVXpNbkI2SlRKR1dqUmlkRlpqWW1WNGVYbE9RbXhqY0hneWFUVlFZVTVNVDNNek1qQTBTMGx6VXpFMlMxQnNXbmhQWW1zM01uZGtWbk5vVG5KRUpUSkdjVEZIVTBZbE1rWTVNMWhWWkhwS1IzRndOMjUxYVVOUE4wNXFRMDgxWlc5alR6WTJhVlpHWW5sa1ZDVXlRblZOYUhCNWVGRk1aRmQ1UkV3bE1rSklObGxMVHpsTlp5VXlSbTU0ZG1ZekpUSkdOVFp3VHlVeVFsbFVjbnBwZGtjMFNHMVNaMFIwZEZObkpUTkVKVE5FDnvOF6T6ln0Fhk3zNhFurocd5pEfyl1-DuHOJqeDCxlV_xdaoJpdUADuWLuRIBqsXnS4OA7Mo8yJ1OIW0JhNAA.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-ea5feb8c9fb9357e.js:1
+6504-ea5feb8c9fb9357e.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSWtMV214Z1lTQmdpdjBhYkdCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...HUW1GNFJHbFZPSEpYVUVST1IxbERiM2RRTnlVeVFtWkZKVEpHUTFjeU1HTlZaWFpTZDBoeFdHVXpNbkI2SlRKR1dqUmlkRlpqWW1WNGVYbE9RbXhqY0hneWFUVlFZVTVNVDNNek1qQTBTMGx6VXpFMlMxQnNXbmhQWW1zM01uZGtWbk5vVG5KRUpUSkdjVEZIVTBZbE1rWTVNMWhWWkhwS1IzRndOMjUxYVVOUE4wNXFRMDgxWlc5alR6WTJhVlpHWW5sa1ZDVXlRblZOYUhCNWVGRk1aRmQ1UkV3bE1rSklObGxMVHpsTlp5VXlSbTU0ZG1ZekpUSkdOVFp3VHlVeVFsbFVjbnBwZGtjMFNHMVNaMFIwZEZObkpUTkVKVE5FDnvOF6T6ln0Fhk3zNhFurocd5pEfyl1-DuHOJqeDCxlV_xdaoJpdUADuWLuRIBqsXnS4OA7Mo8yJ1OIW0JhNAA.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-ea5feb8c9fb9357e.js:1
+_app-014a1ffdcde2d552.js:9 WebSocket connection to 'wss://replit.com/graphql_subscriptions' failed: 
+(anonymous) @ _app-014a1ffdcde2d552.js:9
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Afetch%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3Ae46486c5&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=fbdb8887-a9cd-4cbc-a129-7b0215d80bc1:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+/graphql:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+/data/repls/0e26a2af-25b7-4712-bcf1-e62087ea5bb2/get_connection_metadata:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+securetoken.googleapis.com/v1/token?key=AIzaSyARAzVTWc_KOBojIholLo2wzwNOQ6VKcB8:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+5333.3c4fde7318156009.js:1 WebSocket connection to 'wss://0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev:5900/' failed: WebSocket is closed before the connection is established.
+value @ 5333.3c4fde7318156009.js:1
+_app-014a1ffdcde2d552.js:38 Failed when connecting: Connection closed (code: 1006)
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 Failed when connecting: Connection closed (code: 1006)
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+6504-ea5feb8c9fb9357e.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSWtMV214Z1lTQmdpdjBhYkdCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...HUW1GNFJHbFZPSEpYVUVST1IxbERiM2RRTnlVeVFtWkZKVEpHUTFjeU1HTlZaWFpTZDBoeFdHVXpNbkI2SlRKR1dqUmlkRlpqWW1WNGVYbE9RbXhqY0hneWFUVlFZVTVNVDNNek1qQTBTMGx6VXpFMlMxQnNXbmhQWW1zM01uZGtWbk5vVG5KRUpUSkdjVEZIVTBZbE1rWTVNMWhWWkhwS1IzRndOMjUxYVVOUE4wNXFRMDgxWlc5alR6WTJhVlpHWW5sa1ZDVXlRblZOYUhCNWVGRk1aRmQ1UkV3bE1rSklObGxMVHpsTlp5VXlSbTU0ZG1ZekpUSkdOVFp3VHlVeVFsbFVjbnBwZGtjMFNHMVNaMFIwZEZObkpUTkVKVE5FDnvOF6T6ln0Fhk3zNhFurocd5pEfyl1-DuHOJqeDCxlV_xdaoJpdUADuWLuRIBqsXnS4OA7Mo8yJ1OIW0JhNAA.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-ea5feb8c9fb9357e.js:1
+stallwart.build.js:1 stallwart: failed ping 1
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Afetch%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3Ae46486c5&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=f1aeb665-3f93-4fd8-84aa-9280dbc746b2:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+/data/repls/0e26a2af-25b7-4712-bcf1-e62087ea5bb2/get_connection_metadata:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+_app-014a1ffdcde2d552.js:38 task queue exceeded allotted deadline by 397ms
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 task queue exceeded allotted deadline by 471ms
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 task queue exceeded allotted deadline by 374ms
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 task queue exceeded allotted deadline by 326ms
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+_app-014a1ffdcde2d552.js:38 task queue exceeded allotted deadline by 490ms
+(anonymous) @ _app-014a1ffdcde2d552.js:38
+6504-ea5feb8c9fb9357e.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSTNZV254Z1lTQmdqOG9hZkdCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...1TWpGT1kyZGFkVVZNUnpjMWNHUk1TekpYVTFCYVZscFFTbWgzZFVkWkpUSkdjRUkzVmtoWGEyMVFOVFp0VTA4M05VOU5aVXBPTkZJbE1rWnRVbW8yVVZaTVV6WXllVWRXTWtORVdUaElZMWM0V2s1UVlsbGpiWG8yTVdWdWJHbGlUVWg0YjBwTk1IQm9hMlI0UkRaWlZUVWxNa1p3VTBaTFpFRXhSWEJEUlhkREpUSkdRVTFOTUVsc2QyaHVjekJ0ZFZWNkpUSkNPR3hGWm1OcVpqWk1XQ1V5Um05YVoyeFVWU1V5UWtNbE1rWkNNVFYzVUZnNVVHcHJlSFk0TVdNMk1UTlBPWEY0YzFoVE1FSm1VRXBsVVNVelJDVXpSQT098E9jEfDci38Fmsdk6Pk08eYgrF5Fy0dcTLtuvAbNsUKYJ40Dck_uom1YgRqajsIOeNgQfXAQmf8E8WvUYA1aDg.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-ea5feb8c9fb9357e.js:1
+stallwart.build.js:1 stallwart: failed ping 1
+/data/repls/0e26a2af-25b7-4712-bcf1-e62087ea5bb2/get_connection_metadata:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTED
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Afetch%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3Ae46486c5&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=deaa15d8-eb19-48f8-9468-2683f51884df:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTED
+/graphql:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTED
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Afetch%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3Ae46486c5&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=e0ba90ba-1e66-4a7c-8e07-c07dcc74f252:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTED
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Axhr%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3Ae46486c5&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=e28f7907-71e2-44de-a693-db23d7836969:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTED
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTED
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Axhr%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3Ae46486c5&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=8f680449-aa3e-41b0-bcaa-2380f888ac35:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTED
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTED
+events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+stallwart.build.js:1 stallwart: failed ping 1
+6504-ea5feb8c9fb9357e.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSWpxYXB4Z1lTQmdpdHdxbkdCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...m9lblpPYkd4WmF5VXlSbk5pT0V3bE1rWTBiamxLTURaVmRYcG9kRkpTUVZCMlRXOUphbEl3VWpab1FsTXpSRFZCZUcxM1NUUlJRbXR6WlRneFdFSk5ZVzVHWkRsRVoxTllRMjFZZVRJelRsUnBNRzVtVEZwSldIaEdjWFZzV1hKNmNraFpXWEZxUTIxbFFVcGFiM3BZU21vM2JsTTRVa3RvVlhCS01GSTFOVUoyTkhwd0pUSkNTVWRpVlZwNmNXNXFkamR4YUd0cGQxWkJRa1JXYWpsSFMzVXdZMnQzTTA5RFZHdEJUSFI1VlRJbE1rWk9hVkpCUnpWNVpYaEdaR1J3TlNVeVFrWWxNa0phVENVeVFrUlJTMmNsTTBRbE0wUT3QfFsCIOqqRfgf5AFbiZ6O5p5dlpMFVxE0aPArKo2-XFkR0qYLTB7dOJvhjVYFRJjmyxP0WZQhAuXLx743YpwM.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-ea5feb8c9fb9357e.js:1
+6504-ea5feb8c9fb9357e.js:1 WebSocket connection to 'wss://eval.kirk.platform.replit.com/wsv2/v2.public.Q2dZSWpxYXB4Z1lTQmdpdHdxbkdCaUlFYTJseWF6QUFPczRCQ2lRd1pUSTJZVEpoWmkweU5XSTNMVFEzTVRJdFltTm1NUzFsTmpJd09EZGxZVFZpWWpJU0EyNXBlQm9XY21Wd2JHbDBMWEpsY0d3dFptbHNaWE10YTJseWF5SU1SRzlyZEhWVWNtRmphMlZ5S2cxaGJuUnZhVzVsZG1GbmJtOXVRazRLRjNKbGNHeHBkQzF5WlhCc0xXSnNiMk5yY3kxcmFYSnJFaFZ5WlhCc2FYUXRjbVZ3YkMxdFpYUmhMV3RwY21zYUhISmxjR3hwZEMxdFlYSm5ZWEpwYm1VdFlteHZZMnR6TFd0cGNtdEtCd2orMU5ZVUVBRlFBRm9QYVc1MFpXNTBYM0JsY25OdmJtRnNlQUJTSXdnQkVJQ0FnSUFnR1FBQUFBQUFBQkJBSVFBQUFBQUFB...m9lblpPYkd4WmF5VXlSbk5pT0V3bE1rWTBiamxLTURaVmRYcG9kRkpTUVZCMlRXOUphbEl3VWpab1FsTXpSRFZCZUcxM1NUUlJRbXR6WlRneFdFSk5ZVzVHWkRsRVoxTllRMjFZZVRJelRsUnBNRzVtVEZwSldIaEdjWFZzV1hKNmNraFpXWEZxUTIxbFFVcGFiM3BZU21vM2JsTTRVa3RvVlhCS01GSTFOVUoyTkhwd0pUSkNTVWRpVlZwNmNXNXFkamR4YUd0cGQxWkJRa1JXYWpsSFMzVXdZMnQzTTA5RFZHdEJUSFI1VlRJbE1rWk9hVkpCUnpWNVpYaEdaR1J3TlNVeVFrWWxNa0phVENVeVFrUlJTMmNsTTBRbE0wUT3QfFsCIOqqRfgf5AFbiZ6O5p5dlpMFVxE0aPArKo2-XFkR0qYLTB7dOJvhjVYFRJjmyxP0WZQhAuXLx743YpwM.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+connect @ 6504-ea5feb8c9fb9357e.js:1
+_app-014a1ffdcde2d552.js:9 WebSocket connection to 'wss://replit.com/graphql_subscriptions' failed: 
+(anonymous) @ _app-014a1ffdcde2d552.js:9
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Afetch%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3Ae46486c5&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=4620fe2a-e622-4dcb-b533-6c612508d71f:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+/graphql:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+/graphql:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+securetoken.googleapis.com/v1/token?key=AIzaSyARAzVTWc_KOBojIholLo2wzwNOQ6VKcB8:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+api.sorryapp.com/v1/pages/27c7b5fc:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3e5%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+_initContainer @ eruda.js:2
+init @ eruda.js:2
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:332
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+_initContainer @ eruda.js:2
+init @ eruda.js:2
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:332
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+_initContainer @ eruda.js:2
+init @ eruda.js:2
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:332
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+_initContainer @ eruda.js:2
+init @ eruda.js:2
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:332
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+_initContainer @ eruda.js:2
+init @ eruda.js:2
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:332
+ Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+_initContainer @ eruda.js:2
+init @ eruda.js:2
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:332
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAA6UAAsAAAAAGvAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAARoAAAHeLjoycE9TLzIAAAIkAAAAPwAAAFZWm1KoY21hcAAAAmQAAAFdAAADwhPu1O9nbHlmAAADxAAAB+wAAA9I7RPQpGhlYWQAAAuwAAAAMQAAADZ26MSyaGhlYQAAC+QAAAAdAAAAJAgEBC9obXR4AAAMBAAAAB0AAACwXAv//GxvY2EAAAwkAAAAOwAAAFpuVmoybWF4cAAADGAAAAAfAAAAIAE9AQ1uYW1lAAAMgAAAASkAAAIWm5e+CnBvc3QAAA2sAAAA5QAAAU4VMmUJeJxNkD1Ow0AQhb9NHGISCH9RiB0cErCNHRrqFFSIyqKiQHSpEFJERUnBCTgPZ+AEHIe34wDe1f69efPezOKAHldc07q5re4ZrFevL8QE1MPHm...f7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG2MyW6DQBiD+RKYpKT7vqf7Gg55pNHwEyJNGDSMRHj70nKtD7Zly45G0YA0+h8LRoyJSVBMmLJDyoxd9tjngEOOOOaEU84454JLrrjmhlvuuGfOA4888cwLr7zxzgeffPHNgixKtfeuzawUYTZYv16VITXaS8hy11azwf7FibGi/dS4Te2laWLj6k7lYiVIIv3aK9nWusqng2TLsXR900m2VMXaBvFxbXWnvBjn84mXor8pk54kqKa/NmUvVkyIg3NW/VK2jFvtKzQeR0uGRSgIrFlRYsip2FDT0LGNoh/MCkh9AAAA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAasAAsAAAAACnAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAI4AAADcIsYnIk9TLzIAAAGYAAAAPgAAAFZWmlGRY21hcAAAAdgAAAD2AAACyDioZ9NnbHlmAAAC0AAAAZgAAAH8Lq6nDGhlYWQAAARoAAAAMQAAADZ25cSzaGhlYQAABJwAAAAdAAAAJAgCBBRobXR4AAAEvAAAABkAAABYGAH//GxvY2EAAATYAAAAGAAAAC4J8glUbWF4cAAABPAAAAAfAAAAIAEjAFBuYW1lAAAFEAAAASkAAAIWm5e+CnBvc3QAAAY8AAAAcAAAAJ7qA/7MeJxNjTsOwjAQRJ8TJzE2hPBrKBBHQByAAiGqFBRcIBVCiqhyBA7O2AgRr9Y7M2+lxQCeAyeyy7W9U/fd8GKL5fsiH2vTPx8d7ufEbJpO/aagY...KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxtxksOgjAUQNF3kaIW/x9cBYtqgEAnLXlp0+1rwtQzuVcq2Vj5r6NiR42hYc+BI5aWE2cuXLlx58GTF286PmIm1ajGhzWnJub0S12cBjs4nVI/xhLabdXPS2JCiXgCK5lEwTHQMzKziHwBqnYYpg==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS8AAsAAAAAB7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAGEAAACMISgl+k9TLzIAAAFsAAAAPQAAAFZLxUkWY21hcAAAAawAAADWAAACdBU42qdnbHlmAAAChAAAAC4AAAAwabU7V2hlYWQAAAK0AAAALwAAADZzjr4faGhlYQAAAuQAAAAYAAAAJAFyANlobXR4AAAC/AAAABAAAABAAZAAAGxvY2EAAAMMAAAAEAAAACIAtACobWF4cAAAAxwAAAAfAAAAIAEbAA9uYW1lAAADPAAAASkAAAIWm5e+CnBvc3QAAARoAAAAUwAAAHZW8MNZeJxNjTsOQFAQRc/z/+sV1mABohKV0gZeJRJR2X9cT4RJZu7nFIMBMjoGvHGaF6rdngcNAc/c/O/Nvq2W5E1igdNE2zv1iGh1c5FQPlYXUlJRy...xlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxjkOgCAUANE/uOOGB+FQBIjaaEJIuL6FsfE1M6Lk9fXPoKioaWjp6BnQjEzMLKwYNtHepZhtuMs1vpvO/ch4HIlIxhK4KVyc7BwiD8nvDlkA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAASgAAsAAAAAB4QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFwAAACMIRYl8k9TLzIAAAFkAAAAPQAAAFZLxUkaY21hcAAAAaQAAADHAAACWBcU1KRnbHlmAAACbAAAAC4AAAAwabU7V2hlYWQAAAKcAAAALwAAADZzjr4faGhlYQAAAswAAAAYAAAAJAFyANdobXR4AAAC5AAAABAAAAA4AZAAAGxvY2EAAAL0AAAAEAAAAB4AnACQbWF4cAAAAwQAAAAfAAAAIAEZAA9uYW1lAAADJAAAASkAAAIWm5e+CnBvc3QAAARQAAAATgAAAG5m1cqleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiC2AdNMDGwMckCSGyzHCuSxA2kuIJ+HgReoggtJnANMc...kAeJxlkD1uwkAUhMdgSAJSghQpKbNVCiKZn5IDQE9Bl8KYtTGyvdZ6QaLLCXKEHCGniHKCHChj82hgLT9/M2/e7soABviFh3p5uG1qvVq4oTpxm/Qg7JOfhTvo40W4S38o3MMbpsJ9POKdO3j+HZ0BSuEW7vEh3Kb/KeyTv4Q7eMK3cJf+j3APK/wJ9/HqDdPIFLEp3FIn+yy0Z3n+rrStUlOoSTA+WwtdaBs6vVHro6oOydS5WMXW5GrOrs4yo0prdjpywda5cjYaxeIHkcmRIoJBgbipDktoJNgjQwh71b3UK6YtKvq1VpggwPgqtWCqaJIhlcaGyTWOrBUOPG1K1zGt+FrO5KS5zGreJCMr/u+6t6MT0Q+wbaZKzDDiE1/kg+YO+T89EV6oAAAAeJxdxk0KgCAUAOE3/adlJ/FQgqBuFETw+i2kTd9mRiYZvv4ZJmYWVjZ2Dk4UmosbwyPK1Vq69aVnPbamEBuOSqFj8WQSgUgTeQGPtA2iAAA=' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAS0AAsAAAAAB2QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAFQAAAB0INElr09TLzIAAAFcAAAAPQAAAFZL+0klY21hcAAAAZwAAACfAAACEAEewxRnbHlmAAACPAAAAIYAAACkNSDggmhlYWQAAALEAAAALgAAADZzrb4oaGhlYQAAAvQAAAAWAAAAJAGRANNobXR4AAADDAAAABAAAAAoAZAAAGxvY2EAAAMcAAAAEAAAABYBWgFIbWF4cAAAAywAAAAdAAAAIAEXADtuYW1lAAADTAAAASkAAAIWm5e+CnBvc3QAAAR4AAAAOwAAAFJIWdOleJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiBWAdNMDGwMQkAWK1CGlYEZyGMCstiBMpxAUUYGZgDbG...BmAAEmMI8LSP4H8xkADjQBUwAAAHicZZA9bsJAFITHYEgCUoIUKSmzVQoimZ+SA0BPQZfCmLUxsr3WekGiywlyhBwhp4hyghwoY/NoYC0/fzNv3u7KAAb4hYd6ebhtar1auKE6cZv0IOyTn4U76ONFuEt/KNzDG6bCfTzinTt4/h2dAUrhFu7xIdym/ynsk7+EO3jCt3CX/o9wDyv8Cffx6g3TyBSxKdxSJ/sstGd5/q60rVJTqEkwPlsLXWgbOr1R66OqDsnUuVjF1uRqzq7OMqNKa3Y6csHWuXI2GsXiB5HJkSKCQYG4qQ5LaCTYI0MIe9W91CumLSr6tVaYIMD4KrVgqmiSIZXGhsk1jqwVDjxtStcxrfhazuSkucxq3iQjK/7vurejE9EPsG2mSsww4hNf5IPmDvk/PRFeqAAAAHicXcU7CsAgFEXBe4x/l/kQBAtt3X0KSZNpRk7X91/F8eAJRBKZQqUp2Og2va19MAadyWJzpBd4kgcWAA==' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+createAssigner.js:9 Refused to load the font 'data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAZUAAsAAAAACdAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAAG0AAACgIZAmVU9TLzIAAAF4AAAAPgAAAFZWzlGlY21hcAAAAbgAAADTAAACdAF1q7JnbHlmAAACjAAAAZ8AAAIw/FBRXGhlYWQAAAQsAAAAMQAAADZ25cSzaGhlYQAABGAAAAAdAAAAJAgCBA9obXR4AAAEgAAAABYAAABEFAH//GxvY2EAAASYAAAAFgAAACQHPAeQbWF4cAAABLAAAAAfAAAAIAEeAFBuYW1lAAAE0AAAASkAAAIWm5e+CnBvc3QAAAX8AAAAVwAAAHunB7sWeJxjYGRgYOBiMGCwY2BycfMJYeDLSSzJY5BiYGGAAJA8MpsxJzM9kYEDxgPKsYBpDiD2ArL5GGQYdBhswDIgzA6U4QSzmBlYGbgZeIC28YL5r...7CQBSEx2BIAlKCFCkps1UKIpmfkgNAT0GXwpi1MbK91npBossJcoQcIaeIcoIcKGPzaGAtP38zb97uygAG+IWHenm4bWq9WrihOnGb9CDsk5+FO+jjRbhLfyjcwxumwn084p07eP4dnQFK4Rbu8SHcpv8p7JO/hDt4wrdwl/6PcA8r/An38eoN08gUsSncUif7LLRnef6utK1SU6hJMD5bC11oGzq9Ueujqg7J1LlYxdbkas6uzjKjSmt2OnLB1rlyNhrF4geRyZEigkGBuKkOS2gk2CNDCHvVvdQrpi0q+rVWmCDA+Cq1YKpokiGVxobJNY6sFQ48bUrXMa34Ws7kpLnMat4kIyv+77q3oxPRD7BtpkrMMOITX+SD5g75Pz0RXqgAAAB4nG3EOwqAMBBAwX2a+P/fw8IjSYgoQgLb5PqCtk4xksmnkX8zGTkGS0FJRU1DS0fPwMjEzCLmCke07vTuLt/XzaRdg/WqUbkIHEQcJ56bxI6KPP4cD3YA' because it violates the following Content Security Policy directive: "font-src 'self' https://fonts.gstatic.com".
+
+(anonymous) @ createAssigner.js:9
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/auth/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/appointments:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+ Stripe Publishable Key: Available
+ Loading Stripe with publishable key: pk_test_51...
+ Landing page loaded, checking for password reset tokens
+ Current URL hash: 
+ Hash params: [object Object]
+ All hash params: 
+ ❌ No password reset tokens found, loading normal landing page
+ Failed to send analytics events: TypeError: Failed to fetch
+Mt.forEach.n.<computed> @ eruda.js:2
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with publishable key: pk_test_51...
+Console.js:61 DoctorProfile - Raw params: [object Object]
+Console.js:61 DoctorProfile - Doctor ID: 9
+Console.js:61 DoctorProfile - Raw params: [object Object]
+Console.js:61 DoctorProfile - Doctor ID: 9
+Console.js:61 DoctorProfile - Raw params: [object Object]
+Console.js:61 DoctorProfile - Doctor ID: 9
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 DoctorProfile - Raw params: [object Object]
+Console.js:61 DoctorProfile - Doctor ID: 9
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 🩺 Banner System - Health Profile Check: [object Object]
+Console.js:61 Slot clicked: [object Object]
+Console.js:61 DoctorProfile - Raw params: [object Object]
+Console.js:61 DoctorProfile - Doctor ID: 9
+Console.js:61 Slot held successfully: [object Object]
+Console.js:61 Slot held successfully, user authenticated, redirecting to checkout: /checkout?doctorId=9&slot=2025-09-17T14%3A00%3A00&price=35.00&slotId=5b2aecd5-a251-492c-b31d-5feb9c021d12
+Console.js:61 Failed to send analytics events: TypeError: Failed to fetch
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 Stripe Publishable Key: Available
+Console.js:61 Loading Stripe with publishable key: pk_test_51...
+Console.js:61 🔥 Checkout Page Params: Object
+Console.js:61 Re-holding slot with ID: 5b2aecd5-a251-492c-b31d-5feb9c021d12
+Console.js:61 Slot re-held successfully: Object
+Console.js:61 🔥 Checkout Page Params: Object
+Console.js:61 🆕 Creating new appointment
+Console.js:61 🕐 Original slot parameter: 2025-09-17T14:00:00
+Console.js:61 🕐 Parsed local date: 17.9.2025, 14:00:00
+Console.js:61 🕐 Current timezone offset (minutes): -120
+Console.js:61 🕐 UTC for storage: 2025-09-17T12:00:00.000Z
+Console.js:61 🕐 Verification - stored UTC converted back to local: 17.9.2025, 14:00:00
+Console.js:61 🧪 Testing conflict-free endpoint first...
+Console.js:61 🔥 Checkout Page Params: Object
+Console.js:61 🧪 Test endpoint result: Object
+Console.js:61 ✅ Conflict-free endpoint works! Issue is specifically with /api/appointments
+Console.js:61 🔄 Attempting original /api/appointments endpoint...
+0e26a2af-25b7-4712-bcf1-e62087ea5bb2-00-1aao71fpe1wyj.kirk.replit.dev/api/appointments:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+Console.js:61 ❌ Appointment creation failed: Object
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 Checkout initialization error: Error: Failed to create appointment: 500 {"error":"BOOKING_FAILED","message":"Failed to create appointment. Please try again."}
+    at initializeCheckout (Checkout.tsx:244:19)
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 Landing page loaded, checking for password reset tokens
+Console.js:61 Current URL hash: 
+Console.js:61 Hash params: Object
+Console.js:61 All hash params: Array(0)
+Console.js:61 ❌ No password reset tokens found, loading normal landing page
