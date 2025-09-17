@@ -241,6 +241,19 @@ export interface IStorage {
   createAdminUser(userData: { email: string; firstName: string; lastName: string }): Promise<User>;
   removeAdminUser(userId: number): Promise<void>;
   
+  // Membership operations  
+  markSlotUnavailable(slotId: string): Promise<void>;
+  createAppointmentCoverageIfMissing(coverageData: {
+    appointmentId: number;
+    subscriptionId: string;
+    cycleId: string;
+    allowanceEventId: string;
+    coverageType: string;
+    originalPrice: string;
+    coveredAmount: string;
+    patientPaid: string;
+  }): Promise<boolean>;
+  
   // Meeting stats for dashboard
   getMeetingStats(): Promise<{
     totalLive: number;
