@@ -71,6 +71,13 @@ app.use((req, res, next) => {
   // Create single HTTP server instance (moved from routes.ts)
   const { createServer } = await import('http');
   const server = createServer(app);
+  
+  // ============================================================================
+  // NODE-LEVEL REQUEST TRACER - CANNOT BE BYPASSED BY ANY MIDDLEWARE
+  // ============================================================================
+  server.on('request', (req) => {
+    console.log(`[SRV] ${req.method} ${req.url}`);
+  });
 
   // ============================================================================
   // LAST-CHANCE API FALLTHROUGH TRACER
