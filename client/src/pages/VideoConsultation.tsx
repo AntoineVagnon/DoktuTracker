@@ -146,7 +146,7 @@ export default function VideoConsultation() {
     );
   }
 
-  if (appointment.status !== 'paid') {
+  if (appointment.status !== 'paid' && appointment.status !== 'confirmed') {
     return (
       <div className="min-h-screen bg-background">
         <Header />

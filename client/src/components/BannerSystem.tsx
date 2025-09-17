@@ -325,14 +325,7 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
 
     // 3. Health profile completion banner (third priority) - patients only
     if (user.role === 'patient') {
-      console.log('🩺 Banner System - Health Profile Check:', {
-        hasHealthProfile: !!healthProfile,
-        profileStatus: healthProfile?.profileStatus,
-        completionScore: healthProfile?.completionScore,
-        needsCompletion: !healthProfile || (healthProfile.profileStatus !== 'complete'),
-        userId: user?.id,
-        queryKey: ["/api/health-profile", user?.id]
-      });
+      // Removed excessive console logging to improve performance
       
       const needsProfileCompletion = !healthProfile || 
                                    (healthProfile.profileStatus !== 'complete');

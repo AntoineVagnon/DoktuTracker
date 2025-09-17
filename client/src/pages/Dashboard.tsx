@@ -517,7 +517,7 @@ export default function Dashboard() {
                         Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName} • {appointment.doctor?.specialty}
                       </p>
                       <p className="text-sm text-gray-600">
-                        {new Date(appointment.appointmentDate).toLocaleString()}
+                        {format(new Date(appointment.appointmentDate), 'PPP p')}
                       </p>
                     </div>
                   </div>
