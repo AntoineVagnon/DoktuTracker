@@ -284,7 +284,7 @@ export default function Checkout() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              appointmentId: appointmentData.id,
+              appointmentId: appointmentData.appointmentId || appointmentData.id,
               amount: parseFloat(price)
             })
           });
