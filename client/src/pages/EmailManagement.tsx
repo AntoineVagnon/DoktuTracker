@@ -14,15 +14,13 @@ export default function EmailManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [testEmail, setTestEmail] = useState("");
-  const [testEmailType, setTestEmailType] = useState("welcome");
+  const [testEmailType, setTestEmailType] = useState("welcome_free_credit");
 
   // Test email mutation
   const testEmailMutation = useMutation({
     mutationFn: async ({ email, type }: { email: string; type: string }) => {
-      return apiRequest('/api/emails/test', {
-        method: 'POST',
-        body: JSON.stringify({ email, type })
-      });
+      const response = await apiRequest('POST', '/api/emails/test', { email, type });
+      return await response.json() as { success: boolean; message: string };
     },
     onSuccess: (data) => {
       toast({
@@ -44,9 +42,8 @@ export default function EmailManagement() {
   // Send reminder emails mutation
   const reminderEmailsMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest('/api/emails/send-reminders', {
-        method: 'POST'
-      });
+      const response = await apiRequest('POST', '/api/emails/send-reminders');
+      return await response.json() as { success: boolean; message: string; count?: number };
     },
     onSuccess: (data) => {
       toast({
@@ -66,12 +63,12 @@ export default function EmailManagement() {
   });
 
   // Get upcoming appointments for reminder preview
-  const { data: upcomingAppointments } = useQuery({
+  const { data: upcomingAppointments = [] } = useQuery<any[]>({
     queryKey: ['/api/admin/appointments'],
     enabled: true
   });
 
-  const tomorrowAppointments = upcomingAppointments?.filter((apt: any) => {
+  const tomorrowAppointments = upcomingAppointments.filter((apt: any) => {
     const appointmentDate = new Date(apt.appointmentDate);
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -81,7 +78,7 @@ export default function EmailManagement() {
     dayAfter.setDate(dayAfter.getDate() + 1);
     
     return appointmentDate >= tomorrow && appointmentDate < dayAfter && apt.status === 'paid';
-  }) || [];
+  });
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -118,7 +115,7 @@ export default function EmailManagement() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="welcome">Welcome Email</SelectItem>
+                  <SelectItem value="welcome_free_credit">Welcome Email</SelectItem>
                 </SelectContent>
               </Select>
             </div>
