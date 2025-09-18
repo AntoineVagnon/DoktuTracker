@@ -479,6 +479,11 @@ export const healthProfiles = pgTable("health_profiles", {
   medicalHistory: text("medical_history").array(),
   emergencyContactName: varchar("emergency_contact_name"),
   emergencyContactPhone: varchar("emergency_contact_phone"),
+  // Not applicable flags for medical fields
+  allergiesNotApplicable: boolean("allergies_not_applicable").default(false),
+  medicationsNotApplicable: boolean("medications_not_applicable").default(false),
+  medicalHistoryNotApplicable: boolean("medical_history_not_applicable").default(false),
+  emergencyContactNotApplicable: boolean("emergency_contact_not_applicable").default(false),
   profileStatus: varchar("profile_status").notNull().default("incomplete"), // incomplete, complete, needs_review
   completionScore: integer("completion_score").default(0), // 0-100
   lastReviewedAt: timestamp("last_reviewed_at"),
