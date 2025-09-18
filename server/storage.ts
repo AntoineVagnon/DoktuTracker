@@ -2571,6 +2571,45 @@ export class PostgresStorage implements IStorage {
   }
 
   // Health Profile operations
+  private calculateHealthProfileCompletion(healthProfile: any): number {
+    if (!healthProfile) return 0;
+    
+    const basicFields = [
+      healthProfile.dateOfBirth,
+      healthProfile.gender,
+      healthProfile.height,
+      healthProfile.weight,
+      healthProfile.bloodType,
+    ];
+    
+    // Array fields with N/A support
+    const arrayFieldsWithNA = [
+      { field: healthProfile.allergies, notApplicable: healthProfile.allergiesNotApplicable },
+      { field: healthProfile.medications, notApplicable: healthProfile.medicationsNotApplicable },
+      { field: healthProfile.medicalHistory, notApplicable: healthProfile.medicalHistoryNotApplicable },
+    ];
+    
+    // Emergency contact fields (treated as one unit)
+    const hasEmergencyContact = healthProfile.emergencyContactName || healthProfile.emergencyContactPhone;
+    const emergencyContactNotApplicable = healthProfile.emergencyContactNotApplicable;
+    
+    // Count filled basic fields (strings)
+    const filledBasicFields = basicFields.filter(field => field && String(field).trim() !== '').length;
+    
+    // Count filled or N/A array fields
+    const completedArrayFields = arrayFieldsWithNA.filter(({ field, notApplicable }) => {
+      return notApplicable || (field && Array.isArray(field) && field.length > 0);
+    }).length;
+    
+    // Count emergency contact as complete if filled or marked N/A
+    const emergencyContactComplete = emergencyContactNotApplicable || hasEmergencyContact ? 1 : 0;
+    
+    const totalFields = basicFields.length + arrayFieldsWithNA.length + 1; // +1 for emergency contact
+    const totalCompletedFields = filledBasicFields + completedArrayFields + emergencyContactComplete;
+    
+    return Math.round((totalCompletedFields / totalFields) * 100);
+  }
+
   async getHealthProfile(patientId: number): Promise<HealthProfile | undefined> {
     try {
       console.log('🔍 Fetching health profile from DATABASE for patient:', patientId);
@@ -2607,6 +2646,11 @@ export class PostgresStorage implements IStorage {
         medicalHistory: null,
         emergencyContactName: null,
         emergencyContactPhone: null,
+        // Not applicable flags with default values
+        allergiesNotApplicable: false,
+        medicationsNotApplicable: false,
+        medicalHistoryNotApplicable: false,
+        emergencyContactNotApplicable: false,
         lastReviewedAt: null,
         needsReviewAfter: null,
         createdAt: new Date(),
@@ -2622,12 +2666,16 @@ export class PostgresStorage implements IStorage {
     try {
       console.log('💾 Creating health profile in DATABASE for patient:', profile.patientId);
       
+      // Calculate completion score
+      const completionScore = this.calculateHealthProfileCompletion(profile);
+      const profileStatus = completionScore >= 80 ? 'complete' : 'incomplete';
+      
       const [newProfile] = await db
         .insert(healthProfiles)
         .values({
           ...profile,
-          profileStatus: 'complete',
-          completionScore: 100,
+          profileStatus,
+          completionScore,
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -2653,12 +2701,45 @@ export class PostgresStorage implements IStorage {
     try {
       console.log('💾 Updating health profile in DATABASE with ID:', id);
       
+      // Fetch current profile to merge with updates for accurate completion calculation
+      const [currentProfile] = await db
+        .select()
+        .from(healthProfiles)
+        .where(eq(healthProfiles.id, id))
+        .limit(1);
+      
+      if (!currentProfile) {
+        throw new Error(`Health profile with ID ${id} not found`);
+      }
+      
+      // Merge current profile with updates
+      const mergedProfile = { ...currentProfile, ...updates };
+      
+      // Clear arrays when corresponding N/A flags are true
+      if (mergedProfile.allergiesNotApplicable) {
+        mergedProfile.allergies = [];
+      }
+      if (mergedProfile.medicationsNotApplicable) {
+        mergedProfile.medications = [];
+      }
+      if (mergedProfile.medicalHistoryNotApplicable) {
+        mergedProfile.medicalHistory = [];
+      }
+      if (mergedProfile.emergencyContactNotApplicable) {
+        mergedProfile.emergencyContactName = null;
+        mergedProfile.emergencyContactPhone = null;
+      }
+      
+      // Calculate completion score based on merged data
+      const completionScore = this.calculateHealthProfileCompletion(mergedProfile);
+      const profileStatus = completionScore >= 80 ? 'complete' : 'incomplete';
+      
       const [updatedProfile] = await db
         .update(healthProfiles)
         .set({
-          ...updates,
-          profileStatus: 'complete',
-          completionScore: 100,
+          ...mergedProfile,
+          profileStatus,
+          completionScore,
           updatedAt: new Date()
         })
         .where(eq(healthProfiles.id, id))

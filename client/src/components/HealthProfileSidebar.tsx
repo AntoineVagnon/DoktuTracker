@@ -29,6 +29,11 @@ const healthProfileSchema = z.object({
   medicalHistory: z.array(z.string()).default([]),
   emergencyContactName: z.string().optional(),
   emergencyContactPhone: z.string().optional(),
+  // Not applicable flags
+  allergiesNotApplicable: z.boolean().default(false),
+  medicationsNotApplicable: z.boolean().default(false),
+  medicalHistoryNotApplicable: z.boolean().default(false),
+  emergencyContactNotApplicable: z.boolean().default(false),
 });
 
 type HealthProfileForm = z.infer<typeof healthProfileSchema>;
@@ -56,6 +61,10 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
       allergies: [],
       medications: [],
       medicalHistory: [],
+      allergiesNotApplicable: false,
+      medicationsNotApplicable: false,
+      medicalHistoryNotApplicable: false,
+      emergencyContactNotApplicable: false,
     }
   });
 
@@ -82,6 +91,10 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
         medicalHistory: healthProfile.medicalHistory || [],
         emergencyContactName: healthProfile.emergencyContactName || '',
         emergencyContactPhone: healthProfile.emergencyContactPhone || '',
+        allergiesNotApplicable: healthProfile.allergiesNotApplicable || false,
+        medicationsNotApplicable: healthProfile.medicationsNotApplicable || false,
+        medicalHistoryNotApplicable: healthProfile.medicalHistoryNotApplicable || false,
+        emergencyContactNotApplicable: healthProfile.emergencyContactNotApplicable || false,
       });
     }
   }, [healthProfile, reset]);
@@ -104,7 +117,7 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/health-profile"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/health-profile", user?.id] });
       toast({
         title: "Health Profile Updated",
         description: "Your health information has been saved successfully.",
@@ -131,6 +144,26 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
     setValue(field, currentValues.filter((_, i) => i !== index));
   };
 
+  const getNotApplicableField = (field: 'allergies' | 'medications' | 'medicalHistory') => {
+    const fieldMap = {
+      allergies: 'allergiesNotApplicable',
+      medications: 'medicationsNotApplicable', 
+      medicalHistory: 'medicalHistoryNotApplicable'
+    };
+    return fieldMap[field] as keyof typeof watchedValues;
+  };
+
+  const toggleNotApplicable = (field: 'allergies' | 'medications' | 'medicalHistory') => {
+    const notApplicableField = getNotApplicableField(field);
+    const currentValue = watchedValues[notApplicableField] as boolean;
+    setValue(notApplicableField, !currentValue);
+    
+    // Clear array values when marking as N/A
+    if (!currentValue) {
+      setValue(field, []);
+    }
+  };
+
   const ArrayInput = ({ 
     field, 
     label, 
@@ -142,15 +175,19 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
   }) => {
     const [inputValue, setInputValue] = useState('');
     const values = watchedValues[field] || [];
+    const notApplicableField = getNotApplicableField(field);
+    const isNotApplicable = watchedValues[notApplicableField] as boolean;
 
     return (
-      <div className="space-y-2">
+      <div className="space-y-2" data-testid={`array-input-${field}`}>
         <Label>{label}</Label>
         <div className="flex gap-2">
           <Input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={placeholder}
+            disabled={isNotApplicable}
+            className={isNotApplicable ? 'bg-gray-100 text-gray-500' : ''}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
@@ -158,20 +195,23 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
                 setInputValue('');
               }
             }}
+            data-testid={`input-${field}`}
           />
           <Button
             type="button"
             variant="outline"
             size="sm"
+            disabled={isNotApplicable}
             onClick={() => {
               addArrayItem(field, inputValue);
               setInputValue('');
             }}
+            data-testid={`button-add-${field}`}
           >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
-        {values.length > 0 && (
+        {values.length > 0 && !isNotApplicable && (
           <div className="flex flex-wrap gap-2">
             {values.map((item, index) => (
               <Badge key={index} variant="secondary" className="gap-1">
@@ -185,6 +225,105 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
                 </button>
               </Badge>
             ))}
+          </div>
+        )}
+        {!isNotApplicable && values.length === 0 && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => toggleNotApplicable(field)}
+            className="text-xs text-gray-600 hover:text-gray-800 h-auto py-1 px-2"
+            data-testid={`button-not-applicable-${field}`}
+          >
+            Not Applicable
+          </Button>
+        )}
+        {isNotApplicable && (
+          <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded border" data-testid={`text-not-applicable-${field}`}>
+            Marked as not applicable
+            <button
+              type="button"
+              onClick={() => toggleNotApplicable(field)}
+              className="ml-2 text-blue-600 hover:text-blue-800 underline"
+              data-testid={`button-undo-${field}`}
+            >
+              Undo
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const EmergencyContactInput = () => {
+    const isNotApplicable = watchedValues.emergencyContactNotApplicable as boolean;
+    const hasContactInfo = watchedValues.emergencyContactName || watchedValues.emergencyContactPhone;
+
+    const toggleEmergencyContactNotApplicable = () => {
+      setValue('emergencyContactNotApplicable', !isNotApplicable);
+      
+      // Clear contact info when marking as N/A
+      if (!isNotApplicable) {
+        setValue('emergencyContactName', '');
+        setValue('emergencyContactPhone', '');
+      }
+    };
+
+    return (
+      <div className="space-y-4" data-testid="emergency-contact-section">
+        <h3 className="text-lg font-medium">Emergency Contact</h3>
+        
+        <div className="grid grid-cols-1 gap-4">
+          <div>
+            <Label htmlFor="emergencyContactName">Contact Name</Label>
+            <Input
+              id="emergencyContactName"
+              placeholder="Full name"
+              disabled={isNotApplicable}
+              className={isNotApplicable ? 'bg-gray-100 text-gray-500' : ''}
+              {...form.register('emergencyContactName')}
+              data-testid="input-emergency-contact-name"
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="emergencyContactPhone">Contact Phone</Label>
+            <Input
+              id="emergencyContactPhone"
+              placeholder="Phone number"
+              disabled={isNotApplicable}
+              className={isNotApplicable ? 'bg-gray-100 text-gray-500' : ''}
+              {...form.register('emergencyContactPhone')}
+              data-testid="input-emergency-contact-phone"
+            />
+          </div>
+        </div>
+        
+        {!isNotApplicable && !hasContactInfo && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={toggleEmergencyContactNotApplicable}
+            className="text-xs text-gray-600 hover:text-gray-800 h-auto py-1 px-2"
+            data-testid="button-not-applicable-emergency-contact"
+          >
+            Not Applicable
+          </Button>
+        )}
+        
+        {isNotApplicable && (
+          <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded border" data-testid="text-not-applicable-emergency-contact">
+            Marked as not applicable
+            <button
+              type="button"
+              onClick={toggleEmergencyContactNotApplicable}
+              className="ml-2 text-blue-600 hover:text-blue-800 underline"
+              data-testid="button-undo-emergency-contact"
+            >
+              Undo
+            </button>
           </div>
         )}
       </div>
@@ -315,27 +454,7 @@ export function HealthProfileSidebar({ isOpen, onClose }: HealthProfileSidebarPr
             </div>
 
             {/* Emergency Contact */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Emergency Contact</h3>
-              
-              <div>
-                <Label htmlFor="emergencyContactName">Contact Name</Label>
-                <Input
-                  id="emergencyContactName"
-                  placeholder="Full name"
-                  {...form.register('emergencyContactName')}
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="emergencyContactPhone">Contact Phone</Label>
-                <Input
-                  id="emergencyContactPhone"
-                  placeholder="Phone number"
-                  {...form.register('emergencyContactPhone')}
-                />
-              </div>
-            </div>
+            <EmergencyContactInput />
 
             {/* Save Button */}
             <div className="flex gap-3 pt-4">
