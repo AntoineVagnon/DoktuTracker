@@ -28,6 +28,16 @@ const testEmailSchema = z.object({
   type: z.enum(['ACCOUNT_REG_SUCCESS', 'APPOINTMENT_CONFIRMED', 'APPOINTMENT_REMINDER_24H', 'APPOINTMENT_CANCELLED', 'HEALTH_PROFILE_INCOMPLETE', 'welcome_free_credit']).default('ACCOUNT_REG_SUCCESS')
 });
 
+// Create a mapping from trigger codes to template keys
+const triggerToTemplateMap: Record<string, string> = {
+  'ACCOUNT_REG_SUCCESS': 'account_registration_success',
+  'APPOINTMENT_CONFIRMED': 'booking_confirmation',
+  'APPOINTMENT_REMINDER_24H': 'booking_reminder_24h', 
+  'APPOINTMENT_CANCELLED': 'cancellation_confirmation',
+  'HEALTH_PROFILE_INCOMPLETE': 'health_profile_incomplete',
+  'welcome_free_credit': 'welcome_free_credit' // Legacy support
+};
+
 // POST /api/emails/test
 router.post('/test', isAuthenticated, requireAdmin, async (req, res) => {
   try {
@@ -35,29 +45,46 @@ router.post('/test', isAuthenticated, requireAdmin, async (req, res) => {
     const { email, type } = testEmailSchema.parse(req.body);
     console.log('📧 Parsed request body:', { email, type });
     
-    // Get email template
+    // Map trigger code to template key
+    const templateKey = triggerToTemplateMap[type] || type;
+    console.log('📧 Mapped template key:', templateKey);
+    
+    // Get email template with proper template key
     const templateData = {
       first_name: 'Test User',
-      last_name: 'Account'
+      last_name: 'Account',
+      patient_first_name: 'Test User',
+      doctor_name: 'Dr. Test Doctor',
+      appointment_datetime_local: new Date().toLocaleDateString(),
+      join_link: 'https://example.com/consultation/123'
     };
     console.log('📧 Template data prepared:', templateData);
     
-    const template = getTemplate(type, templateData);
-    console.log('📧 Template retrieved successfully');
+    let template;
+    try {
+      template = getTemplate(templateKey, templateData);
+      console.log('📧 Template retrieved successfully');
+    } catch (templateError: any) {
+      console.error('📧 Template error:', templateError);
+      // Fallback to welcome template if specific template fails
+      template = getTemplate('welcome_free_credit', { first_name: 'Test User' });
+    }
     
-    // Send test email using working email service
+    // Send test email using generic EmailService
     console.log('📧 Creating EmailService instance');
     const emailService = new EmailService();
-    console.log('📧 Calling sendWelcomeEmail');
-    await emailService.sendWelcomeEmail({
-      email,
-      firstName: 'Test User',
-      userType: 'patient'
+    console.log('📧 Calling sendEmail with template');
+    
+    await emailService.sendGenericEmail({
+      to: email,
+      subject: template.subject,
+      html: template.html
     });
     
     res.json({
       success: true,
-      message: `Test email sent successfully to ${email}`
+      message: `Test email sent successfully to ${email}`,
+      templateUsed: templateKey
     });
     
   } catch (error: any) {
@@ -144,14 +171,10 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
         const template = getTemplate('booking_reminder_24h', templateData);
         
         const emailService = new EmailService();
-        await emailService.sendAppointmentReminder({
-          patientEmail: appointment.patient.email || '',
-          patientName: appointment.patient.firstName || 'Patient',
-          doctorName: `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`,
-          specialty: appointment.doctor.specialty || '',
-          appointmentDate: appointment.appointmentDate.toLocaleDateString(),
-          appointmentTime: appointment.appointmentDate.toLocaleTimeString(),
-          appointmentId: appointment.id.toString()
+        await emailService.sendGenericEmail({
+          to: appointment.patient.email || '',
+          subject: template.subject,
+          html: template.html
         });
         
         sentCount++;
@@ -174,72 +197,6 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
     res.status(500).json({
       success: false,
       message: 'Failed to send reminder emails: ' + error.message
-    });
-  }
-});
-
-// GET /api/admin/notification-queue - Get notification queue status
-router.get('/admin/notification-queue', isAuthenticated, requireAdmin, async (req, res) => {
-  try {
-    // Get notification queue counts by status
-    const queueCounts = await db
-      .select({
-        status: notificationQueue.status,
-        count: count()
-      })
-      .from(notificationQueue)
-      .groupBy(notificationQueue.status);
-
-    // Transform results into an object with counts
-    const statusCounts = {
-      pending: 0,
-      processing: 0,
-      completed: 0,
-      failed: 0
-    };
-
-    queueCounts.forEach(({ status, count: statusCount }) => {
-      if (status && status in statusCounts) {
-        (statusCounts as any)[status] = Number(statusCount);
-      }
-    });
-
-    res.json(statusCounts);
-  } catch (error: any) {
-    console.error('Error fetching notification queue status:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch notification queue status: ' + error.message
-    });
-  }
-});
-
-// GET /api/admin/email-logs - Get recent email activity
-router.get('/admin/email-logs', isAuthenticated, requireAdmin, async (req, res) => {
-  try {
-    // Get recent email notifications with user details
-    const recentEmails = await db
-      .select({
-        id: emailNotifications.id,
-        recipient_email: users.email,
-        trigger_code: emailNotifications.triggerCode,
-        status: emailNotifications.status,
-        created_at: emailNotifications.createdAt,
-        sent_at: emailNotifications.sentAt,
-        error_message: emailNotifications.errorMessage,
-        retry_count: emailNotifications.retryCount
-      })
-      .from(emailNotifications)
-      .innerJoin(users, eq(emailNotifications.userId, users.id))
-      .orderBy(desc(emailNotifications.createdAt))
-      .limit(50);
-
-    res.json(recentEmails);
-  } catch (error: any) {
-    console.error('Error fetching email logs:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch email logs: ' + error.message
     });
   }
 });

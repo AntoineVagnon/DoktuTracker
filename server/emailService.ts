@@ -694,6 +694,11 @@ export class EmailService {
       html: this.getEmailTemplate(content)
     });
   }
+
+  // Public method to send generic emails with custom templates
+  async sendGenericEmail(params: EmailParams): Promise<boolean> {
+    return this.sendEmail(params);
+  }
 }
 
 export const emailService = new EmailService();

@@ -4526,6 +4526,132 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Admin routes - must be before other route registrations
+  // Admin authorization middleware
+  const requireAdmin = async (req: any, res: any, next: any) => {
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Admin access required'
+      });
+    }
+    next();
+  };
+
+  // GET /api/admin/notification-queue - Get notification queue status
+  app.get('/api/admin/notification-queue', isAuthenticated, requireAdmin, async (req, res) => {
+    try {
+      const { notificationQueue } = await import('@shared/schema');
+      const { count } = await import('drizzle-orm');
+
+      // Get notification queue counts by status
+      const queueCounts = await db
+        .select({
+          status: notificationQueue.status,
+          count: count()
+        })
+        .from(notificationQueue)
+        .groupBy(notificationQueue.status);
+
+      // Transform results into an object with counts
+      const statusCounts = {
+        pending: 0,
+        processing: 0,
+        completed: 0,
+        failed: 0
+      };
+
+      queueCounts.forEach(({ status, count: statusCount }) => {
+        if (status && status in statusCounts) {
+          (statusCounts as any)[status] = Number(statusCount);
+        }
+      });
+
+      res.json(statusCounts);
+    } catch (error: any) {
+      console.error('Error fetching notification queue status:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch notification queue status: ' + error.message
+      });
+    }
+  });
+
+  // GET /api/admin/email-logs - Get recent email activity
+  app.get('/api/admin/email-logs', isAuthenticated, requireAdmin, async (req, res) => {
+    try {
+      const { emailNotifications, users } = await import('@shared/schema');
+      const { desc } = await import('drizzle-orm');
+
+      // Get recent email notifications with user details
+      const recentEmails = await db
+        .select({
+          id: emailNotifications.id,
+          recipient_email: users.email,
+          trigger_code: emailNotifications.triggerCode,
+          status: emailNotifications.status,
+          created_at: emailNotifications.createdAt,
+          sent_at: emailNotifications.sentAt,
+          error_message: emailNotifications.errorMessage,
+          retry_count: emailNotifications.retryCount
+        })
+        .from(emailNotifications)
+        .innerJoin(users, eq(emailNotifications.userId, users.id))
+        .orderBy(desc(emailNotifications.createdAt))
+        .limit(50);
+
+      res.json(recentEmails);
+    } catch (error: any) {
+      console.error('Error fetching email logs:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch email logs: ' + error.message
+      });
+    }
+  });
+
+  // GET /api/admin/appointments - Get appointments for admin dashboard
+  app.get('/api/admin/appointments', isAuthenticated, requireAdmin, async (req, res) => {
+    try {
+      const { appointments, users, doctors } = await import('@shared/schema');
+      const { desc } = await import('drizzle-orm');
+
+      // Get recent appointments with patient and doctor details
+      const recentAppointments = await db
+        .select({
+          id: appointments.id,
+          appointmentDate: appointments.appointmentDate,
+          status: appointments.status,
+          price: appointments.price,
+          patient: {
+            id: users.id,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            email: users.email
+          },
+          doctor: {
+            id: doctors.id,
+            firstName: doctors.firstName,
+            lastName: doctors.lastName,
+            specialty: doctors.specialty
+          }
+        })
+        .from(appointments)
+        .innerJoin(users, eq(appointments.patientId, users.id))
+        .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
+        .orderBy(desc(appointments.appointmentDate))
+        .limit(100);
+
+      res.json(recentAppointments);
+    } catch (error: any) {
+      console.error('Error fetching admin appointments:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch appointments: ' + error.message
+      });
+    }
+  });
+
   // Register email routes
   const { emailRouter } = await import('./routes/emails');
   app.use('/api/emails', emailRouter);
