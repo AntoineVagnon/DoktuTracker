@@ -192,16 +192,29 @@ export function ConsentManager({ userId, onConsentUpdate }: ConsentManagerProps)
       consentGiven: !consent.consentGiven,
     };
 
+    // Store original state for rollback
+    const originalConsent = consent;
+
     // Update local state immediately for better UX
     setConsents(prev =>
       prev.map(c => (c.id === consentId ? updatedConsent : c))
     );
 
-    // Send update to server
-    if (updatedConsent.consentGiven) {
-      await updateConsentMutation.mutateAsync(updatedConsent);
-    } else {
-      await withdrawConsentMutation.mutateAsync(consent.type);
+    try {
+      // Send update to server
+      if (updatedConsent.consentGiven) {
+        await updateConsentMutation.mutateAsync(updatedConsent);
+      } else {
+        await withdrawConsentMutation.mutateAsync(consent.type);
+      }
+    } catch (error) {
+      // Rollback local state on server error
+      setConsents(prev =>
+        prev.map(c => (c.id === consentId ? originalConsent : c))
+      );
+      
+      // Error handling is already done by the mutation's onError callback
+      // So we don't need to show additional toasts here
     }
   };
 

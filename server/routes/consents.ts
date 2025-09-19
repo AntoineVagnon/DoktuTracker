@@ -22,8 +22,9 @@ router.get('/consents/:userId', isAuthenticated, async (req, res) => {
     const { userId } = req.params;
     
     // Authorization: Users can only access their own consent data
-    const authenticatedUserId = (req as any).user?.id;
-    if (!authenticatedUserId || authenticatedUserId !== parseInt(userId)) {
+    const authenticatedUserId = Number((req as any).user?.id);
+    const requestedUserId = Number(userId);
+    if (!authenticatedUserId || authenticatedUserId !== requestedUserId) {
       return res.status(403).json({ error: 'Access denied: Can only access your own consent data' });
     }
     
@@ -56,8 +57,9 @@ router.post('/consents/:userId', isAuthenticated, async (req, res) => {
     const { userId } = req.params;
     
     // Authorization: Users can only submit consent for themselves
-    const authenticatedUserId = (req as any).user?.id;
-    if (!authenticatedUserId || authenticatedUserId !== parseInt(userId)) {
+    const authenticatedUserId = Number((req as any).user?.id);
+    const requestedUserId = Number(userId);
+    if (!authenticatedUserId || authenticatedUserId !== requestedUserId) {
       return res.status(403).json({ error: 'Access denied: Can only submit consent for yourself' });
     }
     const validatedData = consentSubmissionSchema.parse(req.body);
@@ -123,8 +125,9 @@ router.post('/consents/:userId/withdraw', isAuthenticated, async (req, res) => {
     const { userId } = req.params;
     
     // Authorization: Users can only withdraw their own consent
-    const authenticatedUserId = (req as any).user?.id;
-    if (!authenticatedUserId || authenticatedUserId !== parseInt(userId)) {
+    const authenticatedUserId = Number((req as any).user?.id);
+    const requestedUserId = Number(userId);
+    if (!authenticatedUserId || authenticatedUserId !== requestedUserId) {
       return res.status(403).json({ error: 'Access denied: Can only withdraw your own consent' });
     }
     const { consentType } = req.body;
@@ -167,8 +170,9 @@ router.get('/consents/:userId/history', isAuthenticated, async (req, res) => {
     const { userId } = req.params;
     
     // Authorization: Users can only access their own consent history
-    const authenticatedUserId = (req as any).user?.id;
-    if (!authenticatedUserId || authenticatedUserId !== parseInt(userId)) {
+    const authenticatedUserId = Number((req as any).user?.id);
+    const requestedUserId = Number(userId);
+    if (!authenticatedUserId || authenticatedUserId !== requestedUserId) {
       return res.status(403).json({ error: 'Access denied: Can only access your own consent history' });
     }
     
@@ -191,8 +195,9 @@ router.get('/gdpr/processing-records/:userId', isAuthenticated, async (req, res)
     const { userId } = req.params;
     
     // Authorization: Users can only access their own GDPR records
-    const authenticatedUserId = (req as any).user?.id;
-    if (!authenticatedUserId || authenticatedUserId !== parseInt(userId)) {
+    const authenticatedUserId = Number((req as any).user?.id);
+    const requestedUserId = Number(userId);
+    if (!authenticatedUserId || authenticatedUserId !== requestedUserId) {
       return res.status(403).json({ error: 'Access denied: Can only access your own GDPR records' });
     }
     
