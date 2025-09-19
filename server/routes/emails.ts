@@ -4,8 +4,8 @@ import { isAuthenticated } from '../supabaseAuth';
 import { EmailService } from '../emailService';
 import { getTemplate } from '../services/emailTemplates';
 import { db } from '../db';
-import { appointments, users, doctors } from '@shared/schema';
-import { eq, and, gte, lt, or } from 'drizzle-orm';
+import { appointments, users, doctors, notificationQueue, emailNotifications } from '@shared/schema';
+import { eq, and, gte, lt, or, desc, count, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 // Admin authorization middleware
@@ -22,10 +22,10 @@ const requireAdmin = async (req: any, res: any, next: any) => {
 
 const router = Router();
 
-// Validation schemas - only use existing templates
+// Validation schemas - support new notification template trigger codes
 const testEmailSchema = z.object({
   email: z.string().email('Invalid email address'),
-  type: z.enum(['welcome_free_credit']).default('welcome_free_credit')
+  type: z.enum(['ACCOUNT_REG_SUCCESS', 'APPOINTMENT_CONFIRMED', 'APPOINTMENT_REMINDER_24H', 'APPOINTMENT_CANCELLED', 'HEALTH_PROFILE_INCOMPLETE', 'welcome_free_credit']).default('ACCOUNT_REG_SUCCESS')
 });
 
 // POST /api/emails/test
@@ -174,6 +174,72 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
     res.status(500).json({
       success: false,
       message: 'Failed to send reminder emails: ' + error.message
+    });
+  }
+});
+
+// GET /api/admin/notification-queue - Get notification queue status
+router.get('/admin/notification-queue', isAuthenticated, requireAdmin, async (req, res) => {
+  try {
+    // Get notification queue counts by status
+    const queueCounts = await db
+      .select({
+        status: notificationQueue.status,
+        count: count()
+      })
+      .from(notificationQueue)
+      .groupBy(notificationQueue.status);
+
+    // Transform results into an object with counts
+    const statusCounts = {
+      pending: 0,
+      processing: 0,
+      completed: 0,
+      failed: 0
+    };
+
+    queueCounts.forEach(({ status, count: statusCount }) => {
+      if (status && status in statusCounts) {
+        (statusCounts as any)[status] = Number(statusCount);
+      }
+    });
+
+    res.json(statusCounts);
+  } catch (error: any) {
+    console.error('Error fetching notification queue status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch notification queue status: ' + error.message
+    });
+  }
+});
+
+// GET /api/admin/email-logs - Get recent email activity
+router.get('/admin/email-logs', isAuthenticated, requireAdmin, async (req, res) => {
+  try {
+    // Get recent email notifications with user details
+    const recentEmails = await db
+      .select({
+        id: emailNotifications.id,
+        recipient_email: users.email,
+        trigger_code: emailNotifications.triggerCode,
+        status: emailNotifications.status,
+        created_at: emailNotifications.createdAt,
+        sent_at: emailNotifications.sentAt,
+        error_message: emailNotifications.errorMessage,
+        retry_count: emailNotifications.retryCount
+      })
+      .from(emailNotifications)
+      .innerJoin(users, eq(emailNotifications.userId, users.id))
+      .orderBy(desc(emailNotifications.createdAt))
+      .limit(50);
+
+    res.json(recentEmails);
+  } catch (error: any) {
+    console.error('Error fetching email logs:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch email logs: ' + error.message
     });
   }
 });

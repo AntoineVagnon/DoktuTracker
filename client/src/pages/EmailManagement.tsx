@@ -6,15 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Mail, Send, Clock, CheckCircle, AlertCircle, Users } from "lucide-react";
+import { Mail, Send, Clock, CheckCircle, AlertCircle, Users, Database, Activity, RefreshCw } from "lucide-react";
 
 export default function EmailManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [testEmail, setTestEmail] = useState("");
-  const [testEmailType, setTestEmailType] = useState("welcome_free_credit");
+  const [testEmailType, setTestEmailType] = useState("ACCOUNT_REG_SUCCESS");
 
   // Test email mutation
   const testEmailMutation = useMutation({
@@ -115,7 +116,11 @@ export default function EmailManagement() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="welcome_free_credit">Welcome Email</SelectItem>
+                  <SelectItem value="ACCOUNT_REG_SUCCESS">Welcome Email</SelectItem>
+                  <SelectItem value="APPOINTMENT_CONFIRMED">Booking Confirmation</SelectItem>
+                  <SelectItem value="APPOINTMENT_REMINDER_24H">24h Appointment Reminder</SelectItem>
+                  <SelectItem value="APPOINTMENT_CANCELLED">Cancellation Confirmation</SelectItem>
+                  <SelectItem value="HEALTH_PROFILE_INCOMPLETE">Profile Reminder</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -124,6 +129,7 @@ export default function EmailManagement() {
               onClick={() => testEmailMutation.mutate({ email: testEmail, type: testEmailType })}
               disabled={!testEmail || testEmailMutation.isPending}
               className="w-full"
+              data-testid="button-send-test"
             >
               {testEmailMutation.isPending ? "Sending..." : "Send Test Email"}
             </Button>
@@ -174,6 +180,44 @@ export default function EmailManagement() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Notification Queue Status */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Database className="h-5 w-5" />
+              <span>Notification Queue Status</span>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ['/api/admin/notification-queue'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/admin/email-logs'] });
+              }}
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <NotificationQueueStatus />
+        </CardContent>
+      </Card>
+
+      {/* Recent Email Activity */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Activity className="h-5 w-5" />
+            <span>Recent Email Activity</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RecentEmailActivity />
+        </CardContent>
+      </Card>
 
       {/* Email Templates Overview */}
       <Card>
@@ -244,6 +288,86 @@ export default function EmailManagement() {
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// Notification Queue Status Component
+function NotificationQueueStatus() {
+  const { data: queueStatus, isLoading } = useQuery({
+    queryKey: ['/api/admin/notification-queue'],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  if (isLoading) {
+    return <div className="text-sm text-muted-foreground">Loading queue status...</div>;
+  }
+
+  const pendingCount = queueStatus?.pending || 0;
+  const processingCount = queueStatus?.processing || 0;
+  const failedCount = queueStatus?.failed || 0;
+  const completedCount = queueStatus?.completed || 0;
+
+  return (
+    <div className="grid gap-4 md:grid-cols-4">
+      <div className="text-center p-4 bg-yellow-50 rounded-lg">
+        <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
+        <div className="text-sm text-yellow-700">Pending</div>
+      </div>
+      <div className="text-center p-4 bg-blue-50 rounded-lg">
+        <div className="text-2xl font-bold text-blue-600">{processingCount}</div>
+        <div className="text-sm text-blue-700">Processing</div>
+      </div>
+      <div className="text-center p-4 bg-red-50 rounded-lg">
+        <div className="text-2xl font-bold text-red-600">{failedCount}</div>
+        <div className="text-sm text-red-700">Failed</div>
+      </div>
+      <div className="text-center p-4 bg-green-50 rounded-lg">
+        <div className="text-2xl font-bold text-green-600">{completedCount}</div>
+        <div className="text-sm text-green-700">Completed</div>
+      </div>
+    </div>
+  );
+}
+
+// Recent Email Activity Component
+function RecentEmailActivity() {
+  const { data: recentEmails, isLoading } = useQuery({
+    queryKey: ['/api/admin/email-logs'],
+    refetchInterval: 60000, // Refresh every minute
+  });
+
+  if (isLoading) {
+    return <div className="text-sm text-muted-foreground">Loading recent activity...</div>;
+  }
+
+  if (!recentEmails || recentEmails.length === 0) {
+    return <div className="text-sm text-muted-foreground">No recent email activity</div>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {recentEmails.slice(0, 10).map((email: any) => (
+        <div key={email.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center space-x-3">
+            <Mail className="h-4 w-4 text-gray-500" />
+            <div>
+              <div className="font-medium text-sm">{email.recipient_email}</div>
+              <div className="text-xs text-muted-foreground">{email.trigger_code}</div>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Badge 
+              variant={email.status === 'sent' ? 'default' : email.status === 'failed' ? 'destructive' : 'secondary'}
+            >
+              {email.status}
+            </Badge>
+            <div className="text-xs text-muted-foreground">
+              {new Date(email.created_at).toLocaleString()}
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
