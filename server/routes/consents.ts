@@ -3,6 +3,7 @@ import { db } from '../db';
 import { userConsents, gdprDataProcessingRecords } from '@shared/schema';
 import { eq, and, isNull, desc } from 'drizzle-orm';
 import { z } from 'zod';
+import { authenticateToken } from '../middleware/security';
 
 const router = Router();
 
@@ -16,9 +17,14 @@ const consentSubmissionSchema = z.object({
 });
 
 // Get current consents for a user
-router.get('/api/consents/:userId', async (req, res) => {
+router.get('/consents/:userId', authenticateToken, async (req, res) => {
   try {
     const { userId } = req.params;
+    
+    // Authorization: Users can only access their own consent data
+    if ((req as any).user.id !== parseInt(userId)) {
+      return res.status(403).json({ error: 'Access denied: Can only access your own consent data' });
+    }
     
     // Get latest consent for each type
     const consents = await db
@@ -40,26 +46,45 @@ router.get('/api/consents/:userId', async (req, res) => {
 });
 
 // Submit new consent
-router.post('/api/consents/:userId', async (req, res) => {
+router.post('/consents/:userId', authenticateToken, async (req, res) => {
   try {
+    console.log('🔍 CONSENT API DEBUG: Starting consent submission');
+    console.log('🔍 CONSENT API DEBUG: User ID:', req.params.userId);
+    console.log('🔍 CONSENT API DEBUG: Request body:', req.body);
+    
     const { userId } = req.params;
+    
+    // Authorization: Users can only submit consent for themselves
+    if ((req as any).user.id !== parseInt(userId)) {
+      return res.status(403).json({ error: 'Access denied: Can only submit consent for yourself' });
+    }
     const validatedData = consentSubmissionSchema.parse(req.body);
     
+    console.log('🔍 CONSENT API DEBUG: Validated data:', validatedData);
+    
     // Get user's IP and user agent for audit trail
-    const ipAddress = req.headers['x-forwarded-for'] as string || req.connection.remoteAddress || '';
+    const ipAddress = req.ip || req.connection.remoteAddress || '';
     const userAgent = req.headers['user-agent'] || '';
+    
+    console.log('🔍 CONSENT API DEBUG: IP address:', ipAddress);
+    
+    const insertData = {
+      userId: parseInt(userId),
+      ...validatedData,
+      ipAddress,
+      userAgent,
+      consentDate: new Date(),
+    };
+    
+    console.log('🔍 CONSENT API DEBUG: Insert data:', insertData);
     
     // Insert new consent record
     const [newConsent] = await db
       .insert(userConsents)
-      .values({
-        userId: parseInt(userId),
-        ...validatedData,
-        ipAddress,
-        userAgent,
-        consentDate: new Date(),
-      })
+      .values(insertData)
       .returning();
+      
+    console.log('🔍 CONSENT API DEBUG: New consent created:', newConsent);
     
     // If this is health data processing consent, create GDPR processing record
     if (validatedData.consentType === 'health_data_processing' && validatedData.consentGiven) {
@@ -91,9 +116,14 @@ router.post('/api/consents/:userId', async (req, res) => {
 });
 
 // Withdraw consent
-router.post('/api/consents/:userId/withdraw', async (req, res) => {
+router.post('/consents/:userId/withdraw', authenticateToken, async (req, res) => {
   try {
     const { userId } = req.params;
+    
+    // Authorization: Users can only withdraw their own consent
+    if ((req as any).user.id !== parseInt(userId)) {
+      return res.status(403).json({ error: 'Access denied: Can only withdraw your own consent' });
+    }
     const { consentType } = req.body;
     
     // Find the active consent
@@ -118,7 +148,6 @@ router.post('/api/consents/:userId/withdraw', async (req, res) => {
       .update(userConsents)
       .set({ 
         consentWithdrawnDate: new Date(),
-        updatedAt: new Date(),
       })
       .where(eq(userConsents.id, activeConsent.id));
     
@@ -130,9 +159,14 @@ router.post('/api/consents/:userId/withdraw', async (req, res) => {
 });
 
 // Get consent history for a user
-router.get('/api/consents/:userId/history', async (req, res) => {
+router.get('/consents/:userId/history', authenticateToken, async (req, res) => {
   try {
     const { userId } = req.params;
+    
+    // Authorization: Users can only access their own consent history
+    if ((req as any).user.id !== parseInt(userId)) {
+      return res.status(403).json({ error: 'Access denied: Can only access your own consent history' });
+    }
     
     const history = await db
       .select()
@@ -148,9 +182,14 @@ router.get('/api/consents/:userId/history', async (req, res) => {
 });
 
 // Get GDPR processing records
-router.get('/api/gdpr/processing-records/:userId', async (req, res) => {
+router.get('/gdpr/processing-records/:userId', authenticateToken, async (req, res) => {
   try {
     const { userId } = req.params;
+    
+    // Authorization: Users can only access their own GDPR records
+    if ((req as any).user.id !== parseInt(userId)) {
+      return res.status(403).json({ error: 'Access denied: Can only access your own GDPR records' });
+    }
     
     const records = await db
       .select()
