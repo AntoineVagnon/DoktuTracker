@@ -135,7 +135,7 @@ export function ConsentManager({ userId, onConsentUpdate }: ConsentManagerProps)
         );
         return {
           ...config,
-          consentGiven: userConsent?.consentGiven || false,
+          consentGiven: userConsent?.consentGiven ?? false,
         };
       });
       setConsents(updatedConsents);
