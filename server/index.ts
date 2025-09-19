@@ -3,6 +3,9 @@ import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+// Import email processor to start it automatically
+import "./services/emailProcessor";
+
 const app = express();
 app.set("trust proxy", 1); // Trust first proxy (required for rate limiting behind proxy/load balancer)
 

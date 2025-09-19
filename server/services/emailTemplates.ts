@@ -584,6 +584,89 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
   doctor_upcoming_1h: (data) => ({
     subject: "Upcoming consultation",
     html: `You have a consultation with ${data.patient_name} in 1 hour.`
+  }),
+
+  // Universal Notification System templates
+  account_registration_success: (data) => ({
+    subject: "Welcome to Doktu – Your Health Advisory Platform",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <p>Dear ${data.first_name || 'Patient'},</p>
+        
+        <p>Welcome to Doktu! We're excited to have you join our health advisory platform.</p>
+        
+        <p>You can now book consultations with trusted doctors from various specialties – anytime, from anywhere.</p>
+        
+        <p>To get the most out of your experience:</p>
+        <ul>
+          <li>Complete your health profile now (takes less than 5 minutes).</li>
+          <li>Upload any relevant medical records.</li>
+          <li>Choose your preferred doctor and consultation time.</li>
+        </ul>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.VITE_APP_URL}/dashboard" 
+             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
+            Complete My Health Profile
+          </a>
+        </div>
+        
+        <p>Need help getting started? Our support team is here for you.</p>
+        
+        <p>Thank you for trusting Doktu.</p>
+        
+        <p>Warm regards,<br>Doktu Team</p>
+      </div>
+    `
+  }),
+
+  account_email_verification: (data) => ({
+    subject: "Please verify your Doktu account",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <p>Dear ${data.first_name || 'Patient'},</p>
+        
+        <p>Please click the link below to verify your email address and complete your Doktu account setup:</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${data.verification_link}" 
+             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
+            Verify Email Address
+          </a>
+        </div>
+        
+        <p>If you didn't create a Doktu account, please ignore this email.</p>
+        
+        <p>Best regards,<br>Doktu Team</p>
+      </div>
+    `
+  }),
+
+  health_profile_incomplete: (data) => ({
+    subject: "Complete your health profile – it takes just 5 minutes",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <p>Dear ${data.first_name || 'Patient'},</p>
+        
+        <p>We noticed your health profile is ${data.completion_percentage || '0'}% complete. Taking a few minutes to complete it will help your doctors provide better care.</p>
+        
+        <p><strong>What's missing:</strong></p>
+        <ul>
+          ${data.missing_fields ? data.missing_fields.map(field => `<li>${field}</li>`).join('') : '<li>Basic health information</li>'}
+        </ul>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.VITE_APP_URL}/dashboard" 
+             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
+            Complete Profile Now
+          </a>
+        </div>
+        
+        <p>A complete profile helps doctors understand your health better and provide more personalized care.</p>
+        
+        <p>Best regards,<br>Doktu Team</p>
+      </div>
+    `
   })
 };
 
@@ -618,7 +701,11 @@ function getRequiredFields(templateKey: string): string[] {
     doctor_no_show_patient: ["patient_first_name", "doctor_name"],
     sms_doctor_10m: ["short_link"],
     push_patient_5m: ["doctor_name"],
-    doctor_upcoming_1h: ["patient_name"]
+    doctor_upcoming_1h: ["patient_name"],
+    // Universal Notification System templates
+    account_registration_success: ["first_name"],
+    account_email_verification: ["first_name", "verification_link"],
+    health_profile_incomplete: ["first_name"]
   };
   
   return fieldMap[templateKey] || [];

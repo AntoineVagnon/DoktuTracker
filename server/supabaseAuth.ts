@@ -277,17 +277,27 @@ export async function setupSupabaseAuth(app: Express) {
         
         console.log('User created/updated:', user);
 
-        // 📧 SEND WELCOME EMAIL AFTER SUCCESSFUL REGISTRATION
+        // 📧 SCHEDULE WELCOME EMAIL USING UNIVERSAL NOTIFICATION SYSTEM
         try {
-          await emailService.sendWelcomeEmail({
-            email: user.email,
-            firstName: user.firstName ?? firstName ?? 'Patient',
-            userType: 'patient'
+          const { UniversalNotificationService, TriggerCode } = await import('./services/notificationService');
+          const notificationService = new UniversalNotificationService();
+          
+          await notificationService.scheduleNotification({
+            userId: user.id,
+            triggerCode: TriggerCode.ACCOUNT_REG_SUCCESS,
+            scheduledFor: new Date(), // Send immediately
+            mergeData: {
+              first_name: user.firstName ?? firstName ?? 'Patient'
+            },
+            userContext: {
+              ipAddress: req.ip,
+              userAgent: req.get('User-Agent')
+            }
           });
-          console.log(`📧 Welcome email sent to ${user.email}`);
+          console.log(`📧 Welcome email scheduled for ${user.email}`);
         } catch (emailError) {
-          console.error('📧 Failed to send welcome email:', emailError);
-          // Don't fail registration if email sending fails
+          console.error('📧 Failed to schedule welcome email:', emailError);
+          // Don't fail registration if email scheduling fails
         }
 
         // Store session if user is confirmed
