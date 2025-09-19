@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { isAuthenticated } from '../supabaseAuth';
-import { EmailService } from '../emailService';
+import { emailService } from '../emailService';
 import { getTemplate } from '../services/emailTemplates';
 import { db } from '../db';
 import { appointments, users, doctors, notificationQueue, emailNotifications } from '@shared/schema';
@@ -71,9 +71,8 @@ router.post('/test', isAuthenticated, requireAdmin, async (req, res) => {
     }
     
     // Send test email using generic EmailService
-    console.log('📧 Creating EmailService instance');
-    const emailService = new EmailService();
-    console.log('📧 Calling sendEmail with template');
+    console.log('📧 Using EmailService singleton');
+    console.log('📧 Calling sendGenericEmail with template');
     
     await emailService.sendGenericEmail({
       to: email,
@@ -170,7 +169,7 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
         // Use existing booking_reminder_24h template
         const template = getTemplate('booking_reminder_24h', templateData);
         
-        const emailService = new EmailService();
+        console.log('📧 Using EmailService singleton for reminder');
         await emailService.sendGenericEmail({
           to: appointment.patient.email || '',
           subject: template.subject,
