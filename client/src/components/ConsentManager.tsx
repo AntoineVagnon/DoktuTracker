@@ -86,15 +86,12 @@ export function ConsentManager({ userId, onConsentUpdate }: ConsentManagerProps)
   // Update consent mutation
   const updateConsentMutation = useMutation({
     mutationFn: async (consent: ConsentType) => {
-      return apiRequest(`/api/consents/${userId}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          consentType: consent.type,
-          legalBasis: consent.legalBasis,
-          consentGiven: consent.consentGiven,
-          documentVersion: consent.documentVersion,
-          purposes: consent.purposes,
-        }),
+      return apiRequest('POST', `/api/consents/${userId}`, {
+        consentType: consent.type,
+        legalBasis: consent.legalBasis,
+        consentGiven: consent.consentGiven,
+        documentVersion: consent.documentVersion,
+        purposes: consent.purposes,
       });
     },
     onSuccess: () => {
@@ -116,9 +113,8 @@ export function ConsentManager({ userId, onConsentUpdate }: ConsentManagerProps)
   // Withdraw consent mutation
   const withdrawConsentMutation = useMutation({
     mutationFn: async (consentType: string) => {
-      return apiRequest(`/api/consents/${userId}/withdraw`, {
-        method: 'POST',
-        body: JSON.stringify({ consentType }),
+      return apiRequest('POST', `/api/consents/${userId}/withdraw`, {
+        consentType,
       });
     },
     onSuccess: () => {
