@@ -78,9 +78,16 @@ export function ConsentManager({ userId, onConsentUpdate }: ConsentManagerProps)
   const queryClient = useQueryClient();
 
   // Fetch current consents
-  const { data: userConsents, isLoading } = useQuery({
+  const { data: userConsents, isLoading, error } = useQuery({
     queryKey: [`/api/consents/${userId}`],
     enabled: !!userId,
+    retry: (failureCount, error) => {
+      // Don't retry on authentication errors
+      if (error?.message?.includes('Access token required') || error?.message?.includes('Not authenticated')) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   // Update consent mutation
@@ -101,10 +108,18 @@ export function ConsentManager({ userId, onConsentUpdate }: ConsentManagerProps)
         description: "Your privacy preferences have been saved.",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      let message = "Failed to update consent. Please try again.";
+      let title = "Error";
+      
+      if (error?.message?.includes('Access token required') || error?.message?.includes('Not authenticated')) {
+        title = "Authentication Required";
+        message = "Please log in again to update your privacy preferences.";
+      }
+      
       toast({
-        title: "Error",
-        description: "Failed to update consent. Please try again.",
+        title,
+        description: message,
         variant: "destructive",
       });
     },
@@ -122,6 +137,21 @@ export function ConsentManager({ userId, onConsentUpdate }: ConsentManagerProps)
       toast({
         title: "Consent Withdrawn",
         description: "Your consent has been withdrawn successfully.",
+      });
+    },
+    onError: (error: any) => {
+      let message = "Failed to withdraw consent. Please try again.";
+      let title = "Error";
+      
+      if (error?.message?.includes('Access token required') || error?.message?.includes('Not authenticated')) {
+        title = "Authentication Required";
+        message = "Please log in again to update your privacy preferences.";
+      }
+      
+      toast({
+        title,
+        description: message,
+        variant: "destructive",
       });
     },
   });
@@ -190,11 +220,35 @@ export function ConsentManager({ userId, onConsentUpdate }: ConsentManagerProps)
     }
   };
 
+  // Check for authentication errors
+  const isAuthError = error?.message?.includes('Access token required') || error?.message?.includes('Not authenticated');
+  
   if (isLoading) {
     return (
       <Card>
         <CardContent className="p-6">
           <p className="text-center text-muted-foreground">Loading privacy preferences...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  if (isAuthError) {
+    return (
+      <Card>
+        <CardContent className="p-6 text-center space-y-4">
+          <div className="flex justify-center">
+            <AlertCircle className="h-12 w-12 text-amber-500" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-lg mb-2">Authentication Required</h3>
+            <p className="text-muted-foreground mb-4">
+              Your session has expired. Please log in again to manage your privacy preferences.
+            </p>
+            <Button onClick={() => window.location.href = '/login-form'}>
+              Log In Again
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
