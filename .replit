@@ -98,10 +98,6 @@ localPort = 43901
 externalPort = 3001
 
 [[ports]]
-localPort = 44273
-externalPort = 9000
-
-[[ports]]
 localPort = 45225
 externalPort = 8008
 
@@ -110,4 +106,4 @@ localPort = 46377
 externalPort = 5173
 
 [agent]
-integrations = ["javascript_stripe:1.0.0", "javascript_log_in_with_replit:1.0.0"]
+integrations = ["javascript_stripe:1.0.0", "javascript_log_in_with_replit:1.0.0", "javascript_sendgrid:1.0.0"]

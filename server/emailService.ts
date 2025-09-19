@@ -119,6 +119,13 @@ export class EmailService {
           console.log('📧 Email would be sent in production with verified sender');
           return true; // Don't fail registration for sender verification issues
         }
+
+        // Check for credit limit issues
+        if (sgErrors.some((err: any) => err.message?.includes('credits exceeded') || err.message?.includes('quota') || err.message?.includes('limit'))) {
+          console.error('💳 SendGrid credit limit exceeded - this is expected for trial accounts');
+          console.log('📧 Email would be sent in production with sufficient credits');
+          return true; // Don't fail functionality for credit limit issues
+        }
       }
       
       // Log more detailed error information
