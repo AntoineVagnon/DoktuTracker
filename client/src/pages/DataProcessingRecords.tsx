@@ -82,12 +82,9 @@ export default function DataProcessingRecords() {
   // Create data subject request
   const createRequestMutation = useMutation({
     mutationFn: async (request: Partial<DataSubjectRequest>) => {
-      return apiRequest(`/api/gdpr/subject-requests`, {
-        method: 'POST',
-        body: JSON.stringify({
-          ...request,
-          userId: user?.id
-        })
+      return apiRequest('POST', '/api/gdpr/subject-requests', {
+        ...request,
+        userId: user?.id
       });
     },
     onSuccess: () => {
@@ -109,10 +106,8 @@ export default function DataProcessingRecords() {
   // Export data
   const exportDataMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest(`/api/gdpr/export/${user?.id}`, {
-        method: 'GET'
-      });
-      return response;
+      const response = await apiRequest('GET', `/api/gdpr/export/${user?.id}`);
+      return response.json();
     },
     onSuccess: (data) => {
       // Create download link
