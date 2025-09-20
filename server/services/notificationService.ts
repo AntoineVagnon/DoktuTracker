@@ -392,7 +392,16 @@ export class UniversalNotificationService {
       console.log(`📬 Scheduling notification: ${triggerCode} for user ${userId}`);
       
       // 1. Get user details and preferences
-      const [user] = await db.select().from(users).where(eq(users.id, userId));
+      const [user] = await db
+        .select({
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          username: users.username
+        })
+        .from(users)
+        .where(eq(users.id, userId));
       if (!user) {
         throw new Error(`User ${userId} not found`);
       }
@@ -641,7 +650,9 @@ export class UniversalNotificationService {
     
     // Check notification queue for duplicate notifications
     const [existing] = await db
-      .select()
+      .select({
+        id: notificationQueue.id
+      })
       .from(notificationQueue)
       .where(and(
         eq(notificationQueue.userId, userId),
@@ -1109,7 +1120,10 @@ export class UniversalNotificationService {
     try {
       // Get user timezone for consistent logging
       const [prefs] = await db
-        .select()
+        .select({
+          userId: notificationPreferences.userId,
+          timezone: notificationPreferences.timezone
+        })
         .from(notificationPreferences)
         .where(eq(notificationPreferences.userId, params.userId));
 
@@ -1371,7 +1385,18 @@ export class UniversalNotificationService {
     try {
       // Process email notifications
       const pendingEmails = await db
-        .select()
+        .select({
+          id: emailNotifications.id,
+          userId: emailNotifications.userId,
+          appointmentId: emailNotifications.appointmentId,
+          triggerCode: emailNotifications.triggerCode,
+          templateKey: emailNotifications.templateKey,
+          mergeData: emailNotifications.mergeData,
+          status: emailNotifications.status,
+          scheduledFor: emailNotifications.scheduledFor,
+          priority: emailNotifications.priority,
+          retryCount: emailNotifications.retryCount
+        })
         .from(emailNotifications)
         .where(and(
           eq(emailNotifications.status, "pending"),
@@ -1389,7 +1414,15 @@ export class UniversalNotificationService {
 
       // Process SMS notifications
       const pendingSMS = await db
-        .select()
+        .select({
+          id: smsNotifications.id,
+          userId: smsNotifications.userId,
+          triggerCode: smsNotifications.triggerCode,
+          status: smsNotifications.status,
+          scheduledFor: smsNotifications.scheduledFor,
+          priority: smsNotifications.priority,
+          retryCount: smsNotifications.retryCount
+        })
         .from(smsNotifications)
         .where(and(
           eq(smsNotifications.status, "pending"),
@@ -1402,7 +1435,15 @@ export class UniversalNotificationService {
 
       // Process push notifications
       const pendingPush = await db
-        .select()
+        .select({
+          id: pushNotifications.id,
+          userId: pushNotifications.userId,
+          triggerCode: pushNotifications.triggerCode,
+          status: pushNotifications.status,
+          scheduledFor: pushNotifications.scheduledFor,
+          priority: pushNotifications.priority,
+          retryCount: pushNotifications.retryCount
+        })
         .from(pushNotifications)
         .where(and(
           eq(pushNotifications.status, "pending"),
@@ -1486,7 +1527,10 @@ export class UniversalNotificationService {
   private async scheduleSMS(params: any) {
     // Get user phone number
     const [user] = await db
-      .select()
+      .select({
+        id: users.id,
+        phone: users.phone
+      })
       .from(users)
       .where(eq(users.id, params.userId));
 
@@ -1512,7 +1556,13 @@ export class UniversalNotificationService {
     try {
       // Get user details
       const [user] = await db
-        .select()
+        .select({
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          username: users.username
+        })
         .from(users)
         .where(eq(users.id, notification.userId));
 

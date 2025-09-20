@@ -130,7 +130,34 @@ export function generateButtonGroup(buttons: ButtonData[]): string {
 // Format appointment datetime with timezone awareness
 export function formatAppointmentTime(utcDatetime: string, timezone: string): string {
   try {
-    const date = new Date(utcDatetime);
+    console.log(`📅 Formatting appointment time: ${utcDatetime} in timezone: ${timezone}`);
+    
+    // Ensure we have valid inputs
+    if (!utcDatetime || !timezone) {
+      console.error('Missing required parameters:', { utcDatetime, timezone });
+      return utcDatetime || 'Invalid date';
+    }
+    
+    // Parse the date with better error handling
+    let date: Date;
+    if (utcDatetime.includes('T') && utcDatetime.includes('Z')) {
+      // Already ISO format with Z suffix
+      date = new Date(utcDatetime);
+    } else if (utcDatetime.includes('T')) {
+      // ISO format but missing Z suffix - add it
+      date = new Date(utcDatetime + 'Z');
+    } else {
+      // Try to parse as-is
+      date = new Date(utcDatetime);
+    }
+    
+    // Validate the parsed date
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date after parsing:', { originalDate: utcDatetime, parsedDate: date });
+      return `Invalid date: ${utcDatetime}`;
+    }
+    
+    console.log(`📅 Parsed date successfully: ${date.toISOString()}`);
     
     // Format as: "Wednesday, Aug 20, 2025 · 13:00–13:30 (CEST)"
     const dayDate = formatInTimeZone(date, timezone, 'EEEE, MMM d, yyyy');
@@ -143,10 +170,13 @@ export function formatAppointmentTime(utcDatetime: string, timezone: string): st
     // Get timezone abbreviation
     const timezoneAbbr = formatInTimeZone(date, timezone, 'zzz');
     
-    return `${dayDate} · ${startTime}–${endTime} (${timezoneAbbr})`;
+    const result = `${dayDate} · ${startTime}–${endTime} (${timezoneAbbr})`;
+    console.log(`📅 Formatted result: ${result}`);
+    return result;
   } catch (error) {
     console.error('Error formatting appointment time:', error);
-    return utcDatetime; // Fallback to original string
+    console.error('Input parameters:', { utcDatetime, timezone });
+    return `Date formatting error: ${utcDatetime}`;
   }
 }
 
