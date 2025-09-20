@@ -895,16 +895,19 @@ export const inAppNotifications = pgTable("in_app_notifications", {
   dismissedAt: timestamp("dismissed_at"),
   
   // Suppression and scheduling
-  scheduledFor: timestamp("scheduled_for").notNull(),
+  scheduledFor: timestamp("scheduled_for").notNull().defaultNow(),
   expiresAt: timestamp("expires_at"),
   suppressedBy: uuid("suppressed_by"), // Higher priority notification that suppressed this
   
   // Metadata
-  mergeData: jsonb("merge_data"),
+  mergeData: jsonb("merge_data").notNull().default("{}"),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => [
+  index("idx_in_app_notifications_status_scheduled").on(table.status, table.scheduledFor), // For efficient polling
+  index("idx_in_app_notifications_delivered_at").on(table.deliveredAt), // For analytics
+]);
 
 // Notification audit log for comprehensive tracking
 export const notificationAuditLog = pgTable("notification_audit_log", {

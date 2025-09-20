@@ -1,4 +1,5 @@
 import { UniversalNotificationService } from './notificationService';
+import { getSendGridHealthCheck, isSendGridReady } from './emailService';
 
 // Email processor to handle queued notifications
 class EmailProcessor {
@@ -8,6 +9,23 @@ class EmailProcessor {
 
   constructor() {
     this.notificationService = new UniversalNotificationService();
+    // Perform initial SendGrid health check
+    this.performHealthCheck();
+  }
+
+  // Perform SendGrid health check with masked key logging
+  private performHealthCheck() {
+    const healthCheck = getSendGridHealthCheck();
+    console.log('🔍 SendGrid Health Check:', JSON.stringify(healthCheck, null, 2));
+    
+    if (healthCheck.status === 'unhealthy') {
+      console.error('❌ CRITICAL: SendGrid health check failed - email notifications may not work');
+      console.error('📧 Health check details:', healthCheck.details);
+    } else {
+      console.log('✅ SendGrid health check passed - notification system ready');
+    }
+    
+    return healthCheck;
   }
 
   // Start the email processor with periodic checking
@@ -18,6 +36,13 @@ class EmailProcessor {
     }
 
     console.log(`📧 Starting email processor (checking every ${intervalMinutes} minute(s))`);
+    
+    // Verify SendGrid is ready before starting
+    if (!isSendGridReady()) {
+      console.error('❌ CRITICAL: SendGrid not ready - cannot start email processor');
+      const healthCheck = this.performHealthCheck();
+      return;
+    }
     
     // Process immediately
     this.processEmails();
