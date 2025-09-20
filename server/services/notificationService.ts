@@ -1535,13 +1535,23 @@ export class UniversalNotificationService {
       // TODO: Restore full enhanceMergeData once schema issues are resolved
       console.log('📧 Creating minimal merge data for notification:', notification.id);
       const minimalMergeData = {
-        FirstName: user.firstName || "there",
+        // Universal template fields
+        first_name: user.firstName || "there",
         patient_first_name: user.firstName || "there",
         patient_full_name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
+        
+        // Legacy fields for backward compatibility
+        FirstName: user.firstName || "there",
         PlatformName: "Doktu",
         SupportEmail: "support@doktu.com",
         AppointmentDate: "Your upcoming appointment",
-        DoctorName: "Your doctor"
+        DoctorName: "Your doctor",
+        
+        // Additional common fields
+        verification_link: `${process.env.VITE_APP_URL}/verify-email`,
+        appointment_datetime_local: "Your upcoming appointment",
+        doctor_name: "Your doctor",
+        join_link: `${process.env.VITE_APP_URL}/consultation`
       };
 
       // Get email template with minimal data
