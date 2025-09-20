@@ -108,12 +108,15 @@ export default function DataProcessingRecords() {
       return response.json();
     },
     onSuccess: (data) => {
+      // Convert to CSV format
+      const csvContent = convertToCSV(data);
+      
       // Create download link
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `gdpr-data-export-${format(new Date(), 'yyyy-MM-dd')}.json`;
+      a.download = `gdpr-data-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -121,7 +124,7 @@ export default function DataProcessingRecords() {
       
       toast({
         title: "Data Exported",
-        description: "Your data has been exported successfully."
+        description: "Your data has been exported in CSV format for easy reading."
       });
     },
     onError: () => {
@@ -145,6 +148,100 @@ export default function DataProcessingRecords() {
       'article_9_2_h': 'Healthcare Provision'
     };
     return labels[basis] || basis;
+  };
+
+  // Convert export data to human-readable CSV format
+  const convertToCSV = (data: any) => {
+    const csvSections: string[] = [];
+    
+    // Header with export info
+    csvSections.push('PERSONAL DATA EXPORT');
+    csvSections.push(`Export Date,${new Date(data.exportDate).toLocaleString()}`);
+    csvSections.push('');
+    
+    // Personal Information Section
+    csvSections.push('=== PERSONAL INFORMATION ===');
+    csvSections.push('Field,Value');
+    csvSections.push(`User ID,${data.dataSubject.id || 'N/A'}`);
+    csvSections.push(`Email,${data.dataSubject.email || 'N/A'}`);
+    csvSections.push(`Name,"${((data.dataSubject.title || '') + ' ' + (data.dataSubject.firstName || '') + ' ' + (data.dataSubject.lastName || '')).trim()}"`);
+    csvSections.push(`Role,${data.dataSubject.role || 'N/A'}`);
+    csvSections.push(`Account Created,${data.dataSubject.createdAt ? new Date(data.dataSubject.createdAt).toLocaleString() : 'N/A'}`);
+    csvSections.push('');
+    
+    // Consents Section
+    csvSections.push('=== CONSENT RECORDS ===');
+    if (data.consents && data.consents.length > 0) {
+      csvSections.push('Consent Type,Status,Date Given,Legal Basis,Date Withdrawn');
+      data.consents.forEach((consent: any) => {
+        const dateGiven = consent.date ? new Date(consent.date).toLocaleString() : 'N/A';
+        const dateWithdrawn = consent.withdrawnDate ? new Date(consent.withdrawnDate).toLocaleString() : 'Not Withdrawn';
+        csvSections.push(`${consent.type},${consent.given ? 'Given' : 'Not Given'},${dateGiven},${consent.legalBasis || 'N/A'},${dateWithdrawn}`);
+      });
+    } else {
+      csvSections.push('No consent records found');
+    }
+    csvSections.push('');
+    
+    // Appointments Section
+    csvSections.push('=== APPOINTMENTS ===');
+    if (data.appointments && data.appointments.length > 0) {
+      csvSections.push('Appointment ID,Doctor ID,Date,Status,Price,Created At');
+      data.appointments.forEach((appointment: any) => {
+        const appointmentDate = appointment.date ? new Date(appointment.date).toLocaleString() : 'N/A';
+        const createdAt = appointment.createdAt ? new Date(appointment.createdAt).toLocaleString() : 'N/A';
+        csvSections.push(`${appointment.id},${appointment.doctorId},${appointmentDate},${appointment.status},${appointment.price ? '€' + appointment.price : 'N/A'},${createdAt}`);
+      });
+    } else {
+      csvSections.push('No appointments found');
+    }
+    csvSections.push('');
+    
+    // Health Profile Section
+    csvSections.push('=== HEALTH PROFILE ===');
+    if (data.healthProfile && data.healthProfile.length > 0) {
+      const profile = data.healthProfile[0]; // Usually one profile per user
+      csvSections.push('Field,Value');
+      csvSections.push(`Blood Type,${profile.bloodType || 'N/A'}`);
+      csvSections.push(`Allergies,"${profile.allergies ? profile.allergies.join('; ') : 'None listed'}"`);
+      csvSections.push(`Medications,"${profile.medications ? profile.medications.join('; ') : 'None listed'}"`);
+      csvSections.push(`Medical History,"${profile.medicalHistory || 'None provided'}"`);
+      csvSections.push(`Emergency Contact,${profile.emergencyContact || 'N/A'}`);
+      csvSections.push(`Last Updated,${profile.lastUpdated ? new Date(profile.lastUpdated).toLocaleString() : 'N/A'}`);
+    } else {
+      csvSections.push('No health profile information found');
+    }
+    csvSections.push('');
+    
+    // Processing Activities Section
+    csvSections.push('=== DATA PROCESSING ACTIVITIES ===');
+    if (data.processingActivities && data.processingActivities.length > 0) {
+      csvSections.push('Purpose,Legal Basis,Data Categories,Retention Period,Recipients,Created Date');
+      data.processingActivities.forEach((activity: any) => {
+        const categories = activity.categories ? JSON.stringify(activity.categories).replace(/"/g, "'") : 'N/A';
+        const recipients = activity.recipients ? JSON.stringify(activity.recipients).replace(/"/g, "'") : 'N/A';
+        const createdAt = activity.createdAt ? new Date(activity.createdAt).toLocaleString() : 'N/A';
+        csvSections.push(`"${activity.purpose}",${getLegalBasisLabel(activity.legalBasis)},"${categories}",${activity.retention},"${recipients}",${createdAt}`);
+      });
+    } else {
+      csvSections.push('No processing activities found');
+    }
+    csvSections.push('');
+    
+    // Data Requests Section
+    csvSections.push('=== DATA REQUESTS ===');
+    if (data.dataRequests && data.dataRequests.length > 0) {
+      csvSections.push('Request Type,Status,Description,Response,Submitted Date,Completed Date');
+      data.dataRequests.forEach((request: any) => {
+        const submittedAt = request.submittedAt ? new Date(request.submittedAt).toLocaleString() : 'N/A';
+        const completedAt = request.completedAt ? new Date(request.completedAt).toLocaleString() : 'Not Completed';
+        csvSections.push(`${request.type},${request.status},"${request.description || 'N/A'}","${request.response || 'No response yet'}",${submittedAt},${completedAt}`);
+      });
+    } else {
+      csvSections.push('No data requests found');
+    }
+    
+    return csvSections.join('\n');
   };
 
   const getRequestTypeLabel = (type: string) => {

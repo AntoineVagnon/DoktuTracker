@@ -49,8 +49,9 @@ export async function setupSupabaseAuth(app: Express) {
           console.log('DB User found:', { id: dbUser.id, email: dbUser.email, role: dbUser.role });
           
           // For test accounts with doktu domain, allow temporary bypass ONLY in development
-          const isTestAccount = email.includes('@doktu.') || email.includes('@test') || email.includes('@example');
-          const isDevelopment = process.env.NODE_ENV === 'development';
+          const testEmailAllowlist = process.env.TEST_EMAIL_ALLOWLIST ? process.env.TEST_EMAIL_ALLOWLIST.split(',') : [];
+          const isTestAccount = email.includes('@doktu.') || email.includes('@test') || email.includes('@example') || testEmailAllowlist.includes(email);
+          const isDevelopment = process.env.NODE_ENV !== 'production';
           const authTestBypass = process.env.AUTH_TEST_BYPASS === 'true';
           
           console.log('Is test account?', isTestAccount, 'for email:', email);
