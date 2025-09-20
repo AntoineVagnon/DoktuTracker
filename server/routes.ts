@@ -27,7 +27,7 @@ import {
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupSupabaseAuth, isAuthenticated, supabase } from "./supabaseAuth";
-import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema, doctorTimeSlots, membershipSubscriptions, membershipCycles, membershipAllowanceEvents, appointmentCoverage, appointments } from "@shared/schema";
+import { insertDoctorSchema, insertTimeSlotSchema, insertAppointmentSchema, insertReviewSchema, insertDocumentUploadSchema, insertHealthProfileSchema, doctorTimeSlots, membershipSubscriptions, membershipCycles, membershipAllowanceEvents, appointmentCoverage, appointments } from "@shared/schema";
 import { z } from "zod";
 import { registerDocumentLibraryRoutes } from "./routes/documentLibrary";
 import { setupSlotRoutes } from "./routes/slots";
@@ -3233,8 +3233,42 @@ export async function registerRoutes(app: Express): Promise<void> {
       // Get the authenticated user from req.user (set by isAuthenticated middleware)
       const user = req.user as any;
       
-      const profileData = {
-        ...req.body,
+      // Helper function to convert empty strings to null for date fields
+      const transformDataForDatabase = (data: any) => {
+        const transformed = { ...data };
+        
+        // Convert empty strings to null for date fields
+        if (transformed.dateOfBirth === '' || transformed.dateOfBirth === undefined) {
+          transformed.dateOfBirth = null;
+        }
+        
+        // Convert empty arrays to null or undefined based on schema requirements
+        if (Array.isArray(transformed.allergies) && transformed.allergies.length === 0) {
+          transformed.allergies = [];
+        }
+        if (Array.isArray(transformed.medications) && transformed.medications.length === 0) {
+          transformed.medications = [];
+        }
+        if (Array.isArray(transformed.medicalHistory) && transformed.medicalHistory.length === 0) {
+          transformed.medicalHistory = [];
+        }
+        
+        // Convert empty strings to null for optional string fields
+        const stringFields = ['gender', 'height', 'weight', 'bloodType', 'emergencyContactName', 'emergencyContactPhone'];
+        stringFields.forEach(field => {
+          if (transformed[field] === '') {
+            transformed[field] = null;
+          }
+        });
+        
+        return transformed;
+      };
+      
+      // Transform the request body
+      const transformedBody = transformDataForDatabase(req.body);
+      
+      const profileDataInput = {
+        ...transformedBody,
         patientId: user.id, // Use user.id from the authentication middleware
         completionScore: 100, // Mark as complete
         profileStatus: 'complete',
@@ -3243,7 +3277,22 @@ export async function registerRoutes(app: Express): Promise<void> {
       };
 
       console.log('Creating health profile with patientId:', user.id);
-      const healthProfile = await storage.createHealthProfile(profileData);
+      console.log('Profile data before validation:', profileDataInput);
+      
+      // Validate the data using Zod schema
+      let validatedProfileData;
+      try {
+        validatedProfileData = insertHealthProfileSchema.parse(profileDataInput);
+        console.log('✅ Health profile data validation successful');
+      } catch (validationError: any) {
+        console.error('❌ Health profile validation failed:', validationError);
+        return res.status(400).json({ 
+          message: "Invalid health profile data", 
+          errors: validationError.errors || validationError.message 
+        });
+      }
+      
+      const healthProfile = await storage.createHealthProfile(validatedProfileData);
       res.json(healthProfile);
     } catch (error) {
       console.error("Error creating health profile:", error);
@@ -3254,8 +3303,43 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.put("/api/health-profile/:id", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const profileData = {
-        ...req.body,
+      
+      // Helper function to convert empty strings to null for date fields
+      const transformDataForDatabase = (data: any) => {
+        const transformed = { ...data };
+        
+        // Convert empty strings to null for date fields
+        if (transformed.dateOfBirth === '' || transformed.dateOfBirth === undefined) {
+          transformed.dateOfBirth = null;
+        }
+        
+        // Convert empty arrays to null or undefined based on schema requirements
+        if (Array.isArray(transformed.allergies) && transformed.allergies.length === 0) {
+          transformed.allergies = [];
+        }
+        if (Array.isArray(transformed.medications) && transformed.medications.length === 0) {
+          transformed.medications = [];
+        }
+        if (Array.isArray(transformed.medicalHistory) && transformed.medicalHistory.length === 0) {
+          transformed.medicalHistory = [];
+        }
+        
+        // Convert empty strings to null for optional string fields
+        const stringFields = ['gender', 'height', 'weight', 'bloodType', 'emergencyContactName', 'emergencyContactPhone'];
+        stringFields.forEach(field => {
+          if (transformed[field] === '') {
+            transformed[field] = null;
+          }
+        });
+        
+        return transformed;
+      };
+      
+      // Transform the request body
+      const transformedBody = transformDataForDatabase(req.body);
+      
+      const profileDataInput = {
+        ...transformedBody,
         patientId: user.id,
         profileStatus: 'complete',
         completionScore: 100,
@@ -3264,16 +3348,30 @@ export async function registerRoutes(app: Express): Promise<void> {
       };
       
       console.log('Updating health profile for user ID:', user.id, 'with ID:', req.params.id);
+      console.log('Profile data before validation:', profileDataInput);
+      
+      // Validate the data using Zod schema
+      let validatedProfileData;
+      try {
+        validatedProfileData = insertHealthProfileSchema.parse(profileDataInput);
+        console.log('✅ Health profile data validation successful');
+      } catch (validationError: any) {
+        console.error('❌ Health profile validation failed:', validationError);
+        return res.status(400).json({ 
+          message: "Invalid health profile data", 
+          errors: validationError.errors || validationError.message 
+        });
+      }
       
       try {
         // Try to update first
-        const healthProfile = await storage.updateHealthProfile(req.params.id, profileData);
+        const healthProfile = await storage.updateHealthProfile(req.params.id, validatedProfileData);
         res.json(healthProfile);
       } catch (updateError: any) {
         // If update fails because profile doesn't exist, create a new one
         if (updateError.message.includes('not found')) {
           console.log('Profile not found, creating new health profile for user:', user.id);
-          const newHealthProfile = await storage.createHealthProfile(profileData);
+          const newHealthProfile = await storage.createHealthProfile(validatedProfileData);
           res.json(newHealthProfile);
         } else {
           throw updateError;
