@@ -4748,6 +4748,9 @@ export async function registerRoutes(app: Express): Promise<void> {
   // Register membership routes
   registerMembershipRoutes(app);
 
+  // Register document library routes
+  registerDocumentLibraryRoutes(app);
+
   // Apply global error handler (must be last)
   app.use(errorHandler);
   
