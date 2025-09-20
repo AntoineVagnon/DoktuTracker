@@ -777,14 +777,19 @@ export class UniversalNotificationService {
    * Enhance merge data with user context and system information
    */
   private async enhanceMergeData(mergeData: Record<string, any>, user: any, appointmentId?: number, prefs?: any): Promise<Record<string, any>> {
-    const enhanced = {
+    const enhanced: Record<string, any> = {
       ...mergeData,
-      // User context
+      // User context (both new format and template-expected format)
       FirstName: user.firstName || user.username?.split(" ")[0] || "there",
       LastName: user.lastName || "",
       FullName: `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username || "User",
       Email: user.email,
       Phone: user.phone,
+      
+      // Template-expected field names
+      patient_first_name: user.firstName || user.username?.split(" ")[0] || "there",
+      patient_last_name: user.lastName || "",
+      patient_full_name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username || "User",
       
       // System context
       PlatformName: "Doktu",
@@ -811,8 +816,6 @@ export class UniversalNotificationService {
           .select({
             id: appointments.id,
             appointmentDate: appointments.appointmentDate,
-            duration: appointments.duration,
-            consultationType: appointments.consultationType,
             doctorId: appointments.doctorId,
             zoomMeetingId: appointments.zoomMeetingId,
             zoomJoinUrl: appointments.zoomJoinUrl
@@ -825,8 +828,7 @@ export class UniversalNotificationService {
           const [doctor] = await db
             .select({
               firstName: users.firstName,
-              lastName: users.lastName,
-              specialization: doctors.specialization
+              lastName: users.lastName
             })
             .from(doctors)
             .innerJoin(users, eq(doctors.userId, users.id))
@@ -838,17 +840,29 @@ export class UniversalNotificationService {
           enhanced.AppointmentDate = formatInTimeZone(appointmentDate, userTimezone, "EEEE, MMMM d, yyyy");
           enhanced.AppointmentTime = formatInTimeZone(appointmentDate, userTimezone, "HH:mm");
           enhanced.AppointmentDateTime = formatInTimeZone(appointmentDate, userTimezone, "EEEE, MMMM d, yyyy 'at' HH:mm");
-          enhanced.Duration = `${appointment.duration} minutes`;
-          enhanced.ConsultationType = appointment.consultationType || "Video consultation";
+          enhanced.Duration = "30 minutes"; // Default duration
+          enhanced.ConsultationType = "Video consultation";
           enhanced.AppointmentURL = `/appointments/${appointmentId}`;
           enhanced.JoinLink = appointment.zoomJoinUrl || `/appointments/${appointmentId}/join`;
+          
+          // Template-expected appointment field names
+          enhanced.appointment_datetime_local = formatInTimeZone(appointmentDate, userTimezone, "EEEE, MMMM d, yyyy 'at' HH:mm");
+          enhanced.appointment_date_local = formatInTimeZone(appointmentDate, userTimezone, "EEEE, MMMM d, yyyy");
+          enhanced.appointment_time_local = formatInTimeZone(appointmentDate, userTimezone, "HH:mm");
+          enhanced.join_link = appointment.zoomJoinUrl || `/appointments/${appointmentId}/join`;
 
           if (doctor) {
             enhanced.DoctorName = `${doctor.firstName} ${doctor.lastName}`;
             enhanced.DoctorFirstName = doctor.firstName;
             enhanced.DoctorLastName = doctor.lastName;
-            enhanced.DoctorSpecialization = doctor.specialization;
+            enhanced.DoctorSpecialization = "Medical Doctor"; // Default specialization
             enhanced.DoctorProfileURL = `/doctors/${appointment.doctorId}`;
+            
+            // Template-expected doctor field names
+            enhanced.doctor_name = `${doctor.firstName} ${doctor.lastName}`;
+            enhanced.doctor_first_name = doctor.firstName;
+            enhanced.doctor_last_name = doctor.lastName;
+            enhanced.doctor_specialization = "Medical Doctor"; // Default specialization
           }
         }
       } catch (error) {
@@ -1490,8 +1504,15 @@ export class UniversalNotificationService {
         throw new Error("User email not found");
       }
 
-      // Get email template
-      const template = await getEmailTemplate(notification.templateKey, notification.mergeData);
+      // Enhance merge data with user context and appointment details
+      const enhancedMergeData = await this.enhanceMergeData(
+        notification.mergeData, 
+        user, 
+        notification.appointmentId
+      );
+
+      // Get email template with enhanced data
+      const template = await getEmailTemplate(notification.templateKey, enhancedMergeData);
       
       // Add .ics attachment if needed
       let attachments = [];
