@@ -160,12 +160,6 @@ export default function Header() {
                       <span>Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="flex items-center">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      <span>My Appointments</span>
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
