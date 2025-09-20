@@ -156,20 +156,7 @@ const TRIGGER_PRIORITY: Record<TriggerCode, number> = {
   [TriggerCode.GROWTH_REFERRAL_PROGRAM]: 15,
   [TriggerCode.GROWTH_FEATURE_ANNOUNCEMENT]: 13,
   [TriggerCode.GROWTH_SEASONAL_CAMPAIGN]: 12,
-  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: 10,
-
-  // Legacy mappings
-  [TriggerCode.BOOK_CONF]: 65,
-  [TriggerCode.REM_24H]: 80,
-  [TriggerCode.REM_1H_DOC]: 85,
-  [TriggerCode.REM_10M_DOC]: 85,
-  [TriggerCode.REM_5M_PAT]: 89,
-  [TriggerCode.RESCHED]: 60,
-  [TriggerCode.CANCEL]: 75,
-  [TriggerCode.SURVEY]: 30,
-  [TriggerCode.NO_SHOW]: 78,
-  [TriggerCode.FREE_CREDIT]: 57,
-  [TriggerCode.PROFILE_NEEDED]: 28
+  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: 10
 };
 
 // Template key mapping - maps trigger codes to email template identifiers
@@ -233,20 +220,7 @@ const TRIGGER_TEMPLATES: Record<TriggerCode, string> = {
   [TriggerCode.GROWTH_SEASONAL_CAMPAIGN]: "growth_seasonal_campaign",
   [TriggerCode.GROWTH_MEMBERSHIP_UPSELL]: "growth_membership_upsell",
   [TriggerCode.GROWTH_DOCTOR_RATING_REQUEST]: "growth_doctor_rating_request",
-  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: "growth_app_update_available",
-
-  // Legacy mappings
-  [TriggerCode.BOOK_CONF]: "booking_confirmation",
-  [TriggerCode.REM_24H]: "booking_reminder_24h",
-  [TriggerCode.REM_1H_DOC]: "booking_reminder_1h",
-  [TriggerCode.REM_10M_DOC]: "booking_reminder_1h",
-  [TriggerCode.REM_5M_PAT]: "booking_live_imminent",
-  [TriggerCode.RESCHED]: "booking_rescheduled",
-  [TriggerCode.CANCEL]: "booking_cancelled_doctor",
-  [TriggerCode.SURVEY]: "growth_survey_post_consultation",
-  [TriggerCode.NO_SHOW]: "booking_doctor_no_show",
-  [TriggerCode.FREE_CREDIT]: "payment_refund_issued",
-  [TriggerCode.PROFILE_NEEDED]: "health_profile_incomplete"
+  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: "growth_app_update_available"
 };
 
 // Category mapping for notification preferences
@@ -312,20 +286,7 @@ const TRIGGER_CATEGORIES: Record<TriggerCode, string> = {
   [TriggerCode.GROWTH_SEASONAL_CAMPAIGN]: "marketing_emails",
   [TriggerCode.GROWTH_MEMBERSHIP_UPSELL]: "marketing_emails",
   [TriggerCode.GROWTH_DOCTOR_RATING_REQUEST]: "life_cycle",
-  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: "life_cycle",
-
-  // Legacy mappings
-  [TriggerCode.BOOK_CONF]: "transactional",
-  [TriggerCode.REM_24H]: "appointment_reminders",
-  [TriggerCode.REM_1H_DOC]: "appointment_reminders",
-  [TriggerCode.REM_10M_DOC]: "appointment_reminders",
-  [TriggerCode.REM_5M_PAT]: "appointment_reminders",
-  [TriggerCode.RESCHED]: "transactional",
-  [TriggerCode.CANCEL]: "transactional",
-  [TriggerCode.SURVEY]: "life_cycle",
-  [TriggerCode.NO_SHOW]: "transactional",
-  [TriggerCode.FREE_CREDIT]: "transactional",
-  [TriggerCode.PROFILE_NEEDED]: "document_notifications"
+  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: "life_cycle"
 };
 
 // In-app notification configuration (which triggers should show banners/inbox)
@@ -354,12 +315,50 @@ const IN_APP_NOTIFICATION_CONFIG: Record<TriggerCode, { banner: boolean; inbox: 
   // Appointment changes
   [TriggerCode.BOOKING_RESCHEDULED]: { banner: true, inbox: true, style: "info", persistent: false },
   [TriggerCode.BOOKING_CANCELLED_DOCTOR]: { banner: true, inbox: true, style: "warning", persistent: false },
-  [TriggerCode.BOOKING_HOLD_EXPIRED]: { banner: true, inbox: true, style: "info", persistent: false },
 
   // Default: inbox only for most lifecycle/growth notifications
   [TriggerCode.GROWTH_ONBOARDING_WELCOME]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.GROWTH_ONBOARDING_PROFILE]: { banner: false, inbox: true, style: "info", persistent: false },
   [TriggerCode.GROWTH_FIRST_BOOKING_NUDGE]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.GROWTH_RE_ENGAGEMENT_30D]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.GROWTH_RE_ENGAGEMENT_90D]: { banner: false, inbox: true, style: "info", persistent: false },
   [TriggerCode.GROWTH_SURVEY_POST_CONSULTATION]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.GROWTH_REFERRAL_PROGRAM]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.GROWTH_FEATURE_ANNOUNCEMENT]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.GROWTH_SEASONAL_CAMPAIGN]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.GROWTH_MEMBERSHIP_UPSELL]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.GROWTH_DOCTOR_RATING_REQUEST]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: { banner: false, inbox: true, style: "info", persistent: false },
+
+  // Account & Security (missing ones)
+  [TriggerCode.ACCOUNT_EMAIL_VERIFY]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.ACCOUNT_PASSWORD_RESET]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.ACCOUNT_MFA_UPDATED]: { banner: true, inbox: true, style: "info", persistent: false },
+
+  // Health Profile & Documents (missing ones)
+  [TriggerCode.HEALTH_DOC_UPLOAD_FAILED]: { banner: true, inbox: true, style: "error", persistent: false },
+
+  // Booking & Appointments (missing ones)
+  [TriggerCode.BOOKING_HOLD_EXPIRED]: { banner: true, inbox: true, style: "warning", persistent: false },
+  [TriggerCode.BOOKING_REMINDER_24H]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.BOOKING_REMINDER_1H]: { banner: true, inbox: true, style: "info", persistent: false },
+  [TriggerCode.BOOKING_CANCELLED_PATIENT_EARLY]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.BOOKING_CANCELLED_PATIENT_LATE]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.BOOKING_DOCTOR_NO_SHOW]: { banner: true, inbox: true, style: "error", persistent: false },
+  [TriggerCode.BOOKING_PATIENT_NO_SHOW]: { banner: true, inbox: true, style: "warning", persistent: false },
+
+  // Membership & Payments (missing ones)
+  [TriggerCode.MEMBERSHIP_RENEWAL_UPCOMING]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.MEMBERSHIP_RENEWED]: { banner: true, inbox: true, style: "success", persistent: false },
+  [TriggerCode.MEMBERSHIP_CANCELLED]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.MEMBERSHIP_REACTIVATED]: { banner: true, inbox: true, style: "success", persistent: false },
+  [TriggerCode.MEMBERSHIP_MONTHLY_RESET]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.PAYMENT_RECEIPT]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.PAYMENT_REFUND_ISSUED]: { banner: true, inbox: true, style: "success", persistent: false },
+
+  // Calendar & Availability (missing ones)
+  [TriggerCode.CALENDAR_AVAILABILITY_UPDATED]: { banner: false, inbox: true, style: "info", persistent: false },
+  [TriggerCode.CALENDAR_CONFLICT_DETECTED]: { banner: true, inbox: true, style: "warning", persistent: false },
 };
 
 export class UniversalNotificationService {
@@ -441,8 +440,8 @@ export class UniversalNotificationService {
         membershipNotificationsEnabled: prefs.enabled !== false,
         marketingEmailsEnabled: false, // Default to false for marketing
         lifeCycleEnabled: prefs.enabled !== false,
-        timezone: prefs.timezone || "Europe/Paris",
-        locale: prefs.locale || "en"
+        timezone: "Europe/Paris", // Default timezone for EU telehealth platform
+        locale: "en" // Default locale
       };
       
       console.log(`📋 User ${userId} preferences:`, transformedPrefs);
@@ -545,14 +544,16 @@ export class UniversalNotificationService {
         scheduledNotifications.push({ type: 'email', id: emailId });
       }
 
-      if (channels.sms && user.phone) {
+      // Note: SMS functionality requires phone numbers to be added to user schema
+      // For now, skip SMS notifications as users table doesn't include phone numbers
+      if (channels.sms && false) { // Disabled until phone numbers are added to schema
         const smsId = await this.scheduleSMSNotification({
           userId,
           appointmentId,
           triggerCode,
           templateKey: TRIGGER_TEMPLATES[triggerCode],
           scheduledFor: adjustedScheduledFor,
-          phoneNumber: user.phone,
+          phoneNumber: "", // Would use user.phone when available
           mergeData: enhancedMergeData
         });
         scheduledNotifications.push({ type: 'sms', id: smsId });
@@ -1452,39 +1453,6 @@ export class UniversalNotificationService {
     }
   }
 
-  /**
-   * Get channels for a specific trigger
-   */
-  private getChannelsForTrigger(triggerCode: TriggerCode, preferences: any) {
-    const channels = { email: false, sms: false, push: false };
-
-    switch (triggerCode) {
-      case TriggerCode.BOOK_CONF:
-      case TriggerCode.REM_24H:
-      case TriggerCode.RESCHED:
-      case TriggerCode.CANCEL:
-      case TriggerCode.SURVEY:
-      case TriggerCode.NO_SHOW:
-      case TriggerCode.FREE_CREDIT:
-      case TriggerCode.PROFILE_NEEDED:
-        channels.email = preferences.emailEnabled;
-        break;
-      
-      case TriggerCode.REM_1H_DOC:
-        channels.push = preferences.pushEnabled;
-        break;
-      
-      case TriggerCode.REM_10M_DOC:
-        channels.sms = preferences.smsEnabled;
-        break;
-      
-      case TriggerCode.REM_5M_PAT:
-        channels.push = preferences.pushEnabled;
-        break;
-    }
-
-    return channels;
-  }
 
   /**
    * Check for duplicate notifications
