@@ -415,9 +415,25 @@ export class UniversalNotificationService {
           .where(eq(userNotificationPreferences.userId, userId));
       }
 
+      // Transform user preferences from DB structure to expected format
+      const transformedPrefs = {
+        emailEnabled: prefs.channel === 'email' && prefs.enabled,
+        smsEnabled: prefs.channel === 'sms' && prefs.enabled,
+        pushEnabled: prefs.channel === 'push' && prefs.enabled,
+        appointmentRemindersEnabled: prefs.enabled !== false, // Default to true for transactional
+        documentNotificationsEnabled: prefs.enabled !== false,
+        membershipNotificationsEnabled: prefs.enabled !== false,
+        marketingEmailsEnabled: false, // Default to false for marketing
+        lifeCycleEnabled: prefs.enabled !== false,
+        timezone: prefs.timezone || "Europe/Paris",
+        locale: prefs.locale || "en"
+      };
+      
+      console.log(`📋 User ${userId} preferences:`, transformedPrefs);
+
       // 2. Check if notification is enabled for this category
       const category = TRIGGER_CATEGORIES[triggerCode];
-      if (!this.isNotificationEnabled(triggerCode, category, prefs)) {
+      if (!this.isNotificationEnabled(triggerCode, category, transformedPrefs)) {
         console.log(`🔕 Notification ${triggerCode} disabled for user ${userId} (category: ${category})`);
         await this.logAuditEvent({
           userId,
@@ -448,7 +464,7 @@ export class UniversalNotificationService {
       }
 
       // 4. Apply timezone-aware scheduling and quiet hours
-      const adjustedScheduledFor = await this.applyTimezoneAndQuietHours(scheduledFor, prefs, triggerCode);
+      const adjustedScheduledFor = await this.applyTimezoneAndQuietHours(scheduledFor, transformedPrefs, triggerCode);
 
       // 5. Check frequency caps
       const frequencyCheck = await this.checkFrequencyCaps(userId, triggerCode, category);
@@ -483,10 +499,10 @@ export class UniversalNotificationService {
       }
 
       // 7. Determine channels based on trigger type and user preferences
-      const channels = this.getChannelsForTrigger(triggerCode, prefs);
+      const channels = this.getChannelsForTrigger(triggerCode, transformedPrefs);
       
       // 8. Enhance merge data with user and system context
-      const enhancedMergeData = await this.enhanceMergeData(mergeData, user, appointmentId, prefs);
+      const enhancedMergeData = await this.enhanceMergeData(mergeData, user, appointmentId, transformedPrefs);
 
       console.log(`📡 Scheduling channels for ${triggerCode}:`, {
         email: channels.email,
