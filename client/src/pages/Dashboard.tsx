@@ -939,6 +939,31 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
+                              {/* Documentation */}
+                              <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="font-medium text-gray-900">Documentation</h4>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => setDocumentUploadOpen(true)}
+                                    className="flex items-center gap-2"
+                                    data-testid="button-view-document-library"
+                                  >
+                                    <FileText className="h-4 w-4" />
+                                    View Document Library
+                                  </Button>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-lg border">
+                                  <p className="text-sm text-gray-600 mb-2">
+                                    Manage your medical documents, test results, and other health-related files in one secure location.
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    Upload, download, and organize documents that can be shared with healthcare providers during consultations.
+                                  </p>
+                                </div>
+                              </div>
+
                               {/* Medical Information */}
                               {((healthProfile as any).allergies?.length || (healthProfile as any).medications?.length || (healthProfile as any).medicalHistory?.length) && (
                                 <div className="space-y-4">
@@ -1245,16 +1270,14 @@ export default function Dashboard() {
       />
 
       {/* Document Library Panel */}
-      {selectedAppointmentId && (
-        <DocumentLibraryPanel
-          isOpen={documentUploadOpen}
-          onClose={() => {
-            setDocumentUploadOpen(false);
-            setSelectedAppointmentId(null);
-          }}
-          appointmentId={selectedAppointmentId}
-        />
-      )}
+      <DocumentLibraryPanel
+        isOpen={documentUploadOpen}
+        onClose={() => {
+          setDocumentUploadOpen(false);
+          setSelectedAppointmentId(null);
+        }}
+        appointmentId={selectedAppointmentId || undefined}
+      />
 
       {/* Appointment Actions Modal */}
       <AppointmentActionsModal
