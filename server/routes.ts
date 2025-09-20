@@ -3384,16 +3384,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Document Routes with real database integration
-  app.get("/api/documents", isAuthenticated, async (req, res) => {
-    try {
-      const appointmentId = req.query.appointmentId ? parseInt(req.query.appointmentId as string) : undefined;
-      const documents = await storage.getDocuments(appointmentId);
-      res.json(documents);
-    } catch (error) {
-      console.error("Error fetching documents:", error);
-      res.status(500).json({ message: "Failed to fetch documents" });
-    }
-  });
+  // NOTE: GET /api/documents is handled in documentLibrary.ts with proper user filtering
 
   // NOTE: Document download route is handled in documentLibrary.ts to avoid duplication
 
