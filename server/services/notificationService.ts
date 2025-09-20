@@ -1390,16 +1390,10 @@ export class UniversalNotificationService {
     const now = new Date();
     
     try {
-      // Process email notifications - using only confirmed database fields
-      console.log('🔍 Attempting to fetch pending emails with minimal query...');
+      // Process email notifications - using simplified query to debug schema issues
+      console.log('🔍 Attempting to fetch pending emails with ultra-minimal query...');
       const pendingEmails = await db
-        .select({
-          id: emailNotifications.id,
-          userId: emailNotifications.userId,
-          triggerCode: emailNotifications.triggerCode,
-          status: emailNotifications.status,
-          retryCount: emailNotifications.retryCount
-        })
+        .select()
         .from(emailNotifications)
         .where(eq(emailNotifications.status, "pending"))
         .limit(5);
