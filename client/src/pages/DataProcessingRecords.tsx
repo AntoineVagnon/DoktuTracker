@@ -82,13 +82,11 @@ export default function DataProcessingRecords() {
   // Create data subject request
   const createRequestMutation = useMutation({
     mutationFn: async (request: Partial<DataSubjectRequest>) => {
-      return apiRequest('POST', '/api/gdpr/subject-requests', {
-        ...request,
-        userId: user?.id
-      });
+      return apiRequest('POST', '/api/gdpr/subject-requests', request);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/gdpr/subject-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/gdpr/subject-requests', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/gdpr/processing-records', user?.id] });
       toast({
         title: "Request Submitted",
         description: "Your data request has been submitted successfully."
@@ -106,7 +104,7 @@ export default function DataProcessingRecords() {
   // Export data
   const exportDataMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('GET', `/api/gdpr/export/${user?.id}`);
+      const response = await apiRequest('GET', '/api/gdpr/export');
       return response.json();
     },
     onSuccess: (data) => {
@@ -124,6 +122,13 @@ export default function DataProcessingRecords() {
       toast({
         title: "Data Exported",
         description: "Your data has been exported successfully."
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export your data. Please try again.",
+        variant: "destructive"
       });
     }
   });

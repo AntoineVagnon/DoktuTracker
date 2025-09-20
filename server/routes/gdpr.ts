@@ -10,26 +10,26 @@ import {
 } from '@shared/schema';
 import { eq, and, desc, isNull } from 'drizzle-orm';
 import { z } from 'zod';
+import { isAuthenticated } from '../supabaseAuth';
 
 const router = Router();
 
-// Schema for data subject requests
+// Schema for data subject requests (userId will be added server-side from session)
 const dataSubjectRequestSchema = z.object({
-  userId: z.number(),
   requestType: z.enum(['access', 'rectification', 'erasure', 'portability', 'restriction', 'objection']),
   description: z.string(),
   status: z.enum(['pending', 'in_progress', 'completed', 'rejected']).default('pending')
 });
 
 // Get processing records for a user
-router.get('/api/gdpr/processing-records/:userId', async (req, res) => {
+router.get('/api/gdpr/processing-records', isAuthenticated, async (req: any, res) => {
   try {
-    const { userId } = req.params;
+    const userId = parseInt(req.user.id);
     
     const records = await db
       .select()
       .from(gdprDataProcessingRecords)
-      .where(eq(gdprDataProcessingRecords.userId, parseInt(userId)))
+      .where(eq(gdprDataProcessingRecords.userId, userId))
       .orderBy(desc(gdprDataProcessingRecords.createdAt));
     
     res.json(records);
@@ -40,14 +40,14 @@ router.get('/api/gdpr/processing-records/:userId', async (req, res) => {
 });
 
 // Get data subject requests for a user
-router.get('/api/gdpr/subject-requests/:userId', async (req, res) => {
+router.get('/api/gdpr/subject-requests', isAuthenticated, async (req: any, res) => {
   try {
-    const { userId } = req.params;
+    const userId = parseInt(req.user.id);
     
     const requests = await db
       .select()
       .from(dataSubjectRequests)
-      .where(eq(dataSubjectRequests.userId, parseInt(userId)))
+      .where(eq(dataSubjectRequests.userId, userId))
       .orderBy(desc(dataSubjectRequests.createdAt));
     
     res.json(requests);
@@ -58,14 +58,16 @@ router.get('/api/gdpr/subject-requests/:userId', async (req, res) => {
 });
 
 // Create a new data subject request
-router.post('/api/gdpr/subject-requests', async (req, res) => {
+router.post('/api/gdpr/subject-requests', isAuthenticated, async (req: any, res) => {
   try {
     const validatedData = dataSubjectRequestSchema.parse(req.body);
+    const userId = parseInt(req.user.id);
     
     const [newRequest] = await db
       .insert(dataSubjectRequests)
       .values({
         ...validatedData,
+        userId: userId,
         createdAt: new Date(),
         updatedAt: new Date()
       })
@@ -95,41 +97,40 @@ router.post('/api/gdpr/subject-requests', async (req, res) => {
 });
 
 // Export user data (GDPR Article 20 - Right to data portability)
-router.get('/api/gdpr/export/:userId', async (req, res) => {
+router.get('/api/gdpr/export', isAuthenticated, async (req: any, res) => {
   try {
-    const { userId } = req.params;
-    const userIdNum = parseInt(userId);
+    const userId = parseInt(req.user.id);
     
     // Fetch all user data from various tables
     const [userData] = await db
       .select()
       .from(users)
-      .where(eq(users.id, userIdNum));
+      .where(eq(users.id, userId));
     
     const consentsData = await db
       .select()
       .from(userConsents)
-      .where(eq(userConsents.userId, userIdNum));
+      .where(eq(userConsents.userId, userId));
     
     const appointmentsData = await db
       .select()
       .from(appointments)
-      .where(eq(appointments.patientId, userIdNum));
+      .where(eq(appointments.patientId, userId));
     
     const healthProfileData = await db
       .select()
       .from(healthProfiles)
-      .where(eq(healthProfiles.userId, userIdNum));
+      .where(eq(healthProfiles.patientId, userId));
     
     const processingRecords = await db
       .select()
       .from(gdprDataProcessingRecords)
-      .where(eq(gdprDataProcessingRecords.userId, userIdNum));
+      .where(eq(gdprDataProcessingRecords.userId, userId));
     
     const subjectRequests = await db
       .select()
       .from(dataSubjectRequests)
-      .where(eq(dataSubjectRequests.userId, userIdNum));
+      .where(eq(dataSubjectRequests.userId, userId));
     
     // Compile all data into a structured format
     const exportData = {
@@ -148,7 +149,6 @@ router.get('/api/gdpr/export/:userId', async (req, res) => {
         given: c.consentGiven,
         date: c.consentDate,
         legalBasis: c.legalBasis,
-        purposes: c.purposes,
         withdrawnDate: c.consentWithdrawnDate
       })),
       appointments: appointmentsData.map(a => ({
@@ -157,15 +157,13 @@ router.get('/api/gdpr/export/:userId', async (req, res) => {
         date: a.appointmentDate,
         status: a.status,
         price: a.price,
-        type: a.type,
-        notes: a.notes,
         createdAt: a.createdAt
       })),
       healthProfile: healthProfileData.map(h => ({
         bloodType: h.bloodType,
         allergies: h.allergies,
         medications: h.medications,
-        conditions: h.chronicConditions,
+        medicalHistory: h.medicalHistory,
         emergencyContact: h.emergencyContactName,
         lastUpdated: h.updatedAt
       })),
@@ -198,10 +196,9 @@ router.get('/api/gdpr/export/:userId', async (req, res) => {
 });
 
 // Handle data erasure request (GDPR Article 17 - Right to erasure)
-router.post('/api/gdpr/erasure/:userId', async (req, res) => {
+router.post('/api/gdpr/erasure', isAuthenticated, async (req: any, res) => {
   try {
-    const { userId } = req.params;
-    const userIdNum = parseInt(userId);
+    const userId = parseInt(req.user.id); // Get from authenticated session, not URL param
     
     // In production, this would require additional verification
     // and would need to handle data that must be retained for legal reasons
@@ -215,7 +212,7 @@ router.post('/api/gdpr/erasure/:userId', async (req, res) => {
         lastName: 'USER',
         // Add a deletedAt timestamp if you have one
       })
-      .where(eq(users.id, userIdNum));
+      .where(eq(users.id, userId));
     
     // Log the erasure
     console.log(`Data erasure completed for user ${userId}`);
