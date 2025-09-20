@@ -1,0 +1,56 @@
+Feature: Patient Dashboard Onboarding Banner
+
+  As a logged-in patient,
+  I want to be gently reminded to complete my health profile,
+  So that I can improve my consultation experience without blocking access to bookings.
+
+  Background:
+    Given I am logged into my patient account
+    And I have navigated to the dashboard
+
+  Scenario: Show banner when profile is less than 80% complete
+    Given my profile completion is 45%
+    Then I should see an onboarding banner
+    And the banner should say "Complete your health profile for a more personalized consultation"
+    And I should see a primary CTA labeled "Complete Profile"
+    And I should see a secondary CTA labeled "Maybe Later"
+    And I should still see the "Book New Appointment" button
+
+  Scenario: Hide banner when profile is 80% or more complete
+    Given my profile completion is 85%
+    Then I should not see the onboarding banner
+
+  Scenario: Hide banner when profile is fully complete
+    Given my profile completion is 100%
+    Then I should not see the onboarding banner
+
+  Scenario: "Complete Profile" CTA redirects to health profile form
+    Given I click the "Complete Profile" CTA
+    Then I should be redirected to the profile update page
+
+  Scenario: "Maybe Later" CTA dismisses the banner temporarily
+    Given I click the "Maybe Later" CTA
+    Then the banner should be dismissed
+    And it should not reappear until the next day or session
+
+  Scenario: Appointment booking is always available
+    Given my profile is 30% complete
+    When I click "Book New Appointment"
+    Then I should be allowed to proceed to the appointment booking flow
+
+  Scenario: Banner content is non-blocking and supportive
+    Then the banner text should not contain words like "must", "required", or "blocked"
+    And the tone should emphasize benefits like "better care" or "personalized results"
+
+  Scenario: Banner is responsive on all screen sizes
+    Then the banner should display properly on mobile, tablet, and desktop
+    And the CTAs should be tap-friendly and accessible
+
+  Scenario: Banner includes visible profile completion indicator
+    Given my profile completion is 65%
+    Then the banner should display "Profile 65% complete" or a visual progress bar
+
+  Scenario: Revisiting dashboard after completing profile removes the banner
+    Given I complete my profile
+    And I return to the dashboard
+    Then I should not see the onboarding banner
