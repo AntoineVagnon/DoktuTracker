@@ -6,6 +6,7 @@ import { X, AlertCircle, Clock, Video, Upload, User, Heart } from "lucide-react"
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
 import { formatDistanceToNow, isAfter, isBefore, addMinutes, addHours } from "date-fns";
+import { calculateHealthProfileCompletion } from "@/lib/healthProfileUtils";
 
 interface BannerProps {
   type: 'payment' | 'live' | 'health_profile' | 'info';
@@ -91,51 +92,78 @@ function Banner({
 
   return (
     <div className={cn(
-      "border rounded-lg p-3 mb-2 transition-all duration-300", // Reduced padding for single line
+      "border rounded-lg p-4 mb-2 transition-all duration-300",
       getBannerStyles()
     )}>
       <div className="flex items-center justify-between"> 
         <div className="flex items-center space-x-3 flex-1">
           {getIcon()}
-          <div className="flex items-center gap-3 flex-1">
-            <h3 className="font-medium whitespace-nowrap">{title}</h3>
-            {countdown && (
-              <span className="text-sm font-mono bg-white/50 px-2 py-1 rounded">
-                {timeLeft}
-              </span>
-            )}
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <h3 className="font-medium">{title}</h3>
+              {countdown && (
+                <span className="text-sm font-mono bg-white/50 px-2 py-1 rounded">
+                  {timeLeft}
+                </span>
+              )}
+              {description && !countdown && (
+                <span className="text-sm font-medium opacity-75">
+                  {description}
+                </span>
+              )}
+            </div>
           </div>
         </div>
         
-        {/* Primary action button */}
-        {primaryAction && (
-          <Button
-            onClick={primaryAction.onClick}
-            size="sm"
-            className={cn(
-              "ml-3",
-              type === 'payment' && "bg-red-600 hover:bg-red-700",
-              type === 'live' && "bg-green-600 hover:bg-green-700",
-              type === 'health_profile' && "bg-yellow-600 hover:bg-yellow-700",
-              type === 'info' && "bg-blue-600 hover:bg-blue-700"
-            )}
-          >
-            {primaryAction.icon && <primaryAction.icon className="h-4 w-4 mr-2" />}
-            {primaryAction.label}
-          </Button>
-        )}
-        
-        {/* Dismiss button */}
-        {dismissible && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onDismiss}
-            className="ml-2 h-6 w-6 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
+        <div className="flex items-center gap-2 ml-3">
+          {/* Secondary action buttons */}
+          {secondaryActions?.map((action, index) => (
+            <Button
+              key={index}
+              onClick={action.onClick}
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "text-current hover:bg-white/20",
+                type === 'health_profile' && "hover:bg-yellow-200/50"
+              )}
+              data-testid={`button-${action.label.toLowerCase().replace(' ', '-')}`}
+            >
+              {action.icon && <action.icon className="h-4 w-4 mr-2" />}
+              {action.label}
+            </Button>
+          ))}
+          
+          {/* Primary action button */}
+          {primaryAction && (
+            <Button
+              onClick={primaryAction.onClick}
+              size="sm"
+              className={cn(
+                type === 'payment' && "bg-red-600 hover:bg-red-700",
+                type === 'live' && "bg-green-600 hover:bg-green-700",
+                type === 'health_profile' && "bg-yellow-600 hover:bg-yellow-700 text-white",
+                type === 'info' && "bg-blue-600 hover:bg-blue-700"
+              )}
+              data-testid={`button-${primaryAction.label.toLowerCase().replace(' ', '-')}`}
+            >
+              {primaryAction.icon && <primaryAction.icon className="h-4 w-4 mr-2" />}
+              {primaryAction.label}
+            </Button>
+          )}
+          
+          {/* Dismiss button */}
+          {dismissible && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onDismiss}
+              className="h-6 w-6 p-0 text-current hover:bg-white/20"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -172,20 +200,38 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
     enabled: !!user,
   });
 
-  // Banner dismissal mutation
-  const dismissBannerMutation = useMutation({
-    mutationFn: async ({ bannerType, expiresAt }: { bannerType: string; expiresAt?: Date }) => {
-      return apiRequest('POST', '/api/banner-dismissals', {
-        bannerType,
-        expiresAt: expiresAt?.toISOString(),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/banner-dismissals"] });
+  // Helper functions for localStorage-based dismissals
+  const getDismissedBanners = () => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const stored = localStorage.getItem('doktu_dismissed_banners');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
     }
-  });
+  };
+
+  const dismissBanner = (bannerType: string, expiresAt: Date) => {
+    if (typeof window === 'undefined') return;
+    try {
+      const dismissed = getDismissedBanners();
+      const newDismissal = {
+        bannerType,
+        expiresAt: expiresAt.toISOString(),
+        dismissedAt: new Date().toISOString()
+      };
+      dismissed.push(newDismissal);
+      localStorage.setItem('doktu_dismissed_banners', JSON.stringify(dismissed));
+      
+      // Force a re-render by triggering a state update
+      setDismissalTrigger(prev => prev + 1);
+    } catch (error) {
+      console.error('Failed to dismiss banner:', error);
+    }
+  };
 
   const [banners, setBanners] = useState<BannerProps[]>([]);
+  const [dismissalTrigger, setDismissalTrigger] = useState(0);
 
   // Update current time every second to trigger banner expiry checks
   useEffect(() => {
@@ -322,33 +368,36 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
 
     // 3. Health profile completion banner (third priority) - patients only
     if (user.role === 'patient') {
-      // Removed excessive console logging to improve performance
+      const completionScore = calculateHealthProfileCompletion(healthProfile);
       
-      const needsProfileCompletion = !healthProfile || 
-                                   (healthProfile.profileStatus !== 'complete');
+      // Check if banner has been dismissed recently
+      const dismissedBanners = getDismissedBanners();
+      const dismissedOnboarding = dismissedBanners.find(
+        (dismissed: any) => dismissed.bannerType === 'health_profile_onboarding' && 
+        dismissed.expiresAt && new Date(dismissed.expiresAt) > now
+      );
       
-      if (needsProfileCompletion) {
-        const completionScore = healthProfile?.completionScore || 0;
-        const missingFields = Math.ceil((100 - completionScore) / 20); // Assuming 5 main fields
-        
+      // Show banner when profile is less than 80% complete and not dismissed
+      if (completionScore < 80 && !dismissedOnboarding) {
         newBanners.push({
           type: 'health_profile',
           priority: 3,
-          title: healthProfile?.profileStatus === 'needs_review' 
-            ? 'Please review your health profile (last update > 6 months)'
-            : 'Complete your health profile to book consultations',
+          title: 'Complete your health profile for a more personalized consultation',
+          description: `Profile ${completionScore}% complete`,
           primaryAction: {
             label: 'Complete Profile',
             onClick: () => onOpenHealthProfile?.(),
             icon: Heart,
           },
-          dismissible: healthProfile?.profileStatus === 'needs_review',
-          onDismiss: () => {
-            dismissBannerMutation.mutate({
-              bannerType: 'health_profile',
-              expiresAt: addHours(now, 24), // Dismiss for 24 hours
-            });
-          }
+          secondaryActions: [
+            {
+              label: 'Maybe Later',
+              onClick: () => {
+                dismissBanner('health_profile_onboarding', addHours(now, 24)); // Dismiss for 24 hours
+              },
+            }
+          ],
+          dismissible: false, // Use "Maybe Later" instead of X button
         });
       }
     }
@@ -360,7 +409,7 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
     if (JSON.stringify(sortedBanners) !== JSON.stringify(banners)) {
       setBanners(sortedBanners);
     }
-  }, [user?.id, user?.role, appointments?.length, healthProfile?.profileStatus, healthProfile?.completionScore, currentTime]);
+  }, [user?.id, user?.role, appointments?.length, healthProfile?.profileStatus, healthProfile?.completionScore, currentTime, dismissalTrigger]);
 
   if (banners.length === 0) return null;
 
