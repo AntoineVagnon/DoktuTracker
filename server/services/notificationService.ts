@@ -397,8 +397,7 @@ export class UniversalNotificationService {
           id: users.id,
           email: users.email,
           firstName: users.firstName,
-          lastName: users.lastName,
-          username: users.username
+          lastName: users.lastName
         })
         .from(users)
         .where(eq(users.id, userId));
