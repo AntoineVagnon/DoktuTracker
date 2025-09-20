@@ -1388,58 +1388,61 @@ export class UniversalNotificationService {
    */
   async processPendingNotifications() {
     const now = new Date();
+    const nowISOString = now.toISOString();
     
     try {
-      // Process email notifications - using simplified query to debug schema issues
-      console.log('🔍 Attempting to fetch pending emails with ultra-minimal query...');
-      const pendingEmails = await db
-        .select()
-        .from(emailNotifications)
-        .where(eq(emailNotifications.status, "pending"))
-        .limit(5);
+      // Process email notifications - using raw SQL with proper rows handling
+      console.log('🔍 Processing email notifications with raw SQL...');
+      const emailResult = await db.execute(sql`
+        SELECT id, user_id as "userId", trigger_code as "triggerCode", 
+               template_key as "templateKey", status, retry_count as "retryCount",
+               appointment_id as "appointmentId", merge_data as "mergeData"
+        FROM email_notifications 
+        WHERE (status = 'pending' AND scheduled_for <= ${nowISOString}) 
+           OR (status = 'failed' AND retry_count < 3)
+        LIMIT 5
+      `);
 
-      for (const notification of pendingEmails) {
+      // Handle the direct array result from raw SQL queries
+      const emailRows = emailResult;
+      console.log(`📧 Found ${emailRows.length} email notifications to process`);
+      for (const notification of emailRows) {
         await this.sendEmailNotification(notification);
       }
 
-      // Process SMS notifications
-      const pendingSMS = await db
-        .select({
-          id: smsNotifications.id,
-          userId: smsNotifications.userId,
-          triggerCode: smsNotifications.triggerCode,
-          status: smsNotifications.status,
-          scheduledFor: smsNotifications.scheduledFor,
-          retryCount: smsNotifications.retryCount
-        })
-        .from(smsNotifications)
-        .where(and(
-          eq(smsNotifications.status, "pending"),
-          lte(smsNotifications.scheduledFor, now)
-        ));
+      // Process SMS notifications - using raw SQL with proper rows handling
+      console.log('🔍 Processing SMS notifications with raw SQL...');
+      const smsResult = await db.execute(sql`
+        SELECT id, user_id as "userId", trigger_code as "triggerCode", 
+               status, scheduled_for as "scheduledFor", retry_count as "retryCount"
+        FROM sms_notifications 
+        WHERE (status = 'pending' AND scheduled_for <= ${nowISOString})
+           OR (status = 'failed' AND retry_count < 3)
+        LIMIT 5
+      `);
 
-      for (const notification of pendingSMS) {
+      // Handle the direct array result from raw SQL queries
+      const smsRows = smsResult;
+      console.log(`📱 Found ${smsRows.length} SMS notifications to process`);
+      for (const notification of smsRows) {
         await this.sendSMSNotification(notification);
       }
 
-      // Process push notifications
-      const pendingPush = await db
-        .select({
-          id: pushNotifications.id,
-          userId: pushNotifications.userId,
-          triggerCode: pushNotifications.triggerCode,
-          status: pushNotifications.status,
-          scheduledFor: pushNotifications.scheduledFor,
-          priority: pushNotifications.priority,
-          retryCount: pushNotifications.retryCount
-        })
-        .from(pushNotifications)
-        .where(and(
-          eq(pushNotifications.status, "pending"),
-          lte(pushNotifications.scheduledFor, now)
-        ));
+      // Process push notifications - using raw SQL with proper rows handling
+      console.log('🔍 Processing push notifications with raw SQL...');
+      const pushResult = await db.execute(sql`
+        SELECT id, user_id as "userId", trigger_code as "triggerCode", 
+               status, scheduled_for as "scheduledFor"
+        FROM push_notifications 
+        WHERE (status = 'pending' AND scheduled_for <= ${nowISOString})
+           OR (status = 'failed')
+        LIMIT 5
+      `);
 
-      for (const notification of pendingPush) {
+      // Handle the direct array result from raw SQL queries
+      const pushRows = pushResult;
+      console.log(`📲 Found ${pushRows.length} push notifications to process`);
+      for (const notification of pushRows) {
         await this.sendPushNotification(notification);
       }
 
