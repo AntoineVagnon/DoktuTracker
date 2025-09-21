@@ -1,14 +1,9 @@
 
 import { Router } from 'express';
 import { supabase } from '../supabaseAuth';
-import sendgrid from '@sendgrid/mail';
+import { notificationService, TriggerCode } from '../services/notificationService';
 
 export const authRouter = Router();
-
-// Initialize SendGrid if API key is available
-if (process.env.SENDGRID_API_KEY) {
-  sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
-}
 
 // POST /api/auth/register
 authRouter.post('/register', async (req, res) => {
@@ -55,30 +50,48 @@ authRouter.post('/register', async (req, res) => {
       console.error('Database insert error:', dbError);
     }
 
-    // Generate verification link
-    const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-      type: 'email_change_confirm_new',
-      email
-    });
-
-    // Send custom verification email if SendGrid is configured
-    if (process.env.SENDGRID_API_KEY && linkData?.properties?.token) {
-      try {
-        await sendgrid.send({
-          to: email,
-          from: process.env.FROM_EMAIL || 'noreply@doktu.com',
-          subject: 'Confirm your email for Doktu',
-          html: `
-            <p>Welcome to Doktu!</p>
-            <p>Please confirm your email address by clicking 
-            <a href="${process.env.FRONTEND_URL || 'http://localhost:5000'}/verify?token=${linkData.properties.token}">
-            this link</a>.</p>
-            <p>You can start using Doktu immediately, but you'll need to verify your email to book appointments.</p>
-          `
-        });
-      } catch (emailError) {
-        console.error('Email sending error:', emailError);
+    // Send welcome and verification emails via notification system
+    try {
+      // Get the created user record from our database to get the numeric ID
+      let dbUser = null;
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      // Sometimes there's a slight delay, so try a few times
+      while (!dbUser && attempts < maxAttempts) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', email)
+          .single();
+        
+        dbUser = userData;
+        if (!dbUser && attempts < maxAttempts - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+        }
+        attempts++;
       }
+
+      if (dbUser) {
+        // Send registration success notification via integrated system
+        await notificationService.trigger({
+          userId: parseInt(dbUser.id),
+          triggerCode: TriggerCode.ACCOUNT_REG_SUCCESS,
+          channels: ['email'],
+          mergeData: {
+            first_name: firstName,
+            last_name: lastName,
+            verification_link: `${process.env.FRONTEND_URL || 'http://localhost:5000'}/verify`
+          }
+        });
+        
+        console.log(`✅ Registration success email queued for user ${dbUser.id}`);
+      } else {
+        console.warn(`⚠️ Could not find database user record for ${email} to send welcome email`);
+      }
+    } catch (emailError) {
+      console.error('❌ Error queueing welcome email:', emailError);
+      // Don't fail registration if email fails
     }
 
     // If session exists (email confirmation disabled), set it up
