@@ -74,10 +74,11 @@ authRouter.post('/register', async (req, res) => {
 
       if (dbUser) {
         // Send registration success notification via integrated system
-        await notificationService.trigger({
+        // Fixed: Use scheduleNotification instead of non-existent trigger method
+        await notificationService.scheduleNotification({
           userId: parseInt(dbUser.id),
           triggerCode: TriggerCode.ACCOUNT_REG_SUCCESS,
-          channels: ['email'],
+          scheduledFor: new Date(), // Schedule immediately
           mergeData: {
             first_name: firstName,
             last_name: lastName,
