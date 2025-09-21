@@ -174,8 +174,14 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
 
     await sgMail.send(msg);
     console.log(`✅ Email sent successfully to ${options.to} (${emailSize} bytes)`);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error sending email:', error);
+    
+    // Log detailed SendGrid error information
+    if (error.response?.body?.errors) {
+      console.error('📋 SendGrid error details:', JSON.stringify(error.response.body.errors, null, 2));
+    }
+    
     throw error;
   }
 }
