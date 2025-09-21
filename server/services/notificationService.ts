@@ -687,9 +687,20 @@ export class UniversalNotificationService {
     const [quietStartHour, quietStartMinute] = quietStart.split(":").map(Number);
     const [quietEndHour, quietEndMinute] = quietEnd.split(":").map(Number);
 
-    // Security/urgent notifications ignore quiet hours
+    // Security/urgent notifications and critical account actions ignore quiet hours
     const priority = TRIGGER_PRIORITY[triggerCode];
     if (priority >= 90) { // Blocking/Compliance level
+      return scheduledFor;
+    }
+
+    // Critical account notifications should always be sent immediately
+    const immediateNotifications = [
+      TriggerCode.ACCOUNT_REG_SUCCESS,
+      TriggerCode.ACCOUNT_EMAIL_VERIFY,
+      TriggerCode.ACCOUNT_PASSWORD_RESET,
+      TriggerCode.ACCOUNT_PASSWORD_CHANGED
+    ];
+    if (immediateNotifications.includes(triggerCode)) {
       return scheduledFor;
     }
 
