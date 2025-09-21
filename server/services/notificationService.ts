@@ -1097,7 +1097,7 @@ export class UniversalNotificationService {
         userId,
         category,
         channel: "email",
-        weekStarting: weekStart,
+        weekStarting: weekStart.toISOString().split('T')[0], // Convert Date to string
         sentCount: 1,
         lastSentAt: new Date()
       })
@@ -1160,7 +1160,7 @@ export class UniversalNotificationService {
         errorMessage: params.errorMessage,
         ipAddress: params.userContext?.ipAddress,
         userAgent: params.userContext?.userAgent,
-        locale: prefs?.locale || "en",
+        locale: "en", // Default locale since it's not stored in preferences
         timezone: prefs?.timezone || "Europe/Paris"
       });
     } catch (error) {
@@ -1465,27 +1465,6 @@ export class UniversalNotificationService {
   }
 
 
-  /**
-   * Check for duplicate notifications
-   */
-  private async checkDuplicateNotification(userId: number, appointmentId: number | undefined, triggerCode: TriggerCode) {
-    const thirtyMinutesAgo = subMinutes(new Date(), 30);
-    
-    const [existing] = await db
-      .select({
-        id: emailNotifications.id
-      })
-      .from(emailNotifications)
-      .where(and(
-        eq(emailNotifications.userId, userId),
-        appointmentId ? eq(emailNotifications.appointmentId, appointmentId) : isNull(emailNotifications.appointmentId),
-        eq(emailNotifications.triggerCode, triggerCode),
-        eq(emailNotifications.status, "sent"),
-        lte(emailNotifications.sentAt, thirtyMinutesAgo)
-      ));
-
-    return !!existing;
-  }
 
   /**
    * Schedule email notification
