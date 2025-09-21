@@ -418,7 +418,9 @@ export async function registerRoutes(app: Express): Promise<void> {
               specialty: doctor.specialty,
               appointmentDate,
               appointmentTime,
-              consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+              consultationPrice: typeof doctor.consultationPrice === 'string' 
+                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
+                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
               appointmentId: result.appointment.id.toString()
             });
             
@@ -429,7 +431,9 @@ export async function registerRoutes(app: Express): Promise<void> {
               patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
               appointmentDate,
               appointmentTime,
-              consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+              consultationPrice: typeof doctor.consultationPrice === 'string' 
+                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
+                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
               appointmentId: result.appointment.id.toString()
             });
             
@@ -849,7 +853,9 @@ export async function registerRoutes(app: Express): Promise<void> {
               specialty: doctor.specialty,
               appointmentDate,
               appointmentTime,
-              consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+              consultationPrice: typeof doctor.consultationPrice === 'string' 
+                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
+                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
               appointmentId: result.appointment.id.toString()
             });
             
@@ -860,7 +866,9 @@ export async function registerRoutes(app: Express): Promise<void> {
               patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
               appointmentDate,
               appointmentTime,
-              consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+              consultationPrice: typeof doctor.consultationPrice === 'string' 
+                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
+                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
               appointmentId: result.appointment.id.toString()
             });
             
@@ -2864,7 +2872,9 @@ export async function registerRoutes(app: Express): Promise<void> {
                 specialty: doctor.specialty,
                 appointmentDate,
                 appointmentTime,
-                consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+                consultationPrice: typeof doctor.consultationPrice === 'string' 
+                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
+                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
                 appointmentId: appointment.id.toString()
               });
               
@@ -2875,7 +2885,9 @@ export async function registerRoutes(app: Express): Promise<void> {
                 patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
                 appointmentDate,
                 appointmentTime,
-                consultationPrice: doctor.consultationPrice?.toFixed(2) || '0.00',
+                consultationPrice: typeof doctor.consultationPrice === 'string' 
+                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
+                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
                 appointmentId: appointment.id.toString()
               });
               
