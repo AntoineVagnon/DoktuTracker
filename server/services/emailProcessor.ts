@@ -95,7 +95,8 @@ export const emailProcessor = new EmailProcessor();
 // emailProcessor.start(1); // Check every minute - DISABLED to save resources
 
 // Optional backup processing every 30 minutes for edge cases
-// Uncomment if you want a safety net (but this should rarely be needed)
-// emailProcessor.start(30); // Check every 30 minutes as backup
+// This is a safety net to catch any notifications that immediate processing might have missed
+console.log('🛡️  Setting up backup email processor (every 30 minutes) for safety...');
+emailProcessor.start(30); // Check every 30 minutes as backup
 
 export default EmailProcessor;
