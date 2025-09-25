@@ -603,6 +603,17 @@ export class UniversalNotificationService {
       });
 
       console.log(`✅ Successfully scheduled ${scheduledNotifications.length} notifications for ${triggerCode}`);
+      
+      // 🚀 IMMEDIATE PROCESSING: Process notifications immediately for better user experience
+      // This eliminates the need for constant timer-based checking
+      try {
+        console.log(`🚀 Triggering immediate processing for ${triggerCode}`);
+        await this.processPendingNotifications();
+      } catch (processingError) {
+        console.error(`⚠️ Immediate processing failed for ${triggerCode}, will retry later:`, processingError);
+        // Don't fail the scheduling if immediate processing fails
+      }
+      
       return { success: true, scheduledNotifications };
 
     } catch (error: any) {

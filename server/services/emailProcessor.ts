@@ -92,6 +92,10 @@ class EmailProcessor {
 export const emailProcessor = new EmailProcessor();
 
 // Start processor automatically when module is imported
-emailProcessor.start(1); // Check every minute
+// emailProcessor.start(1); // Check every minute - DISABLED to save resources
+
+// Optional backup processing every 30 minutes for edge cases
+// Uncomment if you want a safety net (but this should rarely be needed)
+// emailProcessor.start(30); // Check every 30 minutes as backup
 
 export default EmailProcessor;
