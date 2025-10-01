@@ -1,0 +1,29 @@
+@echo off
+echo Setting up Vercel environment variables...
+
+echo Adding VITE_STRIPE_PUBLIC_KEY...
+vercel env add VITE_STRIPE_PUBLIC_KEY production pk_test_51RkD7D2YxuDmKTPwVAr4axsu4Pb6tCWRWIUNy97fgZqicl2EuY4iJh0RFPHtrCh3Ry1HiCSgYM3SamSJGCn8BIFy00wPFx6mNy
+
+echo Adding VITE_STRIPE_PUBLISHABLE_KEY...
+vercel env add VITE_STRIPE_PUBLISHABLE_KEY production pk_test_51RkD7D2YxuDmKTPwVAr4axsu4Pb6tCWRWIUNy97fgZqicl2EuY4iJh0RFPHtrCh3Ry1HiCSgYM3SamSJGCn8BIFy00wPFx6mNy
+
+echo Adding VITE_API_URL...
+vercel env add VITE_API_URL production https://web-production-b2ce.up.railway.app
+
+echo Adding VITE_SUPABASE_URL...
+vercel env add VITE_SUPABASE_URL production https://hzmrkvooqjbxptqjqxii.supabase.co
+
+echo Adding VITE_SUPABASE_ANON_KEY...
+vercel env add VITE_SUPABASE_ANON_KEY production eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6bXJrdm9vcWpieHB0cWpxeGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMTE0NzQsImV4cCI6MjA2NDg4NzQ3NH0.p-wJC-xFG2XnxG7M7bbOlQog2i2Rqy6CczdaCHwAg1s
+
+echo Adding VITE_APP_TITLE...
+vercel env add VITE_APP_TITLE production "Doktu - Consultation Médicale"
+
+echo Adding VITE_APP_DESCRIPTION...
+vercel env add VITE_APP_DESCRIPTION production "Plateforme de télémédecine sécurisée"
+
+echo Adding VITE_NODE_ENV...
+vercel env add VITE_NODE_ENV production production
+
+echo Environment variables setup complete!
+echo Now redeploy your project: vercel --prod

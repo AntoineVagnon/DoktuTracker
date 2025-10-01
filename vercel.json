@@ -4,20 +4,10 @@
   "framework": "vite",
   "installCommand": "npm install",
   "devCommand": "npm run dev:frontend",
-  "env": {
-    "VITE_STRIPE_PUBLIC_KEY": "pk_test_51RkD7D2YxuDmKTPwVAr4axsu4Pb6tCWRWIUNy97fgZqicl2EuY4iJh0RFPHtrCh3Ry1HiCSgYM3SamSJGCn8BIFy00wPFx6mNy",
-    "VITE_STRIPE_PUBLISHABLE_KEY": "pk_test_51RkD7D2YxuDmKTPwVAr4axsu4Pb6tCWRWIUNy97fgZqicl2EuY4iJh0RFPHtrCh3Ry1HiCSgYM3SamSJGCn8BIFy00wPFx6mNy",
-    "VITE_API_URL": "https://doktu-tracker.replit.app",
-    "VITE_SUPABASE_URL": "https://hzmrkvooqjbxptqjqxii.supabase.co",
-    "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6bXJrdm9vcWpieHB0cWpxeGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMTE0NzQsImV4cCI6MjA2NDg4NzQ3NH0.p-wJC-xFG2XnxG7M7bbOlQog2i2Rqy6CczdaCHwAg1s",
-    "VITE_APP_TITLE": "Doktu - Consultation Médicale",
-    "VITE_APP_DESCRIPTION": "Plateforme de télémédecine sécurisée",
-    "VITE_NODE_ENV": "production"
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://doktu-tracker.replit.app/api/$1"
+      "destination": "https://web-production-b2ce.up.railway.app/api/$1"
     },
     {
       "source": "/(.*)",
