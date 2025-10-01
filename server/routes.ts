@@ -38,10 +38,10 @@ import { emailService } from "./emailService";
 import { zoomService } from "./services/zoomService";
 import { registerMembershipRoutes } from "./routes/membershipRoutes";
 import { membershipService } from "./services/membershipService";
-import { AuditLogger, auditAdminMiddleware, auditPatientDataMiddleware, auditErrorMiddleware } from "./middleware/auditMiddleware.js";
-import { registerAuditRoutes } from "./routes/auditRoutes.js";
-import { registerGDPRRoutes } from "./routes/gdprRoutes.js";
-import { registerMedicalRecordsRoutes } from "./routes/medicalRecordsRoutes.js";
+import { AuditLogger, auditAdminMiddleware, auditPatientDataMiddleware, auditErrorMiddleware } from "./middleware/auditMiddleware";
+import { registerAuditRoutes } from "./routes/auditRoutes";
+import { registerGDPRRoutes } from "./routes/gdprRoutes";
+import { registerMedicalRecordsRoutes } from "./routes/medicalRecordsRoutes";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
