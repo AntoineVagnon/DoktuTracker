@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://doktu-backend.railway.app/api/$1"
+      "destination": "https://doktu-tracker.replit.app/api/$1"
     },
     {
       "source": "/(.*)",
