@@ -1,0 +1,24 @@
+# Railway ignore file
+node_modules
+.git
+.env.local
+.env.example
+dist/public
+test-results
+playwright-report
+e2e
+tests
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+playwright.config.ts
+.playwright
+docs
+evidence
+scripts
+*.bat
+*.md
+ADMIN_DASHBOARD_METRICS_INVENTORY.md
+CLAUDE.md
+DASHBOARD_METRICS_VALIDATION_REPORT.md
