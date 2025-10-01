@@ -123,8 +123,8 @@ app.use((req, res, next) => {
     const { setupVite } = await import("./vite");
     await setupVite(app, server);
   } else {
-    console.log('Setting up static server...');
-    const { serveStatic } = await import("./vite");
+    console.log('Setting up production static server...');
+    const { serveStatic } = await import("./static");
     serveStatic(app);
   }
 
