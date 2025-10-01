@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+// Import conditionnel pour éviter Vite en production
 
 // Import email processor to start it automatically
 import "./services/emailProcessor";
@@ -120,28 +120,28 @@ app.use((req, res, next) => {
   console.log('Is development?', process.env.NODE_ENV?.trim() === "development");
   if (process.env.NODE_ENV?.trim() === "development") {
     console.log('Setting up Vite dev server...');
+    const { setupVite } = await import("./vite");
     await setupVite(app, server);
   } else {
     console.log('Setting up static server...');
+    const { serveStatic } = await import("./vite");
     serveStatic(app);
   }
 
   // Prevent multiple server instances - critical for dev stability
   if (globalThis.__serverListening) {
-    log('⚠️ Server already listening, skipping duplicate listener');
+    console.log('⚠️ Server already listening, skipping duplicate listener');
     return;
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
+  // Use Railway's PORT environment variable or default to 5000
+  const port = parseInt(process.env.PORT || '5000');
   server.listen({
     port,
     host: "0.0.0.0",
     // Remove reusePort to prevent multiple server instances
   }, () => {
-    log(`serving on port ${port}`);
+    console.log(`serving on port ${port}`);
     globalThis.__serverListening = true;
   });
 })();
