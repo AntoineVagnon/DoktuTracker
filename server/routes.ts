@@ -38,6 +38,10 @@ import { emailService } from "./emailService";
 import { zoomService } from "./services/zoomService";
 import { registerMembershipRoutes } from "./routes/membershipRoutes";
 import { membershipService } from "./services/membershipService";
+import { AuditLogger, auditAdminMiddleware, auditPatientDataMiddleware, auditErrorMiddleware } from "./middleware/auditMiddleware.js";
+import { registerAuditRoutes } from "./routes/auditRoutes.js";
+import { registerGDPRRoutes } from "./routes/gdprRoutes.js";
+import { registerMedicalRecordsRoutes } from "./routes/medicalRecordsRoutes.js";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -54,6 +58,25 @@ export async function registerRoutes(app: Express): Promise<void> {
   console.log('🚨🚨🚨 SERVER ROUTES LOADING - THIS SHOULD ALWAYS APPEAR 🚨🚨🚨');
   console.error('🚨🚨🚨 SERVER ROUTES ERROR LOG - THIS SHOULD ALWAYS APPEAR 🚨🚨🚨');
   
+  // ============================================================================
+  // HEALTH CHECK ENDPOINT FOR RAILWAY
+  // ============================================================================
+  app.get('/api/health', (req, res) => {
+    res.status(200).json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      service: 'doktu-tracker-api',
+      version: '1.0.0'
+    });
+  });
+
+  app.get('/health', (req, res) => {
+    res.status(200).json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString() 
+    });
+  });
+
   // ============================================================================
   // TOP-LEVEL TRACER - FIRST MIDDLEWARE TO PROVE NO INTERCEPTION
   // ============================================================================
@@ -2027,7 +2050,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Admin routes
-  app.get("/api/admin/kpis", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/kpis", isAuthenticated, auditAdminMiddleware('view_kpis', 'admin_dashboard'), async (req, res) => {
     try {
       const user = req.user as any;
       const userId = user?.claims?.sub;
@@ -2050,7 +2073,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Admin dashboard metrics endpoint
-  app.get("/api/admin/metrics", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/metrics", isAuthenticated, auditAdminMiddleware('view_metrics', 'admin_dashboard'), async (req, res) => {
     try {
       const user = req.user as any;
       if (!user || user.role !== 'admin') {
@@ -2079,7 +2102,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Admin meetings endpoint
-  app.get("/api/admin/meetings", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/meetings", isAuthenticated, auditAdminMiddleware('view_meetings', 'admin_dashboard'), async (req, res) => {
     try {
       const user = req.user as any;
       if (!user || user.role !== 'admin') {
@@ -2156,7 +2179,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Admin user management endpoints
-  app.get("/api/admin/users", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/users", isAuthenticated, auditAdminMiddleware('view_users', 'user_management'), async (req, res) => {
     try {
       const user = req.user as any;
       if (!user || user.role !== 'admin') {
@@ -2171,7 +2194,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.post("/api/admin/users", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/users", isAuthenticated, auditAdminMiddleware('create_user', 'user_management'), async (req, res) => {
     try {
       const user = req.user as any;
       if (!user || user.role !== 'admin') {
@@ -2196,7 +2219,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.delete("/api/admin/users/:userId", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/users/:userId", isAuthenticated, auditAdminMiddleware('delete_user', 'user_management'), async (req, res) => {
     try {
       const user = req.user as any;
       if (!user || user.role !== 'admin') {
@@ -3615,7 +3638,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // Email reminder routes are handled by the emailRouter mounted later
 
-  app.get("/api/admin/notifications", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/notifications", isAuthenticated, auditAdminMiddleware('view_notifications', 'notifications'), async (req, res) => {
     try {
       const user = req.user as any;
       if (!user || user.role !== 'admin') {
@@ -3634,7 +3657,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.post("/api/admin/notifications/retry", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/notifications/retry", isAuthenticated, auditAdminMiddleware('retry_notification', 'notifications'), async (req, res) => {
     try {
       const user = req.user as any;
       if (!user || user.role !== 'admin') {
@@ -4766,6 +4789,18 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // Register document library routes
   registerDocumentLibraryRoutes(app);
+
+  // Register audit routes
+  registerAuditRoutes(app);
+
+  // Register GDPR routes
+  registerGDPRRoutes(app);
+
+  // Register Medical Records routes
+  registerMedicalRecordsRoutes(app);
+
+  // Apply audit error middleware
+  app.use(auditErrorMiddleware);
 
   // Apply global error handler (must be last)
   app.use(errorHandler);
