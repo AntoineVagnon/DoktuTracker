@@ -1,0 +1,3 @@
+# Force Railway deployment after environment variables configuration
+# This file triggers a new deployment to ensure env vars are loaded
+timestamp: 2025-10-01T11:36:00Z
