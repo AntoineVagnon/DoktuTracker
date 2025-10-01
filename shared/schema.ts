@@ -1382,6 +1382,194 @@ export const notificationBatch = pgTable('notification_batch', {
   processedAt: timestamp('processed_at')
 });
 
+// ============================================================================
+// MEDICAL RECORDS - SECURE & ENCRYPTED TABLES FOR PHASE 2
+// ============================================================================
+
+// Secure medical records with encryption for sensitive data
+export const medicalRecords = pgTable("medical_records", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  doctorId: integer("doctor_id").references(() => doctors.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  
+  // Encrypted medical data (AES-256)
+  diagnosis: text("diagnosis"), // Will be encrypted
+  symptoms: text("symptoms"), // Will be encrypted
+  treatment: text("treatment"), // Will be encrypted
+  medications: jsonb("medications").default("[]"), // Will be encrypted
+  allergies: jsonb("allergies").default("[]"), // Will be encrypted
+  notes: text("notes"), // Will be encrypted
+  
+  // Non-sensitive metadata
+  recordType: varchar("record_type").notNull().default("consultation"), // consultation, diagnostic, prescription, follow_up
+  severity: varchar("severity").default("normal"), // normal, urgent, critical
+  status: varchar("status").notNull().default("active"), // active, archived, deleted
+  
+  // Security metadata
+  lastAccessedBy: integer("last_accessed_by").references(() => users.id),
+  lastAccessedAt: timestamp("last_accessed_at"),
+  encryptionVersion: varchar("encryption_version").default("v1"),
+  
+  // Timestamps
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_medical_records_patient").on(table.patientId),
+  index("idx_medical_records_doctor").on(table.doctorId),
+  index("idx_medical_records_appointment").on(table.appointmentId),
+  index("idx_medical_records_type_status").on(table.recordType, table.status),
+]);
+
+// Medical record access log for audit trail
+export const medicalRecordAccess = pgTable("medical_record_access", {
+  id: serial("id").primaryKey(),
+  recordId: integer("record_id").references(() => medicalRecords.id).notNull(),
+  accessedBy: integer("accessed_by").references(() => users.id).notNull(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  
+  // Access details
+  accessType: varchar("access_type").notNull(), // view, edit, create, delete, export
+  accessReason: text("access_reason"), // Optional justification
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  
+  // Access result
+  accessGranted: boolean("access_granted").notNull(),
+  denialReason: text("denial_reason"), // If access was denied
+  
+  // Timestamps
+  accessedAt: timestamp("accessed_at").defaultNow(),
+}, (table) => [
+  index("idx_medical_access_record").on(table.recordId),
+  index("idx_medical_access_user").on(table.accessedBy),
+  index("idx_medical_access_patient").on(table.patientId),
+  index("idx_medical_access_time").on(table.accessedAt),
+]);
+
+// Enhanced patient health profile with versioning
+export const patientHealthProfiles = pgTable("patient_health_profiles", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  
+  // Version control
+  version: integer("version").notNull().default(1),
+  isActive: boolean("is_active").notNull().default(true),
+  previousVersionId: integer("previous_version_id").references(() => patientHealthProfiles.id),
+  
+  // Basic info (encrypted)
+  bloodType: varchar("blood_type"), // Will be encrypted
+  height: integer("height"), // cm, will be encrypted
+  weight: integer("weight"), // kg, will be encrypted
+  emergencyContact: jsonb("emergency_contact"), // Will be encrypted
+  
+  // Medical history (encrypted)
+  chronicConditions: jsonb("chronic_conditions").default("[]"), // Will be encrypted
+  surgicalHistory: jsonb("surgical_history").default("[]"), // Will be encrypted
+  familyHistory: jsonb("family_history").default("[]"), // Will be encrypted
+  currentMedications: jsonb("current_medications").default("[]"), // Will be encrypted
+  knownAllergies: jsonb("known_allergies").default("[]"), // Will be encrypted
+  
+  // Lifestyle (encrypted)
+  smokingStatus: varchar("smoking_status"), // Will be encrypted
+  alcoholConsumption: varchar("alcohol_consumption"), // Will be encrypted
+  exerciseLevel: varchar("exercise_level"), // Will be encrypted
+  
+  // Security metadata
+  createdBy: integer("created_by").references(() => users.id).notNull(),
+  updatedBy: integer("updated_by").references(() => users.id),
+  encryptionVersion: varchar("encryption_version").default("v1"),
+  
+  // Timestamps
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_health_profiles_patient").on(table.patientId),
+  index("idx_health_profiles_active").on(table.patientId, table.isActive),
+  index("idx_health_profiles_version").on(table.patientId, table.version),
+]);
+
+// Prescription records with digital signature
+export const prescriptions = pgTable("prescriptions", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  doctorId: integer("doctor_id").references(() => doctors.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  
+  // Prescription details (encrypted)
+  medications: jsonb("medications").notNull(), // [{name, dosage, frequency, duration, instructions}] - encrypted
+  diagnosis: text("diagnosis"), // Will be encrypted
+  notes: text("notes"), // Will be encrypted
+  
+  // Digital signature & validation
+  digitalSignature: text("digital_signature"), // Encrypted doctor signature
+  validationCode: varchar("validation_code").unique(), // For pharmacy validation
+  
+  // Status tracking
+  status: varchar("status").notNull().default("active"), // active, dispensed, expired, cancelled
+  expiresAt: timestamp("expires_at"),
+  dispensedAt: timestamp("dispensed_at"),
+  dispensedBy: varchar("dispensed_by"), // Pharmacy info
+  
+  // Security
+  encryptionVersion: varchar("encryption_version").default("v1"),
+  
+  // Timestamps
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_prescriptions_patient").on(table.patientId),
+  index("idx_prescriptions_doctor").on(table.doctorId),
+  index("idx_prescriptions_status").on(table.status),
+  index("idx_prescriptions_expires").on(table.expiresAt),
+]);
+
+// Document vault for secure medical document storage
+export const medicalDocuments = pgTable("medical_documents", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").references(() => users.id).notNull(),
+  uploadedBy: integer("uploaded_by").references(() => users.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  
+  // Document metadata
+  fileName: varchar("file_name").notNull(),
+  originalFileName: varchar("original_file_name").notNull(),
+  fileType: varchar("file_type").notNull(), // pdf, jpg, png, dicom, etc.
+  fileSize: integer("file_size").notNull(),
+  mimeType: varchar("mime_type").notNull(),
+  
+  // Document categorization
+  documentType: varchar("document_type").notNull(), // lab_result, xray, prescription, report, etc.
+  category: varchar("category").notNull().default("general"), // radiology, laboratory, prescription, report
+  tags: jsonb("tags").default("[]"),
+  
+  // Security & encryption
+  isEncrypted: boolean("is_encrypted").notNull().default(true),
+  encryptionKey: varchar("encryption_key"), // Encrypted with master key
+  checksum: varchar("checksum").notNull(), // File integrity verification
+  
+  // Access control
+  accessLevel: varchar("access_level").notNull().default("doctor_patient"), // doctor_patient, doctor_only, emergency
+  viewableBy: jsonb("viewable_by").default("[]"), // Array of user IDs with specific access
+  
+  // Storage location
+  storageProvider: varchar("storage_provider").notNull().default("local"), // local, s3, azure, etc.
+  storageKey: varchar("storage_key").notNull(), // Path or key in storage system
+  
+  // Timestamps
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_medical_docs_patient").on(table.patientId),
+  index("idx_medical_docs_type").on(table.documentType),
+  index("idx_medical_docs_category").on(table.category),
+  index("idx_medical_docs_uploaded_by").on(table.uploadedBy),
+]);
+
+// ============================================================================
+// GDPR DATA SUBJECT REQUESTS (Enhanced) - Removed duplicate definition
+// ============================================================================
+
 // Notification Zod schemas
 export const insertNotificationTemplatesSchema = createInsertSchema(notificationTemplates).omit({
   id: true,
@@ -1421,3 +1609,55 @@ export const insertNotificationBatchSchema = createInsertSchema(notificationBatc
 });
 export type InsertNotificationBatch = z.infer<typeof insertNotificationBatchSchema>;
 export type NotificationBatch = typeof notificationBatch.$inferSelect;
+
+// ============================================================================
+// MEDICAL RECORDS ZOD SCHEMAS
+// ============================================================================
+
+export const insertMedicalRecordSchema = createInsertSchema(medicalRecords).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastAccessedAt: true
+});
+export type InsertMedicalRecord = z.infer<typeof insertMedicalRecordSchema>;
+export type MedicalRecord = typeof medicalRecords.$inferSelect;
+
+export const insertMedicalRecordAccessSchema = createInsertSchema(medicalRecordAccess).omit({
+  id: true,
+  accessedAt: true
+});
+export type InsertMedicalRecordAccess = z.infer<typeof insertMedicalRecordAccessSchema>;
+export type MedicalRecordAccess = typeof medicalRecordAccess.$inferSelect;
+
+export const insertPatientHealthProfileSchema = createInsertSchema(patientHealthProfiles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+export type InsertPatientHealthProfile = z.infer<typeof insertPatientHealthProfileSchema>;
+export type PatientHealthProfile = typeof patientHealthProfiles.$inferSelect;
+
+export const insertPrescriptionSchema = createInsertSchema(prescriptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+export type InsertPrescription = z.infer<typeof insertPrescriptionSchema>;
+export type Prescription = typeof prescriptions.$inferSelect;
+
+export const insertMedicalDocumentSchema = createInsertSchema(medicalDocuments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+export type InsertMedicalDocument = z.infer<typeof insertMedicalDocumentSchema>;
+export type MedicalDocument = typeof medicalDocuments.$inferSelect;
+
+export const insertDataSubjectRequestSchema = createInsertSchema(dataSubjectRequests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+export type InsertDataSubjectRequest = z.infer<typeof insertDataSubjectRequestSchema>;
+export type DataSubjectRequest = typeof dataSubjectRequests.$inferSelect;
