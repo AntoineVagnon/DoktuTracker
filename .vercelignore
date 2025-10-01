@@ -1,0 +1,16 @@
+server/
+*.md
+.env
+.env.*
+node_modules/
+.git/
+*.log
+dist/index.js
+test-*
+e2e/
+scripts/
+seed-*
+create-*
+playwright*
+*.spec.ts
+*.test.ts
