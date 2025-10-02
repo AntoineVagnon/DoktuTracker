@@ -10,7 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from '@/hooks/useAuth';
 
 // Load Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
 function CompleteSubscriptionForm() {
   const stripe = useStripe();
