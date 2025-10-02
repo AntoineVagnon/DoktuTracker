@@ -28,9 +28,18 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   // Use VITE_API_URL if the url starts with /api/
+  const apiUrl = import.meta.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
   const fullUrl = url.startsWith('/api/') 
-    ? `${import.meta.env.VITE_API_URL}${url}`
+    ? `${apiUrl}${url}`
     : url;
+    
+  // Debug logging
+  console.log('🔗 API Request:', { 
+    originalUrl: url, 
+    fullUrl, 
+    apiUrl: import.meta.env.VITE_API_URL,
+    method 
+  });
     
   const res = await fetch(fullUrl, {
     method,
@@ -51,9 +60,17 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const url = queryKey[0] as string;
     // Use VITE_API_URL if the url starts with /api/
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
     const fullUrl = url.startsWith('/api/') 
-      ? `${import.meta.env.VITE_API_URL}${url}`
+      ? `${apiUrl}${url}`
       : url;
+      
+    // Debug logging
+    console.log('🔍 Query Request:', { 
+      originalUrl: url, 
+      fullUrl, 
+      apiUrl: import.meta.env.VITE_API_URL 
+    });
       
     const res = await fetch(fullUrl, {
       credentials: "include",
