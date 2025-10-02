@@ -33,13 +33,6 @@ export async function apiRequest(
     ? `${apiUrl}${url}`
     : url;
     
-  // Debug logging
-  console.log('🔗 API Request:', { 
-    originalUrl: url, 
-    fullUrl, 
-    apiUrl: import.meta.env.VITE_API_URL,
-    method 
-  });
     
   const res = await fetch(fullUrl, {
     method,
@@ -65,12 +58,6 @@ export const getQueryFn: <T>(options: {
       ? `${apiUrl}${url}`
       : url;
       
-    // Debug logging
-    console.log('🔍 Query Request:', { 
-      originalUrl: url, 
-      fullUrl, 
-      apiUrl: import.meta.env.VITE_API_URL 
-    });
       
     const res = await fetch(fullUrl, {
       credentials: "include",

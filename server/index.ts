@@ -11,6 +11,35 @@ const app = express();
 app.set("trust proxy", 1); // Trust first proxy (required for rate limiting behind proxy/load balancer)
 
 // ============================================================================
+// CORS CONFIGURATION - Allow Vercel frontend to access Railway backend
+// ============================================================================
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    'http://localhost:5000',
+    'http://localhost:3000', 
+    'https://doktu-tracker.vercel.app',
+    'https://web-production-b2ce.up.railway.app'
+  ];
+  
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin || '')) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '');
+  }
+  
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
+
+// ============================================================================
 // GUARANTEED REQUEST VISIBILITY - ABSOLUTE TOP PRIORITY
 // ============================================================================
 app.use((req, res, next) => {
