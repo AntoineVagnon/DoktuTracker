@@ -25,8 +25,12 @@ export default function Landing() {
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
 
+  // Log to verify new deployment (will remove after testing)
+  console.log('🚀 Landing page loaded - CORS fix v2 - ' + new Date().toISOString());
+
   const { data: doctors = [], isLoading } = useQuery({
     queryKey: ["/api/doctors"],
+    staleTime: 0, // Force fresh data
   });
 
   // Get subscription data to disable buttons for current/inferior plans
