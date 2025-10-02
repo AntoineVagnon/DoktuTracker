@@ -36,7 +36,11 @@ export async function apiRequest(
     
   const res = await fetch(fullUrl, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers: {
+      ...(data ? { "Content-Type": "application/json" } : {}),
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache"
+    },
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -61,6 +65,10 @@ export const getQueryFn: <T>(options: {
       
     const res = await fetch(fullUrl, {
       credentials: "include",
+      headers: {
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache"
+      }
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
