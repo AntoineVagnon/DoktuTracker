@@ -12,10 +12,17 @@ if (!connectionString) {
   console.error("Please set DATABASE_URL environment variable in Railway dashboard");
   console.error("Format: postgresql://postgres:[password]@[host]:[port]/postgres?sslmode=require");
   
-  // Create a dummy client that will fail gracefully for health checks
+  // Create a proper dummy postgres client that Drizzle expects
   const dummyClient = {
     sql: () => Promise.reject(new Error("Database not configured")),
     end: () => Promise.resolve(),
+    options: {
+      parsers: {},
+      serializers: {},
+      transform: { undefined: null }
+    },
+    parameters: {},
+    types: { setTypeParser: () => {} }
   } as any;
   
   db = drizzle(dummyClient, { schema });
