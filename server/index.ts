@@ -14,6 +14,14 @@ app.set("trust proxy", 1); // Trust first proxy (required for rate limiting behi
 // CORS CONFIGURATION - Allow Vercel frontend to access Railway backend
 // ============================================================================
 app.use((req, res, next) => {
+  // Log CORS request for debugging
+  console.log('🔍 CORS Request:', {
+    origin: req.headers.origin,
+    method: req.method,
+    url: req.url,
+    userAgent: req.headers['user-agent']?.substring(0, 50)
+  });
+  
   const allowedOrigins = [
     'http://localhost:5000',
     'http://localhost:3000', 
@@ -22,20 +30,25 @@ app.use((req, res, next) => {
   ];
   
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin || '')) {
-    res.setHeader('Access-Control-Allow-Origin', origin || '');
+  
+  // More permissive CORS for debugging
+  if (origin && (allowedOrigins.includes(origin) || origin.includes('vercel.app'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
   
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('✅ CORS Preflight handled for:', origin);
     res.status(200).end();
     return;
   }
   
+  console.log('✅ CORS Headers set for:', origin);
   next();
 });
 
