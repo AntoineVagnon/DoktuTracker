@@ -4,6 +4,9 @@ import * as schema from "@shared/schema";
 
 const connectionString = process.env.DATABASE_URL;
 
+// Initialize database connection or dummy client
+let db: ReturnType<typeof drizzle>;
+
 if (!connectionString) {
   console.error("⚠️  DATABASE_URL not set. Database functionality will be limited.");
   console.error("Please set DATABASE_URL environment variable in Railway dashboard");
@@ -15,9 +18,7 @@ if (!connectionString) {
     end: () => Promise.resolve(),
   } as any;
   
-  // Export dummy db for health checks
-  const dummyDb = drizzle(dummyClient, { schema });
-  export { dummyDb as db };
+  db = drizzle(dummyClient, { schema });
 } else {
   console.log('Connecting to database...');
 
@@ -40,7 +41,7 @@ if (!connectionString) {
     },
   });
 
-  export const db = drizzle(client, { schema });
+  db = drizzle(client, { schema });
 
   // Test connection asynchronously
   client`SELECT 1`.then(() => {
@@ -51,3 +52,5 @@ if (!connectionString) {
     console.error('Note: Please verify your Supabase credentials are correct');
   });
 }
+
+export { db };
