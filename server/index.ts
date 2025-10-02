@@ -11,13 +11,21 @@ const app = express();
 app.set("trust proxy", 1); // Trust first proxy (required for rate limiting behind proxy/load balancer)
 
 // ============================================================================
-// CORS CONFIGURATION - Temporary wildcard for debugging
+// CORS CONFIGURATION - Fixed for credentials support
 // ============================================================================
 app.use((req, res, next) => {
-  // Temporary wildcard CORS to fix the issue quickly
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  
+  // Allow specific origins (no wildcard due to credentials)
+  if (origin === 'https://doktu-tracker.vercel.app' || 
+      origin === 'http://localhost:5000' || 
+      origin === 'http://localhost:3000') {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
