@@ -12,3 +12,7 @@ restartPolicyMaxRetries = 10
 NODE_ENV = "production"
 PORT = "3000"
 NPM_CONFIG_PRODUCTION = "false"
+NODE_VERSION = "20"
+
+# Note: Add your Supabase DATABASE_URL in Railway's environment variables dashboard
+# Format: postgresql://postgres:[password]@[host]:[port]/postgres?sslmode=require
