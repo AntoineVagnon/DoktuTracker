@@ -58,9 +58,9 @@ app.use(session({
   resave: false,
   saveUninitialized: true, // Allow sessions for unauthenticated users
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: true, // Required for sameSite: 'none'
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));

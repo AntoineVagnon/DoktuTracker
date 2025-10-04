@@ -101,15 +101,15 @@ authRouter.post('/register', async (req, res) => {
 
       res.cookie('sb-access-token', data.session.access_token, {
         httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true, // Required for sameSite: 'none'
         maxAge: data.session.expires_in * 1000
       });
 
       res.cookie('sb-refresh-token', data.session.refresh_token, {
         httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true, // Required for sameSite: 'none'
         maxAge: 7 * 24 * 60 * 60 * 1000
       });
     }
@@ -157,15 +157,15 @@ authRouter.post('/login', async (req, res) => {
     // Set HTTP-only cookies for additional security
     res.cookie('sb-access-token', data.session.access_token, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: true, // Required for sameSite: 'none'
       maxAge: data.session.expires_in * 1000
     });
 
     res.cookie('sb-refresh-token', data.session.refresh_token, {
       httpOnly: true,
-      sameSite: 'lax', 
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: true, // Required for sameSite: 'none'
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
