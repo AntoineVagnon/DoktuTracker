@@ -15,11 +15,11 @@ export interface User {
 }
 
 export function useAuth() {
-  const { data: user, isLoading, error } = useQuery<User | null>({
+  const { data: user, isLoading, error, refetch } = useQuery<User | null>({
     queryKey: ["/api/auth/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true, // Enable refetch on focus to catch auth changes
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -27,5 +27,6 @@ export function useAuth() {
     user,
     isAuthenticated: !!user && !error,
     isLoading,
+    refetch,
   };
 }

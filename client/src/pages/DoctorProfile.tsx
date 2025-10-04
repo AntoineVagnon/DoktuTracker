@@ -540,13 +540,19 @@ export default function DoctorProfile() {
                               if (response.ok) {
                                 const holdData = await response.json();
                                 console.log('Slot held successfully:', holdData);
-                                
+
                                 // Store the slot ID in sessionStorage as backup
                                 sessionStorage.setItem('heldSlotId', slot.id);
                                 sessionStorage.setItem('heldSlotExpiry', holdData.expiresAt);
-                                
+
+                                // Check authentication - use both useAuth hook and localStorage
+                                const hasLocalStorageAuth = !!localStorage.getItem('doktu_auth');
+                                const isAuthenticated = user || hasLocalStorageAuth;
+
+                                console.log('Auth check:', { user: !!user, hasLocalStorageAuth, isAuthenticated });
+
                                 // Slot successfully held - redirect based on authentication status
-                                if (user) {
+                                if (isAuthenticated) {
                                   // User is authenticated - go directly to checkout
                                   const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${slot.id}`;
                                   console.log('Slot held successfully, user authenticated, redirecting to checkout:', checkoutUrl);
