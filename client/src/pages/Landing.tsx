@@ -29,7 +29,7 @@ export default function Landing() {
   console.log('🚀 Landing page loaded - CORS fix v2 - ' + new Date().toISOString());
 
   const { data: doctors = [], isLoading } = useQuery({
-    queryKey: ["/api/doctors", Date.now()], // Cache bust with timestamp
+    queryKey: ["/api/doctors"],
     staleTime: 0, // Force fresh data
   });
 
