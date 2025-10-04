@@ -29,15 +29,19 @@ export async function apiRequest(
 ): Promise<Response> {
   // Use VITE_API_URL if the url starts with /api/
   const apiUrl = import.meta.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
-  const fullUrl = url.startsWith('/api/') 
+  const fullUrl = url.startsWith('/api/')
     ? `${apiUrl}${url}`
     : url;
-    
-    
+
+  // Get auth token from localStorage
+  const authData = localStorage.getItem('doktu_auth');
+  const token = authData ? JSON.parse(authData).session?.access_token : null;
+
   const res = await fetch(fullUrl, {
     method,
     headers: {
       ...(data ? { "Content-Type": "application/json" } : {}),
+      ...(token ? { "Authorization": `Bearer ${token}` } : {}),
       "Cache-Control": "no-cache",
       "Pragma": "no-cache"
     },
@@ -58,14 +62,18 @@ export const getQueryFn: <T>(options: {
     const url = queryKey[0] as string;
     // Use VITE_API_URL if the url starts with /api/
     const apiUrl = import.meta.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
-    const fullUrl = url.startsWith('/api/') 
+    const fullUrl = url.startsWith('/api/')
       ? `${apiUrl}${url}`
       : url;
-      
-      
+
+    // Get auth token from localStorage
+    const authData = localStorage.getItem('doktu_auth');
+    const token = authData ? JSON.parse(authData).session?.access_token : null;
+
     const res = await fetch(fullUrl, {
       credentials: "include",
       headers: {
+        ...(token ? { "Authorization": `Bearer ${token}` } : {}),
         "Cache-Control": "no-cache",
         "Pragma": "no-cache"
       }

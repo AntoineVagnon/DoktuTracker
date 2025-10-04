@@ -68,12 +68,18 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     },
     onSuccess: (data) => {
       setAuthError(null);
+
+      // Store auth data in localStorage for Authorization header
+      if (data.session) {
+        localStorage.setItem('doktu_auth', JSON.stringify(data));
+      }
+
       toast({
         title: "Login Successful",
         description: "Welcome back!",
       });
       onClose();
-      
+
       // Role-based redirect based on the authenticated user's role
       const userRole = data.user?.role;
       if (userRole === 'doctor') {
@@ -112,6 +118,12 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     },
     onSuccess: (data) => {
       setAuthError(null);
+
+      // Store auth data in localStorage for Authorization header
+      if (data.session) {
+        localStorage.setItem('doktu_auth', JSON.stringify(data));
+      }
+
       toast({
         title: "Account Created",
         description: data.message || "Your account has been created successfully!",

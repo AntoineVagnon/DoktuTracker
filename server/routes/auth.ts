@@ -179,13 +179,19 @@ authRouter.post('/login', async (req, res) => {
     const role = userData?.role || 'patient';
     const email_verified = userData?.email_verified || false;
 
-    return res.json({ 
+    return res.json({
       user: {
         ...data.session.user,
         role,
         email_verified
       },
-      role
+      role,
+      session: {
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+        expires_in: data.session.expires_in,
+        expires_at: data.session.expires_at
+      }
     });
 
   } catch (error: any) {

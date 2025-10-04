@@ -66,6 +66,11 @@ export default function LoginBook() {
         throw new Error(data.error || 'Login failed');
       }
 
+      // Store auth data in localStorage for Authorization header
+      if (data.session) {
+        localStorage.setItem('doktu_auth', JSON.stringify(data));
+      }
+
       // Successful login - redirect to checkout with booking parameters
       const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot || '')}&price=${price}`;
       window.location.href = checkoutUrl;

@@ -801,17 +801,27 @@ export async function setupSupabaseAuth(app: Express) {
 // Authentication middleware
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   try {
+    // Check for Authorization header first (for cross-domain requests)
+    const authHeader = req.headers.authorization;
+    let accessToken = authHeader?.replace('Bearer ', '');
+
+    // Fallback to session cookies
     const session = (req.session as any)?.supabaseSession;
     const userId = (req.session as any)?.userId;
 
+    if (!accessToken) {
+      accessToken = session?.access_token;
+    }
+
     console.log('Auth middleware - Session check:', {
+      hasAuthHeader: !!authHeader,
       hasSession: !!session,
-      hasAccessToken: !!session?.access_token,
+      hasAccessToken: !!accessToken,
       userId: userId,
       sessionId: req.session.id
     });
 
-    if (!session || !session.access_token) {
+    if (!accessToken) {
       console.log('Auth middleware - No session or access token');
       
       // 🚀 TEMPORARY BYPASS FOR TESTING: Allow userId 53 to create appointments
@@ -843,8 +853,8 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     }
 
     // Check if this is a temporary test account session FIRST before any Supabase validation
-    const isTestSession = session.access_token?.startsWith('temp_token_');
-    console.log('Auth middleware - Test session check:', { isTestSession, token: session.access_token?.substring(0, 20) });
+    const isTestSession = accessToken?.startsWith('temp_token_');
+    console.log('Auth middleware - Test session check:', { isTestSession, token: accessToken?.substring(0, 20) });
     
     if (isTestSession) {
       console.log('Auth middleware - Processing test account session');
@@ -922,7 +932,7 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     }
 
     // Get user data to attach to request
-    const { data: { user }, error } = await supabase.auth.getUser(session.access_token);
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
     
     if (error || !user) {
       console.log('Auth middleware - Invalid session:', error?.message);

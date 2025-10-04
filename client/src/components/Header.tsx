@@ -62,7 +62,8 @@ export default function Header() {
         sessionStorage.clear();
         localStorage.removeItem('auth_redirect');
         localStorage.removeItem('booking_redirect');
-        
+        localStorage.removeItem('doktu_auth');
+
         toast({
           title: "Logged out successfully",
           description: "You have been logged out of your account.",
