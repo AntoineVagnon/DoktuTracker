@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from '@/components/CheckoutForm';
+import { apiRequest } from '@/lib/queryClient';
 
 console.log('Stripe Publishable Key:', import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ? 'Available' : 'Missing');
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -59,19 +60,14 @@ export default function Checkout() {
           // If we have a slotId from the URL, re-hold the slot
           if (slotId) {
             console.log('Re-holding slot with ID:', slotId);
-            const reholdResponse = await fetch('/api/slots/hold', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              credentials: 'include',
-              body: JSON.stringify({ slotId })
-            });
-            
+            const reholdResponse = await apiRequest('POST', '/api/slots/hold', { slotId });
+
             if (reholdResponse.ok) {
               const reholdData = await reholdResponse.json();
               console.log('Slot re-held successfully:', reholdData);
-              
+
               // Now get the held slot
-              const heldSlotResponse = await fetch('/api/slots/held');
+              const heldSlotResponse = await apiRequest('GET', '/api/slots/held');
               heldSlotData = await heldSlotResponse.json();
             } else {
               console.error('Failed to re-hold slot');
@@ -81,7 +77,7 @@ export default function Checkout() {
             }
           } else {
             // No slotId provided, check if there's already a held slot
-            const heldSlotResponse = await fetch('/api/slots/held');
+            const heldSlotResponse = await apiRequest('GET', '/api/slots/held');
             heldSlotData = await heldSlotResponse.json();
           }
           
@@ -93,7 +89,7 @@ export default function Checkout() {
         }
 
         // Fetch doctor information
-        const doctorResponse = await fetch(`/api/doctors/${doctorId}`);
+        const doctorResponse = await apiRequest('GET', `/api/doctors/${doctorId}`);
         const doctorData = await doctorResponse.json();
         setDoctor(doctorData);
 
@@ -114,13 +110,13 @@ export default function Checkout() {
         if (appointmentId) {
           // Use existing appointment instead of creating new one
           console.log('🔄 Using existing appointment ID:', appointmentId);
-          const existingAppointmentResponse = await fetch(`/api/appointments/${appointmentId}`);
-          
+          const existingAppointmentResponse = await apiRequest('GET', `/api/appointments/${appointmentId}`);
+
           if (!existingAppointmentResponse.ok) {
             console.error('❌ Failed to fetch appointment:', existingAppointmentResponse.status);
             throw new Error('Failed to fetch existing appointment');
           }
-          
+
           appointmentData = await existingAppointmentResponse.json();
           console.log('🔄 Fetched appointment data:', appointmentData);
           
@@ -198,18 +194,11 @@ export default function Checkout() {
           // TEST: Try the conflict-free endpoint first
           console.log("🧪 Testing conflict-free endpoint first...");
           try {
-            const testResponse = await fetch("/api/appointments/create", {
-              method: "POST",
-              headers: { 
-                "Content-Type": "application/json"
-              },
-              credentials: 'include',
-              body: JSON.stringify({ test: true })
-            });
-            
+            const testResponse = await apiRequest('POST', '/api/appointments/create', { test: true });
+
             const testResult = await testResponse.json();
             console.log("🧪 Test endpoint result:", testResult);
-            
+
             if (testResponse.ok) {
               console.log("✅ Conflict-free endpoint works! Issue is specifically with /api/appointments");
             } else {
@@ -218,20 +207,15 @@ export default function Checkout() {
           } catch (testError) {
             console.log("❌ Test endpoint failed:", testError);
           }
-          
+
           // Use the working endpoint (conflict-free)
           console.log("🔄 Using working /api/appointments/create endpoint...");
-          const appointmentResponse = await fetch('/api/appointments/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({
-              doctorId: doctorId.toString(),
-              timeSlotId: heldSlotData.heldSlot.id,
-              appointmentDate: appointmentDateUTC.toISOString(), // Store as UTC
-              price: price.toString(),
-              status: 'pending_payment'
-            })
+          const appointmentResponse = await apiRequest('POST', '/api/appointments/create', {
+            doctorId: doctorId.toString(),
+            timeSlotId: heldSlotData.heldSlot.id,
+            appointmentDate: appointmentDateUTC.toISOString(), // Store as UTC
+            price: price.toString(),
+            status: 'pending_payment'
           });
 
           if (!appointmentResponse.ok) {
@@ -280,13 +264,9 @@ export default function Checkout() {
 
         // Create payment intent only if appointment is not already paid and not covered by membership
         if (appointmentData.status !== 'paid' && !appointmentData.coverageResult?.isCovered) {
-          const paymentResponse = await fetch('/api/payment/create-intent', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              appointmentId: appointmentData.appointmentId || appointmentData.id,
-              amount: parseFloat(price)
-            })
+          const paymentResponse = await apiRequest('POST', '/api/payment/create-intent', {
+            appointmentId: appointmentData.appointmentId || appointmentData.id,
+            amount: parseFloat(price)
           });
 
           const paymentData = await paymentResponse.json();
