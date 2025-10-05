@@ -633,12 +633,13 @@ export const membershipPlans = pgTable("membership_plans", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name").notNull(), // "Monthly", "6-Month"
   description: text("description"),
-  priceAmount: decimal("price_amount", { precision: 10, scale: 2 }).notNull(), // 45.00, 219.00
+  priceAmount: integer("price_amount").notNull(), // Price in cents: 4500 = €45.00, 21900 = €219.00
   currency: varchar("currency").notNull().default("EUR"),
-  billingInterval: varchar("billing_interval").notNull(), // "month", "6_months"
+  intervalType: varchar("interval_type").notNull(), // "month", "6_months"
   intervalCount: integer("interval_count").notNull().default(1), // 1 for monthly, 6 for semi-annual
   allowancePerCycle: integer("allowance_per_cycle").notNull().default(2), // 2 consultations per month
-  stripePriceId: varchar("stripe_price_id").notNull(), // Stripe price ID
+  stripeProductId: varchar("stripe_product_id"), // Stripe product ID (nullable)
+  stripePriceId: varchar("stripe_price_id"), // Stripe price ID (nullable)
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
