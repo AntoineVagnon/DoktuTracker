@@ -1433,20 +1433,36 @@ export async function registerRoutes(app: Express): Promise<void> {
     try {
       const { doctorId } = req.params;
       console.log(`🔍 Fetching available slots for rescheduling - doctor ID: ${doctorId}`);
-      
-      // Get all slots for this doctor (not just available ones)
+
+      // Get all slots for this doctor
       const allSlots = await storage.getAllDoctorTimeSlots(doctorId);
-      
-      // Filter for available slots only
-      const availableSlots = allSlots.filter(slot => slot.isAvailable);
-      
+
+      // Get all active appointments for this doctor (to double-check against booked slots)
+      const appointments = await storage.getAppointments(undefined, doctorId);
+      const activeAppointments = appointments.filter(apt =>
+        apt.status === 'paid' || apt.status === 'pending' || apt.status === 'confirmed'
+      );
+
+      // Get set of slot IDs that have active appointments
+      const bookedSlotIds = new Set(
+        activeAppointments
+          .map(apt => apt.slotId)
+          .filter(slotId => slotId !== null && slotId !== undefined)
+      );
+
+      // Filter for truly available slots: marked as available AND not booked by an active appointment
+      const availableSlots = allSlots.filter(slot =>
+        slot.isAvailable && !bookedSlotIds.has(slot.id)
+      );
+
       console.log(`📅 Found ${availableSlots.length} available slots out of ${allSlots.length} total slots for doctor ${doctorId}`);
-      
+      console.log(`🔒 Excluded ${bookedSlotIds.size} slots with active appointments`);
+
       // Debug: Show some available slots
       if (availableSlots.length > 0) {
         console.log('Sample available slots:', availableSlots.slice(0, 3).map(s => `${s.date} ${s.startTime}`));
       }
-      
+
       res.json(availableSlots);
     } catch (error) {
       console.error("Error fetching available slots:", error);
