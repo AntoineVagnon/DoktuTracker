@@ -4060,13 +4060,14 @@ export async function registerRoutes(app: Express): Promise<void> {
     });
   });
 
-  // Create a new subscription
+  // Create a new subscription - VERSION 3 REBUILD
   app.post("/api/membership/subscribe", strictLimiter, isAuthenticated, async (req, res) => {
+    console.log('🚀 [SUBSCRIPTION-v3] ENDPOINT CALLED - CODE VERSION 3');
     try {
       const { planId } = req.body;
 
       // CRITICAL: Validate user object exists with detailed logging
-      console.log('📋 [SUBSCRIPTION-v2] Request received for plan:', planId);
+      console.log('📋 [SUBSCRIPTION-v3] Request received for plan:', planId);
       console.log('📋 [SUBSCRIPTION-v2] req.user full object:', JSON.stringify(req.user, null, 2));
       console.log('📋 [SUBSCRIPTION-v2] req.user exists?', !!req.user);
       console.log('📋 [SUBSCRIPTION-v2] req.user.id value:', req.user?.id);
@@ -4075,20 +4076,22 @@ export async function registerRoutes(app: Express): Promise<void> {
 
       // Validate req.user exists
       if (!req.user) {
-        console.error('❌ [SUBSCRIPTION-v2] CRITICAL: req.user is null/undefined');
+        console.error('❌ [SUBSCRIPTION-v3] CRITICAL: req.user is null/undefined');
         return res.status(401).json({
           error: "Authentication failed",
-          details: "User object not found in request - middleware may have failed"
+          details: "User object not found in request - middleware may have failed",
+          version: "v3"
         });
       }
 
       // Validate req.user.id exists
       if (!req.user.id && req.user.id !== 0) {
-        console.error('❌ [SUBSCRIPTION-v2] CRITICAL: req.user.id is missing');
-        console.error('❌ [SUBSCRIPTION-v2] User object:', req.user);
+        console.error('❌ [SUBSCRIPTION-v3] CRITICAL: req.user.id is missing');
+        console.error('❌ [SUBSCRIPTION-v3] User object:', req.user);
         return res.status(401).json({
           error: "Authentication failed",
-          details: `User ID not found - id value is: ${req.user.id}, type: ${typeof req.user.id}`
+          details: `User ID not found - id value is: ${req.user.id}, type: ${typeof req.user.id}`,
+          version: "v3"
         });
       }
 
@@ -4318,7 +4321,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(500).json({
           error: "Failed to create subscription",
           details: subscriptionError.message || "Unknown error during subscription creation",
-          version: "v2" // Version marker to confirm new code is deployed
+          version: "v3" // Version marker to confirm new code is deployed
         });
       }
 
@@ -4335,7 +4338,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       res.status(500).json({
         error: "Internal server error",
         details: error.message || "Unknown error",
-        version: "v2", // Version marker to confirm new code is deployed
+        version: "v3", // Version marker to confirm new code is deployed
         // Include more context for debugging in non-production
         ...(process.env.NODE_ENV !== 'production' && {
           errorType: error.type,
