@@ -19,18 +19,40 @@ export function registerMembershipRoutes(app: Express) {
         return res.status(401).json({ error: "User not authenticated" });
       }
       const userId = parseInt(req.user.id);
-      
+
       console.log(`🔍 Fetching allowance status for user ID: ${userId}`);
-      const allowanceStatus = await membershipService.getAllowanceStatus(userId);
+      let allowanceStatus = await membershipService.getAllowanceStatus(userId);
       console.log(`📊 Allowance status result:`, allowanceStatus);
-      
+
       if (!allowanceStatus) {
         console.log(`❌ No allowance status found for user ${userId}`);
-        return res.json({
-          hasAllowance: false,
-          allowanceStatus: null,
-          message: "No active subscription found"
-        });
+
+        // Check if user has a Stripe subscription but no allowance (needs initialization)
+        if (req.user.stripeSubscriptionId) {
+          console.log(`🔧 User has subscription ${req.user.stripeSubscriptionId} but no allowance - auto-initializing...`);
+          try {
+            await membershipService.createInitialAllowance(userId);
+            console.log(`✅ Auto-initialization successful, fetching allowance again`);
+            allowanceStatus = await membershipService.getAllowanceStatus(userId);
+
+            if (allowanceStatus) {
+              console.log(`✅ Allowance now available after auto-init`);
+            } else {
+              console.log(`⚠️ Allowance still not available after auto-init`);
+            }
+          } catch (initError) {
+            console.error(`❌ Auto-initialization failed:`, initError);
+            // Continue to return no allowance message
+          }
+        }
+
+        if (!allowanceStatus) {
+          return res.json({
+            hasAllowance: false,
+            allowanceStatus: null,
+            message: "No active subscription found"
+          });
+        }
       }
       
       console.log(`✅ Returning allowance data for user ${userId}:`, {
