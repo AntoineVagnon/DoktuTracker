@@ -629,30 +629,47 @@ export class MembershipService {
     const planIdString = stripeSubscription.metadata?.planId || user.pendingSubscriptionPlan || 'monthly_plan';
     console.log(`📋 Plan ID from metadata/user: ${planIdString}`);
 
-    // Get the plan UUID from membershipPlans table
+    // Get the plan configuration
     const planConfig = this.getPlanConfigurations()[planIdString];
     if (!planConfig) {
       throw new Error(`Invalid plan ID: ${planIdString}`);
     }
 
-    // Find or create the plan in the database
+    // Find the plan in the database by interval_count
     const [plan] = await db
       .select()
       .from(membershipPlans)
-      .where(
-        and(
-          eq(membershipPlans.billingInterval, planConfig.intervalCount === 6 ? '6_months' : 'month'),
-          eq(membershipPlans.intervalCount, planConfig.intervalCount)
-        )
-      )
+      .where(eq(membershipPlans.intervalCount, planConfig.intervalCount))
       .limit(1);
 
-    if (!plan) {
-      throw new Error(`Plan not found in database for ${planIdString}. Please ensure membership plans are seeded.`);
-    }
+    let planUuid: string;
 
-    console.log(`✅ Found plan in database:`, { id: plan.id, name: plan.name });
-    const planUuid = plan.id;
+    if (!plan) {
+      console.log(`📝 Plan not found, creating: ${planConfig.name}`);
+
+      // Create the plan if it doesn't exist
+      const [newPlan] = await db
+        .insert(membershipPlans)
+        .values({
+          name: planConfig.name,
+          description: planConfig.description,
+          priceAmount: planConfig.priceAmount, // Integer (cents)
+          currency: 'EUR',
+          intervalType: planConfig.intervalCount === 6 ? '6_months' : 'month',
+          intervalCount: planConfig.intervalCount,
+          allowancePerCycle: planConfig.allowancePerCycle,
+          stripeProductId: null,
+          stripePriceId: null,
+          isActive: true
+        })
+        .returning();
+
+      console.log(`✅ Created plan in database:`, { id: newPlan.id, name: newPlan.name });
+      planUuid = newPlan.id;
+    } else {
+      console.log(`✅ Found plan in database:`, { id: plan.id, name: plan.name });
+      planUuid = plan.id;
+    }
 
     // Handle missing period dates (use fallback dates based on plan)
     let currentPeriodStart: Date;
