@@ -369,17 +369,32 @@ export default function MembershipStart() {
 
   const startSubscription = async () => {
     try {
+      console.log('Creating subscription for plan:', plan.id);
       const response = await apiRequest("POST", "/api/membership/subscribe", {
         planId: plan.id
       });
 
       const data = await response.json();
-      console.log("Subscription response:", data);
+      console.log("Subscription response:", {
+        status: response.status,
+        ok: response.ok,
+        data
+      });
 
       if (!response.ok) {
         // Server returned an error
-        console.error("Subscription creation failed:", data);
-        throw new Error(data.details || data.error || "Failed to create subscription");
+        console.error("❌ Subscription creation failed with status:", response.status);
+        console.error("❌ Full error response:", JSON.stringify(data, null, 2));
+        console.error("❌ Error details:", {
+          error: data.error,
+          details: data.details,
+          errorType: data.errorType,
+          errorCode: data.errorCode,
+          stack: data.stack
+        });
+
+        const errorMsg = data.details || data.error || "Failed to create subscription";
+        throw new Error(errorMsg);
       }
 
       if (data.clientSecret) {
