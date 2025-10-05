@@ -246,13 +246,46 @@ export default function MembershipStart() {
       // Check for localStorage auth token first (faster and more reliable for cross-domain)
       const hasLocalStorageAuth = !!localStorage.getItem('doktu_auth');
 
-      // First check if we have a session directly via API
+      // If we have localStorage auth, proceed immediately without waiting for API
+      if (hasLocalStorageAuth) {
+        console.log('MembershipStart: Found localStorage auth, proceeding to membership check');
+
+        // Clear the registration flag
+        if (justRegistered) {
+          localStorage.removeItem('just_registered');
+        }
+
+        // User is authenticated - check for existing membership
+        try {
+          const membershipResponse = await apiRequest("GET", "/api/membership/subscription");
+          const membershipData = await membershipResponse.json();
+
+          if (membershipData.subscription && membershipData.subscription.status === 'active') {
+            // User already has active membership
+            setExistingMembership(membershipData.subscription);
+            setCurrentStep('guard');
+            analytics.track('membership_guard_shown', {
+              plan_clicked: plan.id
+            });
+          } else {
+            // No active membership - proceed to payment
+            await startSubscription();
+          }
+        } catch (error) {
+          console.error('Membership check error:', error);
+          // No membership - proceed to payment
+          await startSubscription();
+        }
+        return;
+      }
+
+      // No localStorage auth - check via API
       try {
         const authResponse = await apiRequest("GET", "/api/auth/user");
         const authData = await authResponse.json();
 
-        const isAuthenticated = (authData && authData.id) || hasLocalStorageAuth;
-        console.log('MembershipStart auth check:', { hasApiAuth: !!(authData && authData.id), hasLocalStorageAuth, isAuthenticated });
+        const isAuthenticated = authData && authData.id;
+        console.log('MembershipStart auth check:', { hasApiAuth: !!isAuthenticated, hasLocalStorageAuth: false, isAuthenticated });
 
         if (isAuthenticated) {
           // Clear the registration flag
