@@ -626,7 +626,33 @@ export class MembershipService {
       throw new Error(`Subscription is not active: ${stripeSubscription.status}`);
     }
 
-    const planId = stripeSubscription.metadata?.planId || user.pendingSubscriptionPlan || 'monthly_plan';
+    const planIdString = stripeSubscription.metadata?.planId || user.pendingSubscriptionPlan || 'monthly_plan';
+    console.log(`📋 Plan ID from metadata/user: ${planIdString}`);
+
+    // Get the plan UUID from membershipPlans table
+    const planConfig = this.getPlanConfigurations()[planIdString];
+    if (!planConfig) {
+      throw new Error(`Invalid plan ID: ${planIdString}`);
+    }
+
+    // Find or create the plan in the database
+    const [plan] = await db
+      .select()
+      .from(membershipPlans)
+      .where(
+        and(
+          eq(membershipPlans.billingInterval, planConfig.intervalCount === 6 ? '6_months' : 'month'),
+          eq(membershipPlans.intervalCount, planConfig.intervalCount)
+        )
+      )
+      .limit(1);
+
+    if (!plan) {
+      throw new Error(`Plan not found in database for ${planIdString}. Please ensure membership plans are seeded.`);
+    }
+
+    console.log(`✅ Found plan in database:`, { id: plan.id, name: plan.name });
+    const planUuid = plan.id;
 
     // Handle missing period dates (use fallback dates based on plan)
     let currentPeriodStart: Date;
@@ -642,7 +668,6 @@ export class MembershipService {
       console.warn(`⚠️ Stripe subscription missing period dates, using fallback`);
       currentPeriodStart = new Date();
 
-      const planConfig = this.getPlanConfigurations()[planId];
       if (planConfig.intervalCount === 6) {
         // 6-month plan
         currentPeriodEnd = new Date(currentPeriodStart);
@@ -667,7 +692,7 @@ export class MembershipService {
     // Create subscription record
     const subscriptionData: InsertMembershipSubscription = {
       patientId,
-      planId,
+      planId: planUuid,
       stripeSubscriptionId: user.stripeSubscriptionId,
       stripeCustomerId: stripeSubscription.customer as string,
       status: 'active',
@@ -683,10 +708,12 @@ export class MembershipService {
       .values(subscriptionData)
       .returning();
 
+    console.log(`✅ Created subscription record with ID: ${subscription.id}`);
+
     // Create initial allowance cycle
     await this.createInitialAllowanceCycle(
       subscription.id,
-      planId,
+      planIdString,
       currentPeriodStart,
       currentPeriodEnd
     );
