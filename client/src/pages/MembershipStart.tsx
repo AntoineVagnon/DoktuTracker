@@ -242,23 +242,29 @@ export default function MembershipStart() {
     const checkAuthAndMembership = async (retryCount = 0) => {
       // Check if user just registered
       const justRegistered = localStorage.getItem('just_registered') === 'true';
-      
+
+      // Check for localStorage auth token first (faster and more reliable for cross-domain)
+      const hasLocalStorageAuth = !!localStorage.getItem('doktu_auth');
+
       // First check if we have a session directly via API
       try {
         const authResponse = await apiRequest("GET", "/api/auth/user");
         const authData = await authResponse.json();
-        
-        if (authData && authData.id) {
+
+        const isAuthenticated = (authData && authData.id) || hasLocalStorageAuth;
+        console.log('MembershipStart auth check:', { hasApiAuth: !!(authData && authData.id), hasLocalStorageAuth, isAuthenticated });
+
+        if (isAuthenticated) {
           // Clear the registration flag
           if (justRegistered) {
             localStorage.removeItem('just_registered');
           }
-          
+
           // User is authenticated - check for existing membership
           try {
             const membershipResponse = await apiRequest("GET", "/api/membership/subscription");
             const membershipData = await membershipResponse.json();
-            
+
             if (membershipData.subscription && membershipData.subscription.status === 'active') {
               // User already has active membership
               setExistingMembership(membershipData.subscription);
