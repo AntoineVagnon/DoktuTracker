@@ -3109,44 +3109,52 @@ export async function registerRoutes(app: Express): Promise<void> {
   // ADMIN: Sync existing paid appointments with slot availability
   app.post("/api/admin/sync-appointments-slots", async (req, res) => {
     try {
-      console.log('🔄 Starting appointment-slot synchronization...');
-      
-      // Get all paid appointments for doctorId=9
-      const appointments = await storage.getAppointments(undefined, "9");
-      const paidAppointments = appointments.filter(apt => apt.status === 'paid');
-      
-      console.log(`Found ${paidAppointments.length} paid appointments to sync`);
-      
-      let syncCount = 0;
-      
-      for (const appointment of paidAppointments) {
-        const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
-        const appointmentDate = new Date(appointment.appointmentDate);
-        const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format
-        const appointmentDateString = appointmentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
-        
-        console.log(`🔍 Syncing appointment ${appointment.id}: ${appointmentDateString} ${appointmentTimeString}`);
-        
-        const matchingSlot = timeSlots.find(slot => 
-          slot.date === appointmentDateString && 
-          slot.startTime === appointmentTimeString &&
-          slot.isAvailable === true
-        );
-        
-        if (matchingSlot) {
-          await storage.updateTimeSlot(matchingSlot.id, { isAvailable: false });
-          console.log(`✅ Marked slot ${matchingSlot.id} as unavailable for appointment ${appointment.id}`);
-          syncCount++;
-        } else {
-          console.log(`⚠️ No available slot found for appointment ${appointment.id}`);
+      console.log('🔄 Starting appointment-slot synchronization for all paid appointments...');
+
+      // Get all doctors
+      const doctors = await storage.getDoctors();
+      let totalSyncCount = 0;
+      let totalAppointments = 0;
+
+      for (const doctor of doctors) {
+        const appointments = await storage.getAppointments(undefined, doctor.id.toString());
+        const paidAppointments = appointments.filter(apt => apt.status === 'paid');
+
+        totalAppointments += paidAppointments.length;
+
+        console.log(`🔍 Doctor ${doctor.id}: Found ${paidAppointments.length} paid appointments`);
+
+        for (const appointment of paidAppointments) {
+          // Use slotId directly if available
+          if (appointment.slotId) {
+            // Check if slot is currently available
+            const [slot] = await db
+              .select()
+              .from(doctorTimeSlots)
+              .where(eq(doctorTimeSlots.id, appointment.slotId))
+              .limit(1);
+
+            if (slot && slot.isAvailable) {
+              await storage.updateTimeSlot(appointment.slotId, { isAvailable: false });
+              console.log(`✅ Marked slot ${appointment.slotId} as unavailable for appointment ${appointment.id}`);
+              totalSyncCount++;
+            } else if (!slot) {
+              console.warn(`⚠️ Appointment ${appointment.id} references non-existent slot ${appointment.slotId}`);
+            } else {
+              console.log(`✓ Slot ${appointment.slotId} already unavailable for appointment ${appointment.id}`);
+            }
+          } else {
+            console.warn(`⚠️ Appointment ${appointment.id} has no slotId - skipping`);
+          }
         }
       }
-      
-      res.json({ 
-        success: true, 
-        message: `Synchronized ${syncCount} appointments with slots`,
-        totalAppointments: paidAppointments.length,
-        syncedSlots: syncCount
+
+      res.json({
+        success: true,
+        message: `Synchronized ${totalSyncCount} appointments with slots across ${doctors.length} doctors`,
+        totalAppointments,
+        syncedSlots: totalSyncCount,
+        doctorsProcessed: doctors.length
       });
     } catch (error) {
       console.error('❌ Sync error:', error);
@@ -3188,24 +3196,13 @@ export async function registerRoutes(app: Express): Promise<void> {
             } catch (error) {
               console.error(`❌ Webhook: Failed to create Zoom meeting for appointment ${appointmentId}:`, error);
             }
-            
-            // Mark corresponding slot as unavailable
-            const timeSlots = await storage.getDoctorTimeSlots(appointment.doctorId);
-            const appointmentDate = new Date(appointment.appointmentDate);
-            const appointmentTimeString = appointmentDate.toTimeString().slice(0, 8); // HH:MM:SS format (local time)
-            const appointmentDateString = appointmentDate.toISOString().split('T')[0];
-            
-            console.log(`🔍 Webhook: Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString} (local time)`);
-            
-            const matchingSlot = timeSlots.find(slot => 
-              slot.date === appointmentDateString && 
-              slot.startTime === appointmentTimeString &&
-              slot.isAvailable
-            );
-            
-            if (matchingSlot) {
-              await storage.updateTimeSlot(matchingSlot.id, { isAvailable: false });
-              console.log(`🔒 Webhook: Marked slot ${matchingSlot.id} as unavailable`);
+
+            // Mark corresponding slot as unavailable using the appointment's slotId
+            if (appointment.slotId) {
+              await storage.updateTimeSlot(appointment.slotId, { isAvailable: false });
+              console.log(`🔒 Webhook: Marked slot ${appointment.slotId} as unavailable`);
+            } else {
+              console.warn(`⚠️ Webhook: Appointment ${appointmentId} has no slotId - cannot mark slot unavailable`);
             }
             
             // Trigger appointment confirmation notification
