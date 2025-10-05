@@ -92,11 +92,8 @@ class EmailProcessor {
 export const emailProcessor = new EmailProcessor();
 
 // Start processor automatically when module is imported
-// emailProcessor.start(1); // Check every minute - DISABLED to save resources
-
-// Optional backup processing every 30 minutes for edge cases
-// This is a safety net to catch any notifications that immediate processing might have missed
-console.log('🛡️  Setting up backup email processor (every 30 minutes) for safety...');
-emailProcessor.start(30); // Check every 30 minutes as backup
+// Process every 2 minutes for timely delivery of notifications (account registration, password resets, etc.)
+console.log('📧 Setting up email processor (checking every 2 minutes)...');
+emailProcessor.start(2); // Check every 2 minutes for timely delivery
 
 export default EmailProcessor;

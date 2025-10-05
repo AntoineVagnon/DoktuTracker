@@ -282,7 +282,7 @@ export async function setupSupabaseAuth(app: Express) {
         try {
           const { UniversalNotificationService, TriggerCode } = await import('./services/notificationService');
           const notificationService = new UniversalNotificationService();
-          
+
           await notificationService.scheduleNotification({
             userId: user.id,
             triggerCode: TriggerCode.ACCOUNT_REG_SUCCESS,
@@ -296,6 +296,12 @@ export async function setupSupabaseAuth(app: Express) {
             }
           });
           console.log(`📧 Welcome email scheduled for ${user.email}`);
+
+          // Trigger immediate email processing to send welcome email without delay
+          const { emailProcessor } = await import('./services/emailProcessor');
+          emailProcessor.processNow().catch(err => {
+            console.error('📧 Failed to trigger immediate email processing:', err);
+          });
         } catch (emailError) {
           console.error('📧 Failed to schedule welcome email:', emailError);
           // Don't fail registration if email scheduling fails
