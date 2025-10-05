@@ -18,13 +18,14 @@ declare global {
   namespace Express {
     interface Request {
       user?: {
-        id: string;
+        id: number; // Changed from string to number to match database schema
         email?: string;
         firstName?: string;
         lastName?: string;
         stripeSubscriptionId?: string;
         stripeCustomerId?: string;
         pendingSubscriptionPlan?: string;
+        role?: string;
       };
     }
   }
