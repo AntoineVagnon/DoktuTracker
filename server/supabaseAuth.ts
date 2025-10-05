@@ -909,6 +909,12 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
       // Attach user profile to request for use in route handlers
       (req as any).user = userProfile;
       console.log('Auth middleware - Success for test user:', userProfile.email);
+      console.log('Auth middleware - Attached test user profile:', {
+        id: userProfile.id,
+        email: userProfile.email,
+        hasId: !!userProfile.id,
+        idType: typeof userProfile.id
+      });
       return next();
     }
 
@@ -974,8 +980,14 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
     // Attach user profile to request for use in route handlers
     (req as any).user = userProfile;
-    
+
     console.log('Auth middleware - Success for:', userProfile.email);
+    console.log('Auth middleware - Attached user profile:', {
+      id: userProfile.id,
+      email: userProfile.email,
+      hasId: !!userProfile.id,
+      idType: typeof userProfile.id
+    });
     next();
   } catch (error: any) {
     console.error('Authentication middleware error:', error);
