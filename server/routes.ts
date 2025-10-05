@@ -51,6 +51,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-08-27.basil",
 });
 
+// Initialize membership service with Stripe instance
+membershipService.initialize(stripe);
+console.log('✅ Membership service initialized with Stripe');
+
 export async function registerRoutes(app: Express): Promise<void> {
   // ============================================================================
   // EMERGENCY DEBUG - ULTRA-SIMPLE LOG TO TEST IF ANYTHING WORKS
