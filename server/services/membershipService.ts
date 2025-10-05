@@ -561,21 +561,41 @@ export class MembershipService {
       .where(eq(membershipSubscriptions.stripeSubscriptionId, user.stripeSubscriptionId))
       .limit(1);
 
-    if (existingSubscription) {
-      // Check if allowance cycle already exists
-      const existingCycle = await this.getCurrentAllowanceCycle(existingSubscription.id);
-      if (existingCycle) {
-        throw new Error('Allowance cycle already exists for this subscription');
-      }
+    console.log(`🔍 Existing subscription check:`, { exists: !!existingSubscription, subscription: existingSubscription });
 
-      // Create allowance cycle for existing subscription
-      await this.createInitialAllowanceCycle(
-        existingSubscription.id,
-        existingSubscription.planId,
-        existingSubscription.currentPeriodStart,
-        existingSubscription.currentPeriodEnd
-      );
-      return;
+    if (existingSubscription) {
+      // Validate that existing subscription has valid dates
+      const hasValidDates = existingSubscription.currentPeriodStart &&
+                           existingSubscription.currentPeriodEnd &&
+                           existingSubscription.currentPeriodStart instanceof Date &&
+                           existingSubscription.currentPeriodEnd instanceof Date &&
+                           !isNaN(existingSubscription.currentPeriodStart.getTime()) &&
+                           !isNaN(existingSubscription.currentPeriodEnd.getTime());
+
+      if (!hasValidDates) {
+        console.warn(`⚠️ Existing subscription has invalid dates, deleting and recreating...`);
+        // Delete the broken subscription record
+        await db
+          .delete(membershipSubscriptions)
+          .where(eq(membershipSubscriptions.id, existingSubscription.id));
+        console.log(`🗑️ Deleted broken subscription record`);
+      } else {
+        // Check if allowance cycle already exists
+        const existingCycle = await this.getCurrentAllowanceCycle(existingSubscription.id);
+        if (existingCycle) {
+          throw new Error('Allowance cycle already exists for this subscription');
+        }
+
+        // Create allowance cycle for existing subscription
+        console.log(`✅ Using existing subscription with valid dates`);
+        await this.createInitialAllowanceCycle(
+          existingSubscription.id,
+          existingSubscription.planId,
+          existingSubscription.currentPeriodStart,
+          existingSubscription.currentPeriodEnd
+        );
+        return;
+      }
     }
 
     // Fetch subscription details from Stripe
