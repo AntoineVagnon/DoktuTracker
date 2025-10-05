@@ -577,47 +577,13 @@ export default function Membership() {
           <div className="mb-8">
             <Card className="border-green-200 bg-green-50">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <span className="font-medium text-green-800">Active Subscription</span>
-                    </div>
-                    <p className="text-sm text-green-700 mt-1">
-                      You currently have an active membership plan.
-                    </p>
-                  </div>
-                  <Button
-                    onClick={async () => {
-                      try {
-                        const response = await apiRequest("POST", "/api/membership/initialize-allowance");
-                        const data = await response.json();
-                        if (data.success) {
-                          toast({
-                            title: "Success",
-                            description: "Allowance initialized! Please refresh the page.",
-                          });
-                          setTimeout(() => window.location.reload(), 1500);
-                        } else {
-                          toast({
-                            title: "Info",
-                            description: data.message || "Already initialized",
-                          });
-                        }
-                      } catch (error: any) {
-                        toast({
-                          title: "Error",
-                          description: error.message || "Failed to initialize",
-                          variant: "destructive",
-                        });
-                      }
-                    }}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Initialize Allowance
-                  </Button>
+                <div className="flex items-center space-x-2">
+                  <Check className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-green-800">Active Subscription</span>
                 </div>
+                <p className="text-sm text-green-700 mt-1">
+                  You currently have an active membership plan.
+                </p>
               </CardContent>
             </Card>
           </div>
