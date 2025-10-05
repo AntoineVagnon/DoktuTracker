@@ -4351,6 +4351,46 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Manual endpoint to create initial allowance for user (temporary fix for existing subscriptions)
+  app.post("/api/membership/initialize-allowance", isAuthenticated, async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+      const userId = req.user.id;
+
+      console.log(`🔧 Manual allowance initialization for user ${userId}`);
+
+      const { membershipService } = await import('./services/membershipService');
+
+      // Check if user already has allowance
+      const existingAllowance = await membershipService.getAllowanceStatus(userId);
+      if (existingAllowance) {
+        return res.json({
+          success: false,
+          message: "User already has an active allowance cycle",
+          allowanceStatus: existingAllowance
+        });
+      }
+
+      // Create initial allowance
+      await membershipService.createInitialAllowance(userId);
+      const newAllowance = await membershipService.getAllowanceStatus(userId);
+
+      res.json({
+        success: true,
+        message: "Allowance cycle created successfully",
+        allowanceStatus: newAllowance
+      });
+    } catch (error: any) {
+      console.error('❌ Failed to initialize allowance:', error);
+      res.status(500).json({
+        error: "Failed to initialize allowance",
+        details: error.message
+      });
+    }
+  });
+
   // Cancel subscription
   app.post("/api/membership/cancel", isAuthenticated, async (req, res) => {
     try {
@@ -4511,8 +4551,23 @@ export async function registerRoutes(app: Express): Promise<void> {
           // Activate subscription if it's the first payment
           if (invoice.subscription && invoice.billing_reason === 'subscription_create') {
             console.log('✅ Initial subscription payment successful');
+
             // Grant initial allowance for the membership
-            // This would be implemented when the membership tables are created
+            try {
+              const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+              const userId = subscription.metadata?.userId;
+
+              if (userId) {
+                console.log(`🎁 Creating initial allowance cycle for user ${userId}`);
+                const { membershipService } = await import('./services/membershipService');
+                await membershipService.createInitialAllowance(parseInt(userId));
+                console.log(`✅ Initial allowance created for user ${userId}`);
+              } else {
+                console.error('❌ No userId in subscription metadata, cannot create allowance');
+              }
+            } catch (error) {
+              console.error('❌ Failed to create initial allowance:', error);
+            }
           }
           break;
 
