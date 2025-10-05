@@ -4047,6 +4047,19 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Test endpoint to check user object
+  app.get("/api/test/user", isAuthenticated, async (req, res) => {
+    console.log('🧪 Test endpoint - req.user:', JSON.stringify(req.user, null, 2));
+    res.json({
+      user: req.user,
+      hasUser: !!req.user,
+      hasId: !!req.user?.id,
+      id: req.user?.id,
+      idType: typeof req.user?.id,
+      email: req.user?.email
+    });
+  });
+
   // Create a new subscription
   app.post("/api/membership/subscribe", strictLimiter, isAuthenticated, async (req, res) => {
     try {
