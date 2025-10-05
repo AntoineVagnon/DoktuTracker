@@ -4060,19 +4060,21 @@ export async function registerRoutes(app: Express): Promise<void> {
     });
   });
 
-  // Create a new subscription - VERSION 3 REBUILD
+  // Create a new subscription - VERSION 4 WITH EARLY CATCH
   app.post("/api/membership/subscribe", strictLimiter, isAuthenticated, async (req, res) => {
-    console.log('🚀 [SUBSCRIPTION-v3] ENDPOINT CALLED - CODE VERSION 3');
     try {
+      console.log('🚀 [SUBSCRIPTION-v4] ENDPOINT CALLED - CODE VERSION 4');
+
       const { planId } = req.body;
+      console.log('📋 [SUBSCRIPTION-v4] Body parsed, planId:', planId);
 
       // CRITICAL: Validate user object exists with detailed logging
-      console.log('📋 [SUBSCRIPTION-v3] Request received for plan:', planId);
-      console.log('📋 [SUBSCRIPTION-v2] req.user full object:', JSON.stringify(req.user, null, 2));
-      console.log('📋 [SUBSCRIPTION-v2] req.user exists?', !!req.user);
-      console.log('📋 [SUBSCRIPTION-v2] req.user.id value:', req.user?.id);
-      console.log('📋 [SUBSCRIPTION-v2] req.user.id type:', typeof req.user?.id);
-      console.log('📋 [SUBSCRIPTION-v2] req.user.email:', req.user?.email);
+      console.log('📋 [SUBSCRIPTION-v4] About to check req.user...');
+      console.log('📋 [SUBSCRIPTION-v4] req.user full object:', JSON.stringify(req.user, null, 2));
+      console.log('📋 [SUBSCRIPTION-v4] req.user exists?', !!req.user);
+      console.log('📋 [SUBSCRIPTION-v4] req.user.id value:', req.user?.id);
+      console.log('📋 [SUBSCRIPTION-v4] req.user.id type:', typeof req.user?.id);
+      console.log('📋 [SUBSCRIPTION-v4] req.user.email:', req.user?.email);
 
       // Validate req.user exists
       if (!req.user) {
@@ -4080,18 +4082,18 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(401).json({
           error: "Authentication failed",
           details: "User object not found in request - middleware may have failed",
-          version: "v3"
+          version: "v4"
         });
       }
 
       // Validate req.user.id exists
       if (!req.user.id && req.user.id !== 0) {
-        console.error('❌ [SUBSCRIPTION-v3] CRITICAL: req.user.id is missing');
-        console.error('❌ [SUBSCRIPTION-v3] User object:', req.user);
+        console.error('❌ [SUBSCRIPTION-v4] CRITICAL: req.user.id is missing');
+        console.error('❌ [SUBSCRIPTION-v4] User object:', req.user);
         return res.status(401).json({
           error: "Authentication failed",
           details: `User ID not found - id value is: ${req.user.id}, type: ${typeof req.user.id}`,
-          version: "v3"
+          version: "v4"
         });
       }
 
@@ -4321,7 +4323,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(500).json({
           error: "Failed to create subscription",
           details: subscriptionError.message || "Unknown error during subscription creation",
-          version: "v3" // Version marker to confirm new code is deployed
+          version: "v4" // Version marker to confirm new code is deployed
         });
       }
 
@@ -4338,7 +4340,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       res.status(500).json({
         error: "Internal server error",
         details: error.message || "Unknown error",
-        version: "v3", // Version marker to confirm new code is deployed
+        version: "v4", // Version marker to confirm new code is deployed
         // Include more context for debugging in non-production
         ...(process.env.NODE_ENV !== 'production' && {
           errorType: error.type,
