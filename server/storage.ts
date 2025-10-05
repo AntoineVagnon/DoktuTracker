@@ -383,6 +383,10 @@ export class PostgresStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await this.dbConnection.select().from(users).where(eq(users.email, email));
+    console.log('🔍 [getUserByEmail] Raw user from database:', JSON.stringify(user, null, 2));
+    console.log('🔍 [getUserByEmail] User keys:', user ? Object.keys(user) : 'null');
+    console.log('🔍 [getUserByEmail] User.id value:', user?.id);
+    console.log('🔍 [getUserByEmail] User.id type:', typeof user?.id);
     return user;
   }
 
