@@ -455,7 +455,7 @@ export class PostgresStorage implements IStorage {
       throw new Error('Invalid user ID');
     }
 
-    console.log('📱 updateUser input:', { userId, updates });
+    console.log('📱 updateUser input:', { id, updates });
 
     const updateData = {
       ...updates,
@@ -465,7 +465,7 @@ export class PostgresStorage implements IStorage {
     const [updatedUser] = await db
       .update(users)
       .set(updateData)
-      .where(eq(users.id, userId))
+      .where(eq(users.id, id))
       .returning();
 
     if (!updatedUser) {
