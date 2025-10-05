@@ -543,6 +543,8 @@ export class MembershipService {
    * Used for retroactive allowance creation when subscription was paid before webhook was set up
    */
   async createInitialAllowance(patientId: number): Promise<void> {
+    console.log(`🔧 Starting createInitialAllowance for patient ${patientId}`);
+
     // Get user with subscription ID
     const [user] = await db
       .select()
@@ -554,48 +556,58 @@ export class MembershipService {
       throw new Error('User does not have a Stripe subscription');
     }
 
-    // Check if subscription record already exists
+    console.log(`✅ User has Stripe subscription: ${user.stripeSubscriptionId}`);
+
+    // Clean up any potentially corrupted records first
+    try {
+      const existingRecords = await db
+        .select()
+        .from(membershipSubscriptions)
+        .where(eq(membershipSubscriptions.stripeSubscriptionId, user.stripeSubscriptionId));
+
+      console.log(`🔍 Found ${existingRecords.length} existing subscription records`);
+
+      for (const record of existingRecords) {
+        console.log(`🔍 Checking record:`, { id: record.id, planId: record.planId, hasValidDates: !!record.currentPeriodStart && !!record.currentPeriodEnd });
+
+        // Delete cycles first
+        try {
+          const deletedCycles = await db
+            .delete(membershipCycles)
+            .where(eq(membershipCycles.subscriptionId, record.id))
+            .returning();
+          if (deletedCycles.length > 0) {
+            console.log(`🗑️ Deleted ${deletedCycles.length} cycles for record ${record.id}`);
+          }
+        } catch (err) {
+          console.warn(`⚠️ Could not delete cycles for ${record.id}:`, err);
+        }
+
+        // Then delete subscription
+        await db
+          .delete(membershipSubscriptions)
+          .where(eq(membershipSubscriptions.id, record.id));
+        console.log(`🗑️ Deleted subscription record ${record.id}`);
+      }
+
+      console.log(`✅ Cleanup complete, starting fresh`);
+    } catch (cleanupError) {
+      console.error(`❌ Cleanup error (continuing anyway):`, cleanupError);
+    }
+
+    // Check if subscription record already exists (should be none after cleanup)
     const [existingSubscription] = await db
       .select()
       .from(membershipSubscriptions)
       .where(eq(membershipSubscriptions.stripeSubscriptionId, user.stripeSubscriptionId))
       .limit(1);
 
-    console.log(`🔍 Existing subscription check:`, { exists: !!existingSubscription, subscription: existingSubscription });
+    console.log(`🔍 After cleanup check:`, { exists: !!existingSubscription });
 
+    // After cleanup, there should be no existing subscription
     if (existingSubscription) {
-      // Validate that existing subscription has valid dates
-      const hasValidDates = existingSubscription.currentPeriodStart &&
-                           existingSubscription.currentPeriodEnd &&
-                           existingSubscription.currentPeriodStart instanceof Date &&
-                           existingSubscription.currentPeriodEnd instanceof Date &&
-                           !isNaN(existingSubscription.currentPeriodStart.getTime()) &&
-                           !isNaN(existingSubscription.currentPeriodEnd.getTime());
-
-      if (!hasValidDates) {
-        console.warn(`⚠️ Existing subscription has invalid dates, deleting and recreating...`);
-        // Delete the broken subscription record
-        await db
-          .delete(membershipSubscriptions)
-          .where(eq(membershipSubscriptions.id, existingSubscription.id));
-        console.log(`🗑️ Deleted broken subscription record`);
-      } else {
-        // Check if allowance cycle already exists
-        const existingCycle = await this.getCurrentAllowanceCycle(existingSubscription.id);
-        if (existingCycle) {
-          throw new Error('Allowance cycle already exists for this subscription');
-        }
-
-        // Create allowance cycle for existing subscription
-        console.log(`✅ Using existing subscription with valid dates`);
-        await this.createInitialAllowanceCycle(
-          existingSubscription.id,
-          existingSubscription.planId,
-          existingSubscription.currentPeriodStart,
-          existingSubscription.currentPeriodEnd
-        );
-        return;
-      }
+      console.error(`⚠️ Unexpected: subscription still exists after cleanup, this should not happen`);
+      throw new Error('Failed to clean up existing records');
     }
 
     // Fetch subscription details from Stripe
