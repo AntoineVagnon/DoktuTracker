@@ -4280,9 +4280,23 @@ export async function registerRoutes(app: Express): Promise<void> {
 
     } catch (error: any) {
       console.error("Error in subscription creation:", error);
-      res.status(500).json({ 
+      console.error("Error stack:", error.stack);
+      console.error("Error details:", {
+        message: error.message,
+        type: error.type,
+        code: error.code,
+        userId: req.user?.id,
+        email: req.user?.email
+      });
+      res.status(500).json({
         error: "Internal server error",
-        details: error.message || "Unknown error"
+        details: error.message || "Unknown error",
+        // Include more context for debugging in non-production
+        ...(process.env.NODE_ENV !== 'production' && {
+          errorType: error.type,
+          errorCode: error.code,
+          stack: error.stack?.split('\n').slice(0, 3)
+        })
       });
     }
   });

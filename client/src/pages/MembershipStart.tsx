@@ -333,10 +333,16 @@ export default function MembershipStart() {
       const response = await apiRequest("POST", "/api/membership/subscribe", {
         planId: plan.id
       });
-      
+
       const data = await response.json();
       console.log("Subscription response:", data);
-      
+
+      if (!response.ok) {
+        // Server returned an error
+        console.error("Subscription creation failed:", data);
+        throw new Error(data.details || data.error || "Failed to create subscription");
+      }
+
       if (data.clientSecret) {
         setClientSecret(data.clientSecret);
         setPaymentType(data.paymentType || 'payment'); // Store payment type from backend
@@ -348,11 +354,12 @@ export default function MembershipStart() {
       } else {
         throw new Error("Failed to create subscription - no client secret received");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating subscription:", error);
+      const errorMessage = error.message || "Failed to start subscription process. Please try again.";
       toast({
-        title: "Error",
-        description: "Failed to start subscription process. Please try again.",
+        title: "Subscription Error",
+        description: errorMessage,
         variant: "destructive",
       });
       setCurrentStep('auth');
