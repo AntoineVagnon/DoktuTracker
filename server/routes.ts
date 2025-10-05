@@ -4051,6 +4051,19 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/membership/subscribe", strictLimiter, isAuthenticated, async (req, res) => {
     try {
       const { planId } = req.body;
+
+      console.log('📋 Subscription request - req.user:', {
+        user: req.user,
+        hasUser: !!req.user,
+        userId: req.user?.id,
+        userEmail: req.user?.email
+      });
+
+      if (!req.user || !req.user.id) {
+        console.error('❌ Missing user or user ID in authenticated request');
+        return res.status(401).json({ error: "User not authenticated properly" });
+      }
+
       const userId = req.user.id;
       const userEmail = req.user.email;
 
