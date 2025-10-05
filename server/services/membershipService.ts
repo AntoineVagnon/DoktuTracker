@@ -594,16 +594,35 @@ export class MembershipService {
       throw new Error(`Subscription is not active: ${stripeSubscription.status}`);
     }
 
-    // Validate timestamp values before creating Date objects
-    if (!stripeSubscription.current_period_start || !stripeSubscription.current_period_end) {
-      throw new Error(`Invalid subscription period dates: start=${stripeSubscription.current_period_start}, end=${stripeSubscription.current_period_end}`);
+    const planId = stripeSubscription.metadata?.planId || user.pendingSubscriptionPlan || 'monthly_plan';
+
+    // Handle missing period dates (use fallback dates based on plan)
+    let currentPeriodStart: Date;
+    let currentPeriodEnd: Date;
+
+    if (stripeSubscription.current_period_start && stripeSubscription.current_period_end) {
+      // Use Stripe's dates if available
+      currentPeriodStart = new Date(stripeSubscription.current_period_start * 1000);
+      currentPeriodEnd = new Date(stripeSubscription.current_period_end * 1000);
+      console.log(`✅ Using Stripe period dates`);
+    } else {
+      // Fallback: use current date and calculate end based on plan
+      console.warn(`⚠️ Stripe subscription missing period dates, using fallback`);
+      currentPeriodStart = new Date();
+
+      const planConfig = this.getPlanConfigurations()[planId];
+      if (planConfig.intervalCount === 6) {
+        // 6-month plan
+        currentPeriodEnd = new Date(currentPeriodStart);
+        currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 6);
+      } else {
+        // Monthly plan
+        currentPeriodEnd = new Date(currentPeriodStart);
+        currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
+      }
     }
 
-    const planId = stripeSubscription.metadata?.planId || user.pendingSubscriptionPlan || 'monthly_plan';
-    const currentPeriodStart = new Date(stripeSubscription.current_period_start * 1000);
-    const currentPeriodEnd = new Date(stripeSubscription.current_period_end * 1000);
-
-    console.log(`📅 Converted dates:`, {
+    console.log(`📅 Final dates to use:`, {
       currentPeriodStart: currentPeriodStart.toISOString(),
       currentPeriodEnd: currentPeriodEnd.toISOString()
     });
