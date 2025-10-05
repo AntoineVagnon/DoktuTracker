@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Calendar, Clock, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 
 export default function PaymentSuccess() {
   const [location, navigate] = useLocation();
@@ -35,14 +36,8 @@ export default function PaymentSuccess() {
   const confirmPayment = async (paymentIntentId: string) => {
     try {
       console.log('Confirming payment with ID:', paymentIntentId);
-      
-      const response = await fetch('/api/payment/confirm', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ paymentIntentId }),
-      });
+
+      const response = await apiRequest('POST', '/api/payment/confirm', { paymentIntentId });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
