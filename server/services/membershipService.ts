@@ -93,9 +93,26 @@ export class MembershipService {
     currentPeriodStart: Date,
     currentPeriodEnd: Date
   ): Promise<MembershipCycle> {
+    console.log(`🔄 createInitialAllowanceCycle called with:`, {
+      subscriptionId,
+      planId,
+      currentPeriodStart,
+      currentPeriodEnd,
+      isStartDateValid: currentPeriodStart instanceof Date && !isNaN(currentPeriodStart.getTime()),
+      isEndDateValid: currentPeriodEnd instanceof Date && !isNaN(currentPeriodEnd.getTime())
+    });
+
     const planConfig = this.getPlanConfigurations()[planId];
     if (!planConfig) {
       throw new Error(`Invalid plan ID: ${planId}`);
+    }
+
+    // Validate dates before creating cycle
+    if (!(currentPeriodStart instanceof Date) || isNaN(currentPeriodStart.getTime())) {
+      throw new Error(`Invalid currentPeriodStart date: ${currentPeriodStart}`);
+    }
+    if (!(currentPeriodEnd instanceof Date) || isNaN(currentPeriodEnd.getTime())) {
+      throw new Error(`Invalid currentPeriodEnd date: ${currentPeriodEnd}`);
     }
 
     const cycleData: InsertMembershipCycle = {
@@ -108,6 +125,8 @@ export class MembershipService {
       resetDate: currentPeriodEnd,
       isActive: true
     };
+
+    console.log(`💾 Inserting cycle data:`, cycleData);
 
     const [cycle] = await db.insert(membershipCycles).values(cycleData).returning();
     
@@ -562,13 +581,37 @@ export class MembershipService {
     // Fetch subscription details from Stripe
     const stripeSubscription = await this.stripe.subscriptions.retrieve(user.stripeSubscriptionId);
 
+    console.log(`📅 Stripe subscription data:`, {
+      id: stripeSubscription.id,
+      status: stripeSubscription.status,
+      current_period_start: stripeSubscription.current_period_start,
+      current_period_end: stripeSubscription.current_period_end,
+      created: stripeSubscription.created,
+      metadata: stripeSubscription.metadata
+    });
+
     if (stripeSubscription.status !== 'active') {
       throw new Error(`Subscription is not active: ${stripeSubscription.status}`);
+    }
+
+    // Validate timestamp values before creating Date objects
+    if (!stripeSubscription.current_period_start || !stripeSubscription.current_period_end) {
+      throw new Error(`Invalid subscription period dates: start=${stripeSubscription.current_period_start}, end=${stripeSubscription.current_period_end}`);
     }
 
     const planId = stripeSubscription.metadata?.planId || user.pendingSubscriptionPlan || 'monthly_plan';
     const currentPeriodStart = new Date(stripeSubscription.current_period_start * 1000);
     const currentPeriodEnd = new Date(stripeSubscription.current_period_end * 1000);
+
+    console.log(`📅 Converted dates:`, {
+      currentPeriodStart: currentPeriodStart.toISOString(),
+      currentPeriodEnd: currentPeriodEnd.toISOString()
+    });
+
+    // Validate created timestamp
+    if (!stripeSubscription.created) {
+      throw new Error(`Invalid subscription created timestamp: ${stripeSubscription.created}`);
+    }
 
     // Create subscription record
     const subscriptionData: InsertMembershipSubscription = {
@@ -581,6 +624,8 @@ export class MembershipService {
       currentPeriodEnd,
       activatedAt: new Date(stripeSubscription.created * 1000)
     };
+
+    console.log(`📋 Subscription data to insert:`, subscriptionData);
 
     const [subscription] = await db
       .insert(membershipSubscriptions)
