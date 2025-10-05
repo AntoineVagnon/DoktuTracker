@@ -75,10 +75,25 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   app.get('/health', (req, res) => {
-    res.status(200).json({ 
-      status: 'healthy', 
-      timestamp: new Date().toISOString() 
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString()
     });
+  });
+
+  // SendGrid Health Check Endpoint
+  app.get('/api/health/sendgrid', async (req, res) => {
+    try {
+      const { getSendGridHealthCheck } = await import('./services/emailService');
+      const healthCheck = getSendGridHealthCheck();
+
+      res.status(healthCheck.status === 'healthy' ? 200 : 503).json(healthCheck);
+    } catch (error) {
+      res.status(503).json({
+        status: 'unhealthy',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
   });
 
   // ============================================================================
