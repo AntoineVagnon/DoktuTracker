@@ -520,6 +520,85 @@ export class MembershipService {
   }
 
   /**
+   * Create initial allowance for a user with an existing Stripe subscription
+   * Used for retroactive allowance creation when subscription was paid before webhook was set up
+   */
+  async createInitialAllowance(patientId: number): Promise<void> {
+    // Get user with subscription ID
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, patientId))
+      .limit(1);
+
+    if (!user?.stripeSubscriptionId) {
+      throw new Error('User does not have a Stripe subscription');
+    }
+
+    // Check if subscription record already exists
+    const [existingSubscription] = await db
+      .select()
+      .from(membershipSubscriptions)
+      .where(eq(membershipSubscriptions.stripeSubscriptionId, user.stripeSubscriptionId))
+      .limit(1);
+
+    if (existingSubscription) {
+      // Check if allowance cycle already exists
+      const existingCycle = await this.getCurrentAllowanceCycle(existingSubscription.id);
+      if (existingCycle) {
+        throw new Error('Allowance cycle already exists for this subscription');
+      }
+
+      // Create allowance cycle for existing subscription
+      await this.createInitialAllowanceCycle(
+        existingSubscription.id,
+        existingSubscription.planId,
+        existingSubscription.currentPeriodStart,
+        existingSubscription.currentPeriodEnd
+      );
+      return;
+    }
+
+    // Fetch subscription details from Stripe
+    const stripeSubscription = await this.stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+
+    if (stripeSubscription.status !== 'active') {
+      throw new Error(`Subscription is not active: ${stripeSubscription.status}`);
+    }
+
+    const planId = stripeSubscription.metadata?.planId || user.pendingSubscriptionPlan || 'monthly_plan';
+    const currentPeriodStart = new Date(stripeSubscription.current_period_start * 1000);
+    const currentPeriodEnd = new Date(stripeSubscription.current_period_end * 1000);
+
+    // Create subscription record
+    const subscriptionData: InsertMembershipSubscription = {
+      patientId,
+      planId,
+      stripeSubscriptionId: user.stripeSubscriptionId,
+      stripeCustomerId: stripeSubscription.customer as string,
+      status: 'active',
+      currentPeriodStart,
+      currentPeriodEnd,
+      activatedAt: new Date(stripeSubscription.created * 1000)
+    };
+
+    const [subscription] = await db
+      .insert(membershipSubscriptions)
+      .values(subscriptionData)
+      .returning();
+
+    // Create initial allowance cycle
+    await this.createInitialAllowanceCycle(
+      subscription.id,
+      planId,
+      currentPeriodStart,
+      currentPeriodEnd
+    );
+
+    console.log(`✅ Created subscription record and allowance cycle for user ${patientId}`);
+  }
+
+  /**
    * Handle subscription activation from Stripe webhook
    */
   async activateSubscription(
@@ -548,7 +627,7 @@ export class MembershipService {
 
     // Create initial allowance cycle
     await this.createInitialAllowanceCycle(
-      stripeSubscriptionId,
+      subscription.id,
       planId,
       currentPeriodStart,
       currentPeriodEnd
