@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -38,6 +38,13 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Sync activeTab with defaultTab when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(defaultTab);
+    }
+  }, [isOpen, defaultTab]);
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),

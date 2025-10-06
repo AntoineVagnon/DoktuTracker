@@ -49,9 +49,21 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
       formData.append('appointmentId', appointmentId.toString());
       formData.append('documentType', documentType);
 
-      const response = await fetch('/api/documents/upload', {
+      // Get auth token from localStorage
+      const authData = localStorage.getItem('doktu_auth');
+      const token = authData ? JSON.parse(authData).session?.access_token : null;
+
+      // Use VITE_API_URL for cross-domain requests
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
+      const fullUrl = `${apiUrl}/api/documents/upload`;
+
+      const response = await fetch(fullUrl, {
         method: 'POST',
+        headers: {
+          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        },
         body: formData,
+        credentials: "include",
       });
 
       if (!response.ok) {
