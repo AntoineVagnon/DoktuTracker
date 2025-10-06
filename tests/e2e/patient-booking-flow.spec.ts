@@ -14,13 +14,23 @@ test.describe('Patient Booking Flow', () => {
     // Step 1: Navigate to homepage
     await test.step('Load homepage', async () => {
       await page.goto('https://doktu-tracker.vercel.app/');
-      await expect(page).toHaveTitle(/Doktu/);
+      // Verify page loaded by checking for main heading
+      await expect(page.locator('h1')).toContainText('Book one of our hand-picked doctors');
     });
 
     // Step 2: Register new patient account
     await test.step('Register new patient', async () => {
-      // Click register/signup button
-      await page.click('text=Sign Up');
+      // Click "Sign Up Free" button in header
+      await page.click('button:has-text("Sign Up Free")');
+
+      // Wait for auth modal to appear
+      await page.waitForSelector('text=Welcome to Doktu');
+
+      // Click the "Sign Up" tab (modal opens to Login by default)
+      await page.click('tab[role="tab"]:has-text("Sign Up")');
+
+      // Wait for registration form to appear
+      await page.waitForSelector('input[name="firstName"]');
 
       // Fill registration form
       await page.fill('input[name="firstName"]', 'Test');
@@ -33,7 +43,7 @@ test.describe('Patient Booking Flow', () => {
       await page.click('button[type="submit"]');
 
       // Wait for redirect to dashboard
-      await page.waitForURL('**/dashboard');
+      await page.waitForURL('**/dashboard', { timeout: 30000 });
       await expect(page).toHaveURL(/\/dashboard/);
     });
 
