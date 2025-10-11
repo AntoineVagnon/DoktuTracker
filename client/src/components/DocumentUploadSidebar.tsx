@@ -35,6 +35,9 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
   const [uploadProgress, setUploadProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
 
+  // Force rebuild - version 4
+  console.log('[UPLOAD-SIDEBAR-V4] Component mounted', { appointmentId });
+
   // Fetch existing documents for this appointment
   const { data: documents = [], isLoading } = useQuery<UploadedDocument[]>({
     queryKey: ["/api/documents", appointmentId],
