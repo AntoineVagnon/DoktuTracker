@@ -537,17 +537,19 @@ export function corsConfig() {
       if (!origin) return callback(null, true);
       
       // Define allowed origins based on environment
-      const allowedOrigins = process.env.NODE_ENV === 'production' 
+      const allowedOrigins = process.env.NODE_ENV === 'production'
         ? [
             'https://doktu.co',
             'https://www.doktu.co',
-            'https://app.doktu.co'
+            'https://app.doktu.co',
+            'https://doktu-tracker.vercel.app'
           ]
         : [
             'http://localhost:3000',
             'http://localhost:5173',
             'http://127.0.0.1:3000',
-            'http://127.0.0.1:5173'
+            'http://127.0.0.1:5173',
+            'https://doktu-tracker.vercel.app'
           ];
       
       if (allowedOrigins.includes(origin)) {
