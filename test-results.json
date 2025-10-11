@@ -10,7 +10,9 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 1
+    },
     "preserveOutput": "always",
     "reporter": [
       [
@@ -40,12 +42,13 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "setup",
         "name": "setup",
         "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
         "testIgnore": [
-          "**/auth.setup.ts",
           "**/test-admin-login.spec.ts"
         ],
         "testMatch": [
@@ -57,16 +60,17 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "chromium",
         "name": "chromium",
         "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
         "testIgnore": [
-          "**/auth.setup.ts",
           "**/test-admin-login.spec.ts"
         ],
         "testMatch": [
-          "/.*\\.(spec|test)\\.(ts|js)$/"
+          "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -74,16 +78,35 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "doctor",
+        "name": "doctor",
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/test-admin-login.spec.ts"
+        ],
+        "testMatch": [
+          "/.*\\.(spec|test|setup)\\.(ts|js)$/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "firefox",
         "name": "firefox",
         "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
         "testIgnore": [
-          "**/auth.setup.ts",
           "**/test-admin-login.spec.ts"
         ],
         "testMatch": [
-          "/.*\\.(spec|test)\\.(ts|js)$/"
+          "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -91,16 +114,17 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "webkit",
         "name": "webkit",
         "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
         "testIgnore": [
-          "**/auth.setup.ts",
           "**/test-admin-login.spec.ts"
         ],
         "testMatch": [
-          "/.*\\.(spec|test)\\.(ts|js)$/"
+          "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -108,16 +132,17 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
         "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
         "testIgnore": [
-          "**/auth.setup.ts",
           "**/test-admin-login.spec.ts"
         ],
         "testMatch": [
-          "/.*\\.(spec|test)\\.(ts|js)$/"
+          "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -125,16 +150,17 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Mobile Safari",
         "name": "Mobile Safari",
         "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
         "testIgnore": [
-          "**/auth.setup.ts",
           "**/test-admin-login.spec.ts"
         ],
         "testMatch": [
-          "/.*\\.(spec|test)\\.(ts|js)$/"
+          "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -142,16 +168,17 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Microsoft Edge",
         "name": "Microsoft Edge",
         "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
         "testIgnore": [
-          "**/auth.setup.ts",
           "**/test-admin-login.spec.ts"
         ],
         "testMatch": [
-          "/.*\\.(spec|test)\\.(ts|js)$/"
+          "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -159,16 +186,17 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Google Chrome",
         "name": "Google Chrome",
         "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
         "testIgnore": [
-          "**/auth.setup.ts",
           "**/test-admin-login.spec.ts"
         ],
         "testMatch": [
-          "/.*\\.(spec|test)\\.(ts|js)$/"
+          "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
         "timeout": 60000
       }
@@ -180,17 +208,71 @@
     "workers": 1,
     "webServer": null
   },
-  "suites": [],
-  "errors": [
+  "suites": [
     {
-      "message": "Error: No tests found",
-      "stack": "Error: No tests found"
+      "title": "auth-doctor.setup.ts",
+      "file": "auth-doctor.setup.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "authenticate as test doctor",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2096,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "\n🔐 Authenticating test doctor via API...\n"
+                    },
+                    {
+                      "text": "Email: test.doctor.1760200122865@doktu.co\n"
+                    },
+                    {
+                      "text": "✅ Authenticated as test doctor\n"
+                    },
+                    {
+                      "text": "Session ID: MJ7Rcb7PStY17SqWVc2JtqNdRONX3RaB\n"
+                    },
+                    {
+                      "text": "✅ Doctor authentication state saved\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-10-11T16:34:54.569Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "59362bb762b3c546c5ee-0edd3aa8338fc5210474",
+          "file": "auth-doctor.setup.ts",
+          "line": 15,
+          "column": 1
+        }
+      ]
     }
   ],
+  "errors": [],
   "stats": {
-    "startTime": "2025-10-11T13:46:07.353Z",
-    "duration": 13.748000000000047,
-    "expected": 0,
+    "startTime": "2025-10-11T16:34:53.567Z",
+    "duration": 3139.417,
+    "expected": 1,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
