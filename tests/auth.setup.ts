@@ -7,12 +7,13 @@ import { test as setup, expect } from '@playwright/test';
 
 const ADMIN_AUTH_FILE = './playwright/.auth/admin.json';
 const BASE_URL = process.env.VITE_APP_URL || 'https://doktu-tracker.vercel.app';
+const API_URL = process.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
 const ADMIN_EMAIL = process.env.TEST_ADMIN_EMAIL || 'antoine.vagnon@gmail.com';
 const ADMIN_PASSWORD = process.env.TEST_ADMIN_PASSWORD || 'Spl@ncnopleure49';
 
 setup('authenticate as admin', async ({ page }) => {
-  // Use test-only authentication endpoint for persistent session
-  const response = await page.request.post(`${BASE_URL}/api/test/auth`, {
+  // Use test-only authentication endpoint for persistent session (Railway backend)
+  const response = await page.request.post(`${API_URL}/api/test/auth`, {
     data: {
       email: ADMIN_EMAIL,
       password: ADMIN_PASSWORD,
