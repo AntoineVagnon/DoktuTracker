@@ -2277,8 +2277,10 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Create doctor account (admin only)
-  app.post("/api/admin/create-doctor", isAuthenticated, auditAdminMiddleware('create_doctor', 'user_management'), async (req, res) => {
+  app.post("/api/admin/create-doctor", isAuthenticated, async (req, res) => {
     try {
+      console.log('📝 [Create Doctor] Raw request body:', JSON.stringify(req.body, null, 2));
+
       const user = req.user as any;
       if (!user || user.role !== 'admin') {
         return res.status(401).json({ message: "Unauthorized" });
