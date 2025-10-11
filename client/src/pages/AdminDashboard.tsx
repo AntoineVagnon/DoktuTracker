@@ -1413,7 +1413,14 @@ export default function AdminDashboard() {
       setIsCreating(true);
 
       try {
-        const response = await apiRequest('POST', '/api/admin/create-doctor', formData);
+        // Ensure languages is always an array
+        const dataToSend = {
+          ...formData,
+          languages: Array.isArray(formData.languages) ? formData.languages : [formData.languages]
+        };
+        console.log('[Create Doctor] Sending data:', dataToSend);
+
+        const response = await apiRequest('POST', '/api/admin/create-doctor', dataToSend);
         const result = await response.json();
 
         if (response.ok) {
