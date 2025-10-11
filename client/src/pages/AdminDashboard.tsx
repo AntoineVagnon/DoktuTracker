@@ -167,7 +167,8 @@ const navigationItems = [
   { id: 'predictive', label: 'Predictive Analytics', icon: Brain },
   { id: 'meetings', label: 'Live & Planned Meetings', icon: Video },
   { id: 'notifications', label: 'Notifications', icon: Mail },
-  { id: 'emails', label: 'Email Management', icon: Send }
+  { id: 'emails', label: 'Email Management', icon: Send },
+  { id: 'doctors', label: 'Doctors', icon: UserPlus }
 ];
 
 // Chart colors
@@ -1388,6 +1389,286 @@ export default function AdminDashboard() {
     );
   };
 
+  // DoctorsSection Component
+  const DoctorsSection = () => {
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [formData, setFormData] = useState({
+      email: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      specialization: '',
+      title: 'Dr.',
+      bio: '',
+      licenseNumber: '',
+      yearsOfExperience: 0,
+      consultationFee: 35,
+      languages: ['English'],
+    });
+    const [createdCredentials, setCreatedCredentials] = useState<any>(null);
+    const [isCreating, setIsCreating] = useState(false);
+
+    const handleCreateDoctor = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsCreating(true);
+
+      try {
+        const response = await apiRequest('POST', '/api/admin/create-doctor', formData);
+        const result = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Doctor Created Successfully",
+            description: `${result.doctor.firstName} ${result.doctor.lastName} has been added to the system.`,
+          });
+          setCreatedCredentials(result.credentials);
+          setShowCreateForm(false);
+          // Reset form
+          setFormData({
+            email: '',
+            password: '',
+            firstName: '',
+            lastName: '',
+            specialization: '',
+            title: 'Dr.',
+            bio: '',
+            licenseNumber: '',
+            yearsOfExperience: 0,
+            consultationFee: 35,
+            languages: ['English'],
+          });
+        } else {
+          throw new Error(result.message || 'Failed to create doctor');
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to create doctor account",
+          variant: "destructive",
+        });
+      } finally {
+        setIsCreating(false);
+      }
+    };
+
+    const generatePassword = () => {
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+      let password = "";
+      for (let i = 0; i < 12; i++) {
+        password += charset.charAt(Math.floor(Math.random() * charset.length));
+      }
+      setFormData({ ...formData, password });
+    };
+
+    return (
+      <div className="space-y-6">
+        {/* Header with Create Button */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-bold">Doctor Management</h2>
+            <p className="text-gray-600">Create and manage doctor accounts</p>
+          </div>
+          <Button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="gap-2"
+          >
+            <UserPlus className="h-4 w-4" />
+            {showCreateForm ? 'Cancel' : 'Create New Doctor'}
+          </Button>
+        </div>
+
+        {/* Created Credentials Display */}
+        {createdCredentials && (
+          <Alert className="border-green-200 bg-green-50">
+            <Check className="h-4 w-4 text-green-600" />
+            <AlertDescription>
+              <div className="text-green-800">
+                <p className="font-semibold mb-2">Doctor account created successfully!</p>
+                <div className="bg-white p-3 rounded border border-green-200 space-y-1">
+                  <p><strong>Email:</strong> {createdCredentials.email}</p>
+                  <p><strong>Password:</strong> {createdCredentials.password}</p>
+                </div>
+                <p className="text-sm mt-2">⚠️ Make sure to save these credentials securely. The password won't be shown again.</p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setCreatedCredentials(null)}
+                  className="mt-2"
+                >
+                  Dismiss
+                </Button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Create Form */}
+        {showCreateForm && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Create New Doctor Account</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleCreateDoctor} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">First Name *</label>
+                    <Input
+                      required
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                      placeholder="John"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Last Name *</label>
+                    <Input
+                      required
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                      placeholder="Smith"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Title</label>
+                    <Select
+                      value={formData.title}
+                      onValueChange={(value) => setFormData({ ...formData, title: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Dr.">Dr.</SelectItem>
+                        <SelectItem value="Prof.">Prof.</SelectItem>
+                        <SelectItem value="MD">MD</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Specialization *</label>
+                    <Input
+                      required
+                      value={formData.specialization}
+                      onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
+                      placeholder="General Medicine"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Email *</label>
+                  <Input
+                    required
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="doctor@doktu.co"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Password *</label>
+                  <div className="flex gap-2">
+                    <Input
+                      required
+                      type="text"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder="Minimum 8 characters"
+                      minLength={8}
+                    />
+                    <Button type="button" onClick={generatePassword} variant="outline">
+                      Generate
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Bio</label>
+                  <Input
+                    value={formData.bio}
+                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                    placeholder="Brief description of expertise..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">License Number</label>
+                    <Input
+                      value={formData.licenseNumber}
+                      onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
+                      placeholder="Auto-generated if empty"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Years of Experience</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={formData.yearsOfExperience}
+                      onChange={(e) => setFormData({ ...formData, yearsOfExperience: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Consultation Fee (€)</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.consultationFee}
+                    onChange={(e) => setFormData({ ...formData, consultationFee: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Languages (comma-separated)</label>
+                  <Input
+                    value={formData.languages.join(', ')}
+                    onChange={(e) => setFormData({ ...formData, languages: e.target.value.split(',').map(l => l.trim()) })}
+                    placeholder="English, French, Spanish"
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button type="submit" disabled={isCreating}>
+                    {isCreating ? 'Creating...' : 'Create Doctor'}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setShowCreateForm(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Info Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>About Doctor Accounts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 text-sm text-gray-600">
+              <p>• Doctor accounts are automatically verified and accepting patients</p>
+              <p>• Doctors can log in immediately with the generated credentials</p>
+              <p>• All doctors start with a 5.0 rating (0 reviews)</p>
+              <p>• License numbers are auto-generated if not provided</p>
+              <p>• Doctors can update their profile after logging in</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
   // NotificationsSection Component
   const NotificationsSection = () => {
     const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -1839,6 +2120,7 @@ export default function AdminDashboard() {
             {activeSection === 'meetings' && <MeetingsSection />}
             {activeSection === 'notifications' && <NotificationsSection />}
             {activeSection === 'emails' && <EmailManagement />}
+            {activeSection === 'doctors' && <DoctorsSection />}
           </div>
         </div>
       </div>

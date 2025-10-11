@@ -2262,7 +2262,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
 
       const targetUserId = parseInt(req.params.userId);
-      
+
       // Prevent admins from removing their own access
       if (user.id === targetUserId) {
         return res.status(400).json({ message: "Cannot remove your own admin access" });
@@ -2273,6 +2273,107 @@ export async function registerRoutes(app: Express): Promise<void> {
     } catch (error) {
       console.error("Error removing admin user:", error);
       res.status(500).json({ message: "Failed to remove admin user" });
+    }
+  });
+
+  // Create doctor account (admin only)
+  app.post("/api/admin/create-doctor", isAuthenticated, auditAdminMiddleware('create_doctor', 'user_management'), async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const doctorData = z.object({
+        email: z.string().email(),
+        password: z.string().min(8),
+        firstName: z.string().min(1),
+        lastName: z.string().min(1),
+        specialization: z.string().min(1),
+        title: z.string().default('Dr.'),
+        bio: z.string().optional(),
+        licenseNumber: z.string().optional(),
+        yearsOfExperience: z.number().min(0).default(0),
+        consultationFee: z.number().min(0).default(35),
+        languages: z.array(z.string()).default(['English']),
+      }).parse(req.body);
+
+      console.log('🏥 Admin creating doctor account:', doctorData.email);
+
+      // 1. Create Supabase auth user
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: doctorData.email,
+        password: doctorData.password,
+        email_confirm: true,
+        user_metadata: {
+          role: 'doctor',
+          firstName: doctorData.firstName,
+          lastName: doctorData.lastName
+        }
+      });
+
+      if (authError) {
+        console.error('❌ Auth error:', authError);
+        throw new Error(`Failed to create auth user: ${authError.message}`);
+      }
+
+      const authUserId = authData.user.id;
+      console.log('✅ Auth user created:', authUserId);
+
+      // 2. Create user in users table
+      const newUser = await storage.createUser({
+        email: doctorData.email,
+        firstName: doctorData.firstName,
+        lastName: doctorData.lastName,
+        role: 'doctor',
+        phoneNumber: null,
+      });
+
+      console.log('✅ User profile created:', newUser.id);
+
+      // 3. Create doctor profile
+      const licenseNumber = doctorData.licenseNumber || `DOC-${Date.now()}`;
+      const doctor = await storage.createDoctor({
+        userId: authUserId,
+        firstName: doctorData.firstName,
+        lastName: doctorData.lastName,
+        email: doctorData.email,
+        specialization: doctorData.specialization,
+        title: doctorData.title,
+        bio: doctorData.bio || `${doctorData.title} ${doctorData.firstName} ${doctorData.lastName}, specialized in ${doctorData.specialization}.`,
+        licenseNumber: licenseNumber,
+        yearsOfExperience: doctorData.yearsOfExperience,
+        consultationFee: doctorData.consultationFee,
+        languages: doctorData.languages,
+        rating: 5.0,
+        reviewCount: 0,
+        verified: true,
+        acceptingNewPatients: true,
+      });
+
+      console.log('✅ Doctor profile created:', doctor.id);
+
+      res.status(201).json({
+        success: true,
+        doctor: {
+          id: doctor.id,
+          email: doctor.email,
+          firstName: doctor.firstName,
+          lastName: doctor.lastName,
+          specialization: doctor.specialization,
+        },
+        credentials: {
+          email: doctorData.email,
+          password: doctorData.password, // Return for admin to share with doctor
+        }
+      });
+    } catch (error: any) {
+      console.error("❌ Error creating doctor:", error);
+      if (error.name === 'ZodError') {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: error.message || "Failed to create doctor" });
+      }
     }
   });
 
