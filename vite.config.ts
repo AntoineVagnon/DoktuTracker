@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ mode }) => {
   console.log('🔧 Vite build mode:', mode);
   console.log('🔧 VITE_API_URL:', process.env.VITE_API_URL);
 
