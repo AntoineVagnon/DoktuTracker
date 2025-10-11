@@ -77,10 +77,18 @@ async function fillDoctorForm(page: Page, data: {
   licenseNumber?: string;
   yearsOfExperience?: number;
 }) {
-  await page.fill('[name="firstName"]', data.firstName);
-  await page.fill('[name="lastName"]', data.lastName);
-  await page.fill('[name="email"]', data.email);
-  await page.fill('[name="password"]', data.password);
+  // Clear existing values and fill new ones
+  await page.locator('input[name="firstName"], input[placeholder*="First"], input[placeholder*="John"]').first().clear();
+  await page.locator('input[name="firstName"], input[placeholder*="First"], input[placeholder*="John"]').first().fill(data.firstName);
+
+  await page.locator('input[name="lastName"], input[placeholder*="Last"], input[placeholder*="Smith"]').first().clear();
+  await page.locator('input[name="lastName"], input[placeholder*="Last"], input[placeholder*="Smith"]').first().fill(data.lastName);
+
+  await page.locator('input[name="email"], input[type="email"], input[placeholder*="doctor"]').first().clear();
+  await page.locator('input[name="email"], input[type="email"], input[placeholder*="doctor"]').first().fill(data.email);
+
+  await page.locator('input[name="password"], input[type="password"]').first().clear();
+  await page.locator('input[name="password"], input[type="password"]').first().fill(data.password);
 
   if (data.title) {
     await page.selectOption('select:has-text("Title")', data.title);
