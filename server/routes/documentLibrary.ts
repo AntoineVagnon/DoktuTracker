@@ -291,52 +291,53 @@ export function registerDocumentLibraryRoutes(app: Express) {
     }
   });
 
-  // Simple, bulletproof download route
+  // Simple, bulletproof download route using Supabase Storage
   app.get("/api/download/:documentId", async (req, res) => {
-    console.log("✅ SIMPLE DOWNLOAD ROUTE - DocumentId:", req.params.documentId);
-    
+    console.log("✅ DOWNLOAD ROUTE - DocumentId:", req.params.documentId);
+
     try {
       const { documentId } = req.params;
       const document = await storage.getDocumentById(documentId);
-      
+
       if (!document) {
         console.log("❌ Document not found:", documentId);
         return res.status(404).json({ error: "Document not found" });
       }
 
-      console.log("📄 Document found:", { 
-        fileName: document.fileName, 
+      console.log("📄 Document found:", {
+        fileName: document.fileName,
         fileType: document.fileType,
         uploadUrl: document.uploadUrl
       });
 
-      // Direct download with proper headers for browser navigation
-      const objectStorageService = new ObjectStorageService();
-      
+      // Use Supabase Storage for download
+      const { getSupabaseStorageService } = await import("../supabaseStorage");
+
       try {
-        const objectFile = await objectStorageService.getObjectEntityFile(document.uploadUrl);
-        const [fileContents] = await objectFile.download();
-        
+        const storageService = getSupabaseStorageService();
+
+        // Download file from Supabase Storage
+        const fileBuffer = await storageService.downloadFile(document.uploadUrl);
+
         // Clean filename for Windows - keep it simple
         const cleanFileName = document.fileName
           .replace(/[<>:"/\\|?*]/g, '_')  // Replace Windows-forbidden chars
           .replace(/\s+/g, '_')           // Replace spaces with underscores
           .replace(/_+/g, '_');           // Remove duplicate underscores
-        
+
         // Set proper content type to help Windows recognize the file
-        // Use the actual file type so Windows associates it correctly
-        res.setHeader('Content-Type', document.fileType || 'image/png');
+        res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
         res.setHeader('Content-Disposition', `attachment; filename="${cleanFileName}"`);
-        res.setHeader('Content-Length', fileContents.length.toString());
-        
+        res.setHeader('Content-Length', fileBuffer.length.toString());
+
         // Send the file buffer directly
-        res.end(fileContents);
-        
+        res.end(fileBuffer);
+
       } catch (error) {
-        console.error("❌ Object storage error:", error);
+        console.error("❌ Supabase storage error:", error);
         return res.status(500).json({ error: "Storage error" });
       }
-      
+
     } catch (error) {
       console.error("❌ Download error:", error);
       res.status(500).json({ error: "Download failed" });

@@ -3479,8 +3479,8 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.post("/api/documents/upload", isAuthenticated, upload.single('file'), async (req, res) => {
     try {
-      console.log('🔒 HIPAA-compliant document upload request received');
-      
+      console.log('🔒 GDPR-compliant document upload request received');
+
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
@@ -3496,67 +3496,28 @@ export async function registerRoutes(app: Express): Promise<void> {
       const documentType = req.body.documentType || 'other';
       const patientId = req.body.patientId ? parseInt(req.body.patientId) : null;
 
-      // Initialize object storage service
-      const objectStorageService = new ObjectStorageService();
-      
+      // Use Supabase Storage (GDPR-compliant)
+      const { getSupabaseStorageService } = await import('./supabaseStorage');
+
       try {
-        // Get presigned URL for secure upload
-        const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-        console.log('🔗 Generated secure upload URL');
+        const storageService = getSupabaseStorageService();
 
-        // Debug file buffer integrity before upload
-        console.log('🔍 File buffer analysis:', {
-          originalName: req.file.originalname,
+        console.log('📤 Uploading to Supabase Storage:', {
+          fileName: req.file.originalname,
           size: req.file.size,
-          bufferLength: req.file.buffer.length,
           mimeType: req.file.mimetype,
-          firstBytes: req.file.buffer.slice(0, 16).toString('hex'),
-          lastBytes: req.file.buffer.slice(-16).toString('hex'),
-          isPNG: req.file.buffer.slice(0, 8).toString('hex') === '89504e470d0a1a0a',
-          hasValidPNGEnd: req.file.buffer.slice(-8).toString('hex').includes('49454e44ae426082')
+          userId: user.id
         });
 
-        // Upload file to secure object storage
-        const uploadResponse = await fetch(uploadURL, {
-          method: 'PUT',
-          body: req.file.buffer,
-          headers: {
-            'Content-Type': req.file.mimetype,
-            'Content-Length': req.file.buffer.length.toString(),
-          },
-        });
+        // Upload file to Supabase Storage
+        const { path: storagePath } = await storageService.uploadFile(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype,
+          parseInt(user.id)
+        );
 
-        if (!uploadResponse.ok) {
-          const errorText = await uploadResponse.text();
-          throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText} - ${errorText}`);
-        }
-
-        console.log('✅ File uploaded to secure storage');
-
-        // Normalize the object path for database storage
-        const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
-
-        // Set HIPAA-compliant ACL policy
-        const aclPolicy = {
-          owner: patientId?.toString() || user.id,
-          visibility: "private" as const,
-          encryptionEnabled: true,
-          auditLogging: true,
-          dataClassification: "PHI" as const,
-          aclRules: [
-            {
-              group: {
-                type: ObjectAccessGroupType.DOCTOR_ACCESS,
-                id: patientId?.toString() || user.id,
-              },
-              permission: ObjectPermission.READ,
-            },
-          ],
-        };
-
-        // Apply ACL policy to the uploaded file
-        await objectStorageService.trySetObjectEntityAclPolicy(uploadURL, aclPolicy);
-        console.log('🔒 HIPAA-compliant ACL policy applied');
+        console.log('✅ File uploaded to Supabase Storage:', storagePath);
 
         // Store document metadata in database
         const documentData = {
@@ -3565,13 +3526,13 @@ export async function registerRoutes(app: Express): Promise<void> {
           fileName: req.file.originalname,
           fileSize: req.file.size,
           fileType: req.file.mimetype,
-          uploadUrl: objectPath, // Secure object storage path
+          uploadUrl: storagePath, // Supabase storage path
           documentType: documentType
         };
 
         const document = await storage.createDocument(documentData);
-        
-        console.log('✅ HIPAA-compliant document saved:', {
+
+        console.log('✅ GDPR-compliant document saved:', {
           id: document.id,
           fileName: document.fileName,
           encrypted: true,
@@ -3595,14 +3556,14 @@ export async function registerRoutes(app: Express): Promise<void> {
             encrypted: true,
             auditLogged: true,
             accessControlled: true,
-            hipaaCompliant: true,
             gdprCompliant: true,
+            storageProvider: 'Supabase Storage',
           }
         });
 
-      } catch (uploadError) {
+      } catch (uploadError: any) {
         console.error('Error with secure upload:', uploadError);
-        throw new Error(`Secure upload failed: ${uploadError.message}`);
+        throw new Error(`Secure upload failed: ${uploadError?.message || uploadError}`);
       }
 
     } catch (error) {
