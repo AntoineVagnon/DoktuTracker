@@ -2474,6 +2474,18 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Diagnostic endpoint to check environment variables (always enabled)
+  app.get("/api/test/env-check", async (req, res) => {
+    res.json({
+      ENABLE_TEST_ENDPOINTS: process.env.ENABLE_TEST_ENDPOINTS,
+      ENABLE_TEST_ENDPOINTS_type: typeof process.env.ENABLE_TEST_ENDPOINTS,
+      ENABLE_TEST_ENDPOINTS_exact_match: process.env.ENABLE_TEST_ENDPOINTS === 'true',
+      NODE_ENV: process.env.NODE_ENV,
+      NODE_ENV_type: typeof process.env.NODE_ENV,
+      condition_result: process.env.ENABLE_TEST_ENDPOINTS === 'true' || process.env.NODE_ENV !== 'production'
+    });
+  });
+
   // Test-only endpoint to create persistent session for E2E tests
   // IMPORTANT: Only enable when ENABLE_TEST_ENDPOINTS is set
   console.log('[Test Endpoint Check] ENABLE_TEST_ENDPOINTS:', process.env.ENABLE_TEST_ENDPOINTS);
