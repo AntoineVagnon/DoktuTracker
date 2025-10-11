@@ -2475,8 +2475,8 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Test-only endpoint to create persistent session for E2E tests
-  // IMPORTANT: Only enable in non-production environments
-  if (process.env.NODE_ENV !== 'production') {
+  // IMPORTANT: Only enable when ENABLE_TEST_ENDPOINTS is set
+  if (process.env.ENABLE_TEST_ENDPOINTS === 'true' || process.env.NODE_ENV !== 'production') {
     app.post("/api/test/auth", async (req, res) => {
       try {
         const { email, password } = req.body;
