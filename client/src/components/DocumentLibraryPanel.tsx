@@ -192,12 +192,18 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     },
   });
 
-  // Handle document download - Direct navigation approach
+  // Handle document download - Use Railway backend
   const handleDownload = (doc: any) => {
-    // Most direct approach - let browser handle download natively
-    // This works best in all environments including Replit dev mode
-    window.location.href = `/api/download/${doc.id}`;
-    
+    // Use Railway API URL for downloads
+    const apiUrl = import.meta.env.VITE_API_URL ||
+      (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+    const downloadUrl = `${apiUrl}/api/download/${doc.id}`;
+
+    console.log('📥 [DOWNLOAD] Initiating download:', downloadUrl);
+
+    // Navigate to Railway download endpoint
+    window.location.href = downloadUrl;
+
     toast({
       title: "Download started",
       description: `${doc.fileName} is downloading...`,
