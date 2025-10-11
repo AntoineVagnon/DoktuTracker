@@ -54,10 +54,14 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
       const token = authData ? JSON.parse(authData).session?.access_token : null;
 
       // Use VITE_API_URL for cross-domain requests
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
+      // Force Railway URL in production
+      const apiUrl = import.meta.env.VITE_API_URL ||
+        (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
       const fullUrl = `${apiUrl}/api/documents/upload`;
 
-      console.log('📤 Uploading document with auth token:', token ? 'Present' : 'Missing');
+      console.log('📤 [v2] Uploading document with auth token:', token ? 'Present' : 'Missing');
+      console.log('📤 [v2] API URL:', apiUrl);
+      console.log('📤 [v2] Full URL:', fullUrl);
 
       const response = await fetch(fullUrl, {
         method: 'POST',
