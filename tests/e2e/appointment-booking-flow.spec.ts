@@ -15,13 +15,15 @@ const API_URL = process.env.VITE_API_URL || 'https://web-production-b2ce.up.rail
 // Helper function to dismiss cookie banner
 async function dismissCookieBanner(page: Page) {
   try {
-    const acceptButton = page.locator('button:has-text("Accept"), button:has-text("I understand")').first();
-    if (await acceptButton.isVisible({ timeout: 2000 })) {
+    const acceptButton = page.locator('button:has-text("Accept All"), button:has-text("Accept"), button:has-text("I understand")').first();
+    if (await acceptButton.isVisible({ timeout: 3000 })) {
       await acceptButton.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
+      console.log('✅ Cookie banner dismissed');
     }
   } catch {
     // No cookie banner present
+    console.log('ℹ️ No cookie banner found');
   }
 }
 
@@ -33,7 +35,6 @@ test.use({
 test.describe('Appointment Booking Flow - P0 Critical Scenarios', () => {
 
   test.beforeEach(async ({ page }) => {
-    await dismissCookieBanner(page);
     console.log('✅ Test setup complete - using patient auth state');
   });
 
@@ -43,18 +44,19 @@ test.describe('Appointment Booking Flow - P0 Critical Scenarios', () => {
     // Navigate to home page
     await page.goto(`${BASE_URL}/`);
     await page.waitForLoadState('domcontentloaded');
+    await dismissCookieBanner(page);
 
     // Wait for doctors section to load
     await page.waitForSelector('[data-testid="doctors-grid"], .doctors-grid, text="Find a Doctor"', {
       timeout: 10000
     }).catch(() => console.log('Doctors section selector not found, proceeding...'));
 
-    // Look for any doctor card (using flexible selectors)
-    const doctorCard = page.locator('text=/Dr\\..*Rodriguez|Dr\\..*Johnson|Dr\\..*Chen/i').first();
-    const isVisible = await doctorCard.isVisible({ timeout: 5000 }).catch(() => false);
+    // Look for "View Full Profile" link (most reliable navigation method)
+    const viewProfileLink = page.locator('a:has-text("View Full Profile")').first();
+    const isVisible = await viewProfileLink.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (!isVisible) {
-      console.log('⚠️ No doctor cards found on page');
+      console.log('⚠️ No doctor profile links found on page');
       console.log('Current URL:', page.url());
 
       // Take screenshot for debugging
@@ -65,12 +67,13 @@ test.describe('Appointment Booking Flow - P0 Critical Scenarios', () => {
       return;
     }
 
-    // Get doctor name for verification
-    const doctorNameText = await doctorCard.textContent();
+    // Get the doctor card that contains this link (for verification)
+    const doctorCard = page.locator('.group').filter({ has: viewProfileLink }).first();
+    const doctorNameText = await doctorCard.locator('h3').textContent();
     console.log(`Found doctor card: ${doctorNameText}`);
 
-    // Click on doctor card
-    await doctorCard.click();
+    // Click on "View Full Profile" link
+    await viewProfileLink.click();
 
     // Wait for navigation to doctor profile
     await page.waitForURL(/\/doctor\/\d+/, { timeout: 10000 });
@@ -94,6 +97,7 @@ test.describe('Appointment Booking Flow - P0 Critical Scenarios', () => {
     // Navigate directly to a known doctor (Sarah Johnson - ID 8)
     await page.goto(`${BASE_URL}/doctor/8`);
     await page.waitForLoadState('domcontentloaded');
+    await dismissCookieBanner(page);
     await page.waitForTimeout(2000);
 
     console.log('Current URL:', page.url());
@@ -153,6 +157,7 @@ test.describe('Appointment Booking Flow - P0 Critical Scenarios', () => {
     // Navigate to doctor profile
     await page.goto(`${BASE_URL}/doctor/8`);
     await page.waitForLoadState('domcontentloaded');
+    await dismissCookieBanner(page);
     await page.waitForTimeout(2000);
 
     // Try to find and click a time slot
@@ -193,6 +198,7 @@ test.describe('Appointment Booking Flow - P0 Critical Scenarios', () => {
     // Navigate to test doctor (API Test - ID 5) which has 0 slots
     await page.goto(`${BASE_URL}/doctor/5`);
     await page.waitForLoadState('domcontentloaded');
+    await dismissCookieBanner(page);
     await page.waitForTimeout(2000);
 
     // Verify doctor loaded

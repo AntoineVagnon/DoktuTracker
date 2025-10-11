@@ -90,18 +90,7 @@ export default function DoctorProfile() {
   
   // Fetch doctor details
   const { data: doctor, isLoading: doctorLoading, error: doctorError } = useQuery<Doctor>({
-    queryKey: ["/api/doctors", doctorId],
-    queryFn: async () => {
-      if (!isValidDoctorId) {
-        throw new Error(`Invalid doctor ID: ${doctorId}`);
-      }
-      const response = await fetch(`/api/doctors/${doctorId}`);
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to fetch doctor: ${response.status} ${errorText}`);
-      }
-      return response.json();
-    },
+    queryKey: [`/api/doctors/${doctorId}`],
     enabled: isValidDoctorId, // Only run query if we have a valid doctor ID
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000,
@@ -109,13 +98,7 @@ export default function DoctorProfile() {
 
   // Fetch availability (only when needed)
   const { data: timeSlots, isLoading: slotsLoading } = useQuery<TimeSlot[]>({
-    queryKey: ["/api/time-slots", doctorId],
-    queryFn: async () => {
-      if (!isValidDoctorId) return [];
-      const response = await fetch(`/api/doctors/${doctorId}/slots`);
-      if (!response.ok) return [];
-      return response.json();
-    },
+    queryKey: [`/api/doctors/${doctorId}/slots`],
     enabled: isValidDoctorId, // Only run query if we have a valid doctor ID
     refetchOnWindowFocus: true,
     staleTime: 5 * 60 * 1000,
