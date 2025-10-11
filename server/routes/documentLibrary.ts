@@ -383,8 +383,8 @@ export function registerDocumentLibraryRoutes(app: Express) {
         return res.status(403).json({ error: "Access denied" });
       }
 
-      // Use object storage to download the file
-      const objectStorageService = new ObjectStorageService();
+      // Use Supabase Storage to download the file
+      const { getSupabaseStorageService } = await import("../supabaseStorage");
       try {
         console.log(`🔍 DOWNLOAD DEBUG - Document ${documentId}:`, {
           fileName: document.fileName,
@@ -392,22 +392,33 @@ export function registerDocumentLibraryRoutes(app: Express) {
           fileSize: document.fileSize,
           uploadUrl: document.uploadUrl
         });
-        
-        const normalizedPath = objectStorageService.normalizeObjectEntityPath(document.uploadUrl);
-        console.log(`🔍 NORMALIZED PATH: ${normalizedPath}`);
-        
-        const objectFile = await objectStorageService.getObjectEntityFile(normalizedPath);
-        
-        // Pass the original filename to the download function for proper headers
-        objectStorageService.downloadObject(objectFile, res, 3600, document.fileName);
-      } catch (error) {
-        if (error instanceof ObjectNotFoundError) {
-          return res.status(404).json({ 
-            error: "Document file not found",
-            migration: "This document may need to be re-uploaded for security compliance."
-          });
-        }
-        throw error;
+
+        const storageService = getSupabaseStorageService();
+
+        // Download file from Supabase Storage
+        const fileBuffer = await storageService.downloadFile(document.uploadUrl);
+
+        // Clean filename for Windows
+        const cleanFileName = document.fileName
+          .replace(/[<>:"/\\|?*]/g, '_')
+          .replace(/\s+/g, '_')
+          .replace(/_+/g, '_');
+
+        // Set proper headers
+        res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+        res.setHeader('Content-Disposition', `attachment; filename="${cleanFileName}"`);
+        res.setHeader('Content-Length', fileBuffer.length.toString());
+        res.setHeader('Cache-Control', 'private, max-age=3600');
+
+        // Send the file
+        res.end(fileBuffer);
+
+      } catch (error: any) {
+        console.error("❌ Supabase storage download error:", error);
+        return res.status(404).json({
+          error: "Document file not found",
+          message: error?.message || "File not accessible"
+        });
       }
 
     } catch (error) {
