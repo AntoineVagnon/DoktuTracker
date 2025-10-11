@@ -925,9 +925,9 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     }
 
     // Regular Supabase session handling
-    // Check if token is expired
+    // Check if token is expired (only if we have a session with expires_at)
     const now = Math.floor(Date.now() / 1000);
-    if (session.expires_at && now >= session.expires_at) {
+    if (session && session.expires_at && now >= session.expires_at) {
       console.log('Auth middleware - Token expired');
       // Try to refresh token
       const { data, error } = await supabase.auth.refreshSession(session);
