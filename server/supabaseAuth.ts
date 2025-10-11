@@ -4,14 +4,20 @@ import { storage } from './storage';
 import './types'; // Import session types
 import { emailService } from './emailService';
 
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
-  throw new Error('SUPABASE_URL and SUPABASE_KEY must be set');
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
 }
 
-// Initialize Supabase client
+// Initialize Supabase client with service role key for admin operations
 export const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
 );
 
 export async function setupSupabaseAuth(app: Express) {
