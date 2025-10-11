@@ -2336,7 +2336,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       // 3. Create doctor profile
       const licenseNumber = doctorData.licenseNumber || `DOC-${Date.now()}`;
       const doctor = await storage.createDoctor({
-        userId: authUserId,
+        userId: newUser.id, // Use the integer ID from users table, not the UUID
         firstName: doctorData.firstName,
         lastName: doctorData.lastName,
         email: doctorData.email,
