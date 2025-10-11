@@ -28,8 +28,10 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   // Use VITE_API_URL if the url starts with /api/
-  const apiUrl = import.meta.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
-  const fullUrl = url.startsWith('/api/')
+  // Force Railway URL for production if env var is not set
+  const apiUrl = import.meta.env.VITE_API_URL ||
+    (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+  const fullUrl = url.startsWith('/api/') && apiUrl
     ? `${apiUrl}${url}`
     : url;
 
@@ -61,8 +63,10 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const url = queryKey[0] as string;
     // Use VITE_API_URL if the url starts with /api/
-    const apiUrl = import.meta.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
-    const fullUrl = url.startsWith('/api/')
+    // Force Railway URL for production if env var is not set
+    const apiUrl = import.meta.env.VITE_API_URL ||
+      (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+    const fullUrl = url.startsWith('/api/') && apiUrl
       ? `${apiUrl}${url}`
       : url;
 
