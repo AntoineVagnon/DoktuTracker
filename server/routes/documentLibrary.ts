@@ -291,12 +291,19 @@ export function registerDocumentLibraryRoutes(app: Express) {
     }
   });
 
-  // Simple, bulletproof download route using Supabase Storage
-  app.get("/api/download/:documentId", async (req, res) => {
-    console.log("✅ DOWNLOAD ROUTE - DocumentId:", req.params.documentId);
+  // Secure download route with authentication and authorization
+  app.get("/api/download/:documentId", isAuthenticated, async (req, res) => {
+    console.log("🔒 SECURE DOWNLOAD ROUTE - DocumentId:", req.params.documentId);
 
     try {
       const { documentId } = req.params;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        console.log("❌ UNAUTHORIZED - No userId");
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
       const document = await storage.getDocumentById(documentId);
 
       if (!document) {
@@ -307,8 +314,44 @@ export function registerDocumentLibraryRoutes(app: Express) {
       console.log("📄 Document found:", {
         fileName: document.fileName,
         fileType: document.fileType,
-        uploadUrl: document.uploadUrl
+        uploadUrl: document.uploadUrl,
+        uploadedBy: document.uploadedBy
       });
+
+      // SECURITY CHECK: Verify user has access to this document
+      const userIdInt = parseInt(userId.toString());
+      const isOwner = document.uploadedBy === userIdInt;
+      let hasAccess = isOwner;
+
+      // If user is not the owner, check if they're a doctor with access through appointments
+      if (!isOwner) {
+        const doctorRecord = await storage.getDoctorByUserId(userId.toString());
+        if (doctorRecord) {
+          // Check if this document is attached to any of the doctor's appointments
+          const appointments = await storage.getAppointmentsByDoctor(doctorRecord.id);
+          const appointmentIds = appointments.map((apt: any) => apt.id);
+
+          // Check if document is attached to any of these appointments
+          for (const aptId of appointmentIds) {
+            const aptDocs = await storage.getDocumentsForAppointment(aptId);
+            const hasDoc = aptDocs.some((doc: any) => doc.id === documentId);
+            if (hasDoc) {
+              hasAccess = true;
+              console.log(`✅ Doctor ${doctorRecord.id} has access via appointment ${aptId}`);
+              break;
+            }
+          }
+        }
+      }
+
+      if (!hasAccess) {
+        console.log("🚫 ACCESS DENIED - User:", userIdInt, "Document owner:", document.uploadedBy);
+        console.log("🔐 SECURITY AUDIT: Unauthorized access attempt blocked");
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      console.log("✅ ACCESS GRANTED - User:", userIdInt);
+      console.log("🔐 SECURITY AUDIT: Document access authorized");
 
       // Use Supabase Storage for download
       const { getSupabaseStorageService } = await import("../supabaseStorage");
