@@ -59,9 +59,11 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
         (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
       const fullUrl = `${apiUrl}/api/documents/upload`;
 
-      console.log('📤 [v2] Uploading document with auth token:', token ? 'Present' : 'Missing');
-      console.log('📤 [v2] API URL:', apiUrl);
-      console.log('📤 [v2] Full URL:', fullUrl);
+      console.log('📤 [v3-FRESH] Uploading document with auth token:', token ? 'Present' : 'Missing');
+      console.log('📤 [v3-FRESH] API URL:', apiUrl);
+      console.log('📤 [v3-FRESH] Full URL:', fullUrl);
+      console.log('📤 [v3-FRESH] import.meta.env.PROD:', import.meta.env.PROD);
+      console.log('📤 [v3-FRESH] import.meta.env.VITE_API_URL:', import.meta.env.VITE_API_URL);
 
       const response = await fetch(fullUrl, {
         method: 'POST',
