@@ -17,6 +17,19 @@ const ADMIN_EMAIL = process.env.TEST_ADMIN_EMAIL || 'admin@doktu.co';
 const ADMIN_PASSWORD = process.env.TEST_ADMIN_PASSWORD || ''; // From secure vault
 
 // Helper Functions
+async function dismissCookieBanner(page: Page) {
+  // Try to dismiss cookie banner if present
+  try {
+    const acceptButton = page.locator('button:has-text("Accept"), button:has-text("I understand"), button:has-text("OK")').first();
+    if (await acceptButton.isVisible({ timeout: 2000 })) {
+      await acceptButton.click();
+      await page.waitForTimeout(500);
+    }
+  } catch {
+    // Cookie banner not present or already dismissed
+  }
+}
+
 async function loginAsAdmin(page: Page) {
   // Navigate directly to admin page (auth state loaded from storage)
   await page.goto(`${BASE_URL}/admin`);
@@ -24,6 +37,9 @@ async function loginAsAdmin(page: Page) {
   // Wait for page load with timeout
   await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(2000); // Give time for React to render
+
+  // Dismiss cookie banner if present
+  await dismissCookieBanner(page);
 
   // Check if we landed on admin page (if not, login failed)
   const currentUrl = page.url();
@@ -44,6 +60,8 @@ async function navigateToDoctorsTab(page: Page) {
 async function openCreateDoctorForm(page: Page) {
   await page.click('button:has-text("Create New Doctor")');
   await page.waitForSelector('text=Create New Doctor Account');
+  // Dismiss cookie banner again in case it reappears
+  await dismissCookieBanner(page);
 }
 
 async function fillDoctorForm(page: Page, data: {
