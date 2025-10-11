@@ -9,6 +9,16 @@ import { X, FileText, Paperclip, Trash2, Download, Archive } from "lucide-react"
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { UploadResult } from "@uppy/core";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface DocumentLibraryPanelProps {
   appointmentId?: number;
@@ -21,6 +31,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedTab, setSelectedTab] = useState("library");
+  const [documentToDelete, setDocumentToDelete] = useState<{ id: string; name: string; type: 'appointment' | 'library' } | null>(null);
 
   // Fetch user's document library (only for non-doctors)
   const { data: libraryDocuments = [], isLoading: isLoadingLibrary } = useQuery({
@@ -289,11 +300,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          if (confirm("Are you sure you want to permanently delete this document?")) {
-                            permanentDeleteMutation.mutate(doc.id);
-                          }
-                        }}
+                        onClick={() => setDocumentToDelete({ id: doc.id, name: doc.fileName, type: 'appointment' })}
                         disabled={permanentDeleteMutation.isPending}
                         title="Delete permanently"
                       >
@@ -373,11 +380,7 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => {
-                        if (confirm("Are you sure you want to delete this document permanently?")) {
-                          deleteMutation.mutate(doc.id);
-                        }
-                      }}
+                      onClick={() => setDocumentToDelete({ id: doc.id, name: doc.fileName, type: 'library' })}
                       disabled={deleteMutation.isPending}
                       title="Delete forever"
                     >
@@ -401,6 +404,36 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
         </Card>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!documentToDelete} onOpenChange={() => setDocumentToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Document</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete "{documentToDelete?.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (documentToDelete) {
+                  if (documentToDelete.type === 'appointment') {
+                    permanentDeleteMutation.mutate(documentToDelete.id);
+                  } else {
+                    deleteMutation.mutate(documentToDelete.id);
+                  }
+                  setDocumentToDelete(null);
+                }
+              }}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
