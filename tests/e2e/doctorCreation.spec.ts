@@ -82,9 +82,9 @@ async function fillDoctorForm(page: Page, data: {
   await page.locator('input[name="lastName"], input[placeholder*="Last"], input[placeholder*="Smith"]').first().fill(data.lastName);
   await page.locator('input[name="email"], input[type="email"], input[placeholder*="doctor"]').first().fill(data.email);
 
-  // For password field, use both selectors and increase timeout
+  // Scroll to password field and fill
   const passwordField = page.locator('input[type="password"]').first();
-  await passwordField.waitFor({ state: 'visible', timeout: 10000 });
+  await passwordField.scrollIntoViewIfNeeded();
   await passwordField.fill(data.password);
 
   if (data.title) {
