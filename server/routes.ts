@@ -2334,23 +2334,15 @@ export async function registerRoutes(app: Express): Promise<void> {
       console.log('✅ User profile created:', newUser.id);
 
       // 3. Create doctor profile
-      const licenseNumber = doctorData.licenseNumber || `DOC-${Date.now()}`;
       const doctor = await storage.createDoctor({
         userId: newUser.id, // Use the integer ID from users table, not the UUID
-        firstName: doctorData.firstName,
-        lastName: doctorData.lastName,
-        email: doctorData.email,
-        specialization: doctorData.specialization,
-        title: doctorData.title,
+        specialty: doctorData.specialization, // Schema uses 'specialty' not 'specialization'
         bio: doctorData.bio || `${doctorData.title} ${doctorData.firstName} ${doctorData.lastName}, specialized in ${doctorData.specialization}.`,
-        licenseNumber: licenseNumber,
-        yearsOfExperience: doctorData.yearsOfExperience,
-        consultationFee: doctorData.consultationFee,
+        rppsNumber: doctorData.licenseNumber || `DOC-${Date.now()}`, // Schema uses 'rppsNumber' not 'licenseNumber'
+        consultationPrice: doctorData.consultationFee.toString(), // Schema uses 'consultationPrice' as decimal string
         languages: doctorData.languages,
-        rating: 5.0,
+        rating: "5.00", // Decimal as string
         reviewCount: 0,
-        verified: true,
-        acceptingNewPatients: true,
       });
 
       console.log('✅ Doctor profile created:', doctor.id);
@@ -2359,10 +2351,11 @@ export async function registerRoutes(app: Express): Promise<void> {
         success: true,
         doctor: {
           id: doctor.id,
-          email: doctor.email,
-          firstName: doctor.firstName,
-          lastName: doctor.lastName,
-          specialization: doctor.specialization,
+          userId: newUser.id,
+          email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          specialty: doctor.specialty,
         },
         credentials: {
           email: doctorData.email,
