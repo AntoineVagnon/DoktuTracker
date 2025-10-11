@@ -1,0 +1,432 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img [ref=e8]
+          - heading "Cookie Preferences" [level=3] [ref=e10]
+        - button [ref=e11] [cursor=pointer]:
+          - img
+      - paragraph [ref=e12]:
+        - text: We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. By clicking accept, you agree to this, as outlined in our
+        - link "Privacy Policy" [ref=e13] [cursor=pointer]:
+          - /url: /privacy
+        - text: .
+      - generic [ref=e14]:
+        - button "Manage Preferences" [ref=e15] [cursor=pointer]
+        - button "Reject All" [ref=e16] [cursor=pointer]
+        - button "Accept All" [ref=e17] [cursor=pointer]
+    - region "Notifications (F8)":
+      - list
+    - generic [ref=e18]:
+      - banner [ref=e19]:
+        - generic [ref=e21]:
+          - link "D Doktu" [ref=e22] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e24] [cursor=pointer]: D
+            - generic [ref=e25] [cursor=pointer]: Doktu
+          - navigation [ref=e26]:
+            - link "Doctors" [ref=e27] [cursor=pointer]:
+              - /url: "#doctors"
+            - link "How it Works" [ref=e28] [cursor=pointer]:
+              - /url: "#how-it-works"
+            - link "Pricing" [ref=e29] [cursor=pointer]:
+              - /url: "#pricing"
+          - generic [ref=e30]:
+            - button "Sign In" [ref=e31] [cursor=pointer]
+            - button "Sign Up Free" [active] [ref=e32] [cursor=pointer]
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "Book one of our hand-picked doctors in under 2 minutes" [level=1] [ref=e37]:
+            - text: Book one of our hand-picked doctors in
+            - generic [ref=e38]: under 2 minutes
+          - paragraph [ref=e39]: Connect with certified healthcare professionals for secure video consultations. Available 24/7 across Europe.
+          - generic [ref=e40]:
+            - button "Book Appointment" [ref=e41] [cursor=pointer]:
+              - img
+              - text: Book Appointment
+            - link "See How it Works" [ref=e42] [cursor=pointer]:
+              - /url: "#how-it-works"
+              - img
+              - text: See How it Works
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - generic [ref=e45]:
+                - img "Patient testimonial" [ref=e46]
+                - img "Patient testimonial" [ref=e47]
+                - img "Patient testimonial" [ref=e48]
+              - generic [ref=e49]:
+                - generic [ref=e50]: 50,000+
+                - text: patients treated
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - img [ref=e53]
+                - img [ref=e55]
+                - img [ref=e57]
+                - img [ref=e59]
+                - img [ref=e61]
+              - generic [ref=e63]: 4.9/5 rating
+        - img "Professional medical consultation" [ref=e65]
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - heading "Our Most Picked Medical Team" [level=2] [ref=e69]
+          - paragraph [ref=e70]: Connect with certified specialists across various medical fields. All our doctors are verified and highly rated by patients.
+        - generic [ref=e71]:
+          - generic [ref=e74]:
+            - img "Dr. Dr. James Rodriguez" [ref=e77]
+            - heading "Dr. James Rodriguez" [level=3] [ref=e78]
+            - paragraph [ref=e79]: Pediatrie
+            - generic [ref=e80]:
+              - generic [ref=e81]:
+                - img [ref=e82]
+                - img [ref=e84]
+                - img [ref=e86]
+                - img [ref=e88]
+                - img [ref=e90]
+              - generic [ref=e92]: 4.90 (203)
+            - generic [ref=e94]:
+              - img [ref=e95]
+              - text: "Next: Oct 8, 06:30"
+            - generic [ref=e98]:
+              - generic [ref=e99]: €35.00
+              - generic [ref=e100]: / consultation
+            - generic [ref=e101]:
+              - button "Book Now" [ref=e102] [cursor=pointer]
+              - link "View Full Profile" [ref=e103] [cursor=pointer]:
+                - /url: /doctor/9
+          - generic [ref=e106]:
+            - img "Dr. Dr. Sophie Chen" [ref=e109]
+            - heading "Dr. Sophie Chen" [level=3] [ref=e110]
+            - paragraph [ref=e111]: Dermatologie
+            - generic [ref=e112]:
+              - generic [ref=e113]:
+                - img [ref=e114]
+                - img [ref=e116]
+                - img [ref=e118]
+                - img [ref=e120]
+                - img [ref=e122]
+              - generic [ref=e124]: 4.90 (134)
+            - generic [ref=e126]: No availability
+            - generic [ref=e127]:
+              - generic [ref=e128]: €35.00
+              - generic [ref=e129]: / consultation
+            - generic [ref=e130]:
+              - button "Book Now" [ref=e131] [cursor=pointer]
+              - link "View Full Profile" [ref=e132] [cursor=pointer]:
+                - /url: /doctor/10
+          - generic [ref=e135]:
+            - img "Dr. Dr. Alexandre Dubois" [ref=e138]
+            - heading "Dr. Alexandre Dubois" [level=3] [ref=e139]
+            - paragraph [ref=e140]: Neurologie
+            - generic [ref=e141]:
+              - generic [ref=e142]:
+                - img [ref=e143]
+                - img [ref=e145]
+                - img [ref=e147]
+                - img [ref=e149]
+                - img [ref=e151]
+              - generic [ref=e153]: 4.90 (98)
+            - generic [ref=e155]: No availability
+            - generic [ref=e156]:
+              - generic [ref=e157]: €35.00
+              - generic [ref=e158]: / consultation
+            - generic [ref=e159]:
+              - button "Book Now" [ref=e160] [cursor=pointer]
+              - link "View Full Profile" [ref=e161] [cursor=pointer]:
+                - /url: /doctor/13
+          - generic [ref=e164]:
+            - img "Dr. Dr. Sarah Johnson" [ref=e167]
+            - heading "Dr. Sarah Johnson" [level=3] [ref=e168]
+            - paragraph [ref=e169]: Médecine Générale
+            - generic [ref=e170]:
+              - generic [ref=e171]:
+                - img [ref=e172]
+                - img [ref=e174]
+                - img [ref=e176]
+                - img [ref=e178]
+                - img [ref=e180]
+              - generic [ref=e182]: 4.80 (156)
+            - generic [ref=e184]: No availability
+            - generic [ref=e185]:
+              - generic [ref=e186]: €35.00
+              - generic [ref=e187]: / consultation
+            - generic [ref=e188]:
+              - button "Book Now" [ref=e189] [cursor=pointer]
+              - link "View Full Profile" [ref=e190] [cursor=pointer]:
+                - /url: /doctor/8
+          - generic [ref=e193]:
+            - img "Dr. Dr. Michael Thompson" [ref=e196]
+            - heading "Dr. Michael Thompson" [level=3] [ref=e197]
+            - paragraph [ref=e198]: Cardiologie
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - img [ref=e201]
+                - img [ref=e203]
+                - img [ref=e205]
+                - img [ref=e207]
+                - img [ref=e209]
+              - generic [ref=e211]: 4.70 (89)
+            - generic [ref=e213]: No availability
+            - generic [ref=e214]:
+              - generic [ref=e215]: €35.00
+              - generic [ref=e216]: / consultation
+            - generic [ref=e217]:
+              - button "Book Now" [ref=e218] [cursor=pointer]
+              - link "View Full Profile" [ref=e219] [cursor=pointer]:
+                - /url: /doctor/11
+        - link "See All Doctors" [ref=e221] [cursor=pointer]:
+          - /url: /doctors
+          - text: See All Doctors
+          - img
+      - generic [ref=e223]:
+        - generic [ref=e224]:
+          - heading "Simple booking process—set if available doctors first" [level=2] [ref=e225]
+          - paragraph [ref=e226]: Get professional medical care from the comfort of your home in just three simple steps.
+        - generic [ref=e227]:
+          - generic [ref=e228]:
+            - img [ref=e230]
+            - heading "1. Find Your Doctor" [level=3] [ref=e233]
+            - paragraph [ref=e234]: Browse our verified specialists and check their real-time availability. Filter by specialty, language, and rating.
+          - generic [ref=e235]:
+            - img [ref=e237]
+            - heading "2. Book Instantly" [level=3] [ref=e239]
+            - paragraph [ref=e240]: Select an available time slot and complete your booking in under 2 minutes. Secure payment processing included.
+          - generic [ref=e241]:
+            - img [ref=e243]
+            - heading "3. Start Consultation" [level=3] [ref=e246]
+            - paragraph [ref=e247]: Join your secure video consultation at the scheduled time. Get professional medical advice and prescriptions.
+        - link "Start Booking Now" [ref=e249] [cursor=pointer]:
+          - /url: "#doctors"
+      - generic [ref=e251]:
+        - generic [ref=e252]:
+          - heading "Why choose Doktu?" [level=2] [ref=e253]
+          - paragraph [ref=e254]: Experience healthcare the modern way with our comprehensive telemedicine platform.
+        - generic [ref=e255]:
+          - generic [ref=e257]:
+            - img [ref=e259]
+            - heading "GDPR Compliant" [level=3] [ref=e261]
+            - paragraph [ref=e262]: Your medical data is protected with the highest security standards and European privacy regulations.
+          - generic [ref=e264]:
+            - img [ref=e266]
+            - heading "24/7 Availability" [level=3] [ref=e269]
+            - paragraph [ref=e270]: Access healthcare professionals around the clock, including weekends and holidays.
+          - generic [ref=e272]:
+            - img [ref=e274]
+            - heading "Verified Doctors" [level=3] [ref=e278]
+            - paragraph [ref=e279]: All our healthcare providers are licensed, certified, and regularly reviewed by our medical board.
+          - generic [ref=e281]:
+            - img [ref=e283]
+            - heading "Mobile Friendly" [level=3] [ref=e285]
+            - paragraph [ref=e286]: Access consultations from any device - desktop, tablet, or smartphone with seamless experience.
+          - generic [ref=e288]:
+            - img [ref=e290]
+            - heading "Medical Records" [level=3] [ref=e294]
+            - paragraph [ref=e295]: Keep track of your consultation history, prescriptions, and medical records in one secure place.
+      - generic [ref=e297]:
+        - generic [ref=e298]:
+          - heading "What Our Patients Say" [level=2] [ref=e299]
+          - paragraph [ref=e300]: Join thousands of satisfied patients who have experienced quality healthcare through our platform.
+        - generic [ref=e301]:
+          - generic [ref=e303]:
+            - generic [ref=e304]:
+              - img [ref=e305]
+              - img [ref=e307]
+              - img [ref=e309]
+              - img [ref=e311]
+              - img [ref=e313]
+            - paragraph [ref=e315]: "\"Outstanding service! I was able to consult with a specialist within minutes. The doctor was professional and provided excellent care.\""
+            - generic [ref=e316]:
+              - generic [ref=e318]: MK
+              - generic [ref=e319]:
+                - heading "Maria Kowalski" [level=4] [ref=e320]
+                - paragraph [ref=e321]: Berlin, Germany
+          - generic [ref=e323]:
+            - generic [ref=e324]:
+              - img [ref=e325]
+              - img [ref=e327]
+              - img [ref=e329]
+              - img [ref=e331]
+              - img [ref=e333]
+            - paragraph [ref=e335]: "\"Very convenient and secure platform. The video quality was excellent and I received my prescription immediately after the consultation.\""
+            - generic [ref=e336]:
+              - generic [ref=e338]: JD
+              - generic [ref=e339]:
+                - heading "Jean Dubois" [level=4] [ref=e340]
+                - paragraph [ref=e341]: Paris, France
+          - generic [ref=e343]:
+            - generic [ref=e344]:
+              - img [ref=e345]
+              - img [ref=e347]
+              - img [ref=e349]
+              - img [ref=e351]
+              - img [ref=e353]
+            - paragraph [ref=e355]: "\"Perfect for busy professionals. I was able to get medical advice during my lunch break without leaving the office.\""
+            - generic [ref=e356]:
+              - generic [ref=e358]: AR
+              - generic [ref=e359]:
+                - heading "Anna Rodriguez" [level=4] [ref=e360]
+                - paragraph [ref=e361]: Madrid, Spain
+      - generic [ref=e363]:
+        - generic [ref=e364]:
+          - heading "Choose Your Plan" [level=2] [ref=e365]
+          - paragraph [ref=e366]: Transparent pricing with no hidden fees. Choose the plan that works best for you.
+        - generic [ref=e367]:
+          - generic [ref=e370]:
+            - heading "Pay-per-visit" [level=3] [ref=e371]
+            - generic [ref=e372]: €35
+            - paragraph [ref=e373]: per consultation
+            - list [ref=e374]:
+              - listitem [ref=e375]:
+                - img [ref=e376]
+                - generic [ref=e379]: 30-minute video consultation
+              - listitem [ref=e380]:
+                - img [ref=e381]
+                - generic [ref=e384]: Book certified doctors
+              - listitem [ref=e385]:
+                - img [ref=e386]
+                - generic [ref=e389]: Secure, private call
+              - listitem [ref=e390]:
+                - img [ref=e391]
+                - generic [ref=e394]: No subscription required
+            - button "Book Consultation – €35 per consultation" [ref=e395] [cursor=pointer]: Book Consultation
+          - generic [ref=e396]:
+            - generic [ref=e398]: Most popular
+            - generic [ref=e400]:
+              - heading "Monthly Membership" [level=3] [ref=e401]
+              - generic [ref=e402]: €45
+              - paragraph [ref=e403]: per month
+              - list [ref=e404]:
+                - listitem [ref=e405]:
+                  - img [ref=e406]
+                  - generic [ref=e409]: 2 × 30-minute consultations per month
+                - listitem [ref=e410]:
+                  - img [ref=e411]
+                  - generic [ref=e414]: Book any eligible doctor
+                - listitem [ref=e415]:
+                  - img [ref=e416]
+                  - generic [ref=e419]: Upload & share health data
+                - listitem [ref=e420]:
+                  - img [ref=e421]
+                  - generic [ref=e424]: All Basic plan benefits included
+              - button "Choose Monthly – €45 per month" [ref=e425] [cursor=pointer]: Choose Monthly
+          - generic [ref=e428]:
+            - heading "6-Month Membership" [level=3] [ref=e429]
+            - generic [ref=e430]: €219
+            - paragraph [ref=e431]: per 6 months
+            - list [ref=e432]:
+              - listitem [ref=e433]:
+                - img [ref=e434]
+                - generic [ref=e437]: 12 consultations (2 per month)
+              - listitem [ref=e438]:
+                - img [ref=e439]
+                - generic [ref=e442]: 23% savings vs monthly
+              - listitem [ref=e443]:
+                - img [ref=e444]
+                - generic [ref=e447]: Book any eligible doctor
+              - listitem [ref=e448]:
+                - img [ref=e449]
+                - generic [ref=e452]: All Basic plan benefits included
+            - button "Choose 6-Month – €219 per 6 months" [ref=e453] [cursor=pointer]: Choose 6-Month
+      - generic [ref=e455]:
+        - heading "Skip the waiting room. Book now." [level=2] [ref=e456]
+        - paragraph [ref=e457]: Join thousands of patients who have already experienced the future of healthcare. Get started with your first consultation today.
+        - generic [ref=e458]:
+          - link "Book Your First Appointment" [ref=e459] [cursor=pointer]:
+            - /url: "#doctors"
+            - img
+            - text: Book Your First Appointment
+          - 'link "Call Us: +33 1 23 45 67 89" [ref=e460] [cursor=pointer]':
+            - /url: tel:+33123456789
+            - img
+            - text: "Call Us: +33 1 23 45 67 89"
+      - contentinfo [ref=e461]:
+        - generic [ref=e462]:
+          - generic [ref=e463]:
+            - generic [ref=e464]:
+              - generic [ref=e465]:
+                - generic [ref=e467]: D
+                - generic [ref=e468]: Doktu
+              - paragraph [ref=e469]: Professional telemedicine platform connecting patients with certified healthcare providers across Europe. GDPR compliant and secure.
+              - generic [ref=e470]:
+                - link [ref=e471] [cursor=pointer]:
+                  - /url: "#"
+                  - img [ref=e472] [cursor=pointer]
+                - link [ref=e474] [cursor=pointer]:
+                  - /url: "#"
+                  - img [ref=e475] [cursor=pointer]
+                - link [ref=e477] [cursor=pointer]:
+                  - /url: "#"
+                  - img [ref=e478] [cursor=pointer]
+            - generic [ref=e482]:
+              - heading "Quick Links" [level=3] [ref=e483]
+              - list [ref=e484]:
+                - listitem [ref=e485]:
+                  - link "Find Doctors" [ref=e486] [cursor=pointer]:
+                    - /url: "#doctors"
+                - listitem [ref=e487]:
+                  - link "How it Works" [ref=e488] [cursor=pointer]:
+                    - /url: "#how-it-works"
+                - listitem [ref=e489]:
+                  - link "Pricing" [ref=e490] [cursor=pointer]:
+                    - /url: "#pricing"
+                - listitem [ref=e491]:
+                  - link "For Doctors" [ref=e492] [cursor=pointer]:
+                    - /url: /doctor-signup
+                - listitem [ref=e493]:
+                  - link "Support" [ref=e494] [cursor=pointer]:
+                    - /url: /support
+            - generic [ref=e495]:
+              - heading "Legal & Support" [level=3] [ref=e496]
+              - list [ref=e497]:
+                - listitem [ref=e498]:
+                  - link "Privacy Policy" [ref=e499] [cursor=pointer]:
+                    - /url: /privacy
+                - listitem [ref=e500]:
+                  - link "Terms of Service" [ref=e501] [cursor=pointer]:
+                    - /url: /terms
+                - listitem [ref=e502]:
+                  - link "GDPR Compliance" [ref=e503] [cursor=pointer]:
+                    - /url: /gdpr
+                - listitem [ref=e504]:
+                  - link "Medical Disclaimer" [ref=e505] [cursor=pointer]:
+                    - /url: /disclaimer
+                - listitem [ref=e506]:
+                  - link "Contact Us" [ref=e507] [cursor=pointer]:
+                    - /url: /contact
+          - generic [ref=e508]:
+            - paragraph [ref=e509]: © 2025 Doktu. All rights reserved. Licensed healthcare platform in the EU.
+            - generic [ref=e510]:
+              - generic [ref=e511]:
+                - img [ref=e512]
+                - generic [ref=e514]: GDPR Compliant
+              - generic [ref=e515]:
+                - img [ref=e516]
+                - generic [ref=e519]: SSL Secured
+  - generic [ref=e522]:
+    - button [ref=e523] [cursor=pointer]:
+      - img [ref=e524] [cursor=pointer]
+    - generic [ref=e527]:
+      - heading "Welcome to Doktu" [level=2] [ref=e528]
+      - paragraph [ref=e529]: Access your account or create a new one
+    - generic [ref=e530]:
+      - tablist [ref=e531]:
+        - tab "Login" [selected] [ref=e532] [cursor=pointer]
+        - tab "Sign Up" [ref=e533] [cursor=pointer]
+      - tabpanel "Login" [ref=e534]:
+        - generic [ref=e535]:
+          - generic [ref=e536]:
+            - generic [ref=e537]: Email
+            - textbox "Email" [ref=e538]
+          - generic [ref=e539]:
+            - generic [ref=e540]: Password
+            - textbox "Password" [ref=e541]
+          - button "Sign In" [ref=e542] [cursor=pointer]
+        - generic [ref=e543]:
+          - button "Forgot your password? Reset it" [ref=e544] [cursor=pointer]
+          - paragraph [ref=e545]:
+            - text: Don't have an account?
+            - button "Sign up" [ref=e546] [cursor=pointer]
+```

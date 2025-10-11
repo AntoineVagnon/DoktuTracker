@@ -35,8 +35,14 @@ export function DocumentUploadSidebar({ isOpen, onClose, appointmentId }: Docume
   const [uploadProgress, setUploadProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
 
-  // Force rebuild - version 4
-  console.log('[UPLOAD-SIDEBAR-V4] Component mounted', { appointmentId });
+  // Force rebuild - version 5 with substantial change
+  console.log('[UPLOAD-SIDEBAR-V5] Component mounted', { appointmentId, timestamp: Date.now() });
+  console.log('[UPLOAD-SIDEBAR-V5] Auth state:', { hasUser: !!user, userId: user?.id });
+  console.log('[UPLOAD-SIDEBAR-V5] Environment:', {
+    apiUrl: import.meta.env.VITE_API_URL,
+    isProd: import.meta.env.PROD,
+    mode: import.meta.env.MODE
+  });
 
   // Fetch existing documents for this appointment
   const { data: documents = [], isLoading } = useQuery<UploadedDocument[]>({
