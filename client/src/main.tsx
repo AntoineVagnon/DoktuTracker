@@ -2,6 +2,9 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
+// Build timestamp to force new bundle hash: 2025-10-11T12:45:00Z
+console.log('[DOKTU] App version: 2025-10-11T12:45:00Z');
+
 // Advanced error suppression for runtime overlay
 (function suppressRuntimeErrors() {
   // Disable Vite error overlay completely
