@@ -1,21 +1,22 @@
-# How to Enable E2E Tests
+# E2E Tests - Ready to Run
 
 ## Current Status
 
-The E2E test suite is **complete and ready**. The test endpoint is **already working** on Railway!
+✅ **Test suite complete** (23 E2E tests)
+✅ **Railway backend deployed** (API + test endpoint working)
+⏳ **Vercel frontend deploying** (doctor creation UI)
 
 ## Architecture
 
-- **Frontend:** Vercel (`https://doktu-tracker.vercel.app`)
-- **Backend API:** Railway (`https://web-production-b2ce.up.railway.app`)
+- **Frontend:** Vercel (`https://doktu-tracker.vercel.app`) - Currently redeploying
+- **Backend API:** Railway (`https://web-production-b2ce.up.railway.app`) - ✅ Live
 
-The test endpoint `/api/test/auth` is already deployed and functional on Railway. You can verify:
-
+Test endpoint verified working:
 ```bash
 curl -X POST https://web-production-b2ce.up.railway.app/api/test/auth \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"test"}'
-# Returns: {"error":"Invalid credentials"} ✅ Endpoint works!
+  -d '{"email":"antoine.vagnon@gmail.com","password":"Spl@ncnopleure49"}'
+# Returns: {"success":true,"user":{...},"sessionId":"..."}
 ```
 
 ---
