@@ -2474,6 +2474,68 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Test-only endpoint to create persistent session for E2E tests
+  // IMPORTANT: Only enable in non-production environments
+  if (process.env.NODE_ENV !== 'production') {
+    app.post("/api/test/auth", async (req, res) => {
+      try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+          return res.status(400).json({ error: "Email and password required" });
+        }
+
+        // Authenticate with Supabase
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error || !data.user) {
+          return res.status(401).json({ error: "Invalid credentials" });
+        }
+
+        // Get user from database
+        const dbUser = await storage.getUserByEmail(email);
+
+        if (!dbUser) {
+          return res.status(404).json({ error: "User not found in database" });
+        }
+
+        // Create a long-lived session for testing (24 hours)
+        req.session.cookie.maxAge = 24 * 60 * 60 * 1000;
+        req.session.supabaseSession = {
+          access_token: data.session?.access_token || '',
+          refresh_token: data.session?.refresh_token || '',
+          user: data.user
+        };
+
+        // Save session and return success
+        req.session.save((err) => {
+          if (err) {
+            console.error("Session save error:", err);
+            return res.status(500).json({ error: "Failed to save session" });
+          }
+
+          res.json({
+            success: true,
+            user: {
+              id: dbUser.id,
+              email: dbUser.email,
+              role: dbUser.role,
+              firstName: dbUser.firstName,
+              lastName: dbUser.lastName
+            },
+            sessionId: req.sessionID
+          });
+        });
+      } catch (error: any) {
+        console.error("Test auth error:", error);
+        res.status(500).json({ error: "Authentication failed" });
+      }
+    });
+  }
+
   app.post("/api/auth/confirm", async (req, res) => {
     try {
       const { access_token, refresh_token } = req.body;

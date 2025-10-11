@@ -1,7 +1,7 @@
 {
   "config": {
     "configFile": "C:\\Users\\mings\\.apps\\DoktuTracker\\playwright.config.ts",
-    "rootDir": "C:/Users/mings/.apps/DoktuTracker/tests/e2e",
+    "rootDir": "C:/Users/mings/.apps/DoktuTracker/tests",
     "forbidOnly": false,
     "fullyParallel": false,
     "globalSetup": null,
@@ -10,9 +10,7 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 1
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "reporter": [
       [
@@ -42,15 +40,33 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
+        "id": "setup",
+        "name": "setup",
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/auth.setup.ts",
+          "**/test-admin-login.spec.ts"
+        ],
+        "testMatch": [
+          "/.*\\.setup\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
         "id": "chromium",
         "name": "chromium",
-        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests/e2e",
-        "testIgnore": [],
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/auth.setup.ts",
+          "**/test-admin-login.spec.ts"
+        ],
         "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+          "/.*\\.(spec|test)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -58,15 +74,16 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "firefox",
         "name": "firefox",
-        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests/e2e",
-        "testIgnore": [],
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/auth.setup.ts",
+          "**/test-admin-login.spec.ts"
+        ],
         "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+          "/.*\\.(spec|test)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -74,15 +91,16 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "webkit",
         "name": "webkit",
-        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests/e2e",
-        "testIgnore": [],
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/auth.setup.ts",
+          "**/test-admin-login.spec.ts"
+        ],
         "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+          "/.*\\.(spec|test)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -90,15 +108,16 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
-        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests/e2e",
-        "testIgnore": [],
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/auth.setup.ts",
+          "**/test-admin-login.spec.ts"
+        ],
         "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+          "/.*\\.(spec|test)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -106,15 +125,16 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Mobile Safari",
         "name": "Mobile Safari",
-        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests/e2e",
-        "testIgnore": [],
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/auth.setup.ts",
+          "**/test-admin-login.spec.ts"
+        ],
         "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+          "/.*\\.(spec|test)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -122,15 +142,16 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Microsoft Edge",
         "name": "Microsoft Edge",
-        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests/e2e",
-        "testIgnore": [],
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/auth.setup.ts",
+          "**/test-admin-login.spec.ts"
+        ],
         "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+          "/.*\\.(spec|test)\\.(ts|js)$/"
         ],
         "timeout": 60000
       },
@@ -138,15 +159,16 @@
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Google Chrome",
         "name": "Google Chrome",
-        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests/e2e",
-        "testIgnore": [],
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/auth.setup.ts",
+          "**/test-admin-login.spec.ts"
+        ],
         "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+          "/.*\\.(spec|test)\\.(ts|js)$/"
         ],
         "timeout": 60000
       }
@@ -158,508 +180,19 @@
     "workers": 1,
     "webServer": null
   },
-  "suites": [
+  "suites": [],
+  "errors": [
     {
-      "title": "document-access-real.spec.ts",
-      "file": "document-access-real.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Document Access Control - Real User Testing",
-          "file": "document-access-real.spec.ts",
-          "line": 45,
-          "column": 6,
-          "specs": [
-            {
-              "title": "TEST 1: Patient can login successfully",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 9482,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "\n📋 TEST 1: Patient Login\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        },
-                        {
-                          "text": "✓ Accepted cookies\n"
-                        },
-                        {
-                          "text": "Current URL: https://doktu-tracker.vercel.app/dashboard\n"
-                        },
-                        {
-                          "text": "✅ PASS: Patient logged in successfully\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-11T12:24:34.562Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "531b74663ea367e8502b-03621d1b9bc0a19bbe55",
-              "file": "document-access-real.spec.ts",
-              "line": 47,
-              "column": 3
-            },
-            {
-              "title": "TEST 2: Patient can access document library",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 11547,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "\n📋 TEST 2: Document Library Access\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        },
-                        {
-                          "text": "✓ Accepted cookies\n"
-                        },
-                        {
-                          "text": "✓ Found document library using: button:has-text(\"Upload Docs\")\n"
-                        },
-                        {
-                          "text": "✅ PASS: Document library is accessible\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-11T12:24:44.146Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "531b74663ea367e8502b-107bc6287753ed590f4c",
-              "file": "document-access-real.spec.ts",
-              "line": 66,
-              "column": 3
-            },
-            {
-              "title": "TEST 3: Check for appointments",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 13743,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "\n📋 TEST 3: Patient Appointments\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        },
-                        {
-                          "text": "✓ Accepted cookies\n"
-                        },
-                        {
-                          "text": "✓ Screenshot saved: patient-dashboard.png\n"
-                        },
-                        {
-                          "text": "Found 0 appointments\n"
-                        },
-                        {
-                          "text": "ℹ️  INFO: No appointments found\n"
-                        },
-                        {
-                          "text": "   Patient may need to book an appointment first\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-11T12:24:55.707Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "531b74663ea367e8502b-08104fe9c91377bd2414",
-              "file": "document-access-real.spec.ts",
-              "line": 102,
-              "column": 3
-            },
-            {
-              "title": "TEST 4: Doctor can login",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 33946,
-                      "error": {
-                        "message": "TimeoutError: page.waitForLoadState: Timeout 30000ms exceeded.",
-                        "stack": "TimeoutError: page.waitForLoadState: Timeout 30000ms exceeded.\n    at login (C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\document-access-real.spec.ts:26:14)\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\document-access-real.spec.ts:144:5",
-                        "location": {
-                          "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\document-access-real.spec.ts",
-                          "column": 14,
-                          "line": 26
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 24 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m:\u001b[39m \u001b[33mPage\u001b[39m\u001b[33m,\u001b[39m email\u001b[33m:\u001b[39m string\u001b[33m,\u001b[39m password\u001b[33m:\u001b[39m string) {\n \u001b[90m 25 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mBASE_URL\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m   \u001b[36mawait\u001b[39m handleCookieConsent(page)\u001b[33m;\u001b[39m\n \u001b[90m 28 |\u001b[39m\n \u001b[90m 29 |\u001b[39m   \u001b[90m// Click Sign In button to open modal\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\document-access-real.spec.ts",
-                            "column": 14,
-                            "line": 26
-                          },
-                          "message": "TimeoutError: page.waitForLoadState: Timeout 30000ms exceeded.\n\n  24 | async function login(page: Page, email: string, password: string) {\n  25 |   await page.goto(BASE_URL);\n> 26 |   await page.waitForLoadState('networkidle');\n     |              ^\n  27 |   await handleCookieConsent(page);\n  28 |\n  29 |   // Click Sign In button to open modal\n    at login (C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\document-access-real.spec.ts:26:14)\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\document-access-real.spec.ts:144:5"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "\n📋 TEST 4: Doctor Login\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-11T12:25:09.462Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\document-access-real-Docum-433c4-ing-TEST-4-Doctor-can-login-chromium\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\document-access-real-Docum-433c4-ing-TEST-4-Doctor-can-login-chromium\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\document-access-real-Docum-433c4-ing-TEST-4-Doctor-can-login-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\document-access-real.spec.ts",
-                        "column": 14,
-                        "line": 26
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "531b74663ea367e8502b-2c191a87ada4b45b787c",
-              "file": "document-access-real.spec.ts",
-              "line": 140,
-              "column": 3
-            },
-            {
-              "title": "TEST 5: Doctor appointments and document access",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 14328,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "\n📋 TEST 5: Doctor Appointment Access\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        },
-                        {
-                          "text": "✓ Accepted cookies\n"
-                        },
-                        {
-                          "text": "✓ Screenshot saved: doctor-dashboard.png\n"
-                        },
-                        {
-                          "text": "Doctor can see 0 appointments\n"
-                        },
-                        {
-                          "text": "ℹ️  INFO: No appointments assigned to this doctor\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-11T12:25:45.438Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "531b74663ea367e8502b-29117375aa0cbd1bb626",
-              "file": "document-access-real.spec.ts",
-              "line": 157,
-              "column": 3
-            },
-            {
-              "title": "TEST 6: Security - Unauthenticated access",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6015,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "\n📋 TEST 6: Unauthenticated Access Prevention\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        },
-                        {
-                          "text": "Attempted to access: https://doktu-tracker.vercel.app/dashboard\n"
-                        },
-                        {
-                          "text": "Redirected to: https://doktu-tracker.vercel.app/\n"
-                        },
-                        {
-                          "text": "✅ PASS: Unauthenticated access blocked\n"
-                        },
-                        {
-                          "text": "   Redirected to: https://doktu-tracker.vercel.app/\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-11T12:25:59.871Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "531b74663ea367e8502b-1ccdeb883745c7f29fe4",
-              "file": "document-access-real.spec.ts",
-              "line": 194,
-              "column": 3
-            },
-            {
-              "title": "TEST 7: Document download security",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 10944,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "\n📋 TEST 7: Document Download Security\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        },
-                        {
-                          "text": "Unauthenticated download attempt: \u001b[33m200\u001b[39m\n"
-                        },
-                        {
-                          "text": "❌ FAIL: Unauthenticated download returned: \u001b[33m200\u001b[39m\n"
-                        },
-                        {
-                          "text": "✓ Accepted cookies\n"
-                        },
-                        {
-                          "text": "Authenticated download attempt: \u001b[33m200\u001b[39m\n"
-                        },
-                        {
-                          "text": "⚠️  WARNING: Document download succeeded - may be valid ID\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-11T12:26:05.908Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "531b74663ea367e8502b-81d755b274b58e8ba049",
-              "file": "document-access-real.spec.ts",
-              "line": 216,
-              "column": 3
-            },
-            {
-              "title": "TEST 8: SUMMARY",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 133,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "\n\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        },
-                        {
-                          "text": "           TEST SUMMARY\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        },
-                        {
-                          "text": "✅ Patient Login: TESTED\n"
-                        },
-                        {
-                          "text": "✅ Document Library: TESTED\n"
-                        },
-                        {
-                          "text": "✅ Patient Appointments: TESTED\n"
-                        },
-                        {
-                          "text": "✅ Doctor Login: TESTED\n"
-                        },
-                        {
-                          "text": "✅ Doctor Appointments: TESTED\n"
-                        },
-                        {
-                          "text": "✅ Unauthenticated Access: TESTED\n"
-                        },
-                        {
-                          "text": "✅ Download Security: TESTED\n"
-                        },
-                        {
-                          "text": "=========================================\n"
-                        },
-                        {
-                          "text": "\nCheck screenshots in test-results/ folder\n"
-                        },
-                        {
-                          "text": "=========================================\n\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-11T12:26:16.868Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "531b74663ea367e8502b-62d309b0c01a3bde1286",
-              "file": "document-access-real.spec.ts",
-              "line": 248,
-              "column": 3
-            }
-          ]
-        }
-      ]
+      "message": "Error: No tests found",
+      "stack": "Error: No tests found"
     }
   ],
-  "errors": [],
   "stats": {
-    "startTime": "2025-10-11T12:24:33.527Z",
-    "duration": 104705.614,
-    "expected": 7,
+    "startTime": "2025-10-11T13:46:07.353Z",
+    "duration": 13.748000000000047,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }

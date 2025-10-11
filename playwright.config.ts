@@ -7,7 +7,9 @@ import { defineConfig, devices } from '@playwright/test';
  */
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests',
+  testMatch: /.*\.(spec|test|setup)\.(ts|js)$/,
+  testIgnore: ['**/test-admin-login.spec.ts'],
 
   /* Maximum time one test can run for */
   timeout: 60 * 1000,
@@ -55,8 +57,17 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: './playwright/.auth/admin.json',
+      },
+      dependencies: ['setup'],
     },
 
     {
