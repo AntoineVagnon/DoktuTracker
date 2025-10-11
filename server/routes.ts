@@ -2407,7 +2407,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
       // Get or create user in database
       let dbUser = await storage.getUserByEmail(email);
-      
+
       if (!dbUser) {
         // Create user if doesn't exist (edge case for users created outside the app)
         dbUser = await storage.upsertUser({
@@ -2424,8 +2424,8 @@ export async function registerRoutes(app: Express): Promise<void> {
         }
 
         console.log("Login successful for user:", email);
-        res.json({ 
-          success: true, 
+        res.json({
+          success: true,
           user: dbUser,
           session: {
             access_token: data.session?.access_token,
@@ -2436,6 +2436,41 @@ export async function registerRoutes(app: Express): Promise<void> {
     } catch (error: any) {
       console.error("Login error:", error);
       res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  // Get current authenticated user
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      // Check if user has a session
+      if (!req.session?.supabaseSession?.user) {
+        return res.status(401).json(null);
+      }
+
+      const email = req.session.supabaseSession.user.email;
+
+      // Get user from database
+      const dbUser = await storage.getUserByEmail(email);
+
+      if (!dbUser) {
+        return res.status(401).json(null);
+      }
+
+      // Return user with role
+      res.json({
+        id: dbUser.id,
+        email: dbUser.email,
+        firstName: dbUser.firstName,
+        lastName: dbUser.lastName,
+        role: dbUser.role,
+        profileImageUrl: dbUser.profileImageUrl,
+        avatar_url: dbUser.avatar_url,
+        approved: dbUser.approved,
+        stripeSubscriptionId: dbUser.stripeSubscriptionId
+      });
+    } catch (error: any) {
+      console.error("Get user error:", error);
+      res.status(500).json({ error: "Failed to get user" });
     }
   });
 
