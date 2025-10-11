@@ -40,13 +40,30 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
       const formData = new FormData();
       formData.append('file', file);
       formData.append('documentType', documentType);
-      
+
       if (documentType === 'appointment-only' && appointmentId) {
         formData.append('appointmentId', appointmentId.toString());
       }
-      
-      const response = await fetch("/api/documents/upload", {
+
+      // Get auth token from localStorage
+      const authData = localStorage.getItem('doktu_auth');
+      const token = authData ? JSON.parse(authData).session?.access_token : null;
+
+      // Use VITE_API_URL for cross-domain requests
+      // Force Railway URL in production
+      const apiUrl = import.meta.env.VITE_API_URL ||
+        (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+      const fullUrl = `${apiUrl}/api/documents/upload`;
+
+      console.log('📤 [LIBRARY-PANEL] Uploading document with auth token:', token ? 'Present' : 'Missing');
+      console.log('📤 [LIBRARY-PANEL] API URL:', apiUrl);
+      console.log('📤 [LIBRARY-PANEL] Full URL:', fullUrl);
+
+      const response = await fetch(fullUrl, {
         method: "POST",
+        headers: {
+          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        },
         credentials: 'include',
         body: formData,
       });
