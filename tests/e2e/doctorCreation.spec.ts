@@ -77,18 +77,15 @@ async function fillDoctorForm(page: Page, data: {
   licenseNumber?: string;
   yearsOfExperience?: number;
 }) {
-  // Clear existing values and fill new ones
-  await page.locator('input[name="firstName"], input[placeholder*="First"], input[placeholder*="John"]').first().clear();
+  // Fill form fields (fill() automatically clears existing values)
   await page.locator('input[name="firstName"], input[placeholder*="First"], input[placeholder*="John"]').first().fill(data.firstName);
-
-  await page.locator('input[name="lastName"], input[placeholder*="Last"], input[placeholder*="Smith"]').first().clear();
   await page.locator('input[name="lastName"], input[placeholder*="Last"], input[placeholder*="Smith"]').first().fill(data.lastName);
-
-  await page.locator('input[name="email"], input[type="email"], input[placeholder*="doctor"]').first().clear();
   await page.locator('input[name="email"], input[type="email"], input[placeholder*="doctor"]').first().fill(data.email);
 
-  await page.locator('input[name="password"], input[type="password"]').first().clear();
-  await page.locator('input[name="password"], input[type="password"]').first().fill(data.password);
+  // For password field, use both selectors and increase timeout
+  const passwordField = page.locator('input[type="password"]').first();
+  await passwordField.waitFor({ state: 'visible', timeout: 10000 });
+  await passwordField.fill(data.password);
 
   if (data.title) {
     await page.selectOption('select:has-text("Title")', data.title);
