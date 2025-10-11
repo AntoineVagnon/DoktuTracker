@@ -77,6 +77,14 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
+    {
+      name: 'patient',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: './playwright/.auth/patient.json',
+      },
+      dependencies: ['setup'],
+    },
 
     {
       name: 'firefox',

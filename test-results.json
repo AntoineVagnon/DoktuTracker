@@ -99,6 +99,24 @@
         "metadata": {
           "actualWorkers": 1
         },
+        "id": "patient",
+        "name": "patient",
+        "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
+        "testIgnore": [
+          "**/test-admin-login.spec.ts"
+        ],
+        "testMatch": [
+          "/.*\\.(spec|test|setup)\\.(ts|js)$/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "firefox",
         "name": "firefox",
         "testDir": "C:/Users/mings/.apps/DoktuTracker/tests",
@@ -210,13 +228,13 @@
   },
   "suites": [
     {
-      "title": "auth-doctor.setup.ts",
-      "file": "auth-doctor.setup.ts",
+      "title": "auth-patient.setup.ts",
+      "file": "auth-patient.setup.ts",
       "column": 0,
       "line": 0,
       "specs": [
         {
-          "title": "authenticate as test doctor",
+          "title": "authenticate as test patient",
           "ok": true,
           "tags": [],
           "tests": [
@@ -231,28 +249,28 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2096,
+                  "duration": 2435,
                   "errors": [],
                   "stdout": [
                     {
-                      "text": "\n🔐 Authenticating test doctor via API...\n"
+                      "text": "\n🔐 Authenticating test patient via API...\n"
                     },
                     {
-                      "text": "Email: test.doctor.1760200122865@doktu.co\n"
+                      "text": "Email: kalyos.officiel@gmail.com\n"
                     },
                     {
-                      "text": "✅ Authenticated as test doctor\n"
+                      "text": "✅ Authenticated as test patient\n"
                     },
                     {
-                      "text": "Session ID: MJ7Rcb7PStY17SqWVc2JtqNdRONX3RaB\n"
+                      "text": "Session ID: 4oqRHU0Xj1W4V5sG9OQzXpDgUlUzqiKs\n"
                     },
                     {
-                      "text": "✅ Doctor authentication state saved\n"
+                      "text": "✅ Patient authentication state saved to ./playwright/.auth/patient.json\n"
                     }
                   ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-10-11T16:34:54.569Z",
+                  "startTime": "2025-10-11T17:04:49.567Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -260,8 +278,8 @@
               "status": "expected"
             }
           ],
-          "id": "59362bb762b3c546c5ee-0edd3aa8338fc5210474",
-          "file": "auth-doctor.setup.ts",
+          "id": "4ce83a4f1ea43d0f4546-5e7b862a37511dc9e5fd",
+          "file": "auth-patient.setup.ts",
           "line": 15,
           "column": 1
         }
@@ -270,8 +288,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-10-11T16:34:53.567Z",
-    "duration": 3139.417,
+    "startTime": "2025-10-11T17:04:48.568Z",
+    "duration": 4475.018,
     "expected": 1,
     "skipped": 0,
     "unexpected": 0,

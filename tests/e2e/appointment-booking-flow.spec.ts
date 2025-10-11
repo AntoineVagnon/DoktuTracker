@@ -12,10 +12,6 @@ import { test, expect, Page } from '@playwright/test';
 const BASE_URL = process.env.VITE_APP_URL || 'https://doktu-tracker.vercel.app';
 const API_URL = process.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
 
-// Test patient credentials (using existing test account)
-const TEST_PATIENT_EMAIL = process.env.TEST_PATIENT_EMAIL || 'kalyos.officiel@gmail.com';
-const TEST_PATIENT_PASSWORD = process.env.TEST_PATIENT_PASSWORD || 'Test123456!';
-
 // Helper function to dismiss cookie banner
 async function dismissCookieBanner(page: Page) {
   try {
@@ -29,33 +25,16 @@ async function dismissCookieBanner(page: Page) {
   }
 }
 
-// Helper function to log in as patient
-async function loginAsPatient(page: Page) {
-  await page.goto(`${BASE_URL}/login`);
-  await page.waitForLoadState('domcontentloaded');
-
-  // Fill login form
-  await page.locator('input[type="email"], input[name="email"]').fill(TEST_PATIENT_EMAIL);
-  await page.locator('input[type="password"], input[name="password"]').fill(TEST_PATIENT_PASSWORD);
-
-  // Submit
-  await page.locator('button[type="submit"]').click();
-
-  // Wait for redirect (could be /dashboard or /home)
-  await page.waitForURL(/\/(dashboard|home|\/)/, { timeout: 10000 }).catch(() => {
-    console.log('Login redirect timeout, checking current URL:', page.url());
-  });
-
-  await page.waitForTimeout(1000);
-}
+// Use patient authentication state from setup
+test.use({
+  storageState: './playwright/.auth/patient.json'
+});
 
 test.describe('Appointment Booking Flow - P0 Critical Scenarios', () => {
 
   test.beforeEach(async ({ page }) => {
-    // Login before each test
-    await loginAsPatient(page);
     await dismissCookieBanner(page);
-    console.log('✅ Test setup complete - logged in as patient');
+    console.log('✅ Test setup complete - using patient auth state');
   });
 
   test('P0 - Navigate from home page to doctor profile', async ({ page }) => {
