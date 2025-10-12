@@ -2642,6 +2642,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   // Upload profile photo file (multipart/form-data)
   app.post("/api/admin/doctors/:id/photo/upload", isAuthenticated, upload.single('photo'), async (req, res) => {
     try {
+      console.log('📸 [PHOTO UPLOAD] Starting upload process...');
       const user = req.user as any;
       if (!user || user.role !== 'admin') {
         return res.status(401).json({ message: "Unauthorized" });
@@ -2652,12 +2653,14 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
 
       const doctorId = parseInt(req.params.id);
+      console.log(`📸 [PHOTO UPLOAD] Doctor ID: ${doctorId}, File: ${req.file.originalname}`);
 
       // Get the doctor to find their user ID
       const doctor = await storage.getDoctor(doctorId);
       if (!doctor) {
         return res.status(404).json({ message: "Doctor not found" });
       }
+      console.log(`📸 [PHOTO UPLOAD] Found doctor with user ID: ${doctor.userId}`);
 
       // Upload to Supabase Storage
       const { getSupabaseStorageService } = await import('./supabaseStorage');
@@ -2669,17 +2672,25 @@ export async function registerRoutes(app: Express): Promise<void> {
         req.file.mimetype,
         doctor.userId
       );
+      console.log(`📸 [PHOTO UPLOAD] Uploaded to Supabase: ${publicUrl}`);
 
       // Update the user's profile image with the Supabase URL
       await db
         .update(users)
         .set({ profileImageUrl: publicUrl })
         .where(eq(users.id, doctor.userId));
+      console.log(`📸 [PHOTO UPLOAD] Database updated for user ${doctor.userId}`);
+
+      // Verify the update
+      const updatedUser = await db.query.users.findFirst({
+        where: eq(users.id, doctor.userId)
+      });
+      console.log(`📸 [PHOTO UPLOAD] Verification - DB now has: ${updatedUser?.profileImageUrl}`);
 
       console.log(`✅ Admin uploaded photo for doctor ${doctorId} (user ${doctor.userId}): ${publicUrl}`);
       res.json({ success: true, profileImageUrl: publicUrl });
     } catch (error: any) {
-      console.error("Error uploading doctor photo:", error);
+      console.error("❌ [PHOTO UPLOAD] Error uploading doctor photo:", error);
       res.status(500).json({ message: error.message || "Failed to upload photo" });
     }
   });
