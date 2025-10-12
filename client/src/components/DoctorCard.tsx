@@ -26,6 +26,7 @@ interface Doctor {
     lastName: string | null;
     title: string | null;
     role?: string;
+    profileImageUrl?: string | null;
   } | null;
   specialty: string;
   rating: string;
@@ -97,8 +98,8 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
           {/* Avatar */}
           <div className="flex justify-center mb-4">
             <Avatar className="h-20 w-20">
-              <AvatarImage 
-                src={doctorPhoto} 
+              <AvatarImage
+                src={doctor.user?.profileImageUrl || doctorPhoto}
                 alt={`Dr. ${doctorName}`}
                 className="object-cover"
               />
