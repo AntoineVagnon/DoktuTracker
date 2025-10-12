@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import AvailabilityCalendar from "@/components/admin/AvailabilityCalendar";
 import {
   Calendar, Users, TrendingUp, AlertCircle, Euro, UserX,
   ChevronDown, RefreshCw, UserPlus, Ticket, Send, Video,
@@ -1441,6 +1442,16 @@ export default function AdminDashboard() {
       enabled: !!selectedDoctor,
     });
 
+    // Fetch doctor availability
+    const { data: doctorAvailability, isLoading: availabilityLoading } = useQuery({
+      queryKey: ['/api/admin/doctors', selectedDoctor?.id, 'availability'],
+      queryFn: async () => {
+        const response = await apiRequest('GET', `/api/admin/doctors/${selectedDoctor.id}/availability`);
+        return await response.json();
+      },
+      enabled: !!selectedDoctor && showDetailModal,
+    });
+
     // Filter doctors by search query
     const filteredDoctors = doctors?.filter((doc: any) => {
       const query = searchQuery.toLowerCase();
@@ -1852,7 +1863,7 @@ export default function AdminDashboard() {
 
         {/* Doctor Detail Modal */}
         <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Doctor Details</DialogTitle>
             </DialogHeader>
@@ -1862,110 +1873,135 @@ export default function AdminDashboard() {
                 <span className="ml-2 text-gray-600">Loading details...</span>
               </div>
             ) : doctorDetails ? (
-              <div className="space-y-6">
-                {/* Profile Section */}
-                <div className="flex items-start gap-4 pb-6 border-b">
-                  <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center">
-                    <User className="h-10 w-10 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      Dr. {doctorDetails.user?.firstName} {doctorDetails.user?.lastName}
-                    </h3>
-                    <p className="text-gray-600 mt-1">{doctorDetails.specialty || 'General Practice'}</p>
-                    <p className="text-sm text-gray-500 mt-1">{doctorDetails.user?.email}</p>
-                    {doctorDetails.rppsNumber && (
-                      <p className="text-sm text-gray-500 mt-1">License: {doctorDetails.rppsNumber}</p>
-                    )}
-                  </div>
-                  <Button onClick={() => handleEditDoctor(doctorDetails)} variant="outline">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Profile
-                  </Button>
-                </div>
+              <Tabs defaultValue="details" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="details">Details</TabsTrigger>
+                  <TabsTrigger value="availability">Availability</TabsTrigger>
+                </TabsList>
 
-                {/* Bio Section */}
-                {doctorDetails.bio && (
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">About</h4>
-                    <p className="text-gray-700 text-sm leading-relaxed">{doctorDetails.bio}</p>
-                  </div>
-                )}
-
-                {/* Statistics Grid */}
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">Statistics</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <div className="flex items-center gap-2 text-blue-600 mb-1">
-                        <Calendar className="h-4 w-4" />
-                        <span className="text-xs font-medium">Total</span>
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900">
-                        {doctorDetails.stats?.totalAppointments || 0}
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">Appointments</div>
+                <TabsContent value="details" className="space-y-6">
+                  {/* Profile Section */}
+                  <div className="flex items-start gap-4 pb-6 border-b">
+                    <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center">
+                      <User className="h-10 w-10 text-blue-600" />
                     </div>
-
-                    <div className="bg-green-50 rounded-lg p-4">
-                      <div className="flex items-center gap-2 text-green-600 mb-1">
-                        <Check className="h-4 w-4" />
-                        <span className="text-xs font-medium">Completed</span>
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900">
-                        {doctorDetails.stats?.completedAppointments || 0}
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">Success Rate: {doctorDetails.stats?.completionRate || 0}%</div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        Dr. {doctorDetails.user?.firstName} {doctorDetails.user?.lastName}
+                      </h3>
+                      <p className="text-gray-600 mt-1">{doctorDetails.specialty || 'General Practice'}</p>
+                      <p className="text-sm text-gray-500 mt-1">{doctorDetails.user?.email}</p>
+                      {doctorDetails.rppsNumber && (
+                        <p className="text-sm text-gray-500 mt-1">License: {doctorDetails.rppsNumber}</p>
+                      )}
                     </div>
-
-                    <div className="bg-yellow-50 rounded-lg p-4">
-                      <div className="flex items-center gap-2 text-yellow-600 mb-1">
-                        <Star className="h-4 w-4" />
-                        <span className="text-xs font-medium">Rating</span>
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900">
-                        {doctorDetails.stats?.averageRating || doctorDetails.rating || '5.0'}
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">Average Score</div>
-                    </div>
-
-                    <div className="bg-purple-50 rounded-lg p-4">
-                      <div className="flex items-center gap-2 text-purple-600 mb-1">
-                        <Euro className="h-4 w-4" />
-                        <span className="text-xs font-medium">Revenue</span>
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900">
-                        €{doctorDetails.stats?.totalRevenue?.toFixed(2) || '0.00'}
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">Total Earned</div>
-                    </div>
+                    <Button onClick={() => handleEditDoctor(doctorDetails)} variant="outline">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Profile
+                    </Button>
                   </div>
-                </div>
 
-                {/* Additional Info */}
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Consultation Price</h4>
-                    <p className="text-lg font-medium text-blue-600">€{doctorDetails.consultationPrice || '0.00'}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Available Slots</h4>
-                    <p className="text-lg font-medium text-green-600">
-                      {doctorDetails.stats?.availableSlotsCount || 0}
-                    </p>
-                  </div>
-                  {doctorDetails.languages && doctorDetails.languages.length > 0 && (
-                    <div className="col-span-2">
-                      <h4 className="font-semibold text-gray-900 mb-2">Languages</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {doctorDetails.languages.map((lang: string, idx: number) => (
-                          <Badge key={idx} variant="secondary">{lang}</Badge>
-                        ))}
-                      </div>
+                  {/* Bio Section */}
+                  {doctorDetails.bio && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">About</h4>
+                      <p className="text-gray-700 text-sm leading-relaxed">{doctorDetails.bio}</p>
                     </div>
                   )}
-                </div>
-              </div>
+
+                  {/* Statistics Grid */}
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">Statistics</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-blue-600 mb-1">
+                          <Calendar className="h-4 w-4" />
+                          <span className="text-xs font-medium">Total</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">
+                          {doctorDetails.stats?.totalAppointments || 0}
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">Appointments</div>
+                      </div>
+
+                      <div className="bg-green-50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-green-600 mb-1">
+                          <Check className="h-4 w-4" />
+                          <span className="text-xs font-medium">Completed</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">
+                          {doctorDetails.stats?.completedAppointments || 0}
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">Success Rate: {doctorDetails.stats?.completionRate || 0}%</div>
+                      </div>
+
+                      <div className="bg-yellow-50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-yellow-600 mb-1">
+                          <Star className="h-4 w-4" />
+                          <span className="text-xs font-medium">Rating</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">
+                          {doctorDetails.stats?.averageRating || doctorDetails.rating || '5.0'}
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">Average Score</div>
+                      </div>
+
+                      <div className="bg-purple-50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-purple-600 mb-1">
+                          <Euro className="h-4 w-4" />
+                          <span className="text-xs font-medium">Revenue</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">
+                          €{doctorDetails.stats?.totalRevenue?.toFixed(2) || '0.00'}
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">Total Earned</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Additional Info */}
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">Consultation Price</h4>
+                      <p className="text-lg font-medium text-blue-600">€{doctorDetails.consultationPrice || '0.00'}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">Available Slots</h4>
+                      <p className="text-lg font-medium text-green-600">
+                        {doctorDetails.stats?.availableSlotsCount || 0}
+                      </p>
+                    </div>
+                    {doctorDetails.languages && doctorDetails.languages.length > 0 && (
+                      <div className="col-span-2">
+                        <h4 className="font-semibold text-gray-900 mb-2">Languages</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {doctorDetails.languages.map((lang: string, idx: number) => (
+                            <Badge key={idx} variant="secondary">{lang}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="availability">
+                  {availabilityLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+                      <span className="ml-2 text-gray-600">Loading availability...</span>
+                    </div>
+                  ) : (
+                    <AvailabilityCalendar
+                      doctorId={doctorDetails.id}
+                      slots={doctorAvailability || []}
+                      onSlotClick={(slot) => {
+                        console.log('Slot clicked:', slot);
+                        // Future: Open slot management modal
+                      }}
+                    />
+                  )}
+                </TabsContent>
+              </Tabs>
             ) : (
               <div className="text-center py-8 text-gray-500">Failed to load doctor details</div>
             )}
