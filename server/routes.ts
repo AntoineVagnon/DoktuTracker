@@ -2585,19 +2585,25 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      // Create appointment directly without constraints
-      const appointment = await storage.createAppointment({
+      // Combine date and startTime into a single timestamp for appointmentDate
+      const appointmentDate = new Date(`${date}T${startTime}`);
+
+      console.log('📅 Creating admin appointment:', {
         doctorId,
         patientId,
         date,
         startTime,
-        endTime,
-        reason: reason || 'Admin-created appointment',
-        notes: notes || '',
+        appointmentDate: appointmentDate.toISOString(),
+      });
+
+      // Create appointment directly without constraints
+      const appointment = await storage.createAppointment({
+        doctorId,
+        patientId,
+        appointmentDate,
         status: status || 'confirmed',
-        consultationPrice: 0, // Admin appointments can be free
-        paymentStatus: 'completed', // Mark as completed to avoid payment flow
         paymentIntentId: `admin_${Date.now()}`, // Unique ID for admin appointments
+        price: '0.00', // Admin appointments can be free
       });
 
       console.log(`✅ Admin created appointment: ${appointment.id} for patient ${patientId} with doctor ${doctorId}`);
