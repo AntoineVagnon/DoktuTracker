@@ -2765,6 +2765,84 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Register endpoint for creating new accounts
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { email, password, firstName, lastName } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required" });
+      }
+
+      // Create account with Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          }
+        }
+      });
+
+      if (error) {
+        console.error("Registration error:", error);
+        return res.status(400).json({ error: error.message || "Registration failed" });
+      }
+
+      if (!data.user) {
+        return res.status(400).json({ error: "Failed to create user" });
+      }
+
+      // Create user in database
+      const dbUser = await storage.upsertUser({
+        email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        role: 'patient' // Default role for new registrations
+      });
+
+      // Store session in Express session if auto-confirmed
+      if (data.session) {
+        req.session.supabaseSession = {
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          user: data.user
+        };
+
+        // Save session explicitly
+        req.session.save((err) => {
+          if (err) {
+            console.error("Session save error:", err);
+            return res.status(500).json({ error: "Failed to save session" });
+          }
+
+          console.log("Registration successful for user:", email);
+          res.json({
+            success: true,
+            user: dbUser,
+            session: {
+              access_token: data.session.access_token,
+              refresh_token: data.session.refresh_token
+            }
+          });
+        });
+      } else {
+        // Email confirmation required
+        console.log("Registration successful, email confirmation required:", email);
+        res.json({
+          success: true,
+          message: "Please check your email to confirm your account",
+          user: dbUser
+        });
+      }
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Registration failed" });
+    }
+  });
+
   // Get current authenticated user
   app.get("/api/auth/user", async (req, res) => {
     try {
