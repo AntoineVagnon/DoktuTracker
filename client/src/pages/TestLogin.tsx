@@ -12,37 +12,37 @@ import { CheckCircle } from 'lucide-react';
 export default function TestLogin() {
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
-  
+
   // Get URL parameters for booking context - use window.location.search
   const urlParams = new URLSearchParams(window.location.search);
   const doctorId = urlParams.get('doctorId');
   const slot = urlParams.get('slot');
   const price = urlParams.get('price');
 
-  // Debug logging
-  console.log('TestLogin - URL params:', {
-    fullUrl: window.location.href,
-    search: window.location.search,
-    doctorId,
-    slot,
-    price
-  });
-
   const [formData, setFormData] = useState({
-    email: '', 
+    email: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [loginResult, setLoginResult] = useState<any>(null);
   const [message, setMessage] = useState('');
 
-  // Check for success message in URL params
+  // Check for success message in URL params and debug logging (only run once on mount)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const urlMessage = urlParams.get('message');
     if (urlMessage) {
       setMessage(urlMessage);
     }
+
+    // Debug logging - only once on mount
+    console.log('TestLogin - URL params:', {
+      fullUrl: window.location.href,
+      search: window.location.search,
+      doctorId,
+      slot,
+      price
+    });
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
