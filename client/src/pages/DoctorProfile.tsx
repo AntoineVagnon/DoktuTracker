@@ -50,6 +50,8 @@ interface Doctor {
   bio?: string;
   education?: string;
   experience?: string;
+  medicalApproach?: string;
+  languages?: string[];
 }
 
 interface TimeSlot {
@@ -316,24 +318,33 @@ export default function DoctorProfile() {
                 <CardTitle>Education and Experience</CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-3">
-                  <li className="flex items-start">
-                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
-                    <span>Doctor of Medicine - Medical University</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
-                    <span>Specialized certification in {translateSpecialty(doctor.specialty)}</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
-                    <span>Licensed medical practitioner</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
-                    <span>Continuing education in telemedicine</span>
-                  </li>
-                </ul>
+                {doctor.education || doctor.experience ? (
+                  <div className="space-y-4">
+                    {doctor.education && (
+                      <div>
+                        <h4 className="font-semibold mb-2">Education</h4>
+                        <p className="text-gray-700 whitespace-pre-wrap">{doctor.education}</p>
+                      </div>
+                    )}
+                    {doctor.experience && (
+                      <div>
+                        <h4 className="font-semibold mb-2">Experience</h4>
+                        <p className="text-gray-700 whitespace-pre-wrap">{doctor.experience}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
+                      <span>Specialized certification in {translateSpecialty(doctor.specialty)}</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
+                      <span>Licensed medical practitioner</span>
+                    </li>
+                  </ul>
+                )}
               </CardContent>
             </Card>
 
@@ -360,9 +371,15 @@ export default function DoctorProfile() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-4">
-                  <span className="flex items-center">🇬🇧 English (Native)</span>
-                  <span className="flex items-center">🇫🇷 French (Fluent)</span>
-                  <span className="flex items-center">🇪🇸 Spanish (Conversational)</span>
+                  {doctor.languages && doctor.languages.length > 0 ? (
+                    doctor.languages.map((language, index) => (
+                      <span key={index} className="flex items-center bg-blue-50 px-3 py-1 rounded-full text-blue-700">
+                        {language}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-500">No languages specified</span>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -373,8 +390,8 @@ export default function DoctorProfile() {
                 <CardTitle>Medical Approach</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 leading-relaxed">
-                  I believe in providing compassionate, evidence-based medical care. My approach focuses on listening to patients, understanding their concerns, and working together to develop the best treatment plan for their individual needs.
+                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  {doctor.medicalApproach || "Committed to providing compassionate, evidence-based medical care focused on patient well-being."}
                 </p>
               </CardContent>
             </Card>

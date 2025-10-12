@@ -350,6 +350,7 @@ export const doctors = pgTable("doctors", {
   bio: text("bio"),
   education: text("education"),
   experience: text("experience"),
+  medicalApproach: text("medical_approach"),
   languages: text("languages").array(),
   rppsNumber: varchar("rpps_number"), // French medical registration number
   consultationPrice: decimal("consultation_price", { precision: 10, scale: 2 }).notNull().default("35.00"),

@@ -1417,9 +1417,16 @@ export default function AdminDashboard() {
     const [editFormData, setEditFormData] = useState({
       specialty: '',
       bio: '',
+      education: '',
+      experience: '',
+      medicalApproach: '',
       rppsNumber: '',
       consultationPrice: '',
       languages: ['English'],
+      title: '',
+      firstName: '',
+      lastName: '',
+      phone: '',
     });
     const [createdCredentials, setCreatedCredentials] = useState<any>(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -1533,9 +1540,16 @@ export default function AdminDashboard() {
       setEditFormData({
         specialty: doctor.specialty || '',
         bio: doctor.bio || '',
+        education: doctor.education || '',
+        experience: doctor.experience || '',
+        medicalApproach: doctor.medicalApproach || '',
         rppsNumber: doctor.rppsNumber || '',
         consultationPrice: doctor.consultationPrice || '',
         languages: doctor.languages || ['English'],
+        title: doctor.user?.title || '',
+        firstName: doctor.user?.firstName || '',
+        lastName: doctor.user?.lastName || '',
+        phone: doctor.user?.phone || '',
       });
       setShowEditForm(true);
     };
@@ -2109,6 +2123,98 @@ export default function AdminDashboard() {
                     languages: e.target.value.split(',').map(lang => lang.trim()).filter(lang => lang)
                   })}
                   placeholder="English, French, Spanish"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Education
+                </label>
+                <textarea
+                  value={editFormData.education}
+                  onChange={(e) => setEditFormData({ ...editFormData, education: e.target.value })}
+                  placeholder="Educational background..."
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Experience
+                </label>
+                <textarea
+                  value={editFormData.experience}
+                  onChange={(e) => setEditFormData({ ...editFormData, experience: e.target.value })}
+                  placeholder="Professional experience..."
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Medical Approach
+                </label>
+                <textarea
+                  value={editFormData.medicalApproach}
+                  onChange={(e) => setEditFormData({ ...editFormData, medicalApproach: e.target.value })}
+                  placeholder="Medical philosophy and approach to patient care..."
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="border-t pt-4 mt-4">
+                <h3 className="text-lg font-semibold mb-3">Personal Information</h3>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title
+                </label>
+                <Input
+                  type="text"
+                  value={editFormData.title}
+                  onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+                  placeholder="Dr., Prof., etc."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    First Name
+                  </label>
+                  <Input
+                    type="text"
+                    value={editFormData.firstName}
+                    onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
+                    placeholder="First name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Last Name
+                  </label>
+                  <Input
+                    type="text"
+                    value={editFormData.lastName}
+                    onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
+                    placeholder="Last name"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <Input
+                  type="tel"
+                  value={editFormData.phone}
+                  onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                  placeholder="+33 1 23 45 67 89"
                 />
               </div>
 

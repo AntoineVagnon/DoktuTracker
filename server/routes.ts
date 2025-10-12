@@ -2443,12 +2443,22 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ message: "Invalid doctor ID" });
       }
 
-      const updateData = z.object({
+      // Split incoming data into doctor fields and user fields
+      const updateSchema = z.object({
+        // Doctor table fields
         specialty: z.string().optional(),
         bio: z.string().optional(),
+        education: z.string().optional(),
+        experience: z.string().optional(),
+        medicalApproach: z.string().optional(),
         rppsNumber: z.string().optional(),
         consultationPrice: z.string().optional(),
         languages: z.array(z.string()).optional(),
+        // User table fields
+        title: z.string().optional(),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+        phone: z.string().optional(),
       }).parse(req.body);
 
       // Check if doctor exists
@@ -2457,8 +2467,41 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(404).json({ message: "Doctor not found" });
       }
 
-      // Update doctor profile
-      const updatedDoctor = await storage.updateDoctor(doctorId, updateData);
+      // Separate doctor fields from user fields
+      const doctorData: any = {};
+      const userData: any = {};
+
+      // Doctor table fields
+      if (updateSchema.specialty !== undefined) doctorData.specialty = updateSchema.specialty;
+      if (updateSchema.bio !== undefined) doctorData.bio = updateSchema.bio;
+      if (updateSchema.education !== undefined) doctorData.education = updateSchema.education;
+      if (updateSchema.experience !== undefined) doctorData.experience = updateSchema.experience;
+      if (updateSchema.medicalApproach !== undefined) doctorData.medicalApproach = updateSchema.medicalApproach;
+      if (updateSchema.rppsNumber !== undefined) doctorData.rppsNumber = updateSchema.rppsNumber;
+      if (updateSchema.consultationPrice !== undefined) doctorData.consultationPrice = updateSchema.consultationPrice;
+      if (updateSchema.languages !== undefined) doctorData.languages = updateSchema.languages;
+
+      // User table fields
+      if (updateSchema.title !== undefined) userData.title = updateSchema.title;
+      if (updateSchema.firstName !== undefined) userData.firstName = updateSchema.firstName;
+      if (updateSchema.lastName !== undefined) userData.lastName = updateSchema.lastName;
+      if (updateSchema.phone !== undefined) userData.phone = updateSchema.phone;
+
+      // Update doctor table if there are doctor fields
+      if (Object.keys(doctorData).length > 0) {
+        await storage.updateDoctor(doctorId, doctorData);
+      }
+
+      // Update user table if there are user fields
+      if (Object.keys(userData).length > 0) {
+        await db
+          .update(users)
+          .set(userData)
+          .where(eq(users.id, existingDoctor.userId));
+      }
+
+      // Fetch updated doctor with user info
+      const updatedDoctor = await storage.getDoctor(doctorId);
 
       res.json({
         success: true,
