@@ -2586,7 +2586,8 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
 
       // Combine date and startTime into a single timestamp for appointmentDate
-      const appointmentDate = new Date(`${date}T${startTime}`);
+      // Create date in UTC to avoid timezone conversion issues
+      const appointmentDate = new Date(`${date}T${startTime}:00.000Z`);
 
       console.log('📅 Creating admin appointment:', {
         doctorId,
@@ -2594,6 +2595,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         date,
         startTime,
         appointmentDate: appointmentDate.toISOString(),
+        note: 'Date created in UTC to preserve exact time'
       });
 
       // Create appointment directly without constraints
