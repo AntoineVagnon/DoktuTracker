@@ -1368,6 +1368,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         bio: doctor.bio,
         education: doctor.education,
         experience: doctor.experience,
+        medicalApproach: doctor.medicalApproach,
         languages: doctor.languages,
         consultationPrice: doctor.consultationPrice,
         rating: doctor.rating,
