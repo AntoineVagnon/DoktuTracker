@@ -2372,6 +2372,143 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Get single doctor details with statistics
+  app.get("/api/admin/doctors/:id", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const doctorId = parseInt(req.params.id);
+      if (isNaN(doctorId)) {
+        return res.status(400).json({ message: "Invalid doctor ID" });
+      }
+
+      const doctor = await storage.getDoctor(doctorId);
+      if (!doctor) {
+        return res.status(404).json({ message: "Doctor not found" });
+      }
+
+      // Get doctor statistics
+      const appointments = await storage.getAppointments(undefined, doctorId.toString());
+      const completedAppointments = appointments.filter(a => a.status === 'completed');
+      const cancelledAppointments = appointments.filter(a => a.status === 'cancelled');
+      const upcomingAppointments = appointments.filter(a =>
+        a.status === 'paid' && new Date(a.scheduledTime) > new Date()
+      );
+
+      const totalRevenue = completedAppointments.reduce((sum, appt) =>
+        sum + parseFloat(appt.price || '0'), 0
+      );
+
+      const stats = {
+        totalAppointments: appointments.length,
+        completedAppointments: completedAppointments.length,
+        cancelledAppointments: cancelledAppointments.length,
+        upcomingAppointments: upcomingAppointments.length,
+        completionRate: appointments.length > 0
+          ? Math.round((completedAppointments.length / appointments.length) * 100)
+          : 0,
+        averageRating: parseFloat(doctor.rating || '0'),
+        totalRevenue,
+        availableSlotsCount: 0 // Will be calculated below
+      };
+
+      // Get available slots count
+      const slots = await storage.getDoctorTimeSlots(doctorId);
+      stats.availableSlotsCount = slots.filter(slot => slot.isAvailable).length;
+
+      res.json({
+        ...doctor,
+        stats
+      });
+    } catch (error: any) {
+      console.error("Error fetching doctor details:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch doctor details" });
+    }
+  });
+
+  // Update doctor profile
+  app.put("/api/admin/doctors/:id", isAuthenticated, auditAdminMiddleware('update_doctor', 'doctor_management'), async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const doctorId = parseInt(req.params.id);
+      if (isNaN(doctorId)) {
+        return res.status(400).json({ message: "Invalid doctor ID" });
+      }
+
+      const updateData = z.object({
+        specialty: z.string().optional(),
+        bio: z.string().optional(),
+        rppsNumber: z.string().optional(),
+        consultationPrice: z.string().optional(),
+        languages: z.array(z.string()).optional(),
+      }).parse(req.body);
+
+      // Check if doctor exists
+      const existingDoctor = await storage.getDoctor(doctorId);
+      if (!existingDoctor) {
+        return res.status(404).json({ message: "Doctor not found" });
+      }
+
+      // Update doctor profile
+      const updatedDoctor = await storage.updateDoctor(doctorId, updateData);
+
+      res.json({
+        success: true,
+        doctor: updatedDoctor
+      });
+    } catch (error: any) {
+      console.error("Error updating doctor:", error);
+      if (error.name === 'ZodError') {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: error.message || "Failed to update doctor" });
+      }
+    }
+  });
+
+  // Get doctor availability
+  app.get("/api/admin/doctors/:id/availability", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const doctorId = req.params.id;
+      const slots = await storage.getDoctorTimeSlots(doctorId, req.query.date as string);
+
+      res.json(slots);
+    } catch (error: any) {
+      console.error("Error fetching doctor availability:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch availability" });
+    }
+  });
+
+  // Get doctor meetings/appointments
+  app.get("/api/admin/doctors/:id/appointments", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const doctorId = req.params.id;
+      const appointments = await storage.getAppointments(undefined, doctorId);
+
+      res.json(appointments);
+    } catch (error: any) {
+      console.error("Error fetching doctor appointments:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch appointments" });
+    }
+  });
+
   // Email confirmation endpoint for post-signup
   // Login endpoint for email/password authentication
   app.post("/api/auth/login", async (req, res) => {

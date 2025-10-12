@@ -8,15 +8,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import { 
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
   Calendar, Users, TrendingUp, AlertCircle, Euro, UserX,
   ChevronDown, RefreshCw, UserPlus, Ticket, Send, Video,
-  Clock, X, AlertTriangle, Shield, Mail, Trash2, 
+  Clock, X, AlertTriangle, Shield, Mail, Trash2,
   Star, Activity, Brain, MessageSquare, Settings,
   ArrowUp, ArrowDown, Target, Zap, Heart, TrendingDown,
   BarChart3, PieChart, ArrowUpRight, ArrowDownRight,
   FileText, User, DollarSign, Percent, Check, ExternalLink, Info,
-  Menu, LogIn
+  Menu, LogIn, Edit, Eye, Search
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays } from "date-fns";
@@ -1389,9 +1390,13 @@ export default function AdminDashboard() {
     );
   };
 
-  // DoctorsSection Component
+  // DoctorsSection Component - Enhanced
   const DoctorsSection = () => {
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [formData, setFormData] = useState({
       email: '',
       password: '',
@@ -1405,8 +1410,45 @@ export default function AdminDashboard() {
       consultationFee: 35,
       languages: ['English'],
     });
+    const [editFormData, setEditFormData] = useState({
+      specialty: '',
+      bio: '',
+      rppsNumber: '',
+      consultationPrice: '',
+      languages: ['English'],
+    });
     const [createdCredentials, setCreatedCredentials] = useState<any>(null);
     const [isCreating, setIsCreating] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    // Fetch all doctors
+    const { data: doctors, isLoading: doctorsLoading, refetch: refetchDoctors } = useQuery({
+      queryKey: ['/api/admin/doctors'],
+      queryFn: async () => {
+        const response = await apiRequest('GET', '/api/admin/doctors');
+        return await response.json();
+      },
+      refetchInterval: 30000, // Refresh every 30 seconds
+    });
+
+    // Fetch selected doctor details
+    const { data: doctorDetails, isLoading: detailsLoading } = useQuery({
+      queryKey: ['/api/admin/doctors', selectedDoctor?.id],
+      queryFn: async () => {
+        const response = await apiRequest('GET', `/api/admin/doctors/${selectedDoctor.id}`);
+        return await response.json();
+      },
+      enabled: !!selectedDoctor,
+    });
+
+    // Filter doctors by search query
+    const filteredDoctors = doctors?.filter((doc: any) => {
+      const query = searchQuery.toLowerCase();
+      const fullName = `${doc.user?.firstName || ''} ${doc.user?.lastName || ''}`.toLowerCase();
+      const email = doc.user?.email?.toLowerCase() || '';
+      const specialty = doc.specialty?.toLowerCase() || '';
+      return fullName.includes(query) || email.includes(query) || specialty.includes(query);
+    }) || [];
 
     const handleCreateDoctor = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -1465,6 +1507,53 @@ export default function AdminDashboard() {
         password += charset.charAt(Math.floor(Math.random() * charset.length));
       }
       setFormData({ ...formData, password });
+    };
+
+    const handleViewDoctor = (doctor: any) => {
+      setSelectedDoctor(doctor);
+      setShowDetailModal(true);
+    };
+
+    const handleEditDoctor = (doctor: any) => {
+      setSelectedDoctor(doctor);
+      setEditFormData({
+        specialty: doctor.specialty || '',
+        bio: doctor.bio || '',
+        rppsNumber: doctor.rppsNumber || '',
+        consultationPrice: doctor.consultationPrice || '',
+        languages: doctor.languages || ['English'],
+      });
+      setShowEditForm(true);
+    };
+
+    const handleUpdateDoctor = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsUpdating(true);
+
+      try {
+        const response = await apiRequest('PUT', `/api/admin/doctors/${selectedDoctor.id}`, editFormData);
+        const result = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Doctor Updated Successfully",
+            description: "The doctor profile has been updated.",
+          });
+          setShowEditForm(false);
+          setShowDetailModal(false);
+          refetchDoctors();
+        } else {
+          throw new Error(result.message || 'Failed to update doctor');
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to update doctor profile",
+          variant: "destructive",
+        });
+      } finally {
+        setIsUpdating(false);
+      }
     };
 
     return (
@@ -1657,21 +1746,337 @@ export default function AdminDashboard() {
           </Card>
         )}
 
-        {/* Info Card */}
+        {/* Doctor Management Table */}
         <Card>
           <CardHeader>
-            <CardTitle>About Doctor Accounts</CardTitle>
+            <CardTitle>Manage Doctors</CardTitle>
+            <div className="mt-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search by name, email, or specialty..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 text-sm text-gray-600">
-              <p>• Doctor accounts are automatically verified and accepting patients</p>
-              <p>• Doctors can log in immediately with the generated credentials</p>
-              <p>• All doctors start with a 5.0 rating (0 reviews)</p>
-              <p>• License numbers are auto-generated if not provided</p>
-              <p>• Doctors can update their profile after logging in</p>
-            </div>
+            {doctorsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+                <span className="ml-2 text-gray-600">Loading doctors...</span>
+              </div>
+            ) : filteredDoctors.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                {searchQuery ? 'No doctors found matching your search.' : 'No doctors created yet.'}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b">
+                    <tr className="text-left text-sm text-gray-600">
+                      <th className="pb-3 font-medium">Doctor</th>
+                      <th className="pb-3 font-medium">Specialty</th>
+                      <th className="pb-3 font-medium">Rating</th>
+                      <th className="pb-3 font-medium">Appointments</th>
+                      <th className="pb-3 font-medium">Price</th>
+                      <th className="pb-3 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredDoctors.map((doctor: any) => (
+                      <tr key={doctor.id} className="border-b hover:bg-gray-50 transition-colors">
+                        <td className="py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                              <User className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900">
+                                Dr. {doctor.user?.firstName} {doctor.user?.lastName}
+                              </div>
+                              <div className="text-sm text-gray-500">{doctor.user?.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <span className="text-sm text-gray-700">{doctor.specialty || 'Not specified'}</span>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex items-center gap-1">
+                            <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                            <span className="text-sm font-medium">{doctor.rating || '5.0'}</span>
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <span className="text-sm text-gray-700">-</span>
+                        </td>
+                        <td className="py-4">
+                          <span className="text-sm font-medium text-gray-900">
+                            €{doctor.consultationPrice || '0.00'}
+                          </span>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewDoctor(doctor)}
+                              className="flex items-center gap-1"
+                            >
+                              <Eye className="h-4 w-4" />
+                              View
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditDoctor(doctor)}
+                              className="flex items-center gap-1"
+                            >
+                              <Edit className="h-4 w-4" />
+                              Edit
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Doctor Detail Modal */}
+        <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Doctor Details</DialogTitle>
+            </DialogHeader>
+            {detailsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+                <span className="ml-2 text-gray-600">Loading details...</span>
+              </div>
+            ) : doctorDetails ? (
+              <div className="space-y-6">
+                {/* Profile Section */}
+                <div className="flex items-start gap-4 pb-6 border-b">
+                  <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center">
+                    <User className="h-10 w-10 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      Dr. {doctorDetails.user?.firstName} {doctorDetails.user?.lastName}
+                    </h3>
+                    <p className="text-gray-600 mt-1">{doctorDetails.specialty || 'General Practice'}</p>
+                    <p className="text-sm text-gray-500 mt-1">{doctorDetails.user?.email}</p>
+                    {doctorDetails.rppsNumber && (
+                      <p className="text-sm text-gray-500 mt-1">License: {doctorDetails.rppsNumber}</p>
+                    )}
+                  </div>
+                  <Button onClick={() => handleEditDoctor(doctorDetails)} variant="outline">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                </div>
+
+                {/* Bio Section */}
+                {doctorDetails.bio && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">About</h4>
+                    <p className="text-gray-700 text-sm leading-relaxed">{doctorDetails.bio}</p>
+                  </div>
+                )}
+
+                {/* Statistics Grid */}
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-3">Statistics</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="flex items-center gap-2 text-blue-600 mb-1">
+                        <Calendar className="h-4 w-4" />
+                        <span className="text-xs font-medium">Total</span>
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {doctorDetails.stats?.totalAppointments || 0}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">Appointments</div>
+                    </div>
+
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <div className="flex items-center gap-2 text-green-600 mb-1">
+                        <Check className="h-4 w-4" />
+                        <span className="text-xs font-medium">Completed</span>
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {doctorDetails.stats?.completedAppointments || 0}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">Success Rate: {doctorDetails.stats?.completionRate || 0}%</div>
+                    </div>
+
+                    <div className="bg-yellow-50 rounded-lg p-4">
+                      <div className="flex items-center gap-2 text-yellow-600 mb-1">
+                        <Star className="h-4 w-4" />
+                        <span className="text-xs font-medium">Rating</span>
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {doctorDetails.stats?.averageRating || doctorDetails.rating || '5.0'}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">Average Score</div>
+                    </div>
+
+                    <div className="bg-purple-50 rounded-lg p-4">
+                      <div className="flex items-center gap-2 text-purple-600 mb-1">
+                        <Euro className="h-4 w-4" />
+                        <span className="text-xs font-medium">Revenue</span>
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        €{doctorDetails.stats?.totalRevenue?.toFixed(2) || '0.00'}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">Total Earned</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Info */}
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Consultation Price</h4>
+                    <p className="text-lg font-medium text-blue-600">€{doctorDetails.consultationPrice || '0.00'}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Available Slots</h4>
+                    <p className="text-lg font-medium text-green-600">
+                      {doctorDetails.stats?.availableSlotsCount || 0}
+                    </p>
+                  </div>
+                  {doctorDetails.languages && doctorDetails.languages.length > 0 && (
+                    <div className="col-span-2">
+                      <h4 className="font-semibold text-gray-900 mb-2">Languages</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {doctorDetails.languages.map((lang: string, idx: number) => (
+                          <Badge key={idx} variant="secondary">{lang}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">Failed to load doctor details</div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Doctor Edit Form Modal */}
+        <Dialog open={showEditForm} onOpenChange={setShowEditForm}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Doctor Profile</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleUpdateDoctor} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Specialty <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  value={editFormData.specialty}
+                  onChange={(e) => setEditFormData({ ...editFormData, specialty: e.target.value })}
+                  placeholder="e.g., Cardiology, Pediatrics"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Biography
+                </label>
+                <textarea
+                  value={editFormData.bio}
+                  onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
+                  placeholder="Professional biography and experience..."
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  RPPS Number (License)
+                </label>
+                <Input
+                  type="text"
+                  value={editFormData.rppsNumber}
+                  onChange={(e) => setEditFormData({ ...editFormData, rppsNumber: e.target.value })}
+                  placeholder="Professional license number"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Consultation Price (€) <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editFormData.consultationPrice}
+                  onChange={(e) => setEditFormData({ ...editFormData, consultationPrice: e.target.value })}
+                  placeholder="45.00"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Languages (comma-separated)
+                </label>
+                <Input
+                  type="text"
+                  value={editFormData.languages.join(', ')}
+                  onChange={(e) => setEditFormData({
+                    ...editFormData,
+                    languages: e.target.value.split(',').map(lang => lang.trim()).filter(lang => lang)
+                  })}
+                  placeholder="English, French, Spanish"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="flex-1"
+                >
+                  {isUpdating ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowEditForm(false)}
+                  disabled={isUpdating}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   };

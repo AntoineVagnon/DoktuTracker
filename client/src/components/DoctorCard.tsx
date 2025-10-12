@@ -91,7 +91,7 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
   };
 
   return (
-    <Card className="group hover:shadow-doctor-card transition-all duration-200 border-gray-200 hover:border-[hsl(207,100%,52%)]/30">
+    <Card data-testid="doctor-card" className="group hover:shadow-doctor-card transition-all duration-200 border-gray-200 hover:border-[hsl(207,100%,52%)]/30">
       <CardContent className="p-6">
         <div className="text-center">
           {/* Avatar */}
@@ -159,6 +159,7 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
           {/* Book Button */}
           <div className="space-y-2">
             <Button
+              data-testid="book-now-button"
               onClick={handleBookClick}
               className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-md transition-all duration-200"
             >
