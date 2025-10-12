@@ -1819,9 +1819,18 @@ export default function AdminDashboard() {
                       <tr key={doctor.id} className="border-b hover:bg-gray-50 transition-colors">
                         <td className="py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                              <User className="h-5 w-5 text-blue-600" />
-                            </div>
+                            {doctor.user?.profileImageUrl ? (
+                              <img
+                                src={doctor.user.profileImageUrl}
+                                alt={`Dr. ${doctor.user?.firstName} ${doctor.user?.lastName}`}
+                                className="w-10 h-10 rounded-full object-cover"
+                                key={doctor.user.profileImageUrl}
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <User className="h-5 w-5 text-blue-600" />
+                              </div>
+                            )}
                             <div>
                               <div className="font-medium text-gray-900">
                                 Dr. {doctor.user?.firstName} {doctor.user?.lastName}
@@ -1908,6 +1917,7 @@ export default function AdminDashboard() {
                           src={doctorDetails.user.profileImageUrl}
                           alt={`Dr. ${doctorDetails.user.firstName} ${doctorDetails.user.lastName}`}
                           className="w-full h-full object-cover"
+                          key={doctorDetails.user.profileImageUrl}
                         />
                       ) : (
                         <div className="w-full h-full bg-blue-100 flex items-center justify-center">
@@ -2061,11 +2071,12 @@ export default function AdminDashboard() {
               {/* Profile Picture Section */}
               <div className="flex items-center gap-6 p-4 bg-gray-50 rounded-lg">
                 <div className="flex-shrink-0">
-                  {selectedDoctor?.user?.profileImageUrl ? (
+                  {doctorDetails?.user?.profileImageUrl ? (
                     <img
-                      src={selectedDoctor.user.profileImageUrl}
-                      alt={`${selectedDoctor.user?.firstName} ${selectedDoctor.user?.lastName}`}
+                      src={doctorDetails.user.profileImageUrl}
+                      alt={`${doctorDetails.user?.firstName} ${doctorDetails.user?.lastName}`}
                       className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm"
+                      key={doctorDetails.user.profileImageUrl}
                     />
                   ) : (
                     <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center border-4 border-white shadow-sm">
