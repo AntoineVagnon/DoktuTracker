@@ -29,7 +29,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, Camera, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -2058,6 +2058,39 @@ export default function AdminDashboard() {
               <DialogTitle>Edit Doctor Profile</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleUpdateDoctor} className="space-y-4">
+              {/* Profile Picture Section */}
+              <div className="flex items-center gap-6 p-4 bg-gray-50 rounded-lg">
+                <div className="flex-shrink-0">
+                  {selectedDoctor?.user?.profileImageUrl ? (
+                    <img
+                      src={selectedDoctor.user.profileImageUrl}
+                      alt={`${selectedDoctor.user?.firstName} ${selectedDoctor.user?.lastName}`}
+                      className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center border-4 border-white shadow-sm">
+                      <User className="h-12 w-12 text-blue-600" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900 mb-1">Profile Photo</h4>
+                  <p className="text-sm text-gray-500 mb-3">
+                    Update the doctor's profile picture
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPhotoModal(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Camera className="h-4 w-4" />
+                    Edit Photo
+                  </Button>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Specialty <span className="text-red-500">*</span>

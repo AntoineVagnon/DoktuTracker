@@ -2620,7 +2620,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       const { profileImageUrl } = req.body;
 
       // Get the doctor to find their user ID
-      const doctor = await storage.getDoctorById(doctorId);
+      const doctor = await storage.getDoctor(doctorId);
       if (!doctor) {
         return res.status(404).json({ message: "Doctor not found" });
       }
