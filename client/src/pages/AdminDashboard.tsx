@@ -2291,15 +2291,14 @@ export default function AdminDashboard() {
           doctorName={`${doctorDetails?.user?.firstName} ${doctorDetails?.user?.lastName}`}
           onSuccess={() => {
             console.log('Photo upload success! Refreshing queries...');
-            console.log('Invalidating doctor details:', ['/api/admin/doctors', selectedDoctor?.id]);
-            console.log('Invalidating doctors list:', ['/api/admin/doctors']);
+            console.log('Refetching doctor details:', ['/api/admin/doctors', selectedDoctor?.id]);
+            console.log('Refetching doctors list:', ['/api/admin/doctors']);
 
-            // Refresh doctor details (fixed: removed 'details' to match actual query key)
-            queryClient.invalidateQueries({
+            // Force refetch instead of just invalidating (because staleTime: Infinity)
+            queryClient.refetchQueries({
               queryKey: ['/api/admin/doctors', selectedDoctor?.id]
             });
-            // Refresh doctors list
-            queryClient.invalidateQueries({
+            queryClient.refetchQueries({
               queryKey: ['/api/admin/doctors']
             });
 
@@ -2308,7 +2307,7 @@ export default function AdminDashboard() {
               description: "Profile photo updated successfully",
             });
 
-            console.log('Queries invalidated, UI should refresh now');
+            console.log('Queries refetched, UI should update now');
           }}
         />
       </div>
