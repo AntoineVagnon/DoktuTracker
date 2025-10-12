@@ -194,6 +194,17 @@ export function DoctorsGrid() {
     const lastName = doctor.user?.lastName || doctor.lastName;
     const profileImageUrl = doctor.user?.profileImageUrl || doctor.avatarUrl;
     const rating = doctor.rating ? parseFloat(doctor.rating) : doctor.avgRating;
+
+    // Debug logging for Dr. James Rodriguez
+    if (firstName === 'James' && lastName === 'Rodriguez') {
+      console.log('🔍 Dr. James Rodriguez data:', {
+        doctor,
+        profileImageUrl,
+        hasUser: !!doctor.user,
+        userProfileImageUrl: doctor.user?.profileImageUrl,
+        avatarUrl: doctor.avatarUrl
+      });
+    }
     
     return (
       <Link key={doctor.id} href={`/doctor/${doctor.id}`}>
