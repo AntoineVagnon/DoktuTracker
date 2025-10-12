@@ -53,7 +53,11 @@ export default function DoctorPhotoModal({
         formData.append('photo', selectedFile);
 
         const apiUrl = import.meta.env.VITE_API_URL || '';
-        response = await fetch(`${apiUrl}/api/admin/doctors/${doctorId}/photo/upload`, {
+        const uploadUrl = `${apiUrl}/api/admin/doctors/${doctorId}/photo/upload`;
+        console.log('Uploading to:', uploadUrl);
+        console.log('File:', selectedFile.name, selectedFile.size, 'bytes');
+
+        response = await fetch(uploadUrl, {
           method: 'POST',
           body: formData,
           credentials: 'include',
@@ -66,14 +70,16 @@ export default function DoctorPhotoModal({
       }
 
       if (!response.ok) {
-        throw new Error('Failed to update photo');
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        console.error('Upload failed:', response.status, errorData);
+        throw new Error(errorData.message || `Failed to update photo (${response.status})`);
       }
 
       onSuccess?.();
       onOpenChange(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating photo:', error);
-      alert('Failed to update photo. Please try again.');
+      alert(`Failed to update photo: ${error.message || 'Please try again.'}`);
     } finally {
       setIsSubmitting(false);
     }
