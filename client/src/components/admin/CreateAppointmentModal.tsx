@@ -124,7 +124,7 @@ export default function CreateAppointmentModal({
               <SelectContent>
                 {patients?.map((patient: any) => (
                   <SelectItem key={patient.id} value={patient.id.toString()}>
-                    {patient.user?.firstName} {patient.user?.lastName} ({patient.user?.email})
+                    {patient.firstName} {patient.lastName} ({patient.email})
                   </SelectItem>
                 ))}
               </SelectContent>

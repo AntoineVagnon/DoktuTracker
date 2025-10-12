@@ -569,6 +569,15 @@ export class PostgresStorage implements IStorage {
     return sortedDoctors;
   }
 
+  async getPatients(): Promise<User[]> {
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.role, 'patient'));
+
+    console.log(`👥 Returning ${result.length} patients`);
+    return result;
+  }
 
   async updateDoctor(doctorId: number, data: Partial<Doctor>): Promise<Doctor | undefined> {
     const [updatedDoctor] = await db
