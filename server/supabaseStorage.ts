@@ -14,6 +14,7 @@ import { randomUUID } from 'crypto';
 export class SupabaseStorageService {
   private supabase: SupabaseClient;
   private bucketName: string = 'patient-documents';
+  private profilePhotosBucket: string = 'profile-photos';
 
   constructor() {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
@@ -170,6 +171,73 @@ export class SupabaseStorageService {
     }
 
     console.log(`🗑️ Deleted ${files.length} files for user ${userId} (GDPR compliance)`);
+  }
+
+  /**
+   * Upload a profile photo to public bucket
+   * @param buffer File buffer
+   * @param fileName Original file name
+   * @param mimeType File MIME type
+   * @param userId User ID for organizing files
+   * @returns Public URL of the uploaded photo
+   */
+  async uploadProfilePhoto(
+    buffer: Buffer,
+    fileName: string,
+    mimeType: string,
+    userId: number
+  ): Promise<string> {
+    // Generate unique file path: userId/uuid-originalname
+    const fileExt = fileName.split('.').pop();
+    const uniqueFileName = `${randomUUID()}.${fileExt}`;
+    const filePath = `${userId}/${uniqueFileName}`;
+
+    console.log('📸 Uploading profile photo to Supabase Storage:', {
+      bucket: this.profilePhotosBucket,
+      path: filePath,
+      size: buffer.length,
+      mimeType
+    });
+
+    // Upload file to public bucket
+    const { data, error } = await this.supabase.storage
+      .from(this.profilePhotosBucket)
+      .upload(filePath, buffer, {
+        contentType: mimeType,
+        upsert: false,
+        cacheControl: '3600'
+      });
+
+    if (error) {
+      console.error('❌ Supabase profile photo upload error:', error);
+      throw new Error(`Failed to upload profile photo: ${error.message}`);
+    }
+
+    console.log('✅ Profile photo uploaded successfully:', data.path);
+
+    // Get public URL for the uploaded file
+    const { data: publicUrlData } = this.supabase.storage
+      .from(this.profilePhotosBucket)
+      .getPublicUrl(data.path);
+
+    return publicUrlData.publicUrl;
+  }
+
+  /**
+   * Delete a profile photo
+   * @param filePath Path to the file in storage (relative to bucket)
+   */
+  async deleteProfilePhoto(filePath: string): Promise<void> {
+    const { error } = await this.supabase.storage
+      .from(this.profilePhotosBucket)
+      .remove([filePath]);
+
+    if (error) {
+      console.error('❌ Error deleting profile photo:', error);
+      throw new Error(`Failed to delete profile photo: ${error.message}`);
+    }
+
+    console.log('🗑️ Profile photo deleted:', filePath);
   }
 
   /**

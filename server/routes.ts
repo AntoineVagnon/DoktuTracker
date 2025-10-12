@@ -2639,6 +2639,51 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Upload profile photo file (multipart/form-data)
+  app.post("/api/admin/doctors/:id/photo/upload", isAuthenticated, upload.single('photo'), async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const doctorId = parseInt(req.params.id);
+
+      // Get the doctor to find their user ID
+      const doctor = await storage.getDoctor(doctorId);
+      if (!doctor) {
+        return res.status(404).json({ message: "Doctor not found" });
+      }
+
+      // Upload to Supabase Storage
+      const { getSupabaseStorageService } = await import('./supabaseStorage');
+      const storageService = getSupabaseStorageService();
+
+      const publicUrl = await storageService.uploadProfilePhoto(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        doctor.userId
+      );
+
+      // Update the user's profile image with the Supabase URL
+      await db
+        .update(users)
+        .set({ profileImageUrl: publicUrl })
+        .where(eq(users.id, doctor.userId));
+
+      console.log(`✅ Admin uploaded photo for doctor ${doctorId} (user ${doctor.userId}): ${publicUrl}`);
+      res.json({ success: true, profileImageUrl: publicUrl });
+    } catch (error: any) {
+      console.error("Error uploading doctor photo:", error);
+      res.status(500).json({ message: error.message || "Failed to upload photo" });
+    }
+  });
+
   // Email confirmation endpoint for post-signup
   // Login endpoint for email/password authentication
   app.post("/api/auth/login", async (req, res) => {

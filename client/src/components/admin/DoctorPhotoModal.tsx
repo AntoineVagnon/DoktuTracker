@@ -27,16 +27,42 @@ export default function DoctorPhotoModal({
   const [photoUrl, setPhotoUrl] = useState(currentPhotoUrl || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewError, setPreviewError] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadMode, setUploadMode] = useState<'url' | 'file'>('url');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!photoUrl.trim()) return;
+
+    if (uploadMode === 'file' && !selectedFile) {
+      alert('Please select a file to upload');
+      return;
+    }
+
+    if (uploadMode === 'url' && !photoUrl.trim()) {
+      alert('Please enter a photo URL');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      const response = await apiRequest('PATCH', `/api/admin/doctors/${doctorId}/photo`, {
-        profileImageUrl: photoUrl.trim(),
-      });
+      let response;
+
+      if (uploadMode === 'file' && selectedFile) {
+        // Upload file using FormData
+        const formData = new FormData();
+        formData.append('photo', selectedFile);
+
+        response = await fetch(`/api/admin/doctors/${doctorId}/photo/upload`, {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        });
+      } else {
+        // Use URL
+        response = await apiRequest('PATCH', `/api/admin/doctors/${doctorId}/photo`, {
+          profileImageUrl: photoUrl.trim(),
+        });
+      }
 
       if (!response.ok) {
         throw new Error('Failed to update photo');
@@ -71,6 +97,33 @@ export default function DoctorPhotoModal({
       alert('Failed to remove photo. Please try again.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+
+      setSelectedFile(file);
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPhotoUrl(e.target?.result as string);
+        setPreviewError(false);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -111,49 +164,114 @@ export default function DoctorPhotoModal({
             </div>
           </div>
 
-          {/* Photo URL Input */}
-          <div className="space-y-2">
-            <Label htmlFor="photoUrl" className="flex items-center gap-2">
-              <LinkIcon className="h-4 w-4" />
-              Photo URL
-            </Label>
-            <Input
-              id="photoUrl"
-              type="url"
-              placeholder="https://example.com/photo.jpg"
-              value={photoUrl}
-              onChange={(e) => {
-                setPhotoUrl(e.target.value);
-                setPreviewError(false);
+          {/* Upload Mode Tabs */}
+          <div className="flex gap-2 border-b">
+            <button
+              type="button"
+              onClick={() => {
+                setUploadMode('file');
+                setPhotoUrl('');
+                setSelectedFile(null);
               }}
-            />
-            <p className="text-xs text-gray-500">
-              Enter a direct link to an image (JPG, PNG, etc.)
-            </p>
+              className={`px-4 py-2 font-medium ${
+                uploadMode === 'file'
+                  ? 'border-b-2 border-blue-600 text-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Upload className="h-4 w-4 inline mr-2" />
+              Upload File
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setUploadMode('url');
+                setPhotoUrl('');
+                setSelectedFile(null);
+              }}
+              className={`px-4 py-2 font-medium ${
+                uploadMode === 'url'
+                  ? 'border-b-2 border-blue-600 text-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <LinkIcon className="h-4 w-4 inline mr-2" />
+              Use URL
+            </button>
           </div>
 
-          {/* Quick Examples */}
-          <Alert>
-            <Upload className="h-4 w-4" />
-            <AlertDescription>
-              <p className="text-sm font-medium mb-2">Quick examples from Unsplash:</p>
-              <div className="space-y-1">
-                {unsplashExamples.map((url, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setPhotoUrl(url);
-                      setPreviewError(false);
-                    }}
-                    className="block w-full text-left text-xs text-blue-600 hover:underline truncate"
-                  >
-                    {url}
-                  </button>
-                ))}
+          {/* File Upload */}
+          {uploadMode === 'file' && (
+            <div className="space-y-2">
+              <Label htmlFor="photoFile" className="flex items-center gap-2">
+                <Upload className="h-4 w-4" />
+                Select Image File
+              </Label>
+              <Input
+                id="photoFile"
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="cursor-pointer"
+              />
+              <p className="text-xs text-gray-500">
+                Upload a profile photo (JPG, PNG, etc. - Max 5MB)
+              </p>
+              {selectedFile && (
+                <p className="text-sm text-green-600">
+                  ✓ Selected: {selectedFile.name}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* URL Input */}
+          {uploadMode === 'url' && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="photoUrl" className="flex items-center gap-2">
+                  <LinkIcon className="h-4 w-4" />
+                  Photo URL
+                </Label>
+                <Input
+                  id="photoUrl"
+                  type="url"
+                  placeholder="https://example.com/photo.jpg"
+                  value={photoUrl}
+                  onChange={(e) => {
+                    setPhotoUrl(e.target.value);
+                    setPreviewError(false);
+                  }}
+                />
+                <p className="text-xs text-gray-500">
+                  Enter a direct link to an image (JPG, PNG, etc.)
+                </p>
               </div>
-            </AlertDescription>
-          </Alert>
+
+              {/* Quick Examples */}
+              <Alert>
+                <Upload className="h-4 w-4" />
+                <AlertDescription>
+                  <p className="text-sm font-medium mb-2">Quick examples from Unsplash:</p>
+                  <div className="space-y-1">
+                    {unsplashExamples.map((url, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setPhotoUrl(url);
+                          setPreviewError(false);
+                        }}
+                        className="block w-full text-left text-xs text-blue-600 hover:underline truncate"
+                      >
+                        {url}
+                      </button>
+                    ))}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            </>
+          )}
 
           {previewError && (
             <Alert variant="destructive">
@@ -183,7 +301,14 @@ export default function DoctorPhotoModal({
                 </Button>
               )}
             </div>
-            <Button type="submit" disabled={isSubmitting || !photoUrl.trim() || previewError}>
+            <Button
+              type="submit"
+              disabled={
+                isSubmitting ||
+                (uploadMode === 'url' && (!photoUrl.trim() || previewError)) ||
+                (uploadMode === 'file' && !selectedFile)
+              }
+            >
               {isSubmitting ? 'Updating...' : 'Update Photo'}
             </Button>
           </DialogFooter>
