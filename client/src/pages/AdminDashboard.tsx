@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import AvailabilityCalendar from "@/components/admin/AvailabilityCalendar";
+import DoctorPhotoModal from "@/components/admin/DoctorPhotoModal";
 import {
   Calendar, Users, TrendingUp, AlertCircle, Euro, UserX,
   ChevronDown, RefreshCw, UserPlus, Ticket, Send, Video,
@@ -1398,6 +1399,7 @@ export default function AdminDashboard() {
     const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
+    const [showPhotoModal, setShowPhotoModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [formData, setFormData] = useState({
       email: '',
@@ -1883,9 +1885,25 @@ export default function AdminDashboard() {
                 <TabsContent value="details" className="space-y-6">
                   {/* Profile Section */}
                   <div className="flex items-start gap-4 pb-6 border-b">
-                    <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center">
-                      <User className="h-10 w-10 text-blue-600" />
-                    </div>
+                    <button
+                      onClick={() => setShowPhotoModal(true)}
+                      className="relative w-20 h-20 rounded-full overflow-hidden group cursor-pointer border-2 border-gray-200 hover:border-blue-500 transition-colors"
+                    >
+                      {doctorDetails.user?.profileImageUrl ? (
+                        <img
+                          src={doctorDetails.user.profileImageUrl}
+                          alt={`Dr. ${doctorDetails.user.firstName} ${doctorDetails.user.lastName}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-blue-100 flex items-center justify-center">
+                          <User className="h-10 w-10 text-blue-600" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center transition-all">
+                        <Edit className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </button>
                     <div className="flex-1">
                       <h3 className="text-xl font-semibold text-gray-900">
                         Dr. {doctorDetails.user?.firstName} {doctorDetails.user?.lastName}
@@ -2124,6 +2142,29 @@ export default function AdminDashboard() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Doctor Photo Modal */}
+        <DoctorPhotoModal
+          open={showPhotoModal}
+          onOpenChange={setShowPhotoModal}
+          doctorId={selectedDoctor?.id}
+          currentPhotoUrl={doctorDetails?.user?.profileImageUrl}
+          doctorName={`${doctorDetails?.user?.firstName} ${doctorDetails?.user?.lastName}`}
+          onSuccess={() => {
+            // Refresh doctor details
+            queryClient.invalidateQueries({
+              queryKey: ['/api/admin/doctors', selectedDoctor?.id, 'details']
+            });
+            // Refresh doctors list
+            queryClient.invalidateQueries({
+              queryKey: ['/api/admin/doctors']
+            });
+            toast({
+              title: "Success",
+              description: "Profile photo updated successfully",
+            });
+          }}
+        />
       </div>
     );
   };

@@ -2564,6 +2564,37 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Update doctor photo (admin only)
+  app.patch("/api/admin/doctors/:id/photo", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const doctorId = parseInt(req.params.id);
+      const { profileImageUrl } = req.body;
+
+      // Get the doctor to find their user ID
+      const doctor = await storage.getDoctorById(doctorId);
+      if (!doctor) {
+        return res.status(404).json({ message: "Doctor not found" });
+      }
+
+      // Update the user's profile image
+      await db
+        .update(users)
+        .set({ profileImageUrl: profileImageUrl || null })
+        .where(eq(users.id, doctor.userId));
+
+      console.log(`✅ Admin updated photo for doctor ${doctorId} (user ${doctor.userId})`);
+      res.json({ success: true, profileImageUrl: profileImageUrl || null });
+    } catch (error: any) {
+      console.error("Error updating doctor photo:", error);
+      res.status(500).json({ message: error.message || "Failed to update photo" });
+    }
+  });
+
   // Email confirmation endpoint for post-signup
   // Login endpoint for email/password authentication
   app.post("/api/auth/login", async (req, res) => {
