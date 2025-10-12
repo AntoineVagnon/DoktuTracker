@@ -52,7 +52,8 @@ export default function DoctorPhotoModal({
         const formData = new FormData();
         formData.append('photo', selectedFile);
 
-        response = await fetch(`/api/admin/doctors/${doctorId}/photo/upload`, {
+        const apiUrl = import.meta.env.VITE_API_URL || '';
+        response = await fetch(`${apiUrl}/api/admin/doctors/${doctorId}/photo/upload`, {
           method: 'POST',
           body: formData,
           credentials: 'include',
