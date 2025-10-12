@@ -1,0 +1,429 @@
+
+> rest-express@1.0.0 test:e2e
+> playwright test tests/e2e/live-booking-flow-test.spec.ts --headed --grep UNLOGGED
+
+
+Running 12 tests using 1 worker
+
+
+🔐 Authenticating test doctor via API...
+Email: test.doctor.1760200122865@doktu.co
+✅ Authenticated as test doctor
+Session ID: cilgmA68RkuMrjOCnkNQTk7LCa9sSHOZ
+✅ Doctor authentication state saved
+  ✓   1 [setup] › tests\auth-doctor.setup.ts:15:1 › authenticate as test doctor (1.6s)
+
+🔐 Authenticating test patient via API...
+Email: kalyos.officiel@gmail.com
+✅ Authenticated as test patient
+Session ID: T2G5eCFknkWW_SDho_rv6Csdp7yPtl7j
+✅ Patient authentication state saved to ./playwright/.auth/patient.json
+  ✓   2 [setup] › tests\auth-patient.setup.ts:15:1 › authenticate as test patient (3.6s)
+✓ Authenticated as antoine.vagnon@gmail.com (admin)
+✓ Admin dashboard accessible
+✓ Admin authentication state saved
+  ✓   3 [setup] › tests\auth.setup.ts:14:1 › authenticate as admin (5.6s)
+🧪 TEST: Unlogged Booking Flow (as described by user)
+ℹ️ No cookie banner found or already dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   4 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (2.8m)
+🧪 TEST: Unlogged Booking Flow (as described by user)
+✅ Cookie banner dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   5 [webkit] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (21.4s)
+🧪 TEST: Unlogged Booking Flow (as described by user)
+✅ Cookie banner dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   6 [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (23.5s)
+🧪 TEST: Unlogged Booking Flow (as described by user)
+✅ Cookie banner dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   7 [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (23.2s)
+🧪 TEST: Unlogged Booking Flow (as described by user)
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   8 [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (35.9s)
+🧪 TEST: Unlogged Booking Flow (as described by user)
+✅ Cookie banner dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   9 [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (23.0s)
+🧪 TEST: Unlogged Booking Flow (as described by user)
+✅ Cookie banner dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  10 [chromium] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (20.8s)
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  11 [doctor] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (11ms)
+🧪 TEST: Unlogged Booking Flow (as described by user)
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  12 [patient] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (3.4s)
+
+
+  1) [chromium] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay › Select a doctor profile 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="doctor-card"], .doctor-card, article, .card') to be visible[22m
+
+
+      120 |
+      121 |     await test.step('Select a doctor profile', async () => {
+    > 122 |       await page.waitForSelector('[data-testid="doctor-card"], .doctor-card, article, .card', {
+          |                  ^
+      123 |         timeout: 10000
+      124 |       });
+      125 |
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:122:18
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-chromium\error-context.md
+
+  2) [doctor] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+
+    Error: Error reading storage state from ./playwright/.auth/doctor.json:
+    ENOENT: no such file or directory, open 'C:\Users\mings\.apps\DoktuTracker\playwright\.auth\doctor.json'
+
+  3) [patient] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay › Navigate to homepage and dismiss cookie banner 
+
+    Error: page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://doktu-tracker.vercel.app/
+    Call log:
+    [2m  - navigating to "https://doktu-tracker.vercel.app/", waiting until "load"[22m
+
+
+      106 |
+      107 |     await test.step('Navigate to homepage and dismiss cookie banner', async () => {
+    > 108 |       await page.goto(BASE_URL);
+          |                  ^
+      109 |       await page.waitForLoadState('networkidle');
+      110 |       await dismissCookieBanner(page);
+      111 |       await captureState(page, 'unlogged-booking', '01-homepage');
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:108:18
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:107:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-patient\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-patient\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-patient\error-context.md
+
+  4) [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="doctor-card"], .doctor-card, article, .card') to be visible[22m
+
+
+      120 |
+      121 |     await test.step('Select a doctor profile', async () => {
+    > 122 |       await page.waitForSelector('[data-testid="doctor-card"], .doctor-card, article, .card', {
+          |                  ^
+      123 |         timeout: 10000
+      124 |       });
+      125 |
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:122:18
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:121:16
+
+    [31mTearing down "context" exceeded the test timeout of 120000ms.[39m
+
+    Error: browserContext.close: Test ended.
+    Browser logs:
+
+    <launching> C:\Users\mings\AppData\Local\ms-playwright\firefox-1490\firefox\firefox.exe -no-remote -wait-for-browser -foreground -profile C:\Users\mings\AppData\Local\Temp\playwright_firefoxdev_profile-8VSZwn -juggler-pipe -silent
+    <launched> pid=21012
+    [pid=21012][err] JavaScript warning: resource://services-settings/Utils.sys.mjs, line 116: unreachable code after return statement
+    [pid=21012][out] console.warn: services.settings: Ignoring preference override of remote settings server
+    [pid=21012][out] console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+    [pid=21012][out] 
+    [pid=21012][out] Juggler listening to the pipe
+    [pid=21012][out] console.error: "Warning: unrecognized command line flag" "-foreground"
+    [pid=21012][err] JavaScript error: chrome://juggler/content/Helper.js, line 82: NS_ERROR_FAILURE: Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIWebProgress.removeProgressListener]
+    [pid=21012][out] console.error: services.settings: 
+    [pid=21012][out]   Message: EmptyDatabaseError: "main/nimbus-desktop-experiments" has not been synced yet
+    [pid=21012][out]   Stack:
+    [pid=21012][out]     EmptyDatabaseError@resource://services-settings/Database.sys.mjs:19:5
+    [pid=21012][out] list@resource://services-settings/Database.sys.mjs:96:13
+    [pid=21012][out] 
+    [pid=21012][out] console.error: services.settings: 
+    [pid=21012][out]   Message: EmptyDatabaseError: "main/nimbus-secure-experiments" has not been synced yet
+    [pid=21012][out]   Stack:
+    [pid=21012][out]     EmptyDatabaseError@resource://services-settings/Database.sys.mjs:19:5
+    [pid=21012][out] list@resource://services-settings/Database.sys.mjs:96:13
+    [pid=21012][out] 
+    [pid=21012][out] console.warn: services.settings: #fetchAttachment: Forcing fallbackToDump to false due to Utils.LOAD_DUMPS being false
+    [pid=21012][out] console.error: (new NotFoundError("Could not find fa0fc42c-d91d-fca7-34eb-806ff46062dc in cache or dump", "resource://services-settings/Attachments.sys.mjs", 48))
+    [pid=21012][out] console.warn: "Unable to find the attachment for" "fa0fc42c-d91d-fca7-34eb-806ff46062dc"
+    [pid=21012][out] console.error: [Exception... "Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsIContentSniffer.getMIMETypeFromContent]"  nsresult: "0x80040111 (NS_ERROR_NOT_AVAILABLE)"  location: "JS frame :: resource:///modules/FaviconLoader.sys.mjs :: onStopRequest :: line 300"  data: no]
+    [pid=21012][err] JavaScript warning: resource://gre/modules/UpdateService.sys.mjs, line 3879: unreachable code after return statement
+    [pid=21012][out] 
+    [pid=21012][out]         ERROR: error in channel "content::10/11/10": exception while running method "callFunction" in namespace "page": Execution context was destroyed! destroyExecutionContext@chrome://juggler/content/content/Runtime.js:295:16
+    [pid=21012][out] _onGlobalObjectCleared@chrome://juggler/content/content/FrameTree.js:553:21
+    [pid=21012][out] _onDOMWindowCreated@chrome://juggler/content/content/FrameTree.js:132:11
+    [pid=21012][out]  _onMessageInternal@chrome://juggler/content/SimpleChannel.js:208:24
+    [pid=21012][out] _onMessage@chrome://juggler/content/SimpleChannel.js:194:12
+    [pid=21012][out] bindToActor/actor.receiveMessage@chrome://juggler/content/SimpleChannel.js:39:44
+    [pid=21012][out] 
+    [pid=21012][out]       console.error: [Exception... "Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsIContentSniffer.getMIMETypeFromContent]"  nsresult: "0x80040111 (NS_ERROR_NOT_AVAILABLE)"  location: "JS frame :: resource:///modules/FaviconLoader.sys.mjs :: onStopRequest :: line 300"  data: no]
+    [pid=21012] <gracefully close start>
+    [pid=21012] <kill>
+    [pid=21012] <will force kill>
+    [pid=21012] taskkill stdout: ERFOLGREICH: Der Prozess mit PID 13088 (untergeordnetem Prozess von PID 18508) wurde beendet.
+    ERFOLGREICH: Der Prozess mit PID 29728 (untergeordnetem Prozess von PID 18508) wurde beendet.
+    ERFOLGREICH: Der Prozess mit PID 16984 (untergeordnetem Prozess von PID 18508) wurde beendet.
+    ERFOLGREICH: Der Prozess mit PID 10392 (untergeordnetem Prozess von PID 18508) wurde beendet.
+    ERFOLGREICH: Der Prozess mit PID 3040 (untergeordnetem Prozess von PID 18508) wurde beendet.
+    ERFOLGREICH: Der Prozess mit PID 22540 (untergeordnetem Prozess von PID 18508) wurde beendet.
+    ERFOLGREICH: Der Prozess mit PID 18508 (untergeordnetem Prozess von PID 21012) wurde beendet.
+    ERFOLGREICH: Der Prozess mit PID 21012 (untergeordnetem Prozess von PID 22616) wurde beendet.
+
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-firefox\error-context.md
+
+  5) [webkit] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay › Select a doctor profile 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="doctor-card"], .doctor-card, article, .card') to be visible[22m
+
+
+      120 |
+      121 |     await test.step('Select a doctor profile', async () => {
+    > 122 |       await page.waitForSelector('[data-testid="doctor-card"], .doctor-card, article, .card', {
+          |                  ^
+      123 |         timeout: 10000
+      124 |       });
+      125 |
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:122:18
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-webkit\error-context.md
+
+  6) [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay › Select a doctor profile 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="doctor-card"], .doctor-card, article, .card') to be visible[22m
+
+
+      120 |
+      121 |     await test.step('Select a doctor profile', async () => {
+    > 122 |       await page.waitForSelector('[data-testid="doctor-card"], .doctor-card, article, .card', {
+          |                  ^
+      123 |         timeout: 10000
+      124 |       });
+      125 |
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:122:18
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Mobile-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Mobile-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Mobile-Chrome\error-context.md
+
+  7) [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay › Select a doctor profile 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="doctor-card"], .doctor-card, article, .card') to be visible[22m
+
+
+      120 |
+      121 |     await test.step('Select a doctor profile', async () => {
+    > 122 |       await page.waitForSelector('[data-testid="doctor-card"], .doctor-card, article, .card', {
+          |                  ^
+      123 |         timeout: 10000
+      124 |       });
+      125 |
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:122:18
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Mobile-Safari\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Mobile-Safari\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Mobile-Safari\error-context.md
+
+  8) [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay › Navigate to homepage and dismiss cookie banner 
+
+    TimeoutError: page.waitForLoadState: Timeout 30000ms exceeded.
+
+      107 |     await test.step('Navigate to homepage and dismiss cookie banner', async () => {
+      108 |       await page.goto(BASE_URL);
+    > 109 |       await page.waitForLoadState('networkidle');
+          |                  ^
+      110 |       await dismissCookieBanner(page);
+      111 |       await captureState(page, 'unlogged-booking', '01-homepage');
+      112 |     });
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:109:18
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:107:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Microsoft-Edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Microsoft-Edge\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Microsoft-Edge\error-context.md
+
+  9) [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay › Select a doctor profile 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="doctor-card"], .doctor-card, article, .card') to be visible[22m
+
+
+      120 |
+      121 |     await test.step('Select a doctor profile', async () => {
+    > 122 |       await page.waitForSelector('[data-testid="doctor-card"], .doctor-card, article, .card', {
+          |                  ^
+      123 |         timeout: 10000
+      124 |       });
+      125 |
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:122:18
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Google-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Google-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-Google-Chrome\error-context.md
+
+  9 failed
+    [chromium] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+    [doctor] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+    [patient] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+    [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+    [webkit] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+    [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+    [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+    [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+    [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+  3 passed (6.4m)
+
+[36m  Serving HTML report at http://localhost:57728. Press Ctrl+C to quit.[39m

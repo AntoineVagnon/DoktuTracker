@@ -1,0 +1,66 @@
+
+> rest-express@1.0.0 test:e2e
+> playwright test tests/e2e/live-booking-flow-test.spec.ts --headed --grep UNLOGGED --project=firefox
+
+
+Running 1 test using 1 worker
+
+🧪 TEST: Unlogged Booking Flow (as described by user)
+ℹ️ No cookie banner found or already dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+Found 7 "Book Now" buttons
+📸 Screenshot captured: unlogged-booking - 03-doctor-cards-loaded
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  1 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (1.0m)
+
+
+  1) [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay › Select a doctor profile 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Book Now")').first()[22m
+    [2m    - locator resolved to <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-md transit…>Book Now</button>[22m
+    [2m  - attempting click action[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is visible, enabled and stable[22m
+    [2m    - scrolling into view if needed[22m
+    [2m    - done scrolling[22m
+    [2m    - <p class="text-sm text-muted-foreground">…</p> from <div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background/95 backdrop-blur-sm border-t">…</div> subtree intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+
+
+      135 |
+      136 |       // Click first "Book Now" button
+    > 137 |       await bookButtons[0].click();
+          |                            ^
+      138 |
+      139 |       await page.waitForTimeout(3000); // Wait for navigation and page render
+      140 |       await captureState(page, 'unlogged-booking', '04-doctor-profile');
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:137:28
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:121:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-firefox\error-context.md
+
+  1 failed
+    [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+
+[36m  Serving HTML report at http://localhost:61797. Press Ctrl+C to quit.[39m

@@ -54,7 +54,7 @@
         "testMatch": [
           "/.*\\.setup\\.ts/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -72,7 +72,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -90,7 +90,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -108,7 +108,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -126,7 +126,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -144,7 +144,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -162,7 +162,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -180,7 +180,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -198,7 +198,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -216,7 +216,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 180000
+        "timeout": 60000
       }
     ],
     "shard": null,
@@ -239,7 +239,7 @@
           "tags": [],
           "tests": [
             {
-              "timeout": 180000,
+              "timeout": 60000,
               "annotations": [],
               "expectedStatus": "passed",
               "projectId": "setup",
@@ -249,7 +249,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 891,
+                  "duration": 734,
                   "errors": [],
                   "stdout": [
                     {
@@ -262,7 +262,7 @@
                       "text": "✅ Authenticated as test doctor\n"
                     },
                     {
-                      "text": "Session ID: 2Z5i-5vFz2lEah40e-Xxbgx8VMS7EIRK\n"
+                      "text": "Session ID: aJX3b9z0kl-xSsmZNNctix83bDP7jf6B\n"
                     },
                     {
                       "text": "✅ Doctor authentication state saved\n"
@@ -270,7 +270,7 @@
                   ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-10-12T10:35:36.871Z",
+                  "startTime": "2025-10-12T13:07:59.495Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -297,7 +297,7 @@
           "tags": [],
           "tests": [
             {
-              "timeout": 180000,
+              "timeout": 60000,
               "annotations": [],
               "expectedStatus": "passed",
               "projectId": "setup",
@@ -307,7 +307,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3159,
+                  "duration": 3087,
                   "errors": [],
                   "stdout": [
                     {
@@ -320,7 +320,7 @@
                       "text": "✅ Authenticated as test patient\n"
                     },
                     {
-                      "text": "Session ID: N6lhg2zL2QYkmOwqGqTYenTwgRHZ_Lj8\n"
+                      "text": "Session ID: 5akm6EprOXP_ARvSrFQPWoW7vbBdKuQi\n"
                     },
                     {
                       "text": "✅ Patient authentication state saved to ./playwright/.auth/patient.json\n"
@@ -328,7 +328,7 @@
                   ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-10-12T10:35:37.800Z",
+                  "startTime": "2025-10-12T13:08:00.273Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -355,7 +355,7 @@
           "tags": [],
           "tests": [
             {
-              "timeout": 180000,
+              "timeout": 60000,
               "annotations": [],
               "expectedStatus": "passed",
               "projectId": "setup",
@@ -365,7 +365,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6173,
+                  "duration": 3570,
                   "errors": [],
                   "stdout": [
                     {
@@ -380,7 +380,7 @@
                   ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-10-12T10:35:41.215Z",
+                  "startTime": "2025-10-12T13:08:03.547Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -396,271 +396,461 @@
       ]
     },
     {
-      "title": "e2e\\complete-booking-flow.spec.ts",
-      "file": "e2e/complete-booking-flow.spec.ts",
+      "title": "e2e\\admin-doctor-management-test.spec.ts",
+      "file": "e2e/admin-doctor-management-test.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Complete Appointment Booking Flow",
-          "file": "e2e/complete-booking-flow.spec.ts",
-          "line": 32,
+          "title": "Admin Doctor Management Feature",
+          "file": "e2e/admin-doctor-management-test.spec.ts",
+          "line": 7,
           "column": 6,
           "specs": [
             {
-              "title": "P0 - Complete booking journey: Home → Slot Selection → Payment",
+              "title": "should display doctor management table with search",
               "ok": false,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 180000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "patient",
-                  "projectName": "patient",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
                   "results": [
                     {
                       "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 30238,
+                      "duration": 21481,
                       "error": {
-                        "message": "TimeoutError: page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
-                        "stack": "TimeoutError: page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts:162:18",
+                        "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n",
+                        "stack": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16",
                         "location": {
-                          "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts",
-                          "column": 18,
-                          "line": 162
+                          "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                          "column": 16,
+                          "line": 17
                         },
-                        "snippet": "\u001b[0m \u001b[90m 160 |\u001b[39m     \u001b[36mtry\u001b[39m {\n \u001b[90m 161 |\u001b[39m       \u001b[90m// Wait for redirect - should go to /checkout since we're authenticated\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 162 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(\u001b[35m/\\/(checkout|register|payment)/\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m15000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 163 |\u001b[39m       \u001b[36mconst\u001b[39m redirectUrl \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39murl()\u001b[33m;\u001b[39m\n \u001b[90m 164 |\u001b[39m       console\u001b[33m.\u001b[39mlog(\u001b[32m`  ✅ Redirected to: ${redirectUrl}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 165 |\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m\n \u001b[90m 16 |\u001b[39m     \u001b[90m// Click login button\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Se connecter'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[90m// Fill in admin credentials\u001b[39m\n \u001b[90m 20 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'input[type=\"email\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[33mADMIN_EMAIL\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts",
-                            "column": 18,
-                            "line": 162
+                            "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                            "column": 16,
+                            "line": 17
                           },
-                          "message": "TimeoutError: page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n  160 |     try {\n  161 |       // Wait for redirect - should go to /checkout since we're authenticated\n> 162 |       await page.waitForURL(/\\/(checkout|register|payment)/, { timeout: 15000 });\n      |                  ^\n  163 |       const redirectUrl = page.url();\n  164 |       console.log(`  ✅ Redirected to: ${redirectUrl}`);\n  165 |\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts:162:18"
+                          "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n\n  15 |\n  16 |     // Click login button\n> 17 |     await page.click('text=Se connecter');\n     |                ^\n  18 |\n  19 |     // Fill in admin credentials\n  20 |     await page.fill('input[type=\"email\"]', ADMIN_EMAIL);\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16"
                         }
                       ],
-                      "stdout": [
-                        {
-                          "text": "\n🧪 Testing COMPLETE booking flow end-to-end\n\n"
-                        },
-                        {
-                          "text": "STEP 1: Navigate to home page\n"
-                        },
-                        {
-                          "text": "  [Browser log]: Stripe Publishable Key: Available\n"
-                        },
-                        {
-                          "text": "  [Browser log]: Loading Stripe with publishable key: pk_test_51...\n"
-                        },
-                        {
-                          "text": "  [Browser log]: [DOKTU] App version: 2025-10-11T13:15:00Z\n"
-                        },
-                        {
-                          "text": "  [Browser log]: [DOKTU] Build number: 20251011-1315\n"
-                        },
-                        {
-                          "text": "  [Browser log]: [DOKTU] Expected component version: V5\n"
-                        },
-                        {
-                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:52.135Z\n"
-                        },
-                        {
-                          "text": "  [Browser log]: Landing page loaded, checking for password reset tokens\n"
-                        },
-                        {
-                          "text": "  [Browser log]: Current URL hash: \n"
-                        },
-                        {
-                          "text": "  [Browser log]: Hash params: {type: null, accessToken: false}\n"
-                        },
-                        {
-                          "text": "  [Browser log]: All hash params: []\n"
-                        },
-                        {
-                          "text": "  [Browser log]: ❌ No password reset tokens found, loading normal landing page\n"
-                        },
-                        {
-                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:53.114Z\n"
-                        },
-                        {
-                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:53.167Z\n"
-                        },
-                        {
-                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:53.278Z\n"
-                        },
-                        {
-                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:53.297Z\n"
-                        },
-                        {
-                          "text": "✅ Cookie banner dismissed\n"
-                        },
-                        {
-                          "text": "\nSTEP 2: Find Dr. James Rodriguez\n"
-                        },
-                        {
-                          "text": "  ✅ Found availability: Next: Oct 21, 16:00\n"
-                        },
-                        {
-                          "text": "\nSTEP 3: Navigate to doctor profile\n"
-                        },
-                        {
-                          "text": "  Clicking \"Book Now\" button\n"
-                        },
-                        {
-                          "text": "  [Browser error]: Failed to load resource: the server responded with a status of 405 ()\n"
-                        },
-                        {
-                          "text": "  [Browser error]: Failed to send analytics events: Error: Analytics failed: \n    at Hb.flush (https://doktu-tracker.vercel.app/assets/index-DQ3prala.js:449:115756)\n"
-                        },
-                        {
-                          "text": "  [Browser log]: Stripe Publishable Key: Available\n"
-                        },
-                        {
-                          "text": "  [Browser log]: Loading Stripe with publishable key: pk_test_51...\n"
-                        },
-                        {
-                          "text": "  [Browser log]: [DOKTU] App version: 2025-10-11T13:15:00Z\n"
-                        },
-                        {
-                          "text": "  [Browser log]: [DOKTU] Build number: 20251011-1315\n"
-                        },
-                        {
-                          "text": "  [Browser log]: [DOKTU] Expected component version: V5\n"
-                        },
-                        {
-                          "text": "\nSTEP 4: Wait for doctor profile page\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
-                        },
-                        {
-                          "text": "  ✅ On doctor profile: https://doktu-tracker.vercel.app/doctor/9\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
-                        },
-                        {
-                          "text": "\nSTEP 5: Look for available time slots\n"
-                        },
-                        {
-                          "text": "  ✅ Found time slot using selector \"button:has-text(\"16:00\")\": 16:00\n"
-                        },
-                        {
-                          "text": "\nSTEP 6: Select time slot\n"
-                        },
-                        {
-                          "text": "  [Browser log]: Slot clicked: {doctorId: 9, slot: 2025-10-21T16:00:00, price: 35.00}\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
-                        },
-                        {
-                          "text": "  ✅ Clicked on time slot\n"
-                        },
-                        {
-                          "text": "  [Network] /api/slots/hold - Status: 405\n"
-                        },
-                        {
-                          "text": "  [Browser error]: Failed to load resource: the server responded with a status of 405 ()\n"
-                        },
-                        {
-                          "text": "  [Browser error]: Failed to hold slot: SyntaxError: Failed to execute 'json' on 'Response': Unexpected end of JSON input\n    at onClick (https://doktu-tracker.vercel.app/assets/index-DQ3prala.js:460:123335)\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
-                        },
-                        {
-                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
-                        },
-                        {
-                          "text": "  [Network] Response body: \n"
-                        },
-                        {
-                          "text": "  Hold request made: true\n"
-                        },
-                        {
-                          "text": "  Hold request success: false\n"
-                        },
-                        {
-                          "text": "\nSTEP 7: Wait for redirect to checkout/register page\n"
-                        },
-                        {
-                          "text": "\n  ❌ Redirect timeout - slot click may not have triggered navigation\n"
-                        },
-                        {
-                          "text": "  Current URL: https://doktu-tracker.vercel.app/doctor/9\n"
-                        },
-                        {
-                          "text": "  Taking screenshot for debugging...\n"
-                        }
-                      ],
+                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-12T10:35:48.384Z",
+                      "startTime": "2025-10-12T13:08:08.878Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-complete-booking-flow--9057d--→-Slot-Selection-→-Payment-patient\\test-failed-1.png"
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-f459a-anagement-table-with-search-chromium\\test-failed-1.png"
                         },
                         {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-complete-booking-flow--9057d--→-Slot-Selection-→-Payment-patient\\video.webm"
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-f459a-anagement-table-with-search-chromium\\video.webm"
                         },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-complete-booking-flow--9057d--→-Slot-Selection-→-Payment-patient\\error-context.md"
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-f459a-anagement-table-with-search-chromium\\error-context.md"
                         }
                       ],
                       "errorLocation": {
-                        "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts",
-                        "column": 18,
-                        "line": 162
+                        "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                        "column": 16,
+                        "line": 17
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "1eca7619e50f5a93c111-3613b4d52bf001fde132",
-              "file": "e2e/complete-booking-flow.spec.ts",
-              "line": 34,
+              "id": "ce5864eb5293b8dc44a9-5510b758086ea4bad8bf",
+              "file": "e2e/admin-doctor-management-test.spec.ts",
+              "line": 36,
+              "column": 3
+            },
+            {
+              "title": "should search doctors by name",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 21512,
+                      "error": {
+                        "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n",
+                        "stack": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16",
+                        "location": {
+                          "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                          "column": 16,
+                          "line": 17
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m\n \u001b[90m 16 |\u001b[39m     \u001b[90m// Click login button\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Se connecter'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[90m// Fill in admin credentials\u001b[39m\n \u001b[90m 20 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'input[type=\"email\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[33mADMIN_EMAIL\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                            "column": 16,
+                            "line": 17
+                          },
+                          "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n\n  15 |\n  16 |     // Click login button\n> 17 |     await page.click('text=Se connecter');\n     |                ^\n  18 |\n  19 |     // Fill in admin credentials\n  20 |     await page.fill('input[type=\"email\"]', ADMIN_EMAIL);\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-12T13:08:32.505Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-11395-ould-search-doctors-by-name-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-11395-ould-search-doctors-by-name-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-11395-ould-search-doctors-by-name-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                        "column": 16,
+                        "line": 17
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "ce5864eb5293b8dc44a9-1a03e65bb7587db3e611",
+              "file": "e2e/admin-doctor-management-test.spec.ts",
+              "line": 54,
+              "column": 3
+            },
+            {
+              "title": "should open doctor detail modal on View button click",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 20953,
+                      "error": {
+                        "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n",
+                        "stack": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16",
+                        "location": {
+                          "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                          "column": 16,
+                          "line": 17
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m\n \u001b[90m 16 |\u001b[39m     \u001b[90m// Click login button\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Se connecter'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[90m// Fill in admin credentials\u001b[39m\n \u001b[90m 20 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'input[type=\"email\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[33mADMIN_EMAIL\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                            "column": 16,
+                            "line": 17
+                          },
+                          "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n\n  15 |\n  16 |     // Click login button\n> 17 |     await page.click('text=Se connecter');\n     |                ^\n  18 |\n  19 |     // Fill in admin credentials\n  20 |     await page.fill('input[type=\"email\"]', ADMIN_EMAIL);\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-12T13:08:56.103Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-f35f4--modal-on-View-button-click-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-f35f4--modal-on-View-button-click-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-f35f4--modal-on-View-button-click-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                        "column": 16,
+                        "line": 17
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "ce5864eb5293b8dc44a9-4fead57e407c2a49013e",
+              "file": "e2e/admin-doctor-management-test.spec.ts",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "should open edit form modal on Edit button click",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 22492,
+                      "error": {
+                        "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n",
+                        "stack": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16",
+                        "location": {
+                          "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                          "column": 16,
+                          "line": 17
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m\n \u001b[90m 16 |\u001b[39m     \u001b[90m// Click login button\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Se connecter'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[90m// Fill in admin credentials\u001b[39m\n \u001b[90m 20 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'input[type=\"email\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[33mADMIN_EMAIL\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                            "column": 16,
+                            "line": 17
+                          },
+                          "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n\n  15 |\n  16 |     // Click login button\n> 17 |     await page.click('text=Se connecter');\n     |                ^\n  18 |\n  19 |     // Fill in admin credentials\n  20 |     await page.fill('input[type=\"email\"]', ADMIN_EMAIL);\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-12T13:09:19.148Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-48726--modal-on-Edit-button-click-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-48726--modal-on-Edit-button-click-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-48726--modal-on-Edit-button-click-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                        "column": 16,
+                        "line": 17
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "ce5864eb5293b8dc44a9-3229dcec64688622b8d1",
+              "file": "e2e/admin-doctor-management-test.spec.ts",
+              "line": 124,
+              "column": 3
+            },
+            {
+              "title": "should update doctor profile successfully",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 21587,
+                      "error": {
+                        "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n",
+                        "stack": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16",
+                        "location": {
+                          "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                          "column": 16,
+                          "line": 17
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m\n \u001b[90m 16 |\u001b[39m     \u001b[90m// Click login button\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Se connecter'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[90m// Fill in admin credentials\u001b[39m\n \u001b[90m 20 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'input[type=\"email\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[33mADMIN_EMAIL\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                            "column": 16,
+                            "line": 17
+                          },
+                          "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Se connecter')\u001b[22m\n\n\n  15 |\n  16 |     // Click login button\n> 17 |     await page.click('text=Se connecter');\n     |                ^\n  18 |\n  19 |     // Fill in admin credentials\n  20 |     await page.fill('input[type=\"email\"]', ADMIN_EMAIL);\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts:17:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-12T13:09:43.841Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-2fb83-doctor-profile-successfully-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-2fb83-doctor-profile-successfully-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-admin-doctor-managemen-2fb83-doctor-profile-successfully-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\admin-doctor-management-test.spec.ts",
+                        "column": 16,
+                        "line": 17
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "ce5864eb5293b8dc44a9-96f217de69893635366b",
+              "file": "e2e/admin-doctor-management-test.spec.ts",
+              "line": 163,
+              "column": 3
+            },
+            {
+              "title": "should display statistics in detail modal",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "failed",
+                      "duration": 0,
+                      "error": {
+                        "message": "Error: worker process exited unexpectedly (code=3221225794, signal=null)"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: worker process exited unexpectedly (code=3221225794, signal=null)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-12T13:10:06.799Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "ce5864eb5293b8dc44a9-bef98f189e131039b450",
+              "file": "e2e/admin-doctor-management-test.spec.ts",
+              "line": 216,
+              "column": 3
+            },
+            {
+              "title": "should show Create New Doctor button",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-12T13:10:06.800Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ce5864eb5293b8dc44a9-a47052feb431eeda2d79",
+              "file": "e2e/admin-doctor-management-test.spec.ts",
+              "line": 250,
               "column": 3
             }
           ]
@@ -670,11 +860,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-10-12T10:35:36.046Z",
-    "duration": 42989.478,
+    "startTime": "2025-10-12T13:07:58.680Z",
+    "duration": 128129.13100000001,
     "expected": 3,
-    "skipped": 0,
-    "unexpected": 1,
+    "skipped": 1,
+    "unexpected": 6,
     "flaky": 0
   }
 }

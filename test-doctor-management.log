@@ -1,0 +1,26 @@
+
+> rest-express@1.0.0 test:e2e
+> playwright test tests/e2e/admin-doctor-management-test.spec.ts --headed --project=chromium
+
+
+Running 10 tests using 1 worker
+
+
+🔐 Authenticating test doctor via API...
+Email: test.doctor.1760200122865@doktu.co
+✅ Authenticated as test doctor
+Session ID: A7EFSsqBnhGnr0sooq-sq5y7OUPAojtq
+✅ Doctor authentication state saved
+  ✓   1 [setup] › tests\auth-doctor.setup.ts:15:1 › authenticate as test doctor (1.3s)
+
+🔐 Authenticating test patient via API...
+Email: kalyos.officiel@gmail.com
+✅ Authenticated as test patient
+Session ID: BsmaA99DZkFf2XAmhJwARHjzQlTbY3WE
+✅ Patient authentication state saved to ./playwright/.auth/patient.json
+  ✓   2 [setup] › tests\auth-patient.setup.ts:15:1 › authenticate as test patient (3.8s)
+✓ Authenticated as antoine.vagnon@gmail.com (admin)
+✓ Admin dashboard accessible
+✓ Admin authentication state saved
+  ✓   3 [setup] › tests\auth.setup.ts:14:1 › authenticate as admin (5.8s)
+  ✘   4 [chromium] › tests\e2e\admin-doctor-management-test.spec.ts:36:3 › Admin Doctor Management Feature › should display doctor management table with search (22.4s)

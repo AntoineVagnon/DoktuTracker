@@ -1,0 +1,99 @@
+
+> rest-express@1.0.0 test:e2e
+> playwright test tests/e2e/live-booking-flow-test.spec.ts --headed --grep UNLOGGED --project=firefox
+
+
+Running 1 test using 1 worker
+
+🧪 TEST: Unlogged Booking Flow (as described by user)
+✅ Cookie banner dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+Found 7 "Book Now" buttons
+📸 Screenshot captured: unlogged-booking - 03-doctor-cards-loaded
+📸 Screenshot captured: unlogged-booking - 04-doctor-profile
+✅ Clicked Book Now and navigated to doctor profile
+Found 7 slots with selector: button:has-text(":")
+Found 7 available time slots
+📸 Screenshot captured: unlogged-booking - 05-slots-available
+📸 Screenshot captured: unlogged-booking - 06-slot-selected
+✅ Time slot selected as unlogged user
+📍 Current URL after slot selection: https://doktu-tracker.vercel.app/register?doctorId=9&slot=2025-10-21T16%3A00%3A00&price=35.00&slotId=33482d37-465f-4079-9e90-26d81cf676bd
+ℹ️ No cookie banner found or already dismissed
+✅ Redirected to authentication page
+📸 Screenshot captured: unlogged-booking - 07-auth-page
+❌ Login failed: page.fill: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:208:22
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:183:5 {
+  name: [32m'TimeoutError'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts'[39m,
+      line: [33m208[39m,
+      column: [33m22[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+    apiName: [32m'page.fill'[39m,
+    params: {
+      selector: [32m'input[name="email"], input[type="email"]'[39m,
+      value: [32m'kalyos.officiel@gmail.com'[39m,
+      timeout: [33m15000[39m
+    },
+    group: [90mundefined[39m,
+    stepId: [32m'pw:api@69'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@69'[39m,
+      _title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+      _parentStep: [36m[TestStepInfoImpl][39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    recoverFromStepError: [36m[AsyncFunction: recoverFromStepError][39m,
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1760271412701[39m,
+    error: {
+      message: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m,
+      stack: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m +
+        [32m'\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:208:22\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:183:5'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+📸 Screenshot captured: unlogged-booking - 10-login-failed
+📍 Final URL: https://doktu-tracker.vercel.app/register?doctorId=9&slot=2025-10-21T16%3A00%3A00&price=35.00&slotId=33482d37-465f-4079-9e90-26d81cf676bd
+❌ Did NOT reach checkout page
+This confirms the user's report: unlogged booking flow is broken
+📸 Screenshot captured: unlogged-booking - 11-checkout-not-reached
+✅ TEST COMPLETED: Unlogged Booking Flow
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✓  1 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (31.8s)
+
+  1 passed (35.5s)
+
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

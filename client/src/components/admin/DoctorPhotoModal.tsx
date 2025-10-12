@@ -52,8 +52,7 @@ export default function DoctorPhotoModal({
         const formData = new FormData();
         formData.append('photo', selectedFile);
 
-        const apiUrl = import.meta.env.VITE_API_URL ||
-          (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://web-production-b2ce.up.railway.app';
         const uploadUrl = `${apiUrl}/api/admin/doctors/${doctorId}/photo/upload`;
         console.log('Uploading to:', uploadUrl);
         console.log('File:', selectedFile.name, selectedFile.size, 'bytes');

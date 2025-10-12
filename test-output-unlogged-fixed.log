@@ -1,0 +1,55 @@
+
+> rest-express@1.0.0 test:e2e
+> playwright test tests/e2e/live-booking-flow-test.spec.ts --headed --grep UNLOGGED --project=firefox
+
+
+Running 1 test using 1 worker
+
+🧪 TEST: Unlogged Booking Flow (as described by user)
+✅ Cookie banner dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  1 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (25.4s)
+
+
+  1) [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay › Select a doctor profile 
+
+    TimeoutError: page.waitForSelector: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="doctor-card"]') to be visible[22m
+
+
+      121 |     await test.step('Select a doctor profile', async () => {
+      122 |       // Wait for doctor cards to load
+    > 123 |       await page.waitForSelector('[data-testid="doctor-card"]', {
+          |                  ^
+      124 |         timeout: 15000
+      125 |       });
+      126 |
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:123:18
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-f57d7-or-→-Timeslot-→-Login-→-Pay-firefox\error-context.md
+
+  1 failed
+    [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay 
+
+[36m  Serving HTML report at http://localhost:52322. Press Ctrl+C to quit.[39m

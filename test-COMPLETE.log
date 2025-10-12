@@ -1,0 +1,135 @@
+
+> rest-express@1.0.0 test:e2e
+> playwright test tests/e2e/live-booking-flow-test.spec.ts --headed --grep UNLOGGED --project=firefox
+
+
+Running 1 test using 1 worker
+
+🧪 TEST: Unlogged Booking Flow (as described by user)
+✅ Cookie banner dismissed
+📸 Screenshot captured: unlogged-booking - 01-homepage
+ℹ️ No cookie banner found or already dismissed
+📸 Screenshot captured: unlogged-booking - 02-doctor-list
+✅ Accessed doctor list as unlogged user
+Found 7 "Book Now" buttons
+📸 Screenshot captured: unlogged-booking - 03-doctor-cards-loaded
+📸 Screenshot captured: unlogged-booking - 04-doctor-profile
+✅ Clicked Book Now and navigated to doctor profile
+Found 7 slots with selector: button:has-text(":")
+Found 7 available time slots
+📸 Screenshot captured: unlogged-booking - 05-slots-available
+📸 Screenshot captured: unlogged-booking - 06-slot-selected
+✅ Time slot selected as unlogged user
+📍 Current URL after slot selection: https://doktu-tracker.vercel.app/register?doctorId=9&slot=2025-10-21T16%3A00%3A00&price=35.00&slotId=33482d37-465f-4079-9e90-26d81cf676bd
+ℹ️ No cookie banner found or already dismissed
+✅ Redirected to authentication page
+📸 Screenshot captured: unlogged-booking - 07-auth-page
+❌ Login failed: locator.isVisible: invalid regular expression flag ,
+createTextMatcher@debugger eval code:7696:16
+queryAll@debugger eval code:6613:50
+_queryEngineAll@debugger eval code:6586:49
+querySelectorAll@debugger eval code:6573:30
+querySelector@debugger eval code:6498:25
+@debugger eval code line 291 > eval:2:34
+evaluate@debugger eval code:293:16
+@debugger eval code:1:44
+
+Call log:
+[2m    - checking visibility of locator('text=/Already have an account.*Sign in instead/i, button:has-text("Sign in instead"), a:has-text("Sign in instead")')[22m
+
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:200:32
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:184:5 {
+  name: [32m'Error'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts'[39m,
+      line: [33m200[39m,
+      column: [33m32[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m`Is visible locator('text=/Already have an account.*Sign in instead/i, button:has-text("Sign in instead"), a:has-text("Sign in instead")')`[39m,
+    apiName: [32m'locator.isVisible'[39m,
+    params: {
+      selector: [32m'text=/Already have an account.*Sign in instead/i, button:has-text("Sign in instead"), a:has-text("Sign in instead")'[39m,
+      strict: [33mtrue[39m,
+      timeout: [33m3000[39m
+    },
+    group: [32m'getter'[39m,
+    stepId: [32m'pw:api@72'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@72'[39m,
+      _title: [32m`Is visible locator('text=/Already have an account.*Sign in instead/i, button:has-text("Sign in instead"), a:has-text("Sign in instead")')`[39m,
+      _parentStep: [36m[TestStepInfoImpl][39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    recoverFromStepError: [36m[AsyncFunction: recoverFromStepError][39m,
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1760271720632[39m,
+    error: {
+      message: [32m'Error: locator.isVisible: invalid regular expression flag ,\n'[39m +
+        [32m'createTextMatcher@debugger eval code:7696:16\n'[39m +
+        [32m'queryAll@debugger eval code:6613:50\n'[39m +
+        [32m'_queryEngineAll@debugger eval code:6586:49\n'[39m +
+        [32m'querySelectorAll@debugger eval code:6573:30\n'[39m +
+        [32m'querySelector@debugger eval code:6498:25\n'[39m +
+        [32m'@debugger eval code line 291 > eval:2:34\n'[39m +
+        [32m'evaluate@debugger eval code:293:16\n'[39m +
+        [32m'@debugger eval code:1:44\n'[39m +
+        [32m'\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m    - checking visibility of locator('text=/Already have an account.*Sign in instead/i, button:has-text("Sign in instead"), a:has-text("Sign in instead")')\x1B[22m\n`[39m,
+      stack: [32m'Error: locator.isVisible: invalid regular expression flag ,\n'[39m +
+        [32m'createTextMatcher@debugger eval code:7696:16\n'[39m +
+        [32m'queryAll@debugger eval code:6613:50\n'[39m +
+        [32m'_queryEngineAll@debugger eval code:6586:49\n'[39m +
+        [32m'querySelectorAll@debugger eval code:6573:30\n'[39m +
+        [32m'querySelector@debugger eval code:6498:25\n'[39m +
+        [32m'@debugger eval code line 291 > eval:2:34\n'[39m +
+        [32m'evaluate@debugger eval code:293:16\n'[39m +
+        [32m'@debugger eval code:1:44\n'[39m +
+        [32m'\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m    - checking visibility of locator('text=/Already have an account.*Sign in instead/i, button:has-text("Sign in instead"), a:has-text("Sign in instead")')\x1B[22m\n`[39m +
+        [32m'\n'[39m +
+        [32m'    at createTextMatcher@debugger eval code:7696:16\n'[39m +
+        [32m'    at queryAll@debugger eval code:6613:50\n'[39m +
+        [32m'    at _queryEngineAll@debugger eval code:6586:49\n'[39m +
+        [32m'    at querySelectorAll@debugger eval code:6573:30\n'[39m +
+        [32m'    at querySelector@debugger eval code:6498:25\n'[39m +
+        [32m'    at @debugger eval code line 291 > eval:2:34\n'[39m +
+        [32m'    at evaluate@debugger eval code:293:16\n'[39m +
+        [32m'    at @debugger eval code:1:44\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:200:32\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:184:5'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+📸 Screenshot captured: unlogged-booking - 10-login-failed
+📍 Final URL: https://doktu-tracker.vercel.app/register?doctorId=9&slot=2025-10-21T16%3A00%3A00&price=35.00&slotId=33482d37-465f-4079-9e90-26d81cf676bd
+❌ Did NOT reach checkout page
+This confirms the user's report: unlogged booking flow is broken
+📸 Screenshot captured: unlogged-booking - 11-checkout-not-reached
+✅ TEST COMPLETED: Unlogged Booking Flow
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✓  1 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:104:3 › BOOKING FLOW - Complete E2E Test Suite › P0: UNLOGGED booking flow - Doctor → Timeslot → Login → Pay (20.9s)
+
+  1 passed (24.6s)
+
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

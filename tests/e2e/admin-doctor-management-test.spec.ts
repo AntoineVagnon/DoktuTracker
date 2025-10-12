@@ -1,30 +1,29 @@
 import { test, expect } from '@playwright/test';
 
-const ADMIN_EMAIL = 'admin@doktu.co';
-const ADMIN_PASSWORD = 'SecureAdmin123!';
-const BASE_URL = 'https://doktu-tracker.vercel.app';
+const BASE_URL = process.env.VITE_APP_URL || 'https://doktu-tracker.vercel.app';
 
 test.describe('Admin Doctor Management Feature', () => {
+  // Use the authenticated admin state from setup
+  test.use({ storageState: './playwright/.auth/admin.json' });
 
   test.beforeEach(async ({ page }) => {
-    // Navigate to login page
-    await page.goto(BASE_URL);
+    // Navigate directly to admin dashboard (already authenticated)
+    await page.goto(`${BASE_URL}/admin`);
 
     // Wait for page to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
-    // Click login button
-    await page.click('text=Se connecter');
+    // Handle cookies banner if it appears
+    try {
+      const cookiesButton = page.locator('button:has-text("Tout accepter"), button:has-text("Accept"), button:has-text("J\'accepte")');
+      await cookiesButton.click({ timeout: 3000 });
+      console.log('✅ Cookies banner accepted');
+    } catch (error) {
+      console.log('ℹ️ No cookies banner found or already accepted');
+    }
 
-    // Fill in admin credentials
-    await page.fill('input[type="email"]', ADMIN_EMAIL);
-    await page.fill('input[type="password"]', ADMIN_PASSWORD);
-
-    // Click login button
-    await page.click('button:has-text("Se connecter")');
-
-    // Wait for dashboard to load
-    await page.waitForURL('**/admin-dashboard', { timeout: 10000 });
+    // Wait for admin dashboard to be ready
+    await page.waitForSelector('button:has-text("Doctors")', { timeout: 10000 });
 
     // Navigate to Doctors section
     await page.click('button:has-text("Doctors")');
@@ -96,11 +95,12 @@ test.describe('Admin Doctor Management Feature', () => {
       // Click the first "View" button
       await page.locator('button:has-text("View")').first().click();
 
-      // Wait for modal to open
-      await page.waitForTimeout(1000);
+      // Wait for modal to open with longer timeout and proper selector
+      await page.waitForSelector('[role="dialog"]', { timeout: 10000 });
+      await page.waitForTimeout(500);
 
       // Check if modal title is visible
-      await expect(page.locator('text=Doctor Details')).toBeVisible();
+      await expect(page.locator('text=Doctor Details')).toBeVisible({ timeout: 10000 });
 
       // Check if profile section is visible
       await expect(page.locator('text=About').or(page.locator('h3:has-text("Dr.")'))).toBeVisible();
@@ -224,12 +224,13 @@ test.describe('Admin Doctor Management Feature', () => {
       // Click the first "View" button
       await page.locator('button:has-text("View")').first().click();
 
-      // Wait for modal to open
-      await page.waitForTimeout(1000);
+      // Wait for modal to open properly
+      await page.waitForSelector('[role="dialog"]', { timeout: 10000 });
+      await page.waitForTimeout(500);
 
       // Check if statistics cards are visible
       const statsSection = page.locator('text=Statistics');
-      await expect(statsSection).toBeVisible();
+      await expect(statsSection).toBeVisible({ timeout: 10000 });
 
       // Check for specific stat labels
       await expect(page.locator('text=Total').or(page.locator('text=Appointments'))).toBeVisible();

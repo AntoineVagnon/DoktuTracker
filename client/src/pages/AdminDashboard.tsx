@@ -2289,18 +2289,25 @@ export default function AdminDashboard() {
           doctorId={selectedDoctor?.id}
           currentPhotoUrl={doctorDetails?.user?.profileImageUrl}
           doctorName={`${doctorDetails?.user?.firstName} ${doctorDetails?.user?.lastName}`}
-          onSuccess={() => {
+          onSuccess={async () => {
             console.log('Photo upload success! Refreshing queries...');
             console.log('Refetching doctor details:', ['/api/admin/doctors', selectedDoctor?.id]);
             console.log('Refetching doctors list:', ['/api/admin/doctors']);
 
             // Force refetch instead of just invalidating (because staleTime: Infinity)
-            queryClient.refetchQueries({
+            await queryClient.refetchQueries({
               queryKey: ['/api/admin/doctors', selectedDoctor?.id]
             });
-            queryClient.refetchQueries({
+            console.log('Doctor details refetched');
+
+            await queryClient.refetchQueries({
               queryKey: ['/api/admin/doctors']
             });
+            console.log('Doctors list refetched');
+
+            // Also try setting the query data directly as a fallback
+            const currentData = queryClient.getQueryData(['/api/admin/doctors', selectedDoctor?.id]);
+            console.log('Current doctor data after refetch:', currentData);
 
             toast({
               title: "Success",

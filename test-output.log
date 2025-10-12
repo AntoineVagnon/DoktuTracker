@@ -1,0 +1,1750 @@
+
+> rest-express@1.0.0 test:e2e
+> playwright test tests/e2e/live-booking-flow-test.spec.ts --headed
+
+
+Running 57 tests using 1 worker
+
+
+🔐 Authenticating test doctor via API...
+Email: test.doctor.1760200122865@doktu.co
+✅ Authenticated as test doctor
+Session ID: vBIaaF9IGZkcPYARrWWECYeV_NJI0lcx
+✅ Doctor authentication state saved
+  ✓   1 [setup] › tests\auth-doctor.setup.ts:15:1 › authenticate as test doctor (566ms)
+
+🔐 Authenticating test patient via API...
+Email: kalyos.officiel@gmail.com
+✅ Authenticated as test patient
+Session ID: wAG042JvPMmCvSQfq1e2EWzAUOh5panN
+✅ Patient authentication state saved to ./playwright/.auth/patient.json
+  ✓   2 [setup] › tests\auth-patient.setup.ts:15:1 › authenticate as test patient (3.6s)
+✓ Authenticated as antoine.vagnon@gmail.com (admin)
+✓ Admin dashboard accessible
+✓ Admin authentication state saved
+  ✓   3 [setup] › tests\auth.setup.ts:14:1 › authenticate as admin (5.7s)
+🧪 TEST: Patient Booking Flow - Timing Constraints
+📸 Screenshot captured: booking-flow - 01-homepage
+❌ Login failed: page.fill: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+    at login [90m(C:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:37:14[90m)[39m
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:70:9
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:68:5 {
+  name: [32m'TimeoutError'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts'[39m,
+      line: [33m37[39m,
+      column: [33m14[39m,
+      function: [32m'login'[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+    apiName: [32m'page.fill'[39m,
+    params: {
+      selector: [32m'input[name="email"], input[type="email"]'[39m,
+      value: [32m'kalyos.officiel@gmail.com'[39m,
+      timeout: [33m15000[39m
+    },
+    group: [90mundefined[39m,
+    stepId: [32m'pw:api@41'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@41'[39m,
+      _title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+      _parentStep: [36m[TestStepInfoImpl][39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    recoverFromStepError: [36m[AsyncFunction: recoverFromStepError][39m,
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1760269435334[39m,
+    error: {
+      message: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m,
+      stack: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m +
+        [32m'\n'[39m +
+        [32m'    at login (C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:37:14)\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:70:9\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:68:5'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+📸 Screenshot captured: booking-flow - 02-login-failed
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   4 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints (23.2s)
+🧪 TEST: Video Consultation Access Timing
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   5 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) (18.6s)
+🧪 TEST: Cancellation/Reschedule 1-Hour Window
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   6 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window (21.0s)
+🧪 TEST: Doctor Video Consultation Access
+⚠️ Doctor login failed - account may not exist
+💡 Creating test doctor account may be required
+📸 Screenshot captured: doctor-video - 01-login-failed
+📸 Screenshot captured: doctor-video - 02-appointments-view
+✅ Found 0 video consultation buttons for doctor
+📸 Screenshot captured: doctor-video - 03-final-state
+✅ TEST COMPLETED: Doctor Video Consultation Access
+  ✓   7 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:338:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Doctor view - Video consultation access (20.7s)
+🧪 TEST: Admin Appointment Management
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   8 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management (26.2s)
+🧪 TEST: Payment Flow Validation
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘   9 [firefox] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) (18.4s)
+🧪 TEST: Patient Booking Flow - Timing Constraints
+📸 Screenshot captured: booking-flow - 01-homepage
+❌ Login failed: page.fill: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+    at login [90m(C:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:37:14[90m)[39m
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:70:9
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:68:5 {
+  name: [32m'TimeoutError'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts'[39m,
+      line: [33m37[39m,
+      column: [33m14[39m,
+      function: [32m'login'[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+    apiName: [32m'page.fill'[39m,
+    params: {
+      selector: [32m'input[name="email"], input[type="email"]'[39m,
+      value: [32m'kalyos.officiel@gmail.com'[39m,
+      timeout: [33m15000[39m
+    },
+    group: [90mundefined[39m,
+    stepId: [32m'pw:api@41'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@41'[39m,
+      _title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+      _parentStep: [36m[TestStepInfoImpl][39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    recoverFromStepError: [36m[AsyncFunction: recoverFromStepError][39m,
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1760269578157[39m,
+    error: {
+      message: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m,
+      stack: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m +
+        [32m'\n'[39m +
+        [32m'    at login (C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:37:14)\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:70:9\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:68:5'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+📸 Screenshot captured: booking-flow - 02-login-failed
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  10 [webkit] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints (22.6s)
+🧪 TEST: Video Consultation Access Timing
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  11 [webkit] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) (18.2s)
+🧪 TEST: Cancellation/Reschedule 1-Hour Window
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  12 [webkit] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window (17.0s)
+🧪 TEST: Doctor Video Consultation Access
+⚠️ Doctor login failed - account may not exist
+💡 Creating test doctor account may be required
+📸 Screenshot captured: doctor-video - 01-login-failed
+📸 Screenshot captured: doctor-video - 02-appointments-view
+✅ Found 0 video consultation buttons for doctor
+📸 Screenshot captured: doctor-video - 03-final-state
+✅ TEST COMPLETED: Doctor Video Consultation Access
+  ✓  13 [webkit] › tests\e2e\live-booking-flow-test.spec.ts:338:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Doctor view - Video consultation access (18.4s)
+🧪 TEST: Admin Appointment Management
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  14 [webkit] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management (17.9s)
+🧪 TEST: Payment Flow Validation
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  15 [webkit] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) (16.8s)
+🧪 TEST: Patient Booking Flow - Timing Constraints
+📸 Screenshot captured: booking-flow - 01-homepage
+❌ Login failed: page.fill: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+    at login [90m(C:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:37:14[90m)[39m
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:70:9
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:68:5 {
+  name: [32m'TimeoutError'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts'[39m,
+      line: [33m37[39m,
+      column: [33m14[39m,
+      function: [32m'login'[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+    apiName: [32m'page.fill'[39m,
+    params: {
+      selector: [32m'input[name="email"], input[type="email"]'[39m,
+      value: [32m'kalyos.officiel@gmail.com'[39m,
+      timeout: [33m15000[39m
+    },
+    group: [90mundefined[39m,
+    stepId: [32m'pw:api@41'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@41'[39m,
+      _title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+      _parentStep: [36m[TestStepInfoImpl][39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    recoverFromStepError: [36m[AsyncFunction: recoverFromStepError][39m,
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1760269696528[39m,
+    error: {
+      message: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m,
+      stack: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m +
+        [32m'\n'[39m +
+        [32m'    at login (C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:37:14)\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:70:9\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:68:5'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+📸 Screenshot captured: booking-flow - 02-login-failed
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  16 [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints (25.7s)
+🧪 TEST: Video Consultation Access Timing
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  17 [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) (19.6s)
+🧪 TEST: Cancellation/Reschedule 1-Hour Window
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  18 [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window (20.1s)
+🧪 TEST: Doctor Video Consultation Access
+⚠️ Doctor login failed - account may not exist
+💡 Creating test doctor account may be required
+📸 Screenshot captured: doctor-video - 01-login-failed
+📸 Screenshot captured: doctor-video - 02-appointments-view
+✅ Found 0 video consultation buttons for doctor
+📸 Screenshot captured: doctor-video - 03-final-state
+✅ TEST COMPLETED: Doctor Video Consultation Access
+  ✓  19 [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:338:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Doctor view - Video consultation access (20.7s)
+🧪 TEST: Admin Appointment Management
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  20 [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management (19.5s)
+🧪 TEST: Payment Flow Validation
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  21 [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) (20.2s)
+🧪 TEST: Patient Booking Flow - Timing Constraints
+📸 Screenshot captured: booking-flow - 01-homepage
+❌ Login failed: page.fill: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+    at login [90m(C:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:37:14[90m)[39m
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:70:9
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:68:5 {
+  name: [32m'TimeoutError'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts'[39m,
+      line: [33m37[39m,
+      column: [33m14[39m,
+      function: [32m'login'[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+    apiName: [32m'page.fill'[39m,
+    params: {
+      selector: [32m'input[name="email"], input[type="email"]'[39m,
+      value: [32m'kalyos.officiel@gmail.com'[39m,
+      timeout: [33m15000[39m
+    },
+    group: [90mundefined[39m,
+    stepId: [32m'pw:api@41'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@41'[39m,
+      _title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+      _parentStep: [36m[TestStepInfoImpl][39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    recoverFromStepError: [36m[AsyncFunction: recoverFromStepError][39m,
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1760269826091[39m,
+    error: {
+      message: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m,
+      stack: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m +
+        [32m'\n'[39m +
+        [32m'    at login (C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:37:14)\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:70:9\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:68:5'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+📸 Screenshot captured: booking-flow - 02-login-failed
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  22 [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints (23.1s)
+🧪 TEST: Video Consultation Access Timing
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  23 [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) (17.7s)
+🧪 TEST: Cancellation/Reschedule 1-Hour Window
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  24 [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window (16.7s)
+🧪 TEST: Doctor Video Consultation Access
+⚠️ Doctor login failed - account may not exist
+💡 Creating test doctor account may be required
+📸 Screenshot captured: doctor-video - 01-login-failed
+📸 Screenshot captured: doctor-video - 02-appointments-view
+✅ Found 0 video consultation buttons for doctor
+📸 Screenshot captured: doctor-video - 03-final-state
+✅ TEST COMPLETED: Doctor Video Consultation Access
+  ✓  25 [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:338:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Doctor view - Video consultation access (18.3s)
+🧪 TEST: Admin Appointment Management
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  26 [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management (17.7s)
+🧪 TEST: Payment Flow Validation
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  27 [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) (16.7s)
+🧪 TEST: Patient Booking Flow - Timing Constraints
+📸 Screenshot captured: booking-flow - 01-homepage
+❌ Login failed: page.fill: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+    at login [90m(C:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:37:14[90m)[39m
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:70:9
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:68:5 {
+  name: [32m'TimeoutError'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts'[39m,
+      line: [33m37[39m,
+      column: [33m14[39m,
+      function: [32m'login'[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+    apiName: [32m'page.fill'[39m,
+    params: {
+      selector: [32m'input[name="email"], input[type="email"]'[39m,
+      value: [32m'kalyos.officiel@gmail.com'[39m,
+      timeout: [33m15000[39m
+    },
+    group: [90mundefined[39m,
+    stepId: [32m'pw:api@40'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@40'[39m,
+      _title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+      _parentStep: [36m[TestStepInfoImpl][39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    recoverFromStepError: [36m[AsyncFunction: recoverFromStepError][39m,
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1760269941914[39m,
+    error: {
+      message: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m,
+      stack: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m +
+        [32m'\n'[39m +
+        [32m'    at login (C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:37:14)\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:70:9\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:68:5'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+📸 Screenshot captured: booking-flow - 02-login-failed
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  28 [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints (24.0s)
+🧪 TEST: Video Consultation Access Timing
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  29 [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) (20.1s)
+🧪 TEST: Cancellation/Reschedule 1-Hour Window
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  30 [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window (20.2s)
+🧪 TEST: Doctor Video Consultation Access
+⚠️ Doctor login failed - account may not exist
+💡 Creating test doctor account may be required
+📸 Screenshot captured: doctor-video - 01-login-failed
+📸 Screenshot captured: doctor-video - 02-appointments-view
+✅ Found 0 video consultation buttons for doctor
+📸 Screenshot captured: doctor-video - 03-final-state
+✅ TEST COMPLETED: Doctor Video Consultation Access
+  ✓  31 [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:338:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Doctor view - Video consultation access (20.7s)
+🧪 TEST: Admin Appointment Management
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  32 [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management (20.0s)
+🧪 TEST: Payment Flow Validation
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  33 [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) (20.6s)
+🧪 TEST: Patient Booking Flow - Timing Constraints
+📸 Screenshot captured: booking-flow - 01-homepage
+❌ Login failed: page.fill: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+    at login [90m(C:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:37:14[90m)[39m
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:70:9
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:68:5 {
+  name: [32m'TimeoutError'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts'[39m,
+      line: [33m37[39m,
+      column: [33m14[39m,
+      function: [32m'login'[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+    apiName: [32m'page.fill'[39m,
+    params: {
+      selector: [32m'input[name="email"], input[type="email"]'[39m,
+      value: [32m'kalyos.officiel@gmail.com'[39m,
+      timeout: [33m15000[39m
+    },
+    group: [90mundefined[39m,
+    stepId: [32m'pw:api@40'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@40'[39m,
+      _title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+      _parentStep: [36m[TestStepInfoImpl][39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    recoverFromStepError: [36m[AsyncFunction: recoverFromStepError][39m,
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1760270075464[39m,
+    error: {
+      message: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m,
+      stack: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m +
+        [32m'\n'[39m +
+        [32m'    at login (C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:37:14)\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:70:9\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:68:5'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+📸 Screenshot captured: booking-flow - 02-login-failed
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  34 [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints (25.2s)
+🧪 TEST: Video Consultation Access Timing
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  35 [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) (19.8s)
+🧪 TEST: Cancellation/Reschedule 1-Hour Window
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  36 [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window (20.3s)
+🧪 TEST: Doctor Video Consultation Access
+⚠️ Doctor login failed - account may not exist
+💡 Creating test doctor account may be required
+📸 Screenshot captured: doctor-video - 01-login-failed
+📸 Screenshot captured: doctor-video - 02-appointments-view
+✅ Found 0 video consultation buttons for doctor
+📸 Screenshot captured: doctor-video - 03-final-state
+✅ TEST COMPLETED: Doctor Video Consultation Access
+  ✓  37 [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:338:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Doctor view - Video consultation access (20.1s)
+🧪 TEST: Admin Appointment Management
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  38 [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management (20.1s)
+🧪 TEST: Payment Flow Validation
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  39 [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) (20.3s)
+🧪 TEST: Patient Booking Flow - Timing Constraints
+📸 Screenshot captured: booking-flow - 01-homepage
+❌ Login failed: page.fill: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+    at login [90m(C:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:37:14[90m)[39m
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:70:9
+    at [90mC:\Users\mings\.apps\DoktuTracker\[39mtests\e2e\live-booking-flow-test.spec.ts:68:5 {
+  name: [32m'TimeoutError'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts'[39m,
+      line: [33m37[39m,
+      column: [33m14[39m,
+      function: [32m'login'[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+    apiName: [32m'page.fill'[39m,
+    params: {
+      selector: [32m'input[name="email"], input[type="email"]'[39m,
+      value: [32m'kalyos.officiel@gmail.com'[39m,
+      timeout: [33m15000[39m
+    },
+    group: [90mundefined[39m,
+    stepId: [32m'pw:api@40'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@40'[39m,
+      _title: [32m`Fill "kalyos.officiel@gmail.com" locator('input[name="email"], input[type="email"]')`[39m,
+      _parentStep: [36m[TestStepInfoImpl][39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    recoverFromStepError: [36m[AsyncFunction: recoverFromStepError][39m,
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1760270209690[39m,
+    error: {
+      message: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m,
+      stack: [32m'TimeoutError: page.fill: Timeout 15000ms exceeded.\n'[39m +
+        [32m'Call log:\n'[39m +
+        [32m`\x1B[2m  - waiting for locator('input[name="email"], input[type="email"]')\x1B[22m\n`[39m +
+        [32m'\n'[39m +
+        [32m'    at login (C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:37:14)\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:70:9\n'[39m +
+        [32m'    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\live-booking-flow-test.spec.ts:68:5'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+📸 Screenshot captured: booking-flow - 02-login-failed
+
+========================================
+📊 TEST SUITE EXECUTION SUMMARY
+========================================
+✅ All test scenarios executed
+📸 Screenshots saved to test-results/
+💡 Review screenshots for visual validation
+========================================
+
+  ✘  40 [chromium] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints (23.5s)
+  ✘  41 [chromium] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) (0ms)
+  -  42 [chromium] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window
+  -  43 [chromium] › tests\e2e\live-booking-flow-test.spec.ts:338:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Doctor view - Video consultation access
+  -  44 [chromium] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management
+  -  45 [chromium] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment)
+  ✘  46 [doctor] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints (0ms)
+  -  47 [doctor] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window)
+  -  48 [doctor] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window
+  -  49 [doctor] › tests\e2e\live-booking-flow-test.spec.ts:338:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Doctor view - Video consultation access
+  -  50 [doctor] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management
+  -  51 [doctor] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment)
+  ✘  52 [patient] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints (0ms)
+  -  53 [patient] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window)
+  -  54 [patient] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window
+  -  55 [patient] › tests\e2e\live-booking-flow-test.spec.ts:338:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Doctor view - Video consultation access
+  -  56 [patient] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management
+  -  57 [patient] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment)
+
+
+  1) [chromium] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |     const acceptButtonSelectors = [
+      36 |       'button:has-text("Accept All")',
+    > 37 |       'button:has-text("Accept")',
+         |              ^
+      38 |       'button:has-text("I agree")',
+      39 |       '[data-testid="cookie-accept"]',
+      40 |     ];
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:70:9
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:68:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-chromium\error-context.md
+
+  2) [chromium] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+  3) [doctor] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+  4) [patient] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+  5) [firefox] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:70:9
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:68:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-firefox\error-context.md
+
+  6) [firefox] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) › Login as patient and navigate to dashboard 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:225:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:224:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--firefox\error-context.md
+
+  7) [firefox] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:288:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:287:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-firefox\error-context.md
+
+  8) [firefox] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management › Login as admin 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:386:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:385:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-firefox\error-context.md
+
+  9) [firefox] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) › Login as patient and start booking 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:447:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:446:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--firefox\error-context.md
+
+  10) [webkit] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:70:9
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:68:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-webkit\error-context.md
+
+  11) [webkit] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) › Login as patient and navigate to dashboard 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:225:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:224:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--webkit\error-context.md
+
+  12) [webkit] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:288:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:287:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-webkit\error-context.md
+
+  13) [webkit] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management › Login as admin 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:386:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:385:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-webkit\error-context.md
+
+  14) [webkit] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) › Login as patient and start booking 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:447:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:446:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--webkit\error-context.md
+
+  15) [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:70:9
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:68:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Mobile-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Mobile-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Mobile-Chrome\error-context.md
+
+  16) [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) › Login as patient and navigate to dashboard 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:225:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:224:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Mobile-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Mobile-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Mobile-Chrome\error-context.md
+
+  17) [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:288:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:287:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Mobile-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Mobile-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Mobile-Chrome\error-context.md
+
+  18) [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management › Login as admin 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:386:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:385:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Mobile-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Mobile-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Mobile-Chrome\error-context.md
+
+  19) [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) › Login as patient and start booking 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:447:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:446:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Mobile-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Mobile-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Mobile-Chrome\error-context.md
+
+  20) [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:70:9
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:68:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Mobile-Safari\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Mobile-Safari\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Mobile-Safari\error-context.md
+
+  21) [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) › Login as patient and navigate to dashboard 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:225:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:224:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Mobile-Safari\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Mobile-Safari\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Mobile-Safari\error-context.md
+
+  22) [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:288:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:287:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Mobile-Safari\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Mobile-Safari\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Mobile-Safari\error-context.md
+
+  23) [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management › Login as admin 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:386:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:385:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Mobile-Safari\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Mobile-Safari\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Mobile-Safari\error-context.md
+
+  24) [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) › Login as patient and start booking 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:447:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:446:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Mobile-Safari\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Mobile-Safari\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Mobile-Safari\error-context.md
+
+  25) [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:70:9
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:68:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Microsoft-Edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Microsoft-Edge\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Microsoft-Edge\error-context.md
+
+  26) [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) › Login as patient and navigate to dashboard 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:225:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:224:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Microsoft-Edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Microsoft-Edge\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Microsoft-Edge\error-context.md
+
+  27) [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:288:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:287:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Microsoft-Edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Microsoft-Edge\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Microsoft-Edge\error-context.md
+
+  28) [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management › Login as admin 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:386:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:385:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Microsoft-Edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Microsoft-Edge\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Microsoft-Edge\error-context.md
+
+  29) [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) › Login as patient and start booking 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:447:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:446:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Microsoft-Edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Microsoft-Edge\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Microsoft-Edge\error-context.md
+
+  30) [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |   await page.waitForLoadState('networkidle');
+      36 |
+    > 37 |   await page.fill('input[name="email"], input[type="email"]', email);
+         |              ^
+      38 |   await page.fill('input[name="password"], input[type="password"]', password);
+      39 |   await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
+      40 |
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:70:9
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:68:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Google-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Google-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-4520f----Check-timing-constraints-Google-Chrome\error-context.md
+
+  31) [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) › Login as patient and navigate to dashboard 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |     const acceptButtonSelectors = [
+      36 |       'button:has-text("Accept All")',
+    > 37 |       'button:has-text("Accept")',
+         |              ^
+      38 |       'button:has-text("I agree")',
+      39 |       '[data-testid="cookie-accept"]',
+      40 |     ];
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:225:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:224:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Google-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Google-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-c0d15-access-timing-5-min-window--Google-Chrome\error-context.md
+
+  32) [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window › Login as patient 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |     const acceptButtonSelectors = [
+      36 |       'button:has-text("Accept All")',
+    > 37 |       'button:has-text("Accept")',
+         |              ^
+      38 |       'button:has-text("I agree")',
+      39 |       '[data-testid="cookie-accept"]',
+      40 |     ];
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:288:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:287:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Google-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Google-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-e30a4-on-reschedule-1-hour-window-Google-Chrome\error-context.md
+
+  33) [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management › Login as admin 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |     const acceptButtonSelectors = [
+      36 |       'button:has-text("Accept All")',
+    > 37 |       'button:has-text("Accept")',
+         |              ^
+      38 |       'button:has-text("I agree")',
+      39 |       '[data-testid="cookie-accept"]',
+      40 |     ];
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:386:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:385:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Google-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Google-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-a16f8-dmin-appointment-management-Google-Chrome\error-context.md
+
+  34) [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) › Login as patient and start booking 
+
+    TimeoutError: page.fill: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="email"], input[type="email"]')[22m
+
+
+      35 |     const acceptButtonSelectors = [
+      36 |       'button:has-text("Accept All")',
+    > 37 |       'button:has-text("Accept")',
+         |              ^
+      38 |       'button:has-text("I agree")',
+      39 |       '[data-testid="cookie-accept"]',
+      40 |     ];
+        at login (C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:37:14)
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:447:7
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\live-booking-flow-test.spec.ts:446:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Google-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Google-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-live-booking-flow-test-8a945-eck-without-actual-payment--Google-Chrome\error-context.md
+
+  34 failed
+    [chromium] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+    [chromium] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) 
+    [doctor] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+    [patient] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+    [firefox] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+    [firefox] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) 
+    [firefox] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window 
+    [firefox] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management 
+    [firefox] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) 
+    [webkit] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+    [webkit] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) 
+    [webkit] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window 
+    [webkit] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management 
+    [webkit] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) 
+    [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+    [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) 
+    [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window 
+    [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management 
+    [Mobile Chrome] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) 
+    [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+    [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) 
+    [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window 
+    [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management 
+    [Mobile Safari] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) 
+    [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+    [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) 
+    [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window 
+    [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management 
+    [Microsoft Edge] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) 
+    [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:59:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Patient booking flow - Check timing constraints 
+    [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:221:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Check video consultation access timing (5-min window) 
+    [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:284:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Check cancellation/reschedule 1-hour window 
+    [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:382:3 › BOOKING FLOW - Complete E2E Test Suite › P1: Admin appointment management 
+    [Google Chrome] › tests\e2e\live-booking-flow-test.spec.ts:443:3 › BOOKING FLOW - Complete E2E Test Suite › P0: Payment flow check (without actual payment) 
+  14 did not run
+  9 passed (13.5m)
+
+[36m  Serving HTML report at http://localhost:62198. Press Ctrl+C to quit.[39m
