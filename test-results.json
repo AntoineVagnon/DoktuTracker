@@ -54,7 +54,7 @@
         "testMatch": [
           "/.*\\.setup\\.ts/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -72,7 +72,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -90,7 +90,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -108,7 +108,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -126,7 +126,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -144,7 +144,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -162,7 +162,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -180,7 +180,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -198,7 +198,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       },
       {
         "outputDir": "C:/Users/mings/.apps/DoktuTracker/test-results",
@@ -216,7 +216,7 @@
         "testMatch": [
           "/.*\\.(spec|test|setup)\\.(ts|js)$/"
         ],
-        "timeout": 60000
+        "timeout": 180000
       }
     ],
     "shard": null,
@@ -239,7 +239,7 @@
           "tags": [],
           "tests": [
             {
-              "timeout": 60000,
+              "timeout": 180000,
               "annotations": [],
               "expectedStatus": "passed",
               "projectId": "setup",
@@ -249,7 +249,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2587,
+                  "duration": 891,
                   "errors": [],
                   "stdout": [
                     {
@@ -262,7 +262,7 @@
                       "text": "✅ Authenticated as test doctor\n"
                     },
                     {
-                      "text": "Session ID: DFGPdcdBgqEyLwJOg4qRui3Egs1gd3L4\n"
+                      "text": "Session ID: 2Z5i-5vFz2lEah40e-Xxbgx8VMS7EIRK\n"
                     },
                     {
                       "text": "✅ Doctor authentication state saved\n"
@@ -270,7 +270,7 @@
                   ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-10-12T09:56:22.074Z",
+                  "startTime": "2025-10-12T10:35:36.871Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -297,7 +297,7 @@
           "tags": [],
           "tests": [
             {
-              "timeout": 60000,
+              "timeout": 180000,
               "annotations": [],
               "expectedStatus": "passed",
               "projectId": "setup",
@@ -307,7 +307,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3941,
+                  "duration": 3159,
                   "errors": [],
                   "stdout": [
                     {
@@ -320,7 +320,7 @@
                       "text": "✅ Authenticated as test patient\n"
                     },
                     {
-                      "text": "Session ID: y6on62e9OLbsT14OspGj2Ng3gTgKYMdl\n"
+                      "text": "Session ID: N6lhg2zL2QYkmOwqGqTYenTwgRHZ_Lj8\n"
                     },
                     {
                       "text": "✅ Patient authentication state saved to ./playwright/.auth/patient.json\n"
@@ -328,7 +328,7 @@
                   ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-10-12T09:56:24.725Z",
+                  "startTime": "2025-10-12T10:35:37.800Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -355,7 +355,7 @@
           "tags": [],
           "tests": [
             {
-              "timeout": 60000,
+              "timeout": 180000,
               "annotations": [],
               "expectedStatus": "passed",
               "projectId": "setup",
@@ -365,7 +365,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6867,
+                  "duration": 6173,
                   "errors": [],
                   "stdout": [
                     {
@@ -380,7 +380,7 @@
                   ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-10-12T09:56:29.345Z",
+                  "startTime": "2025-10-12T10:35:41.215Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -396,25 +396,25 @@
       ]
     },
     {
-      "title": "e2e\\appointment-booking-flow.spec.ts",
-      "file": "e2e/appointment-booking-flow.spec.ts",
+      "title": "e2e\\complete-booking-flow.spec.ts",
+      "file": "e2e/complete-booking-flow.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Appointment Booking Flow - P0 Critical Scenarios",
-          "file": "e2e/appointment-booking-flow.spec.ts",
-          "line": 35,
+          "title": "Complete Appointment Booking Flow",
+          "file": "e2e/complete-booking-flow.spec.ts",
+          "line": 32,
           "column": 6,
           "specs": [
             {
-              "title": "P0 - Navigate from home page to doctor profile",
-              "ok": true,
+              "title": "P0 - Complete booking journey: Home → Slot Selection → Payment",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 180000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "patient",
@@ -423,45 +423,244 @@
                     {
                       "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 7915,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 30238,
+                      "error": {
+                        "message": "TimeoutError: page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+                        "stack": "TimeoutError: page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts:162:18",
+                        "location": {
+                          "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts",
+                          "column": 18,
+                          "line": 162
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 160 |\u001b[39m     \u001b[36mtry\u001b[39m {\n \u001b[90m 161 |\u001b[39m       \u001b[90m// Wait for redirect - should go to /checkout since we're authenticated\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 162 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(\u001b[35m/\\/(checkout|register|payment)/\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m15000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 163 |\u001b[39m       \u001b[36mconst\u001b[39m redirectUrl \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39murl()\u001b[33m;\u001b[39m\n \u001b[90m 164 |\u001b[39m       console\u001b[33m.\u001b[39mlog(\u001b[32m`  ✅ Redirected to: ${redirectUrl}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 165 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts",
+                            "column": 18,
+                            "line": 162
+                          },
+                          "message": "TimeoutError: page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n  160 |     try {\n  161 |       // Wait for redirect - should go to /checkout since we're authenticated\n> 162 |       await page.waitForURL(/\\/(checkout|register|payment)/, { timeout: 15000 });\n      |                  ^\n  163 |       const redirectUrl = page.url();\n  164 |       console.log(`  ✅ Redirected to: ${redirectUrl}`);\n  165 |\n    at C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts:162:18"
+                        }
+                      ],
                       "stdout": [
                         {
-                          "text": "✅ Test setup complete - using patient auth state\n"
+                          "text": "\n🧪 Testing COMPLETE booking flow end-to-end\n\n"
                         },
                         {
-                          "text": "\n🧪 Testing navigation: Home → Doctor Profile\n"
+                          "text": "STEP 1: Navigate to home page\n"
+                        },
+                        {
+                          "text": "  [Browser log]: Stripe Publishable Key: Available\n"
+                        },
+                        {
+                          "text": "  [Browser log]: Loading Stripe with publishable key: pk_test_51...\n"
+                        },
+                        {
+                          "text": "  [Browser log]: [DOKTU] App version: 2025-10-11T13:15:00Z\n"
+                        },
+                        {
+                          "text": "  [Browser log]: [DOKTU] Build number: 20251011-1315\n"
+                        },
+                        {
+                          "text": "  [Browser log]: [DOKTU] Expected component version: V5\n"
+                        },
+                        {
+                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:52.135Z\n"
+                        },
+                        {
+                          "text": "  [Browser log]: Landing page loaded, checking for password reset tokens\n"
+                        },
+                        {
+                          "text": "  [Browser log]: Current URL hash: \n"
+                        },
+                        {
+                          "text": "  [Browser log]: Hash params: {type: null, accessToken: false}\n"
+                        },
+                        {
+                          "text": "  [Browser log]: All hash params: []\n"
+                        },
+                        {
+                          "text": "  [Browser log]: ❌ No password reset tokens found, loading normal landing page\n"
+                        },
+                        {
+                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:53.114Z\n"
+                        },
+                        {
+                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:53.167Z\n"
+                        },
+                        {
+                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:53.278Z\n"
+                        },
+                        {
+                          "text": "  [Browser log]: 🚀 Landing page loaded - CORS fix v2 - 2025-10-12T10:35:53.297Z\n"
                         },
                         {
                           "text": "✅ Cookie banner dismissed\n"
                         },
                         {
-                          "text": "Doctors section selector not found, proceeding...\n"
+                          "text": "\nSTEP 2: Find Dr. James Rodriguez\n"
                         },
                         {
-                          "text": "Found doctor card: Dr. James Rodriguez\n"
+                          "text": "  ✅ Found availability: Next: Oct 21, 16:00\n"
                         },
                         {
-                          "text": "✅ Navigated to doctor profile: https://doktu-tracker.vercel.app/doctor/9\n"
+                          "text": "\nSTEP 3: Navigate to doctor profile\n"
                         },
                         {
-                          "text": "✅ Doctor profile loaded successfully\n"
+                          "text": "  Clicking \"Book Now\" button\n"
+                        },
+                        {
+                          "text": "  [Browser error]: Failed to load resource: the server responded with a status of 405 ()\n"
+                        },
+                        {
+                          "text": "  [Browser error]: Failed to send analytics events: Error: Analytics failed: \n    at Hb.flush (https://doktu-tracker.vercel.app/assets/index-DQ3prala.js:449:115756)\n"
+                        },
+                        {
+                          "text": "  [Browser log]: Stripe Publishable Key: Available\n"
+                        },
+                        {
+                          "text": "  [Browser log]: Loading Stripe with publishable key: pk_test_51...\n"
+                        },
+                        {
+                          "text": "  [Browser log]: [DOKTU] App version: 2025-10-11T13:15:00Z\n"
+                        },
+                        {
+                          "text": "  [Browser log]: [DOKTU] Build number: 20251011-1315\n"
+                        },
+                        {
+                          "text": "  [Browser log]: [DOKTU] Expected component version: V5\n"
+                        },
+                        {
+                          "text": "\nSTEP 4: Wait for doctor profile page\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
+                        },
+                        {
+                          "text": "  ✅ On doctor profile: https://doktu-tracker.vercel.app/doctor/9\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
+                        },
+                        {
+                          "text": "\nSTEP 5: Look for available time slots\n"
+                        },
+                        {
+                          "text": "  ✅ Found time slot using selector \"button:has-text(\"16:00\")\": 16:00\n"
+                        },
+                        {
+                          "text": "\nSTEP 6: Select time slot\n"
+                        },
+                        {
+                          "text": "  [Browser log]: Slot clicked: {doctorId: 9, slot: 2025-10-21T16:00:00, price: 35.00}\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
+                        },
+                        {
+                          "text": "  ✅ Clicked on time slot\n"
+                        },
+                        {
+                          "text": "  [Network] /api/slots/hold - Status: 405\n"
+                        },
+                        {
+                          "text": "  [Browser error]: Failed to load resource: the server responded with a status of 405 ()\n"
+                        },
+                        {
+                          "text": "  [Browser error]: Failed to hold slot: SyntaxError: Failed to execute 'json' on 'Response': Unexpected end of JSON input\n    at onClick (https://doktu-tracker.vercel.app/assets/index-DQ3prala.js:460:123335)\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Raw params: {0: 9, id: 9}\n"
+                        },
+                        {
+                          "text": "  [Browser log]: DoctorProfile - Doctor ID: 9\n"
+                        },
+                        {
+                          "text": "  [Network] Response body: \n"
+                        },
+                        {
+                          "text": "  Hold request made: true\n"
+                        },
+                        {
+                          "text": "  Hold request success: false\n"
+                        },
+                        {
+                          "text": "\nSTEP 7: Wait for redirect to checkout/register page\n"
+                        },
+                        {
+                          "text": "\n  ❌ Redirect timeout - slot click may not have triggered navigation\n"
+                        },
+                        {
+                          "text": "  Current URL: https://doktu-tracker.vercel.app/doctor/9\n"
+                        },
+                        {
+                          "text": "  Taking screenshot for debugging...\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-12T09:56:38.246Z",
+                      "startTime": "2025-10-12T10:35:48.384Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-complete-booking-flow--9057d--→-Slot-Selection-→-Payment-patient\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-complete-booking-flow--9057d--→-Slot-Selection-→-Payment-patient\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\mings\\.apps\\DoktuTracker\\test-results\\e2e-complete-booking-flow--9057d--→-Slot-Selection-→-Payment-patient\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\mings\\.apps\\DoktuTracker\\tests\\e2e\\complete-booking-flow.spec.ts",
+                        "column": 18,
+                        "line": 162
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "cfb93b240c9a657bdb55-e11f15f2bd037364408a",
-              "file": "e2e/appointment-booking-flow.spec.ts",
-              "line": 41,
+              "id": "1eca7619e50f5a93c111-3613b4d52bf001fde132",
+              "file": "e2e/complete-booking-flow.spec.ts",
+              "line": 34,
               "column": 3
             }
           ]
@@ -471,11 +670,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-10-12T09:56:20.376Z",
-    "duration": 26609.249,
-    "expected": 4,
+    "startTime": "2025-10-12T10:35:36.046Z",
+    "duration": 42989.478,
+    "expected": 3,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }

@@ -1,0 +1,135 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - link "D Doktu" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e9] [cursor=pointer]: D
+          - generic [ref=e10] [cursor=pointer]: Doktu
+        - navigation
+        - button "PT" [ref=e12] [cursor=pointer]:
+          - generic [ref=e14] [cursor=pointer]: PT
+    - link "Back to doctors" [ref=e17] [cursor=pointer]:
+      - /url: /
+      - img [ref=e18] [cursor=pointer]
+      - text: Back to doctors
+    - generic [ref=e23]:
+      - generic [ref=e25]: JR
+      - generic [ref=e26]:
+        - heading "Dr. James Rodriguez" [level=1] [ref=e27]
+        - paragraph [ref=e28]: Pediatrie
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - img [ref=e31]
+            - generic [ref=e34]: Paris, France
+          - generic [ref=e35]:
+            - img [ref=e36]
+            - generic [ref=e38]: 4.90 (203 reviews)
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e44]: About
+          - paragraph [ref=e46]: Experienced pediatrician specializing in childhood development and preventive care. Over 10 years of experience in both hospital and private practice settings. [Updated via API]
+        - generic [ref=e47]:
+          - generic [ref=e49]: Education and Experience
+          - list [ref=e51]:
+            - listitem [ref=e52]:
+              - generic [ref=e54]: Doctor of Medicine - Medical University
+            - listitem [ref=e55]:
+              - generic [ref=e57]: Specialized certification in Pediatrie
+            - listitem [ref=e58]:
+              - generic [ref=e60]: Licensed medical practitioner
+            - listitem [ref=e61]:
+              - generic [ref=e63]: Continuing education in telemedicine
+        - generic [ref=e64]:
+          - generic [ref=e66]: Areas of Expertise
+          - generic [ref=e68]:
+            - generic [ref=e69]: General consultations
+            - generic [ref=e70]: Preventive care
+            - generic [ref=e71]: Chronic conditions
+            - generic [ref=e72]: Telemedicine
+            - generic [ref=e73]: Patient education
+        - generic [ref=e74]:
+          - generic [ref=e76]: Languages Spoken
+          - generic [ref=e78]:
+            - generic [ref=e79]: 🇬🇧 English (Native)
+            - generic [ref=e80]: 🇫🇷 French (Fluent)
+            - generic [ref=e81]: 🇪🇸 Spanish (Conversational)
+        - generic [ref=e82]:
+          - generic [ref=e84]: Medical Approach
+          - paragraph [ref=e86]: I believe in providing compassionate, evidence-based medical care. My approach focuses on listening to patients, understanding their concerns, and working together to develop the best treatment plan for their individual needs.
+        - generic [ref=e89]:
+          - generic [ref=e91]: JR
+          - generic [ref=e92]:
+            - paragraph [ref=e93]: Dr. James Rodriguez
+            - paragraph [ref=e94]: Pediatrie
+            - paragraph [ref=e95]: "Medical ID: DOC-9"
+        - generic [ref=e96]:
+          - generic [ref=e98]: FAQ
+          - generic [ref=e100]:
+            - heading "What are Dr. James's office hours?" [level=3] [ref=e102]:
+              - button "What are Dr. James's office hours?" [ref=e103] [cursor=pointer]:
+                - text: What are Dr. James's office hours?
+                - img [ref=e104] [cursor=pointer]
+            - heading "Does Dr. James accept new patients?" [level=3] [ref=e107]:
+              - button "Does Dr. James accept new patients?" [ref=e108] [cursor=pointer]:
+                - text: Does Dr. James accept new patients?
+                - img [ref=e109] [cursor=pointer]
+      - generic [ref=e113]:
+        - generic [ref=e114]:
+          - generic [ref=e115]: Available slots
+          - generic [ref=e117]: €35.00 - 30 min consultation
+        - generic [ref=e118]:
+          - generic [ref=e119]:
+            - button [ref=e120] [cursor=pointer]:
+              - img
+            - generic [ref=e121]: Week of Oct 20
+            - button [ref=e122] [cursor=pointer]:
+              - img
+          - generic [ref=e123]:
+            - button "Mon 20" [disabled] [ref=e124]:
+              - generic [ref=e125]:
+                - generic [ref=e126]: Mon
+                - generic [ref=e127]: "20"
+            - button "Tue 21" [ref=e128] [cursor=pointer]:
+              - generic [ref=e129] [cursor=pointer]:
+                - generic [ref=e130] [cursor=pointer]: Tue
+                - generic [ref=e131] [cursor=pointer]: "21"
+            - button "Wed 22" [disabled] [ref=e132]:
+              - generic [ref=e133]:
+                - generic [ref=e134]: Wed
+                - generic [ref=e135]: "22"
+            - button "Thu 23" [disabled] [ref=e136]:
+              - generic [ref=e137]:
+                - generic [ref=e138]: Thu
+                - generic [ref=e139]: "23"
+            - button "Fri 24" [disabled] [ref=e140]:
+              - generic [ref=e141]:
+                - generic [ref=e142]: Fri
+                - generic [ref=e143]: "24"
+            - button "Sat 25" [disabled] [ref=e144]:
+              - generic [ref=e145]:
+                - generic [ref=e146]: Sat
+                - generic [ref=e147]: "25"
+            - button "Sun 26" [disabled] [ref=e148]:
+              - generic [ref=e149]:
+                - generic [ref=e150]: Sun
+                - generic [ref=e151]: "26"
+          - generic [ref=e152]:
+            - heading "Today 21 Oct" [level=3] [ref=e153]
+            - paragraph [ref=e154]: 7 available slots
+            - paragraph [ref=e155]: Times in Central European Time (GMT+1)
+          - generic [ref=e156]:
+            - button "16:00" [active] [ref=e157] [cursor=pointer]
+            - button "16:30" [ref=e158] [cursor=pointer]
+            - button "17:00" [ref=e159] [cursor=pointer]
+            - button "17:30" [ref=e160] [cursor=pointer]
+            - button "18:00" [ref=e161] [cursor=pointer]
+            - button "18:30" [ref=e162] [cursor=pointer]
+            - button "19:00" [ref=e163] [cursor=pointer]
+```

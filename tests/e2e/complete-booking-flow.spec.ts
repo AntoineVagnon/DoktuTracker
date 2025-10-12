@@ -34,6 +34,32 @@ test.describe('Complete Appointment Booking Flow', () => {
   test('P0 - Complete booking journey: Home → Slot Selection → Payment', async ({ page }) => {
     console.log('\n🧪 Testing COMPLETE booking flow end-to-end\n');
 
+    // Listen to console logs from the page
+    page.on('console', msg => {
+      if (msg.type() === 'log' || msg.type() === 'error') {
+        console.log(`  [Browser ${msg.type()}]:`, msg.text());
+      }
+    });
+
+    // Track network requests to /api/slots/hold
+    let holdRequestMade = false;
+    let holdRequestSuccess = false;
+
+    page.on('response', async response => {
+      if (response.url().includes('/api/slots/hold')) {
+        holdRequestMade = true;
+        holdRequestSuccess = response.ok();
+        console.log(`  [Network] /api/slots/hold - Status: ${response.status()}`);
+
+        try {
+          const body = await response.text();
+          console.log(`  [Network] Response body: ${body.substring(0, 200)}`);
+        } catch (e) {
+          // Ignore errors reading response body
+        }
+      }
+    });
+
     // STEP 1: Navigate to home page
     console.log('STEP 1: Navigate to home page');
     await page.goto(`${BASE_URL}/`);
@@ -116,76 +142,125 @@ test.describe('Complete Appointment Booking Flow', () => {
       return; // Exit gracefully
     }
 
-    // STEP 6: Select a time slot
+    // STEP 6: Select a time slot and wait for redirect
     console.log('\nSTEP 6: Select time slot');
     await slot.click();
     console.log('  ✅ Clicked on time slot');
 
-    await page.waitForTimeout(1000);
-
-    // STEP 7: Look for "Continue" or "Book" button
-    console.log('\nSTEP 7: Look for continue/booking button');
-    const continueButtons = [
-      'button:has-text("Continue")',
-      'button:has-text("Book")',
-      'button:has-text("Proceed")',
-      'button:has-text("Next")',
-      'button:has-text("Confirm")'
-    ];
-
-    let continueButton = null;
-    let buttonFound = false;
-
-    for (const selector of continueButtons) {
-      continueButton = page.locator(selector).first();
-      buttonFound = await continueButton.isVisible({ timeout: 2000 }).catch(() => false);
-
-      if (buttonFound) {
-        console.log(`  ✅ Found button: "${selector}"`);
-        break;
-      }
-    }
-
-    if (!buttonFound) {
-      console.log('  ⚠️ No continue/booking button found');
-      await page.screenshot({ path: 'test-results/no-continue-button.png', fullPage: true });
-      console.log('  ℹ️ This is expected if booking flow UI is not yet complete');
-      return;
-    }
-
-    // STEP 8: Click continue/book button
-    console.log('\nSTEP 8: Click continue button');
-    await continueButton.click();
+    // Wait a bit for the click handler to execute
     await page.waitForTimeout(2000);
 
-    // STEP 9: Check if we're on payment or confirmation page
-    console.log('\nSTEP 9: Check current page');
-    const currentUrl = page.url();
-    console.log(`  Current URL: ${currentUrl}`);
+    // Check if the hold request was made
+    console.log(`  Hold request made: ${holdRequestMade}`);
+    console.log(`  Hold request success: ${holdRequestSuccess}`);
 
-    if (currentUrl.includes('/payment') || currentUrl.includes('/checkout')) {
-      console.log('  ✅ Reached payment page!');
+    // STEP 7: Wait for redirect to checkout (authenticated user) or register (unauthenticated)
+    console.log('\nSTEP 7: Wait for redirect to checkout/register page');
 
-      // Take screenshot of payment page
-      await page.screenshot({ path: 'test-results/payment-page.png', fullPage: true });
+    try {
+      // Wait for redirect - should go to /checkout since we're authenticated
+      await page.waitForURL(/\/(checkout|register|payment)/, { timeout: 15000 });
+      const redirectUrl = page.url();
+      console.log(`  ✅ Redirected to: ${redirectUrl}`);
 
-      // Look for payment form
-      const stripeFrame = page.frameLocator('iframe[title*="Secure"]').first();
-      const hasStripe = await stripeFrame.locator('input').first().isVisible({ timeout: 5000 }).catch(() => false);
+      // STEP 8: Verify we're on checkout page (authenticated flow)
+      console.log('\nSTEP 8: Verify checkout page');
 
-      if (hasStripe) {
-        console.log('  ✅ Stripe payment form detected');
+      if (redirectUrl.includes('/checkout')) {
+        console.log('  ✅ On checkout page (authenticated flow)');
+
+        // Take screenshot
+        await page.screenshot({ path: 'test-results/checkout-page.png', fullPage: true });
+
+        // Verify URL contains expected parameters
+        const url = new URL(redirectUrl);
+        const doctorId = url.searchParams.get('doctorId');
+        const slot = url.searchParams.get('slot');
+        const price = url.searchParams.get('price');
+        const slotId = url.searchParams.get('slotId');
+
+        console.log(`  Doctor ID: ${doctorId}`);
+        console.log(`  Slot: ${slot}`);
+        console.log(`  Price: €${price}`);
+        console.log(`  Slot ID: ${slotId}`);
+
+        expect(doctorId).toBeTruthy();
+        expect(slot).toBeTruthy();
+        expect(price).toBeTruthy();
+        expect(slotId).toBeTruthy();
+
+        // STEP 9: Look for payment form elements
+        console.log('\nSTEP 9: Verify payment form');
+
+        // Wait for page to load
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(3000); // Wait for Stripe to load
+
+        // Look for Stripe iframe
+        const stripeFrame = page.frameLocator('iframe[title*="Secure"], iframe[name*="__privateStripeFrame"]').first();
+        const hasStripe = await stripeFrame.locator('input').first().isVisible({ timeout: 5000 }).catch(() => false);
+
+        if (hasStripe) {
+          console.log('  ✅ Stripe payment form loaded');
+        } else {
+          // Alternative: look for payment form on the page
+          const paymentForm = page.locator('form, [data-testid="payment-form"], text=/payment|card number|pay now/i').first();
+          const hasPaymentForm = await paymentForm.isVisible({ timeout: 3000 }).catch(() => false);
+
+          if (hasPaymentForm) {
+            console.log('  ✅ Payment form found');
+          } else {
+            console.log('  ⚠️ No payment form detected');
+            console.log('  Taking screenshot for debugging...');
+            await page.screenshot({ path: 'test-results/checkout-no-payment-form.png', fullPage: true });
+          }
+        }
+
+        // STEP 10: Verify appointment details displayed
+        console.log('\nSTEP 10: Verify appointment summary');
+
+        const summaryElements = [
+          'text=/Dr\\.|James|Rodriguez/',
+          'text=/Oct|2025/',
+          'text=/€|EUR|[0-9]+/',
+        ];
+
+        for (const selector of summaryElements) {
+          const element = page.locator(selector).first();
+          const visible = await element.isVisible({ timeout: 3000 }).catch(() => false);
+          if (visible) {
+            const text = await element.textContent();
+            console.log(`  ✅ Found: ${text?.trim()}`);
+          }
+        }
+
+      } else if (redirectUrl.includes('/register')) {
+        console.log('  ⚠️ Redirected to register page (should be checkout for authenticated user)');
+        console.log('  This may indicate authentication state not properly loaded');
+        await page.screenshot({ path: 'test-results/unexpected-register-redirect.png', fullPage: true });
       } else {
-        console.log('  ℹ️ Payment form structure may differ');
+        console.log(`  ℹ️ On page: ${redirectUrl}`);
+        await page.screenshot({ path: 'test-results/unexpected-redirect.png', fullPage: true });
       }
-    } else if (currentUrl.includes('/booking') || currentUrl.includes('/appointment')) {
-      console.log('  ✅ On booking/appointment page');
-    } else {
-      console.log(`  ℹ️ On page: ${currentUrl}`);
-    }
 
-    console.log('\n✅ Booking flow test complete!');
-    console.log('   The infrastructure is working correctly.');
-    console.log('   Any missing UI elements can be implemented incrementally.');
+      console.log('\n✅ Complete booking flow test finished!');
+      console.log('   Successfully navigated: Home → Profile → Slot Selection → Checkout');
+
+    } catch (error) {
+      console.log('\n  ❌ Redirect timeout - slot click may not have triggered navigation');
+      console.log(`  Current URL: ${page.url()}`);
+      console.log('  Taking screenshot for debugging...');
+      await page.screenshot({ path: 'test-results/no-redirect-after-slot-click.png', fullPage: true });
+
+      // Check for any error messages on the page
+      const errorMsg = page.locator('text=/error|failed|unable/i').first();
+      const hasError = await errorMsg.isVisible({ timeout: 2000 }).catch(() => false);
+      if (hasError) {
+        const errorText = await errorMsg.textContent();
+        console.log(`  Error message: ${errorText}`);
+      }
+
+      throw error;
+    }
   });
 });

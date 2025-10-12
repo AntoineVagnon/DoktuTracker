@@ -510,11 +510,16 @@ export default function DoctorProfile() {
                             
                             try {
                               // Hold the slot for 15 minutes before redirecting to auth
-                              const response = await fetch('/api/slots/hold', {
+                              // Construct full API URL to ensure we hit the backend (Railway), not frontend (Vercel)
+                              const apiUrl = import.meta.env.VITE_API_URL ||
+                                (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+                              const holdUrl = apiUrl ? `${apiUrl}/api/slots/hold` : '/api/slots/hold';
+
+                              const response = await fetch(holdUrl, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include', // Ensure cookies are sent
-                                body: JSON.stringify({ 
+                                body: JSON.stringify({
                                   slotId: slot.id,
                                   sessionId: undefined // Let server use session ID
                                 })
