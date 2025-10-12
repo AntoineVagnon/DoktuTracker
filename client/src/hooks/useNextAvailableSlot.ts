@@ -6,17 +6,7 @@ import { useQuery } from "@tanstack/react-query";
  */
 export function useNextAvailableSlot(doctorId: string) {
   const { data: timeSlots, isLoading } = useQuery({
-    queryKey: ["/api/time-slots", doctorId, "nextOnly"],
-    queryFn: async () => {
-      try {
-        const response = await fetch(`/api/doctors/${doctorId}/slots?nextOnly=true`);
-        if (!response.ok) return [];
-        return response.json();
-      } catch (error) {
-        console.warn("Failed to fetch time slots for doctor", doctorId);
-        return [];
-      }
-    },
+    queryKey: [`/api/doctors/${doctorId}/slots?nextOnly=true`],
     refetchOnWindowFocus: false, // Disable auto-refetch
     staleTime: 15 * 60 * 1000, // Consider data stale after 15 minutes
     gcTime: 20 * 60 * 1000, // Keep in cache longer
