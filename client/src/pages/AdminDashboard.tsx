@@ -1825,7 +1825,6 @@ export default function AdminDashboard() {
                                 src={doctor.user.profileImageUrl}
                                 alt={`Dr. ${doctor.user?.firstName} ${doctor.user?.lastName}`}
                                 className="w-10 h-10 rounded-full object-cover"
-                                key={doctor.user.profileImageUrl}
                               />
                             ) : (
                               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -2319,8 +2318,8 @@ export default function AdminDashboard() {
 
             // Invalidate SWR cache for homepage doctors grid
             console.log('Invalidating SWR cache for /api/doctors');
-            mutateSWR('/api/doctors');
-            console.log('SWR cache invalidated');
+            await mutateSWR('/api/doctors', undefined, { revalidate: true });
+            console.log('SWR cache invalidated and refetched');
 
             // Also try setting the query data directly as a fallback
             const currentData = queryClient.getQueryData(['/api/admin/doctors', selectedDoctor?.id]);
