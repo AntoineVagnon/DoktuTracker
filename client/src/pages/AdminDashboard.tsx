@@ -2290,6 +2290,10 @@ export default function AdminDashboard() {
           currentPhotoUrl={doctorDetails?.user?.profileImageUrl}
           doctorName={`${doctorDetails?.user?.firstName} ${doctorDetails?.user?.lastName}`}
           onSuccess={() => {
+            console.log('Photo upload success! Refreshing queries...');
+            console.log('Invalidating doctor details:', ['/api/admin/doctors', selectedDoctor?.id]);
+            console.log('Invalidating doctors list:', ['/api/admin/doctors']);
+
             // Refresh doctor details (fixed: removed 'details' to match actual query key)
             queryClient.invalidateQueries({
               queryKey: ['/api/admin/doctors', selectedDoctor?.id]
@@ -2298,10 +2302,13 @@ export default function AdminDashboard() {
             queryClient.invalidateQueries({
               queryKey: ['/api/admin/doctors']
             });
+
             toast({
               title: "Success",
               description: "Profile photo updated successfully",
             });
+
+            console.log('Queries invalidated, UI should refresh now');
           }}
         />
       </div>
