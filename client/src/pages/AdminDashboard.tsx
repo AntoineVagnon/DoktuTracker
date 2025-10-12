@@ -2290,9 +2290,9 @@ export default function AdminDashboard() {
           currentPhotoUrl={doctorDetails?.user?.profileImageUrl}
           doctorName={`${doctorDetails?.user?.firstName} ${doctorDetails?.user?.lastName}`}
           onSuccess={() => {
-            // Refresh doctor details
+            // Refresh doctor details (fixed: removed 'details' to match actual query key)
             queryClient.invalidateQueries({
-              queryKey: ['/api/admin/doctors', selectedDoctor?.id, 'details']
+              queryKey: ['/api/admin/doctors', selectedDoctor?.id]
             });
             // Refresh doctors list
             queryClient.invalidateQueries({
