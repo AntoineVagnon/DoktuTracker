@@ -2202,7 +2202,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
       try {
         // Get all doctors with full information including user details
-        const doctors = await storage.getAllDoctors();
+        const doctors = await storage.getDoctors();
         res.json(doctors);
       } catch (error) {
         console.error("Error fetching doctor roster:", error);
