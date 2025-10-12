@@ -20,7 +20,7 @@ import {
   FileText, User, DollarSign, Percent, Check, ExternalLink, Info,
   Menu, LogIn, Edit, Eye, Search
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, subDays } from "date-fns";
 import {
   Tooltip,
@@ -185,6 +185,7 @@ const CHART_COLORS = {
 
 export default function AdminDashboard() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [activeSection, setActiveSection] = useState('overview');
@@ -1993,10 +1994,20 @@ export default function AdminDashboard() {
                   ) : (
                     <AvailabilityCalendar
                       doctorId={doctorDetails.id}
+                      doctorName={`${doctorDetails.user?.firstName} ${doctorDetails.user?.lastName}`}
                       slots={doctorAvailability || []}
                       onSlotClick={(slot) => {
                         console.log('Slot clicked:', slot);
-                        // Future: Open slot management modal
+                      }}
+                      onAppointmentCreated={() => {
+                        // Refresh availability data
+                        queryClient.invalidateQueries({
+                          queryKey: ['/api/admin/doctors', selectedDoctor?.id, 'availability']
+                        });
+                        toast({
+                          title: "Success",
+                          description: "Appointment created successfully",
+                        });
                       }}
                     />
                   )}

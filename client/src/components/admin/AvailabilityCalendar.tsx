@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Clock, Plus } from 'lucide-react';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
+import CreateAppointmentModal from './CreateAppointmentModal';
 
 interface TimeSlot {
   id: string;
@@ -17,12 +18,22 @@ interface TimeSlot {
 
 interface AvailabilityCalendarProps {
   doctorId: number;
+  doctorName?: string;
   slots: TimeSlot[];
   onSlotClick?: (slot: TimeSlot) => void;
+  onAppointmentCreated?: () => void;
 }
 
-export default function AvailabilityCalendar({ doctorId, slots, onSlotClick }: AvailabilityCalendarProps) {
+export default function AvailabilityCalendar({
+  doctorId,
+  doctorName,
+  slots,
+  onSlotClick,
+  onAppointmentCreated
+}: AvailabilityCalendarProps) {
   const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
 
   // Generate 7 days for the week view
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
@@ -66,6 +77,19 @@ export default function AvailabilityCalendar({ doctorId, slots, onSlotClick }: A
     return 'bg-gray-50 border-gray-200 hover:bg-gray-100';
   };
 
+  // Handle slot click to create appointment
+  const handleSlotClick = (slot: TimeSlot) => {
+    setSelectedSlot(slot);
+    setShowCreateModal(true);
+    onSlotClick?.(slot);
+  };
+
+  // Handle creating appointment at custom time
+  const handleCreateCustomAppointment = () => {
+    setSelectedSlot(null);
+    setShowCreateModal(true);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -75,6 +99,10 @@ export default function AvailabilityCalendar({ doctorId, slots, onSlotClick }: A
             Availability Schedule
           </CardTitle>
           <div className="flex items-center gap-2">
+            <Button variant="default" size="sm" onClick={handleCreateCustomAppointment}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Appointment
+            </Button>
             <Button variant="outline" size="sm" onClick={handleToday}>
               Today
             </Button>
@@ -131,7 +159,7 @@ export default function AvailabilityCalendar({ doctorId, slots, onSlotClick }: A
                     daySlots.map((slot) => (
                       <button
                         key={slot.id}
-                        onClick={() => onSlotClick?.(slot)}
+                        onClick={() => handleSlotClick(slot)}
                         className={`w-full text-left p-2 rounded border-2 transition-colors ${getSlotColorClass(slot)}`}
                       >
                         <div className="flex items-center gap-1 mb-1">
@@ -175,6 +203,21 @@ export default function AvailabilityCalendar({ doctorId, slots, onSlotClick }: A
             <div className="text-xs text-gray-600">Blocked</div>
           </div>
         </div>
+
+        {/* Create Appointment Modal */}
+        <CreateAppointmentModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+          doctorId={doctorId}
+          doctorName={doctorName}
+          prefilledDate={selectedSlot?.date}
+          prefilledStartTime={selectedSlot?.startTime}
+          prefilledEndTime={selectedSlot?.endTime}
+          onSuccess={() => {
+            onAppointmentCreated?.();
+            setSelectedSlot(null);
+          }}
+        />
       </CardContent>
     </Card>
   );

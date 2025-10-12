@@ -2510,6 +2510,60 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Get all patients (for admin)
+  app.get("/api/admin/patients", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const patients = await storage.getPatients();
+      res.json(patients);
+    } catch (error: any) {
+      console.error("Error fetching patients:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch patients" });
+    }
+  });
+
+  // Create appointment (admin only - bypasses all booking constraints)
+  app.post("/api/admin/appointments/create", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { doctorId, patientId, date, startTime, endTime, reason, notes, status } = req.body;
+
+      // Validate required fields
+      if (!doctorId || !patientId || !date || !startTime || !endTime) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Create appointment directly without constraints
+      const appointment = await storage.createAppointment({
+        doctorId,
+        patientId,
+        date,
+        startTime,
+        endTime,
+        reason: reason || 'Admin-created appointment',
+        notes: notes || '',
+        status: status || 'confirmed',
+        consultationPrice: 0, // Admin appointments can be free
+        paymentStatus: 'completed', // Mark as completed to avoid payment flow
+        paymentIntentId: `admin_${Date.now()}`, // Unique ID for admin appointments
+      });
+
+      console.log(`✅ Admin created appointment: ${appointment.id} for patient ${patientId} with doctor ${doctorId}`);
+      res.json(appointment);
+    } catch (error: any) {
+      console.error("Error creating admin appointment:", error);
+      res.status(500).json({ message: error.message || "Failed to create appointment" });
+    }
+  });
+
   // Email confirmation endpoint for post-signup
   // Login endpoint for email/password authentication
   app.post("/api/auth/login", async (req, res) => {
