@@ -77,6 +77,15 @@ export default function TestLogin() {
         throw new Error(data.error || 'Login failed');
       }
 
+      // Store auth data in localStorage for subsequent API requests
+      if (data.session) {
+        localStorage.setItem('doktu_auth', JSON.stringify({
+          session: data.session,
+          user: data.user
+        }));
+        console.log('✅ Auth data stored in localStorage');
+      }
+
       setLoginResult(data);
       toast({
         title: "Login Successful!",

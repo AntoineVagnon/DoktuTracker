@@ -151,9 +151,16 @@ export default function CreateAccount() {
 
       // Handle redirect after successful registration
       console.log('Registration successful, session data:', data.session);
-      
+
       if (data.session) {
         // User is immediately signed in (no email confirmation required)
+        // Store auth data in localStorage for subsequent API requests
+        localStorage.setItem('doktu_auth', JSON.stringify({
+          session: data.session,
+          user: data.user
+        }));
+        console.log('✅ Auth data stored in localStorage');
+
         // Set flag to indicate fresh registration for MembershipStart component
         localStorage.setItem('just_registered', 'true');
         
