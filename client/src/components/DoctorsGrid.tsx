@@ -131,7 +131,7 @@ const fallbackDoctors: Doctor[] = [
 
 export function DoctorsGrid() {
   const { data: doctors, error, isLoading } = useSWR<Doctor[]>(
-    "/api/doctors", 
+    "/api/doctors",
     fetcher,
     {
       refreshInterval: 0, // Disable auto-refresh to reduce API calls
@@ -148,6 +148,14 @@ export function DoctorsGrid() {
 
   // Use fallback data when API fails or returns empty
   const displayDoctors = (doctors && doctors.length > 0) ? doctors : (error ? fallbackDoctors : []);
+
+  // Debug: Log what data we're using
+  console.log('🏥 DoctorsGrid data:', {
+    usingFallback: !doctors || doctors.length === 0,
+    doctorsCount: doctors?.length,
+    displayDoctorsCount: displayDoctors.length,
+    firstDoctor: displayDoctors[0]
+  });
 
   // Log warning if doctors array is empty
   if (displayDoctors && displayDoctors.length === 0) {
