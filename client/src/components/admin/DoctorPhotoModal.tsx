@@ -69,6 +69,9 @@ export default function DoctorPhotoModal({
           body: formData,
           credentials: 'include',
         });
+
+        console.log('Upload response status:', response.status);
+        console.log('Upload response ok:', response.ok);
       } else {
         // Use URL
         response = await apiRequest('PATCH', `/api/admin/doctors/${doctorId}/photo`, {
@@ -81,6 +84,11 @@ export default function DoctorPhotoModal({
         console.error('Upload failed:', response.status, errorData);
         throw new Error(errorData.message || `Failed to update photo (${response.status})`);
       }
+
+      // Log the response data
+      const responseData = await response.json();
+      console.log('Upload response data:', responseData);
+      console.log('New photo URL from backend:', responseData.profileImageUrl);
 
       onSuccess?.();
       onOpenChange(false);
