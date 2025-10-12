@@ -5120,6 +5120,9 @@ export async function registerRoutes(app: Express): Promise<void> {
   // Register Medical Records routes
   registerMedicalRecordsRoutes(app);
 
+  // Register slot routes (hold, release, cleanup)
+  setupSlotRoutes(app);
+
   // Apply audit error middleware
   app.use(auditErrorMiddleware);
 
