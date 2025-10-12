@@ -52,13 +52,21 @@ export default function DoctorPhotoModal({
         const formData = new FormData();
         formData.append('photo', selectedFile);
 
-        const apiUrl = import.meta.env.VITE_API_URL || '';
+        const apiUrl = import.meta.env.VITE_API_URL ||
+          (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
         const uploadUrl = `${apiUrl}/api/admin/doctors/${doctorId}/photo/upload`;
         console.log('Uploading to:', uploadUrl);
         console.log('File:', selectedFile.name, selectedFile.size, 'bytes');
 
+        // Get auth token from localStorage (same as apiRequest)
+        const authData = localStorage.getItem('doktu_auth');
+        const token = authData ? JSON.parse(authData).session?.access_token : null;
+
         response = await fetch(uploadUrl, {
           method: 'POST',
+          headers: {
+            ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+          },
           body: formData,
           credentials: 'include',
         });
