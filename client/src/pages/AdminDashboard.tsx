@@ -22,6 +22,7 @@ import {
   Menu, LogIn, Edit, Eye, Search
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { mutate as mutateSWR } from "swr";
 import { format, subDays } from "date-fns";
 import {
   Tooltip,
@@ -2315,6 +2316,11 @@ export default function AdminDashboard() {
               queryKey: ['/api/admin/doctors']
             });
             console.log('Doctors list refetched');
+
+            // Invalidate SWR cache for homepage doctors grid
+            console.log('Invalidating SWR cache for /api/doctors');
+            mutateSWR('/api/doctors');
+            console.log('SWR cache invalidated');
 
             // Also try setting the query data directly as a fallback
             const currentData = queryClient.getQueryData(['/api/admin/doctors', selectedDoctor?.id]);
