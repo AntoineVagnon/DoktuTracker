@@ -5377,6 +5377,227 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Charge a saved payment method for subscription creation
+  app.post("/api/membership/charge-saved-subscription", strictLimiter, isAuthenticated, async (req, res) => {
+    try {
+      console.log('💳 [SAVED-SUBSCRIPTION] Endpoint called');
+
+      const { planId, paymentMethodId } = req.body;
+
+      if (!planId || !paymentMethodId) {
+        return res.status(400).json({
+          error: "Missing planId or paymentMethodId",
+          code: "MISSING_PARAMETERS"
+        });
+      }
+
+      if (!req.user) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+
+      const userId = req.user.id;
+      const userEmail = req.user.email;
+
+      console.log('✅ [SAVED-SUBSCRIPTION] User validated - ID:', userId, 'Email:', userEmail);
+
+      // Plan configurations
+      const planConfigs = {
+        "monthly_plan": {
+          name: "Monthly Membership",
+          priceAmount: 4500, // €45.00 in cents
+          interval: 'month' as const,
+          intervalCount: 1,
+          allowance: 2
+        },
+        "biannual_plan": {
+          name: "6-Month Membership",
+          priceAmount: 21900, // €219.00 in cents
+          interval: 'month' as const,
+          intervalCount: 6,
+          allowance: 12
+        }
+      };
+
+      const selectedPlanConfig = planConfigs[planId as keyof typeof planConfigs];
+      if (!selectedPlanConfig) {
+        return res.status(400).json({ error: "Invalid plan selected" });
+      }
+
+      // Get or create Stripe customer
+      let customer;
+      const existingCustomers = await stripe.customers.list({
+        email: userEmail,
+        limit: 1
+      });
+
+      if (existingCustomers.data.length > 0) {
+        customer = existingCustomers.data[0];
+        console.log(`✅ [SAVED-SUBSCRIPTION] Found existing customer: ${customer.id}`);
+      } else {
+        customer = await stripe.customers.create({
+          email: userEmail,
+          name: `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim(),
+          metadata: {
+            userId: userId.toString(),
+            planId: planId
+          }
+        });
+        console.log(`✅ [SAVED-SUBSCRIPTION] Created new customer: ${customer.id}`);
+      }
+
+      // Verify the payment method belongs to the customer
+      const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
+      if (paymentMethod.customer !== customer.id) {
+        return res.status(403).json({ error: "Payment method does not belong to customer" });
+      }
+
+      // Create or retrieve the product in Stripe
+      let product;
+      const products = await stripe.products.list({
+        active: true,
+        limit: 100
+      });
+
+      product = products.data.find(p => p.name === selectedPlanConfig.name);
+
+      if (!product) {
+        product = await stripe.products.create({
+          name: selectedPlanConfig.name,
+          description: planId === 'monthly_plan'
+            ? '2 consultations per month with certified doctors'
+            : '12 consultations over 6 months with certified doctors',
+          metadata: {
+            planId: planId
+          }
+        });
+      }
+
+      // Create or retrieve the price
+      let price;
+      const prices = await stripe.prices.list({
+        product: product.id,
+        active: true,
+        limit: 100
+      });
+
+      price = prices.data.find(p =>
+        p.unit_amount === selectedPlanConfig.priceAmount &&
+        p.recurring?.interval === selectedPlanConfig.interval &&
+        p.recurring?.interval_count === selectedPlanConfig.intervalCount
+      );
+
+      if (!price) {
+        price = await stripe.prices.create({
+          product: product.id,
+          unit_amount: selectedPlanConfig.priceAmount,
+          currency: 'eur',
+          recurring: {
+            interval: selectedPlanConfig.interval,
+            interval_count: selectedPlanConfig.intervalCount
+          },
+          metadata: {
+            planId: planId
+          }
+        });
+      }
+
+      console.log('✅ [SAVED-SUBSCRIPTION] Creating subscription with saved payment method');
+
+      // Create subscription with the saved payment method
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{
+          price: price.id
+        }],
+        default_payment_method: paymentMethodId,
+        expand: ['latest_invoice.payment_intent'],
+        metadata: {
+          userId: userId.toString(),
+          planId: planId,
+          planName: selectedPlanConfig.name
+        }
+      });
+
+      console.log('✅ [SAVED-SUBSCRIPTION] Subscription created:', subscription.id);
+
+      // If subscription is active (payment succeeded), create membership record
+      if (subscription.status === 'active') {
+        console.log('✅ [SAVED-SUBSCRIPTION] Subscription active, creating membership records');
+
+        // Update user with Stripe IDs
+        await storage.updateUser(userId, {
+          stripeCustomerId: customer.id,
+          stripeSubscriptionId: subscription.id
+        } as any);
+
+        // Import membership service
+        const { membershipService } = await import('./services/membershipService');
+
+        // Create membership subscription record
+        const now = new Date();
+        const periodEnd = new Date(now);
+        if (planId === 'monthly_plan') {
+          periodEnd.setMonth(periodEnd.getMonth() + 1);
+        } else {
+          periodEnd.setMonth(periodEnd.getMonth() + 6);
+        }
+
+        const membershipSubscription = await membershipService.createSubscription(
+          userId,
+          planId,
+          subscription.id,
+          'active',
+          now,
+          periodEnd
+        );
+
+        // Create initial allowance cycle
+        await membershipService.createInitialAllowanceCycle(
+          membershipSubscription.id,
+          planId,
+          now,
+          periodEnd
+        );
+
+        console.log('✅ [SAVED-SUBSCRIPTION] Membership records created successfully');
+
+        res.json({
+          success: true,
+          subscription: {
+            id: subscription.id,
+            status: subscription.status,
+            planId: planId
+          }
+        });
+      } else {
+        // Payment requires additional action (rare with saved payment methods)
+        console.log('⚠️ [SAVED-SUBSCRIPTION] Subscription requires additional action:', subscription.status);
+
+        res.json({
+          success: false,
+          requiresAction: true,
+          subscription: {
+            id: subscription.id,
+            status: subscription.status
+          }
+        });
+      }
+
+    } catch (error: any) {
+      console.error('❌ [SAVED-SUBSCRIPTION] Error:', error);
+
+      // Handle specific Stripe errors
+      if (error.type === 'StripeCardError') {
+        return res.status(400).json({ error: error.message, code: "CARD_DECLINED" });
+      }
+
+      res.status(500).json({
+        error: error.message || "Failed to create subscription",
+        code: "SUBSCRIPTION_ERROR"
+      });
+    }
+  });
+
   // Manual endpoint to create initial allowance for user (temporary fix for existing subscriptions)
   app.post("/api/membership/initialize-allowance", isAuthenticated, async (req, res) => {
     try {

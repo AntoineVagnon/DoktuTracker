@@ -12,6 +12,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLocation, useSearch } from 'wouter';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { analytics } from "@/lib/analytics";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
@@ -50,14 +52,49 @@ const PLAN_DETAILS: Record<string, PlanDetails> = {
   }
 };
 
+interface PaymentMethod {
+  id: string;
+  type: string;
+  card?: {
+    brand: string;
+    last4: string;
+    exp_month: number;
+    exp_year: number;
+  };
+  billing_details?: {
+    name?: string;
+    email?: string;
+  };
+  is_default?: boolean;
+}
+
 interface PaymentFormProps {
   plan: PlanDetails;
   clientSecret: string;
   onSuccess: () => void;
   onError: (error: string) => void;
+  paymentMethods: PaymentMethod[];
+  selectedPaymentMethod: string | null;
+  setSelectedPaymentMethod: (id: string | null) => void;
+  useNewCard: boolean;
+  setUseNewCard: (use: boolean) => void;
+  onPayWithSavedCard: () => Promise<void>;
 }
 
-const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'payment' }: PaymentFormProps & { paymentType?: 'payment' | 'setup' }) => {
+const PaymentForm = ({
+  plan,
+  clientSecret,
+  onSuccess,
+  onError,
+  paymentType = 'payment',
+  paymentMethods,
+  selectedPaymentMethod,
+  setSelectedPaymentMethod,
+  useNewCard,
+  setUseNewCard,
+  onPayWithSavedCard,
+  isProcessingPayment
+}: PaymentFormProps & { paymentType?: 'payment' | 'setup'; isProcessingPayment?: boolean }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
@@ -72,6 +109,10 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
       console.log("Waiting for Stripe/Elements:", { stripe: !!stripe, elements: !!elements });
     }
   }, [elements, stripe]);
+
+  const formatCardBrand = (brand: string) => {
+    return brand.charAt(0).toUpperCase() + brand.slice(1);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +135,7 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
 
     let error;
     let result;
-    
+
     // Check if this is a setup intent or payment intent based on client secret prefix
     if (clientSecret.startsWith('seti_')) {
       // This is a setup intent - use confirmCardSetup
@@ -111,7 +152,7 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
         }
       });
     }
-    
+
     error = result.error;
 
     if (error) {
@@ -126,7 +167,7 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
       // Check success for both payment intent and setup intent
       const isPaymentSuccess = result.paymentIntent?.status === 'succeeded';
       const isSetupSuccess = result.setupIntent?.status === 'succeeded';
-      
+
       if (isPaymentSuccess || isSetupSuccess) {
         console.log("Payment/setup succeeded!");
         analytics.track('membership_payment_success', {
@@ -156,61 +197,144 @@ const PaymentForm = ({ plan, clientSecret, onSuccess, onError, paymentType = 'pa
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="p-4 border border-gray-200 rounded-lg bg-white">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Card Details
-            </label>
-            <CardElement 
-              options={{
-                style: {
-                  base: {
-                    fontSize: '16px',
-                    color: '#424770',
-                    '::placeholder': {
-                      color: '#aab7c4',
+          {/* Show saved payment methods if available and not choosing to use new card */}
+          {paymentMethods.length > 0 && !useNewCard ? (
+            <div className="space-y-4">
+              <Label className="text-sm font-medium mb-3 block">Select Payment Method</Label>
+              <RadioGroup
+                value={selectedPaymentMethod || ''}
+                onValueChange={setSelectedPaymentMethod}
+                className="space-y-3"
+              >
+                {paymentMethods.map((method) => (
+                  <div key={method.id} className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value={method.id} id={method.id} />
+                    <Label htmlFor={method.id} className="flex items-center flex-1 cursor-pointer">
+                      <CreditCard className="h-5 w-5 text-gray-600 mr-3" />
+                      <div className="flex-1">
+                        <div className="font-medium">
+                          {formatCardBrand(method.card?.brand || 'Card')} •••• {method.card?.last4}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          Expires {method.card?.exp_month}/{method.card?.exp_year}
+                        </div>
+                      </div>
+                      {method.is_default && (
+                        <Badge variant="secondary" className="text-xs ml-2">Default</Badge>
+                      )}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setUseNewCard(true)}
+                className="w-full"
+              >
+                Use a Different Card
+              </Button>
+
+              <div className="text-xs text-gray-500 space-y-1">
+                <p>By clicking Activate Membership, you agree to our:</p>
+                <div className="flex gap-3">
+                  <a href="/terms" className="underline hover:text-gray-700">Terms of Service</a>
+                  <a href="/privacy" className="underline hover:text-gray-700">Privacy Policy</a>
+                  <a href="/terms#refund" className="underline hover:text-gray-700">Refund Policy</a>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                onClick={onPayWithSavedCard}
+                disabled={!selectedPaymentMethod || isLoading || isProcessingPayment}
+                className="w-full"
+                size="lg"
+              >
+                {(isLoading || isProcessingPayment) ? (
+                  <>
+                    <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Activate Membership with Saved Card
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 border border-gray-200 rounded-lg bg-white">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Card Details
+                </label>
+                <CardElement
+                  options={{
+                    style: {
+                      base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {
+                          color: '#aab7c4',
+                        },
+                      },
+                      invalid: {
+                        color: '#9e2146',
+                      },
                     },
-                  },
-                  invalid: {
-                    color: '#9e2146',
-                  },
-                },
-              }}
-              className="p-3 border border-gray-300 rounded"
-            />
-          </div>
-          <div className="text-xs text-gray-500">
-            Enter your card details to complete the membership activation.
-          </div>
+                  }}
+                  className="p-3 border border-gray-300 rounded"
+                />
+              </div>
+              <div className="text-xs text-gray-500">
+                Enter your card details to complete the membership activation.
+              </div>
+
+              {paymentMethods.length > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setUseNewCard(false)}
+                  className="w-full"
+                >
+                  Use Saved Payment Method
+                </Button>
+              )}
+
+              <div className="text-xs text-gray-500 space-y-1">
+                <p>By clicking Activate Membership, you agree to our:</p>
+                <div className="flex gap-3">
+                  <a href="/terms" className="underline hover:text-gray-700">Terms of Service</a>
+                  <a href="/privacy" className="underline hover:text-gray-700">Privacy Policy</a>
+                  <a href="/terms#refund" className="underline hover:text-gray-700">Refund Policy</a>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={!stripe || !elementsReady || isLoading}
+                className="w-full"
+                size="lg"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Activate Membership
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       )}
-
-      <div className="text-xs text-gray-500 space-y-1">
-        <p>By clicking Activate Membership, you agree to our:</p>
-        <div className="flex gap-3">
-          <a href="/terms" className="underline hover:text-gray-700">Terms of Service</a>
-          <a href="/privacy" className="underline hover:text-gray-700">Privacy Policy</a>
-          <a href="/terms#refund" className="underline hover:text-gray-700">Refund Policy</a>
-        </div>
-      </div>
-
-      <Button 
-        type="submit" 
-        disabled={!stripe || !elementsReady || isLoading} 
-        className="w-full" 
-        size="lg"
-      >
-        {isLoading ? (
-          <>
-            <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />
-            Processing...
-          </>
-        ) : (
-          <>
-            <CreditCard className="w-4 h-4 mr-2" />
-            Activate Membership
-          </>
-        )}
-      </Button>
     </form>
   );
 };
@@ -221,13 +345,17 @@ export default function MembershipStart() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  
+
   const [currentStep, setCurrentStep] = useState<'loading' | 'auth' | 'payment' | 'success' | 'guard'>('loading');
   const [clientSecret, setClientSecret] = useState<string>('');
   const [paymentType, setPaymentType] = useState<'payment' | 'setup'>('payment');
   const [existingMembership, setExistingMembership] = useState<any>(null);
   const [paymentError, setPaymentError] = useState<string>('');
-  
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+  const [useNewCard, setUseNewCard] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
   const plan = PLAN_DETAILS[planParam] || PLAN_DETAILS.monthly;
 
   useEffect(() => {
@@ -370,6 +498,28 @@ export default function MembershipStart() {
   const startSubscription = async () => {
     try {
       console.log('Creating subscription for plan:', plan.id);
+
+      // Fetch saved payment methods first
+      try {
+        console.log('💳 Fetching saved payment methods...');
+        const paymentMethodsResponse = await apiRequest('GET', '/api/payment-methods');
+        if (paymentMethodsResponse.ok) {
+          const methods = await paymentMethodsResponse.json();
+          setPaymentMethods(methods);
+          console.log('💳 Found', methods.length, 'saved payment methods');
+
+          // Auto-select the default payment method if available
+          const defaultMethod = methods.find((m: any) => m.is_default);
+          if (defaultMethod) {
+            setSelectedPaymentMethod(defaultMethod.id);
+            console.log('💳 Auto-selected default payment method');
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch payment methods:', error);
+        // Continue without saved payment methods
+      }
+
       const response = await apiRequest("POST", "/api/membership/subscribe", {
         planId: plan.id
       });
@@ -417,6 +567,63 @@ export default function MembershipStart() {
         variant: "destructive",
       });
       setCurrentStep('auth');
+    }
+  };
+
+  const handlePayWithSavedCard = async () => {
+    if (!selectedPaymentMethod) {
+      toast({
+        title: "Error",
+        description: "Please select a payment method",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsProcessingPayment(true);
+
+    try {
+      console.log('💳 Charging saved payment method for membership:', {
+        paymentMethodId: selectedPaymentMethod,
+        planId: plan.id
+      });
+
+      const response = await apiRequest('POST', '/api/membership/charge-saved-subscription', {
+        planId: plan.id,
+        paymentMethodId: selectedPaymentMethod
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Subscription creation failed');
+      }
+
+      const result = await response.json();
+      console.log('✅ Subscription successful:', result);
+
+      if (result.success) {
+        // Track successful activation
+        analytics.track('membership_payment_success', {
+          plan: plan.id,
+          amount: plan.price,
+          type: 'saved_card'
+        });
+
+        // Redirect to success page
+        setLocation(`/membership/success?plan=${plan.id}`);
+      }
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      toast({
+        title: "Payment Failed",
+        description: error.message,
+        variant: "destructive"
+      });
+      analytics.track('membership_payment_failed', {
+        plan: plan.id,
+        reason: error.message
+      });
+      setIsProcessingPayment(false);
     }
   };
 
@@ -659,12 +866,19 @@ export default function MembershipStart() {
               )}
 
               <Elements stripe={stripePromise} options={elementsOptions} key={clientSecret}>
-                <PaymentForm 
+                <PaymentForm
                   plan={plan}
                   clientSecret={clientSecret}
                   paymentType={paymentType}
                   onSuccess={handlePaymentSuccess}
                   onError={setPaymentError}
+                  paymentMethods={paymentMethods}
+                  selectedPaymentMethod={selectedPaymentMethod}
+                  setSelectedPaymentMethod={setSelectedPaymentMethod}
+                  useNewCard={useNewCard}
+                  setUseNewCard={setUseNewCard}
+                  onPayWithSavedCard={handlePayWithSavedCard}
+                  isProcessingPayment={isProcessingPayment}
                 />
               </Elements>
             </CardContent>
