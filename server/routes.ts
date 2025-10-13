@@ -3610,6 +3610,234 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Charge a saved payment method for an appointment
+  app.post("/api/payment/charge-saved-method", isAuthenticated, async (req, res) => {
+    try {
+      const { appointmentId, paymentMethodId, amount } = req.body;
+
+      if (!appointmentId || !paymentMethodId) {
+        return res.status(400).json({
+          error: "Missing appointmentId or paymentMethodId",
+          code: "MISSING_PARAMETERS"
+        });
+      }
+
+      // Get appointment details
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment) {
+        return res.status(404).json({
+          error: "Appointment not found",
+          code: "APPOINTMENT_NOT_FOUND"
+        });
+      }
+
+      // Verify the appointment belongs to this user
+      if (appointment.patientId !== req.user.id) {
+        return res.status(403).json({
+          error: "Unauthorized access to appointment",
+          code: "UNAUTHORIZED"
+        });
+      }
+
+      // Prevent payment for already paid appointments
+      if (appointment.status === 'paid') {
+        return res.status(400).json({
+          error: "Appointment is already paid",
+          code: "APPOINTMENT_ALREADY_PAID"
+        });
+      }
+
+      // Get doctor details to retrieve the REAL price from database
+      const doctor = await storage.getDoctor(appointment.doctorId);
+      if (!doctor) {
+        return res.status(404).json({
+          error: "Doctor not found",
+          code: "DOCTOR_NOT_FOUND"
+        });
+      }
+
+      // CRITICAL: Use price from database, NEVER from client
+      const realPrice = parseFloat(doctor.consultationPrice);
+
+      console.log(`💰 Charging saved payment method: Doctor ${doctor.id}, Real price: €${realPrice}`);
+
+      // Validate price is reasonable (between €1 and €500)
+      if (realPrice < 1 || realPrice > 500) {
+        console.error(`⚠️ Suspicious price detected: €${realPrice}`);
+        return res.status(400).json({
+          error: "Invalid consultation price",
+          code: "INVALID_PRICE"
+        });
+      }
+
+      // Get user's Stripe customer ID
+      const user = await storage.getUser(req.user.id.toString());
+      if (!user || !user.stripeCustomerId) {
+        return res.status(400).json({
+          error: "User has no Stripe customer ID",
+          code: "NO_CUSTOMER_ID"
+        });
+      }
+
+      // Verify the payment method belongs to the customer
+      const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
+      if (paymentMethod.customer !== user.stripeCustomerId) {
+        return res.status(403).json({
+          error: "Payment method does not belong to this customer",
+          code: "INVALID_PAYMENT_METHOD"
+        });
+      }
+
+      // Create and confirm payment intent with saved payment method
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(realPrice * 100), // Convert to cents - using DATABASE price
+        currency: 'eur',
+        customer: user.stripeCustomerId,
+        payment_method: paymentMethodId,
+        off_session: true,
+        confirm: true,
+        metadata: {
+          appointmentId: appointmentId.toString(),
+          patientId: req.user.id.toString(),
+          doctorId: appointment.doctorId.toString(),
+          realPrice: realPrice.toString()
+        },
+      });
+
+      if (paymentIntent.status === 'succeeded') {
+        // Update appointment status to paid
+        await storage.updateAppointmentStatus(appointmentId, "paid", paymentIntent.id);
+
+        // Get appointment details to mark the corresponding slot as unavailable
+        const appointmentData = await storage.getAppointment(appointmentId);
+
+        // Create Zoom meeting for the paid appointment
+        if (appointmentData && zoomService.isConfigured()) {
+          console.log(`🎥 Creating Zoom meeting for appointment ${appointmentId}`);
+          await zoomService.createMeeting(Number(appointmentId));
+        }
+
+        if (appointmentData) {
+          // Find and mark the corresponding time slot as unavailable
+          const timeSlots = await storage.getDoctorTimeSlots(appointmentData.doctorId);
+          const appointmentDate = new Date(appointmentData.appointmentDate);
+
+          // Extract date and time components from UTC appointment date
+          const appointmentDateString = appointmentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+          const appointmentTimeString = appointmentDate.toISOString().split('T')[1].slice(0, 8); // HH:MM:SS format from UTC
+
+          console.log(`🔍 Looking for slot: date=${appointmentDateString}, time=${appointmentTimeString} (UTC time)`);
+
+          const matchingSlot = timeSlots.find(slot =>
+            slot.date === appointmentDateString &&
+            slot.startTime === appointmentTimeString &&
+            slot.isAvailable
+          );
+
+          if (matchingSlot) {
+            await storage.updateTimeSlot(matchingSlot.id, { isAvailable: false });
+            console.log(`🔒 Marked slot ${matchingSlot.id} as unavailable after successful payment`);
+          } else {
+            console.log(`⚠️ Could not find matching slot for appointment date: ${appointmentDateString} ${appointmentTimeString}`);
+          }
+
+          // Trigger appointment confirmation notification (non-blocking)
+          try {
+            await notificationService.scheduleNotification({
+              userId: appointmentData.patientId,
+              triggerCode: 'appointment-confirmed' as TriggerCode,
+              scheduledFor: new Date(),
+              data: {
+                appointmentId: appointmentData.id.toString(),
+                appointmentDate: appointmentData.appointmentDate,
+                doctorName: doctor ? `${doctor.user?.firstName || ''} ${doctor.user?.lastName || ''}`.trim() : 'Doctor'
+              }
+            });
+            console.log(`📬 Scheduled confirmation notification for appointment ${appointmentData.id}`);
+          } catch (notifError) {
+            console.error('📬 Failed to schedule notification:', notifError);
+            // Don't fail the payment if notification fails
+          }
+
+          // Send email confirmations to both patient and doctor
+          try {
+            const patient = await storage.getUser(appointmentData.patientId.toString());
+            if (patient && doctor.user) {
+              const appointmentLocalDate = new Date(appointmentData.appointmentDate);
+              const appointmentDate = appointmentLocalDate.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              });
+              const appointmentTime = appointmentLocalDate.toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+
+              // Send confirmation to patient
+              await emailService.sendAppointmentConfirmationToPatient({
+                patientEmail: patient.email!,
+                patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+                doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+                appointmentDate,
+                appointmentTime,
+                consultationPrice: realPrice.toFixed(2),
+                appointmentId: appointmentData.id.toString()
+              });
+
+              // Send confirmation to doctor
+              await emailService.sendAppointmentConfirmationToDoctor({
+                doctorEmail: doctor.user.email!,
+                doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
+                patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
+                appointmentDate,
+                appointmentTime,
+                consultationPrice: realPrice.toFixed(2),
+                appointmentId: appointmentData.id.toString()
+              });
+
+              console.log(`📧 Email confirmations sent after payment for appointment ${appointmentData.id}`);
+            }
+          } catch (emailError) {
+            console.error('📧 Failed to send email confirmations after payment:', emailError);
+            // Don't fail the payment confirmation if email fails
+          }
+        }
+
+        res.json({
+          success: true,
+          paymentIntent: {
+            id: paymentIntent.id,
+            status: paymentIntent.status,
+            amount: paymentIntent.amount
+          }
+        });
+      } else {
+        res.status(400).json({
+          error: "Payment was not successful",
+          status: paymentIntent.status,
+          code: "PAYMENT_FAILED"
+        });
+      }
+    } catch (error: any) {
+      console.error("Error charging saved payment method:", error);
+
+      // Handle specific Stripe errors
+      if (error.type === 'StripeCardError') {
+        return res.status(400).json({
+          error: error.message || "Card was declined",
+          code: "CARD_DECLINED"
+        });
+      }
+
+      res.status(500).json({
+        error: error.message || "Failed to process payment",
+        code: "PAYMENT_ERROR"
+      });
+    }
+  });
+
   // ============================================================================
   // PAYMENT METHODS MANAGEMENT ENDPOINTS
   // ============================================================================

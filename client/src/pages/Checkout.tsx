@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Calendar, Clock, Euro, AlertTriangle } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Loader2, Calendar, Clock, Euro, AlertTriangle, CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import { loadStripe } from '@stripe/stripe-js';
@@ -22,6 +24,10 @@ export default function Checkout() {
   const [doctor, setDoctor] = useState<any>(null);
   const [bookingData, setBookingData] = useState<any>(null);
   const [clientSecret, setClientSecret] = useState<string>('');
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+  const [useNewCard, setUseNewCard] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Extract booking parameters from URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -84,6 +90,35 @@ export default function Checkout() {
       }
 
       try {
+        // Fetch saved payment methods for the user
+        console.log('💳 Fetching saved payment methods...');
+        try {
+          const paymentMethodsResponse = await apiRequest('GET', '/api/payment-methods');
+          if (paymentMethodsResponse.ok) {
+            const methods = await paymentMethodsResponse.json();
+            setPaymentMethods(methods);
+
+            // Auto-select the default payment method if available
+            const defaultMethod = methods.find((m: any) => m.is_default);
+            if (defaultMethod) {
+              setSelectedPaymentMethod(defaultMethod.id);
+              console.log('💳 Auto-selected default payment method:', defaultMethod.id);
+            } else if (methods.length > 0) {
+              // If no default, select the first one
+              setSelectedPaymentMethod(methods[0].id);
+              console.log('💳 Auto-selected first payment method:', methods[0].id);
+            } else {
+              // No saved payment methods, user will need to enter card
+              setUseNewCard(true);
+              console.log('💳 No saved payment methods, will use new card');
+            }
+          }
+        } catch (pmError) {
+          console.error('❌ Failed to fetch payment methods:', pmError);
+          // Continue with checkout even if fetching payment methods fails
+          setUseNewCard(true);
+        }
+
         // Only check for held slots if we don't have an existing appointment
         let heldSlotData: any = {};
         
@@ -295,14 +330,25 @@ export default function Checkout() {
 
         // Create payment intent only if appointment is not already paid and not covered by membership
         if (appointmentData.status !== 'paid' && !appointmentData.coverageResult?.isCovered) {
-          const paymentResponse = await apiRequest('POST', '/api/payment/create-intent', {
-            appointmentId: appointmentData.appointmentId || appointmentData.id,
-            amount: parseFloat(price)
-          });
+          // Only create payment intent if using a new card
+          // If using saved payment method, we won't need the Stripe Element
+          if (useNewCard || !selectedPaymentMethod) {
+            const paymentResponse = await apiRequest('POST', '/api/payment/create-intent', {
+              appointmentId: appointmentData.appointmentId || appointmentData.id,
+              amount: parseFloat(price)
+            });
 
-          const paymentData = await paymentResponse.json();
-          if (paymentData.clientSecret) {
-            setClientSecret(paymentData.clientSecret);
+            const paymentData = await paymentResponse.json();
+            if (paymentData.clientSecret) {
+              setClientSecret(paymentData.clientSecret);
+            }
+          } else {
+            console.log('💳 Will use saved payment method:', selectedPaymentMethod);
+            // Store appointment ID for later use with saved payment method
+            setBookingData((prev: any) => ({
+              ...prev,
+              appointmentId: appointmentData.appointmentId || appointmentData.id
+            }));
           }
         } else {
           console.log('💎 Skipping payment intent creation - appointment already paid or covered');
@@ -347,6 +393,59 @@ export default function Checkout() {
       description: "Your appointment has been confirmed.",
     });
     setLocation('/dashboard');
+  };
+
+  const handlePayWithSavedCard = async () => {
+    if (!selectedPaymentMethod || !bookingData?.appointmentId) {
+      toast({
+        title: "Error",
+        description: "Missing payment method or appointment information",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsProcessingPayment(true);
+
+    try {
+      console.log('💳 Charging saved payment method:', {
+        appointmentId: bookingData.appointmentId,
+        paymentMethodId: selectedPaymentMethod,
+        amount: bookingData.price
+      });
+
+      const response = await apiRequest('POST', '/api/payment/charge-saved-method', {
+        appointmentId: bookingData.appointmentId,
+        paymentMethodId: selectedPaymentMethod,
+        amount: bookingData.price
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Payment failed');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Payment successful:', result);
+        handlePaymentSuccess();
+      } else {
+        throw new Error('Payment was not successful');
+      }
+    } catch (error: any) {
+      console.error('❌ Payment error:', error);
+      toast({
+        title: "Payment Failed",
+        description: error.message || "Unable to process payment. Please try again.",
+        variant: "destructive"
+      });
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const formatCardBrand = (brand: string) => {
+    return brand.charAt(0).toUpperCase() + brand.slice(1);
   };
 
   const formatTimeRemaining = (milliseconds: number) => {
@@ -465,41 +564,123 @@ export default function Checkout() {
             </CardContent>
           </Card>
 
-          {/* Stripe Payment Form */}
+          {/* Payment Form */}
           <Card>
             <CardHeader>
               <CardTitle>Payment Details</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              {clientSecret && (
-                <div>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Client Secret: {clientSecret ? 'Available' : 'Missing'}
-                  </p>
-                  <Elements 
-                    stripe={stripePromise} 
-                    options={{
-                      clientSecret,
-                      appearance: {
-                        theme: 'stripe',
-                      },
-                    }}
+              {/* Show saved payment methods if available */}
+              {paymentMethods.length > 0 && !useNewCard ? (
+                <div className="space-y-4">
+                  {/* Saved Payment Methods */}
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Select Payment Method</Label>
+                    <RadioGroup
+                      value={selectedPaymentMethod || ''}
+                      onValueChange={setSelectedPaymentMethod}
+                      className="space-y-3"
+                    >
+                      {paymentMethods.map((method) => (
+                        <div
+                          key={method.id}
+                          className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                        >
+                          <RadioGroupItem value={method.id} id={method.id} />
+                          <Label
+                            htmlFor={method.id}
+                            className="flex items-center flex-1 cursor-pointer"
+                          >
+                            <CreditCard className="h-5 w-5 text-gray-600 mr-3" />
+                            <div className="flex-1">
+                              <div className="font-medium">
+                                {formatCardBrand(method.card?.brand || 'Card')} •••• {method.card?.last4}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                Expires {method.card?.exp_month}/{method.card?.exp_year}
+                              </div>
+                            </div>
+                            {method.is_default && (
+                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                Default
+                              </span>
+                            )}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </div>
+
+                  {/* Pay Button for Saved Card */}
+                  <Button
+                    onClick={handlePayWithSavedCard}
+                    disabled={!selectedPaymentMethod || isProcessingPayment}
+                    className="w-full"
+                    size="lg"
                   >
-                    <CheckoutForm 
-                      onSuccess={handlePaymentSuccess}
-                      bookingData={bookingData}
-                    />
-                  </Elements>
+                    {isProcessingPayment ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Processing Payment...
+                      </>
+                    ) : (
+                      <>
+                        Pay €{bookingData.price}
+                      </>
+                    )}
+                  </Button>
+
+                  {/* Toggle to Use New Card */}
+                  <div className="text-center pt-4 border-t">
+                    <Button
+                      variant="outline"
+                      onClick={() => setUseNewCard(true)}
+                      className="w-full"
+                    >
+                      Use a Different Card
+                    </Button>
+                  </div>
                 </div>
+              ) : (
+                <>
+                  {/* Show toggle back to saved cards if we have any */}
+                  {paymentMethods.length > 0 && useNewCard && (
+                    <div className="mb-4">
+                      <Button
+                        variant="ghost"
+                        onClick={() => setUseNewCard(false)}
+                        className="text-sm"
+                      >
+                        ← Back to Saved Cards
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* New Card Entry */}
+                  {clientSecret ? (
+                    <Elements
+                      stripe={stripePromise}
+                      options={{
+                        clientSecret,
+                        appearance: {
+                          theme: 'stripe',
+                        },
+                      }}
+                    >
+                      <CheckoutForm
+                        onSuccess={handlePaymentSuccess}
+                        bookingData={bookingData}
+                      />
+                    </Elements>
+                  ) : (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-blue-600 mr-2" />
+                      <span>Preparing payment...</span>
+                    </div>
+                  )}
+                </>
               )}
-              
-              {!clientSecret && (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-blue-600 mr-2" />
-                  <span>Preparing payment...</span>
-                </div>
-              )}
-              
+
               <p className="text-xs text-gray-500 text-center mt-4">
                 Secure payment powered by Stripe
               </p>
