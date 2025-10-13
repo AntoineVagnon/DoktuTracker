@@ -1,0 +1,39 @@
+{
+  "checkout": {
+    "loading": "Preparing your appointment...",
+    "expired_title": "Slot Expired",
+    "expired_message": "Your reserved time slot has expired. Please choose a new time.",
+    "expired_button": "Choose New Time",
+    "time_remaining": "Time remaining:",
+    "confirm_title": "Confirm Your Appointment",
+    "doctor_label": "Doctor:",
+    "price_label": "Price:",
+    "payment_title": "Payment Details",
+    "saved_method_label": "Select Payment Method",
+    "card_expires": "Expires",
+    "card_default": "Default",
+    "pay_button": "Pay €{{amount}}",
+    "processing": "Processing Payment...",
+    "use_different_card": "Use a Different Card",
+    "back_to_saved": "← Back to Saved Cards",
+    "preparing_payment": "Preparing payment...",
+    "secure_by_stripe": "Secure payment powered by Stripe",
+    "errors": {
+      "invalid_booking": "Invalid Booking Request",
+      "missing_info": "Missing booking information. Please start the booking process again.",
+      "payment_init_failed": "Failed to initialize payment. Please try again.",
+      "missing_payment_method": "Missing payment method or appointment information",
+      "payment_failed": "Payment Failed",
+      "payment_failed_message": "Unable to process payment. Please try again.",
+      "general_error": "Error"
+    },
+    "success": {
+      "title": "Payment Successful!",
+      "message": "Your appointment has been confirmed.",
+      "already_confirmed": "Appointment Already Confirmed!",
+      "already_booked": "Your appointment is already booked and confirmed.",
+      "membership_confirmed": "Appointment Confirmed!",
+      "membership_credits": "Your appointment has been booked using your membership credits. {{remaining}} credits remaining."
+    }
+  }
+}

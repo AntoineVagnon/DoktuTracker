@@ -1,0 +1,39 @@
+{
+  "checkout": {
+    "loading": "Priprema vašeg termina...",
+    "expired_title": "Termin je istekao",
+    "expired_message": "Vaš rezervisani termin je istekao. Molimo odaberite novo vrijeme.",
+    "expired_button": "Odaberite novo vrijeme",
+    "time_remaining": "Preostalo vrijeme:",
+    "confirm_title": "Potvrdite vaš termin",
+    "doctor_label": "Doktor:",
+    "price_label": "Cijena:",
+    "payment_title": "Detalji plaćanja",
+    "saved_method_label": "Odaberite način plaćanja",
+    "card_expires": "Ističe",
+    "card_default": "Osnovni",
+    "pay_button": "Platite €{{amount}}",
+    "processing": "Obrađuje se plaćanje...",
+    "use_different_card": "Koristite drugu karticu",
+    "back_to_saved": "← Nazad na sačuvane kartice",
+    "preparing_payment": "Priprema plaćanja...",
+    "secure_by_stripe": "Sigurno plaćanje putem Stripe-a",
+    "errors": {
+      "invalid_booking": "Neispravna rezervacija",
+      "missing_info": "Nedostaju podaci o rezervaciji. Molimo započnite proces rezervacije ponovo.",
+      "payment_init_failed": "Neuspjela inicijalizacija plaćanja. Molimo pokušajte ponovo.",
+      "missing_payment_method": "Nedostaje način plaćanja ili podaci o terminu",
+      "payment_failed": "Plaćanje neuspjelo",
+      "payment_failed_message": "Nije moguće obraditi plaćanje. Molimo pokušajte ponovo.",
+      "general_error": "Greška"
+    },
+    "success": {
+      "title": "Plaćanje uspješno!",
+      "message": "Vaš termin je potvrđen.",
+      "already_confirmed": "Termin već potvrđen!",
+      "already_booked": "Vaš termin je već rezervisan i potvrđen.",
+      "membership_confirmed": "Termin potvrđen!",
+      "membership_credits": "Vaš termin je rezervisan koristeći kredite članstva. {{remaining}} kredita preostalo."
+    }
+  }
+}
