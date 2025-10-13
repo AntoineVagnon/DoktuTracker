@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Header from '@/components/Header';
 import DoctorCard from '@/components/DoctorCard';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/hooks/useTranslation';
 import { queryClient } from '@/lib/queryClient';
 
 // Helper function to translate French specialties to English
@@ -63,6 +64,7 @@ export default function DoctorList() {
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('anytime');
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation('doctors');
   
   // Force refresh auth state on mount
   React.useEffect(() => {
@@ -109,8 +111,8 @@ export default function DoctorList() {
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto max-w-6xl px-4 py-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Find Your Perfect Doctor</h1>
-            <p className="text-gray-600">Search by specialty, availability, or location</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t('doctors.list.title')}</h1>
+            <p className="text-gray-600">{t('doctors.list.search_placeholder')}</p>
           </div>
         </div>
       </div>
@@ -122,7 +124,7 @@ export default function DoctorList() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Search by name or specialty"
+                placeholder={t('doctors.list.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -130,10 +132,10 @@ export default function DoctorList() {
             </div>
             <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="All Specialties" />
+                <SelectValue placeholder={t('doctors.list.filter_specialty')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Specialties</SelectItem>
+                <SelectItem value="all">{t('doctors.list.filter_all')}</SelectItem>
                 {specialties.map((specialty) => (
                   <SelectItem key={specialty} value={specialty}>
                     {specialty}
@@ -196,7 +198,7 @@ export default function DoctorList() {
 
         {!isLoading && filteredDoctors.length === 0 && (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No doctors found</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('doctors.list.no_results')}</h3>
             <p className="text-gray-600">Try adjusting your search criteria or browse all available doctors.</p>
           </div>
         )}

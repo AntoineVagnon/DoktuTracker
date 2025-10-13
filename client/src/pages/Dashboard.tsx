@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useLocation } from "wouter";
 import Header from "@/components/Header";
@@ -44,6 +45,7 @@ function isAppointmentJoinable(appointmentDate: string): boolean {
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation('dashboard');
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const [showVerificationBanner, setShowVerificationBanner] = useState(false);
@@ -466,8 +468,8 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Patient Dashboard</h1>
-            <p className="text-gray-600 text-sm sm:text-base">Welcome back, {user?.firstName || "Patient"}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('dashboard.patient.title')}</h1>
+            <p className="text-gray-600 text-sm sm:text-base">{t('dashboard.patient.welcome')}, {user?.firstName || "Patient"}</p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -575,7 +577,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center">
                         <Calendar className="h-5 w-5 mr-2" />
-                        Upcoming Appointments
+                        {t('dashboard.patient.upcoming_appointments')}
                       </CardTitle>
                       {hasMoreAppointments && (
                         <Button variant="ghost" size="sm" onClick={() => setLocation('/doctors')}>
@@ -597,10 +599,10 @@ export default function Dashboard() {
                     ) : upcomingAppointments.length === 0 ? (
                       <div className="text-center py-8">
                         <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-600 mb-4">No upcoming appointments</p>
+                        <p className="text-gray-600 mb-4">{t('dashboard.patient.no_appointments')}</p>
                         <Button onClick={handleBookAppointment} className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
                           <Plus className="h-4 w-4 mr-2" />
-                          Book an appointment
+                          {t('dashboard.patient.book_appointment')}
                         </Button>
                       </div>
                     ) : (
@@ -742,7 +744,7 @@ export default function Dashboard() {
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <User className="h-5 w-5 mr-2" />
-                      My Doctors
+                      {t('dashboard.patient.my_doctors')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -809,7 +811,7 @@ export default function Dashboard() {
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Settings className="h-5 w-5 mr-2" />
-                      Settings
+                      {t('dashboard.patient.settings')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

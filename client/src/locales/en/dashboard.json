@@ -1,17 +1,19 @@
 {
   "dashboard": {
     "patient": {
-      "title": "Tableau de bord patient",
-      "welcome": "Bienvenue",
-      "my_appointments": "Mes rendez-vous",
-      "book_new": "Réserver un nouveau rendez-vous",
-      "no_appointments": "Aucun rendez-vous à venir"
+      "title": "Patient Dashboard",
+      "welcome": "Welcome back",
+      "upcoming_appointments": "Upcoming Appointments",
+      "no_appointments": "No upcoming appointments",
+      "book_appointment": "Book an appointment",
+      "my_doctors": "My Doctors",
+      "settings": "Settings"
     },
     "doctor": {
-      "title": "Tableau de bord médecin",
-      "my_calendar": "Mon calendrier",
-      "my_patients": "Mes patients",
-      "settings": "Paramètres"
+      "title": "Doctor Dashboard",
+      "my_calendar": "My Calendar",
+      "my_patients": "My Patients",
+      "settings": "Settings"
     }
   }
 }
