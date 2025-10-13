@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, Clock, Euro } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Doctor {
   id: string;
@@ -25,6 +26,7 @@ interface Doctor {
 export default function BookAppointment() {
   const [location] = useLocation();
   const { user, isLoading: authLoading } = useAuth();
+  const { t } = useTranslation('booking');
   
   // Auth guard: redirect unauthenticated users to login flow
   if (authLoading) {
@@ -57,12 +59,12 @@ export default function BookAppointment() {
           <div className="max-w-md mx-auto text-center">
             <Card className="rounded-2xl shadow-lg p-6">
               <CardContent>
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Booking Request</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('booking.page.invalid_title')}</h1>
                 <p className="text-gray-600 mb-8">
-                  The booking information is incomplete or invalid.
+                  {t('booking.page.invalid_message')}
                 </p>
                 <Button onClick={() => window.location.href = '/'} className="w-full">
-                  Return to Home
+                  {t('booking.page.return_home')}
                 </Button>
               </CardContent>
             </Card>
@@ -129,12 +131,12 @@ export default function BookAppointment() {
           <div className="max-w-md mx-auto text-center">
             <Card className="rounded-2xl shadow-lg p-6">
               <CardContent>
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Doctor Not Found</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('booking.page.doctor_not_found')}</h1>
                 <p className="text-gray-600 mb-8">
-                  The requested doctor could not be found.
+                  {t('booking.page.doctor_not_found_message')}
                 </p>
                 <Button onClick={() => window.location.href = '/'} className="w-full">
-                  Return to Home
+                  {t('booking.page.return_home')}
                 </Button>
               </CardContent>
             </Card>
@@ -156,47 +158,47 @@ export default function BookAppointment() {
           <Card className="rounded-2xl shadow-lg p-6">
             <CardContent className="p-0">
               {/* Back link */}
-              <button 
+              <button
                 onClick={() => window.location.href = `/doctor/${doctorId}`}
                 className="flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to profile
+                {t('booking.page.back_to_profile')}
               </button>
 
               {/* Title and subtitle */}
               <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">Book appointment</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-1">{t('booking.page.title')}</h1>
                 <p className="text-gray-600">
-                  with Dr. {doctor?.user.firstName} {doctor?.user.lastName}
+                  {t('booking.page.with_doctor')} {doctor?.user.firstName} {doctor?.user.lastName}
                 </p>
               </div>
 
               {/* Booking Summary */}
               <div className="border rounded-lg p-4 mb-6 bg-gray-50">
-                <h3 className="font-semibold text-gray-900 mb-3">Booking Summary</h3>
-                
+                <h3 className="font-semibold text-gray-900 mb-3">{t('booking.page.summary_title')}</h3>
+
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                      <span>Date</span>
+                      <span>{t('booking.page.date_label')}</span>
                     </div>
                     <span className="font-medium">{slotTime.date}</span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                      <span>Time</span>
+                      <span>{t('booking.page.time_label')}</span>
                     </div>
                     <span className="font-medium">{slotTime.time}</span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <Euro className="h-4 w-4 text-gray-400 mr-2" />
-                      <span>Price</span>
+                      <span>{t('booking.page.price_label')}</span>
                     </div>
                     <span className="font-medium">€{price}</span>
                   </div>
@@ -205,14 +207,14 @@ export default function BookAppointment() {
 
               {/* Checkout button for authenticated users */}
               <div>
-                <p className="text-gray-900 mb-4 font-medium">Ready to proceed with your booking</p>
-                
+                <p className="text-gray-900 mb-4 font-medium">{t('booking.page.ready_message')}</p>
+
                 <Button
                   onClick={handleProceedToCheckout}
                   className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded-lg"
                   aria-label="Proceed to secure checkout"
                 >
-                  Proceed to Checkout
+                  {t('booking.page.proceed_button')}
                 </Button>
               </div>
             </CardContent>

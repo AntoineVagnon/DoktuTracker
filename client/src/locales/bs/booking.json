@@ -2,11 +2,19 @@
   "booking": {
     "page": {
       "title": "Zakažite termin",
-      "select_date": "Odaberite datum",
-      "select_time": "Odaberite vremenski termin",
-      "no_slots": "Nema dostupnih termina za ovaj datum",
-      "confirm_button": "Potvrdite rezervaciju",
-      "cancel_button": "Otkaži"
+      "with_doctor": "sa Dr.",
+      "back_to_profile": "Nazad na profil",
+      "summary_title": "Pregled rezervacije",
+      "date_label": "Datum",
+      "time_label": "Vrijeme",
+      "price_label": "Cijena",
+      "ready_message": "Spremni ste za nastavak vaše rezervacije",
+      "proceed_button": "Nastavite na plaćanje",
+      "invalid_title": "Nevažeći zahtjev za rezervaciju",
+      "invalid_message": "Informacije o rezervaciji su nepotpune ili nevažeće.",
+      "doctor_not_found": "Doktor nije pronađen",
+      "doctor_not_found_message": "Traženi doktor nije pronađen.",
+      "return_home": "Povratak na početnu"
     }
   }
 }

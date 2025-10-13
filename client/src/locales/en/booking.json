@@ -1,12 +1,20 @@
 {
   "booking": {
     "page": {
-      "title": "Book an Appointment",
-      "select_date": "Select Date",
-      "select_time": "Select Time Slot",
-      "no_slots": "No available slots for this date",
-      "confirm_button": "Confirm Booking",
-      "cancel_button": "Cancel"
+      "title": "Book appointment",
+      "with_doctor": "with Dr.",
+      "back_to_profile": "Back to profile",
+      "summary_title": "Booking Summary",
+      "date_label": "Date",
+      "time_label": "Time",
+      "price_label": "Price",
+      "ready_message": "Ready to proceed with your booking",
+      "proceed_button": "Proceed to Checkout",
+      "invalid_title": "Invalid Booking Request",
+      "invalid_message": "The booking information is incomplete or invalid.",
+      "doctor_not_found": "Doctor Not Found",
+      "doctor_not_found_message": "The requested doctor could not be found.",
+      "return_home": "Return to Home"
     }
   }
 }
