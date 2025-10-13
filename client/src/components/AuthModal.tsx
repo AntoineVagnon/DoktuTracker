@@ -266,18 +266,18 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
           setAuthError(null); // Clear error when switching tabs
         }}>
           <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsTrigger value="login">{t('auth.login.title')}</TabsTrigger>
+            <TabsTrigger value="signup">{t('auth.register.title')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="login" className="space-y-4">
             <form onSubmit={loginForm.handleSubmit(handleLoginSubmit)} className="space-y-4">
               <div>
-                <Label htmlFor="login-email">Email</Label>
+                <Label htmlFor="login-email">{t('auth.login.email_field')}</Label>
                 <Input
                   id="login-email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.login.email_field')}
                   {...loginForm.register("email")}
                 />
                 {loginForm.formState.errors.email && (
@@ -288,11 +288,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
               </div>
 
               <div>
-                <Label htmlFor="login-password">Password</Label>
+                <Label htmlFor="login-password">{t('auth.login.password_field')}</Label>
                 <Input
                   id="login-password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t('auth.login.password_field')}
                   {...loginForm.register("password")}
                 />
                 {loginForm.formState.errors.password && (
@@ -302,12 +302,12 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                 )}
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full"
                 disabled={loginMutation.isPending}
               >
-                {loginMutation.isPending ? "Signing In..." : "Sign In"}
+                {loginMutation.isPending ? "Signing In..." : t('auth.login.button')}
               </Button>
             </form>
 
@@ -318,17 +318,17 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                 disabled={isResettingPassword}
                 className="text-sm text-blue-600 hover:underline font-medium disabled:opacity-50"
               >
-                {isResettingPassword ? "Sending reset email..." : "Forgot your password? Reset it"}
+                {isResettingPassword ? "Sending reset email..." : t('auth.login.forgot_password')}
               </button>
-              
+
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account?{" "}
+                {t('auth.login.no_account')}{" "}
                 <button
                   type="button"
                   onClick={() => setActiveTab("signup")}
                   className="text-blue-600 hover:underline font-medium"
                 >
-                  Sign up
+                  {t('auth.login.sign_up_link')}
                 </button>
               </p>
             </div>
@@ -338,10 +338,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
             <form onSubmit={signupForm.handleSubmit(handleSignupSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="signup-firstName">First Name</Label>
+                  <Label htmlFor="signup-firstName">{t('auth.register.first_name')}</Label>
                   <Input
                     id="signup-firstName"
-                    placeholder="First name"
+                    placeholder={t('auth.register.first_name')}
                     {...signupForm.register("firstName")}
                   />
                   {signupForm.formState.errors.firstName && (
@@ -352,10 +352,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                 </div>
 
                 <div>
-                  <Label htmlFor="signup-lastName">Last Name</Label>
+                  <Label htmlFor="signup-lastName">{t('auth.register.last_name')}</Label>
                   <Input
                     id="signup-lastName"
-                    placeholder="Last name"
+                    placeholder={t('auth.register.last_name')}
                     {...signupForm.register("lastName")}
                   />
                   {signupForm.formState.errors.lastName && (
@@ -367,11 +367,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
               </div>
 
               <div>
-                <Label htmlFor="signup-email">Email</Label>
+                <Label htmlFor="signup-email">{t('auth.register.email_field')}</Label>
                 <Input
                   id="signup-email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.register.email_field')}
                   {...signupForm.register("email")}
                 />
                 {signupForm.formState.errors.email && (
@@ -382,11 +382,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
               </div>
 
               <div>
-                <Label htmlFor="signup-password">Password</Label>
+                <Label htmlFor="signup-password">{t('auth.register.password_field')}</Label>
                 <Input
                   id="signup-password"
                   type="password"
-                  placeholder="Choose a password (min. 6 characters)"
+                  placeholder={t('auth.register.password_field')}
                   {...signupForm.register("password")}
                 />
                 {signupForm.formState.errors.password && (
@@ -396,24 +396,24 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                 )}
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full"
                 disabled={signupMutation.isPending}
               >
-                {signupMutation.isPending ? "Creating Account..." : "Create Account"}
+                {signupMutation.isPending ? "Creating Account..." : t('auth.register.button')}
               </Button>
             </form>
 
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Already have an account?{" "}
+                {t('auth.register.have_account')}{" "}
                 <button
                   type="button"
                   onClick={() => setActiveTab("login")}
                   className="text-blue-600 hover:underline font-medium"
                 >
-                  Sign in
+                  {t('auth.register.login_link')}
                 </button>
               </p>
             </div>
