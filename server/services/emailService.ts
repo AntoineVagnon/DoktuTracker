@@ -174,8 +174,30 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
 
     await sgMail.send(msg);
     console.log(`✅ Email sent successfully to ${options.to} (${emailSize} bytes)`);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error sending email:', error);
+
+    // Log detailed SendGrid error information
+    if (error.response) {
+      console.error('📧 SendGrid Response Details:');
+      console.error('   Status Code:', error.response.statusCode);
+      console.error('   Status Text:', error.response.statusMessage);
+      console.error('   Headers:', JSON.stringify(error.response.headers, null, 2));
+      console.error('   Body:', JSON.stringify(error.response.body, null, 2));
+
+      // Log specific error messages from SendGrid
+      if (error.response.body?.errors) {
+        console.error('   SendGrid Error Messages:');
+        error.response.body.errors.forEach((err: any, index: number) => {
+          console.error(`      Error ${index + 1}:`, JSON.stringify(err, null, 2));
+        });
+      }
+    }
+
+    // Log the API key being used (masked)
+    console.error('   Using API Key:', sendGridManager.healthCheck().details.apiKey);
+    console.error('   From Email:', sendGridManager.healthCheck().details.fromEmail);
+
     throw error;
   }
 }
