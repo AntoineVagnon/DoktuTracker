@@ -293,7 +293,7 @@ export default function Dashboard() {
     const timeDiff = appointmentTime.getTime() - now.getTime();
     const minutesDiff = timeDiff / (1000 * 60);
 
-    return minutesDiff <= 5 && minutesDiff >= -30 && appointment.status === "paid";
+    return minutesDiff <= 10 && minutesDiff >= -60 && (appointment.status === "paid" || appointment.status === "confirmed");
   };
 
 
@@ -651,10 +651,10 @@ export default function Dashboard() {
 
                               <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                                 {/* Video Consultation Button - only show when appointment is live/joinable */}
-                                {appointment.status === 'paid' && appointment.zoomMeetingId && isAppointmentJoinable(appointment.appointmentDate) && (
-                                  <Button 
-                                    variant="default" 
-                                    size="sm" 
+                                {(appointment.status === 'paid' || appointment.status === 'confirmed') && appointment.zoomMeetingId && isAppointmentJoinable(appointment.appointmentDate) && (
+                                  <Button
+                                    variant="default"
+                                    size="sm"
                                     className="h-9 flex-1 sm:flex-none bg-green-600 hover:bg-green-700"
                                     onClick={() => setLocation(`/video-consultation/${appointment.id}`)}
                                   >
@@ -665,7 +665,7 @@ export default function Dashboard() {
                                 )}
                                 
                                 {/* Show meeting info for future appointments */}
-                                {appointment.status === 'paid' && appointment.zoomMeetingId && !isAppointmentJoinable(appointment.appointmentDate) && (
+                                {(appointment.status === 'paid' || appointment.status === 'confirmed') && appointment.zoomMeetingId && !isAppointmentJoinable(appointment.appointmentDate) && (
                                   <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-md">
                                     <Video className="h-4 w-4 mr-2" />
                                     <span>Video call available 10 min before appointment</span>
