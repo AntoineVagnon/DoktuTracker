@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Loader2, CreditCard, ChevronDown, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -41,6 +42,7 @@ interface PaymentFormProps {
 }
 
 const PaymentForm = ({ appointmentDetails, onPaymentSuccess, onCancel }: PaymentFormProps) => {
+  const { t } = useTranslation('checkout');
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -93,7 +95,7 @@ const PaymentForm = ({ appointmentDetails, onPaymentSuccess, onCancel }: Payment
         setClientSecret(paymentData.clientSecret);
       } catch (error) {
         console.error('Error creating appointment and payment intent:', error);
-        setErrorMessage('Failed to initialize payment. Please try again.');
+        setErrorMessage(t('checkout.errors.payment_init_failed'));
         setPaymentStatus('error');
       }
     };
@@ -167,9 +169,9 @@ const PaymentForm = ({ appointmentDetails, onPaymentSuccess, onCancel }: Payment
     return (
       <div className="text-center py-8">
         <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-        <h3 className="text-xl font-semibold text-green-700 mb-2">Payment Successful!</h3>
-        <p className="text-gray-600 mb-4">Your appointment has been confirmed.</p>
-        <p className="text-sm text-gray-500">Redirecting to your dashboard...</p>
+        <h3 className="text-xl font-semibold text-green-700 mb-2">{t('checkout.success.title')}</h3>
+        <p className="text-gray-600 mb-4">{t('checkout.success.message')}</p>
+        <p className="text-sm text-gray-500">{t('checkout.loading')}</p>
       </div>
     );
   }
@@ -179,28 +181,28 @@ const PaymentForm = ({ appointmentDetails, onPaymentSuccess, onCancel }: Payment
       {/* Appointment Summary */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Appointment Details</CardTitle>
+          <CardTitle className="text-lg">{t('checkout.appointment_details')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between">
-            <span className="text-gray-600">Doctor:</span>
+            <span className="text-gray-600">{t('checkout.doctor_label')}</span>
             <span className="font-medium">{appointmentDetails.doctorName}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Specialty:</span>
+            <span className="text-gray-600">{t('checkout.specialty_label')}</span>
             <span>{appointmentDetails.specialty}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Date & Time:</span>
+            <span className="text-gray-600">{t('checkout.datetime_label')}</span>
             <span>
-              {appointmentDetails.date && appointmentDetails.time 
+              {appointmentDetails.date && appointmentDetails.time
                 ? format(new Date(`${appointmentDetails.date}T${appointmentDetails.time}`), 'MMM d, yyyy • HH:mm')
                 : 'Invalid date'
               }
             </span>
           </div>
           <div className="flex justify-between items-center pt-2 border-t">
-            <span className="text-gray-600">Total:</span>
+            <span className="text-gray-600">{t('checkout.total_label')}</span>
             <Badge variant="outline" className="text-lg font-semibold text-blue-600">
               €{appointmentDetails.price.toFixed(2)}
             </Badge>
@@ -252,7 +254,7 @@ const PaymentForm = ({ appointmentDetails, onPaymentSuccess, onCancel }: Payment
           <CardHeader>
             <CardTitle className="text-lg flex items-center">
               <CreditCard className="h-5 w-5 mr-2" />
-              Payment Information
+              {t('checkout.payment_information')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -294,7 +296,7 @@ const PaymentForm = ({ appointmentDetails, onPaymentSuccess, onCancel }: Payment
             disabled={isProcessing}
             className="flex-1"
           >
-            Cancel
+            {t('checkout.cancel')}
           </Button>
           <Button
             type="submit"
@@ -304,10 +306,10 @@ const PaymentForm = ({ appointmentDetails, onPaymentSuccess, onCancel }: Payment
             {isProcessing ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Processing...
+                {t('checkout.processing_short')}
               </>
             ) : (
-              `Pay €${appointmentDetails.price.toFixed(2)}`
+              t('checkout.pay_button').replace('{{amount}}', appointmentDetails.price.toFixed(2))
             )}
           </Button>
         </div>
@@ -317,6 +319,7 @@ const PaymentForm = ({ appointmentDetails, onPaymentSuccess, onCancel }: Payment
 };
 
 export default function PaymentModal({ isOpen, onClose, appointmentDetails, onPaymentSuccess }: PaymentModalProps) {
+  const { t } = useTranslation('checkout');
   const [showCancelBanner, setShowCancelBanner] = useState(false);
 
   const handleClose = () => {
@@ -329,7 +332,7 @@ export default function PaymentModal({ isOpen, onClose, appointmentDetails, onPa
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Secure Payment</DialogTitle>
+            <DialogTitle>{t('checkout.secure_payment')}</DialogTitle>
           </DialogHeader>
           
           <Elements stripe={stripePromise}>
