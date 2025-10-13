@@ -1,22 +1,29 @@
 {
   "header": {
     "navigation": {
-      "menu_item": "Tableau de bord",
-      "button": "Déconnexion"
+      "home": "Home",
+      "doctors": "Doctors",
+      "how_it_works": "How it Works",
+      "pricing": "Pricing",
+      "dashboard": "Dashboard"
+    },
+    "auth": {
+      "sign_in": "Sign In",
+      "sign_up": "Sign Up Free",
+      "log_out": "Log out",
+      "logging_out": "Logging out..."
     }
   },
   "footer": {
     "links": {
-      "column_1_title": "Company",
-      "about": "À propos",
+      "company": "Company",
+      "about": "About",
       "contact": "Contact",
-      "column_2_title": "Legal",
-      "privacy": "Confidentialité",
-      "terms": "Conditions d'utilisation"
+      "legal": "Legal",
+      "privacy": "Privacy",
+      "terms": "Terms of Service"
     },
-    "copyright": {
-      "text": "© 2024 Doktu. All rights reserved."
-    }
+    "copyright": "© 2024 Doktu. All rights reserved."
   },
   "common": {
     "button": {

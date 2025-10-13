@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, User, Calendar, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 import { apiRequest } from "@/lib/queryClient";
 import AuthModal from "@/components/AuthModal";
 import { AllowanceDashboard } from "@/components/AllowanceDashboard";
@@ -20,6 +21,7 @@ export default function Header() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,9 +33,9 @@ export default function Header() {
   }, []);
 
   const navigation = [
-    { name: "Doctors", href: "#doctors" },
-    { name: "How it Works", href: "#how-it-works" },
-    { name: "Pricing", href: "#pricing" },
+    { nameKey: "header.navigation.doctors", href: "#doctors" },
+    { nameKey: "header.navigation.how_it_works", href: "#how-it-works" },
+    { nameKey: "header.navigation.pricing", href: "#pricing" },
   ];
 
   const getUserInitials = (user: any) => {
@@ -112,11 +114,11 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             {!isAuthenticated && navigation.map((item) => (
               <a
-                key={item.name}
+                key={item.nameKey}
                 href={item.href}
                 className="text-sm font-medium text-gray-700 hover:text-[hsl(207,100%,52%)] transition-colors"
               >
-                {item.name}
+                {t(item.nameKey)}
               </a>
             ))}
           </nav>
@@ -128,23 +130,23 @@ export default function Header() {
 
             {!isAuthenticated ? (
               <>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   onClick={() => {
                     setAuthModalTab("login");
                     setIsAuthModalOpen(true);
                   }}
                 >
-                  Sign In
+                  {t('header.auth.sign_in')}
                 </Button>
-                <Button 
+                <Button
                   className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-lg transition-all duration-200"
                   onClick={() => {
                     setAuthModalTab("signup");
                     setIsAuthModalOpen(true);
                   }}
                 >
-                  Sign Up Free
+                  {t('header.auth.sign_up')}
                 </Button>
               </>
             ) : (
@@ -161,12 +163,12 @@ export default function Header() {
                   <DropdownMenuItem asChild>
                     <Link href={getDashboardRoute()} className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      <span>Dashboard</span>
+                      <span>{t('header.navigation.dashboard')}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
+                    <span>{isLoggingOut ? t('header.auth.logging_out') : t('header.auth.log_out')}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -185,32 +187,32 @@ export default function Header() {
                   <nav className="flex flex-col space-y-4">
                     {navigation.map((item) => (
                       <a
-                        key={item.name}
+                        key={item.nameKey}
                         href={item.href}
                         className="text-lg font-medium text-gray-700 hover:text-[hsl(207,100%,52%)] transition-colors"
                       >
-                        {item.name}
+                        {t(item.nameKey)}
                       </a>
                     ))}
                     <div className="pt-4 space-y-2">
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         className="w-full justify-start"
                         onClick={() => {
                           setAuthModalTab("login");
                           setIsAuthModalOpen(true);
                         }}
                       >
-                        Sign In
+                        {t('header.auth.sign_in')}
                       </Button>
-                      <Button 
+                      <Button
                         className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]"
                         onClick={() => {
                           setAuthModalTab("signup");
                           setIsAuthModalOpen(true);
                         }}
                       >
-                        Sign Up Free
+                        {t('header.auth.sign_up')}
                       </Button>
                     </div>
                   </nav>

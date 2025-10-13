@@ -1,22 +1,29 @@
 {
   "header": {
     "navigation": {
-      "menu_item": "Kontrolna tabla",
-      "button": "Odjava"
+      "home": "Početna",
+      "doctors": "Doktori",
+      "how_it_works": "Kako funkcionira",
+      "pricing": "Cijene",
+      "dashboard": "Kontrolna tabla"
+    },
+    "auth": {
+      "sign_in": "Prijavite se",
+      "sign_up": "Registrujte se",
+      "log_out": "Odjava",
+      "logging_out": "Odjavljuje se..."
     }
   },
   "footer": {
     "links": {
-      "column_1_title": "Kompanija",
+      "company": "Kompanija",
       "about": "O nama",
       "contact": "Kontakt",
-      "column_2_title": "Pravno",
+      "legal": "Pravno",
       "privacy": "Privatnost",
       "terms": "Uslovi korištenja"
     },
-    "copyright": {
-      "text": "© 2024 Doktu. Sva prava zadržana."
-    }
+    "copyright": "© 2024 Doktu. Sva prava zadržana."
   },
   "common": {
     "button": {
