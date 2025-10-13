@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Clock, Star, Calendar, MapPin, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
@@ -10,6 +10,7 @@ import { formatUserFullName, getUserInitials } from "@/lib/nameUtils";
 import { useAvailabilitySync } from "@/hooks/useAvailabilitySync";
 import { useAuth } from "@/hooks/useAuth";
 import { format, addDays, startOfWeek, isSameDay } from "date-fns";
+import { bs as bosnianLocale } from "date-fns/locale";
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import Header from "@/components/Header";
@@ -17,6 +18,7 @@ import { analytics } from "@/lib/analytics";
 import { convertSlotTimeToLocal } from "@/lib/dateUtils";
 import { BannerSystem } from "@/components/BannerSystem";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/hooks/useLanguage";
 
 // Helper function to translate French specialties to English
 function translateSpecialty(specialty: string): string {
@@ -43,6 +45,7 @@ interface Doctor {
     firstName: string | null;
     lastName: string | null;
     title: string | null;
+    profileImageUrl?: string | null;
   } | null;
   specialty: string;
   rating: string;
@@ -65,9 +68,13 @@ interface TimeSlot {
 
 export default function DoctorProfile() {
   const { t } = useTranslation('doctors');
+  const { language } = useLanguage();
   const params = useParams();
   const doctorId = params.id;
   const { user } = useAuth();
+
+  // Get date-fns locale based on current language
+  const dateLocale = language === 'bs' ? bosnianLocale : undefined;
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 })); // Monday start
   const [isNewBookingInProgress, setIsNewBookingInProgress] = useState(false);
@@ -266,6 +273,11 @@ export default function DoctorProfile() {
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="flex items-center space-x-6">
             <Avatar className="h-24 w-24">
+              <AvatarImage
+                src={doctor.user?.profileImageUrl || undefined}
+                alt={doctorName}
+                className="object-cover"
+              />
               <AvatarFallback className="bg-white/20 text-white font-bold text-2xl">
                 {initials}
               </AvatarFallback>
@@ -403,6 +415,11 @@ export default function DoctorProfile() {
               <CardContent className="p-4">
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-12 w-12">
+                    <AvatarImage
+                      src={doctor.user?.profileImageUrl || undefined}
+                      alt={doctorName}
+                      className="object-cover"
+                    />
                     <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold">
                       {initials}
                     </AvatarFallback>
@@ -463,7 +480,7 @@ export default function DoctorProfile() {
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
                     <span className="text-sm font-medium">
-                      {t('doctors.profile.slots_week_of')} {format(weekStart, 'MMM d')}
+                      {t('doctors.profile.slots_week_of')} {format(weekStart, 'MMM d', { locale: dateLocale })}
                     </span>
                     <Button
                       variant="ghost"
@@ -480,7 +497,7 @@ export default function DoctorProfile() {
                       const isSelected = isSameDay(day, selectedDate);
                       const hasSlots = daysWithSlots.has(format(day, 'yyyy-MM-dd'));
                       const dayNum = format(day, 'd');
-                      const dayName = format(day, 'EEE');
+                      const dayName = format(day, 'EEE', { locale: dateLocale });
                       
                       return (
                         <button
@@ -506,7 +523,7 @@ export default function DoctorProfile() {
 
                   {/* Selected day header */}
                   <div className="text-center pt-2">
-                    <h3 className="font-medium">{t('doctors.profile.slots_today')} {format(selectedDate, 'dd MMM')}</h3>
+                    <h3 className="font-medium">{t('doctors.profile.slots_today')} {format(selectedDate, 'dd MMM', { locale: dateLocale })}</h3>
                     <p className="text-xs text-gray-500">{selectedDateSlots.length} {t('doctors.profile.slots_available')}</p>
                     <p className="text-xs text-gray-400">{t('doctors.profile.slots_timezone')}</p>
                   </div>
