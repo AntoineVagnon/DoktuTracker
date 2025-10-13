@@ -11,11 +11,13 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from '@/components/CheckoutForm';
 import { apiRequest } from '@/lib/queryClient';
+import { useTranslation } from '@/hooks/useTranslation';
 
 console.log('Stripe Publishable Key:', import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ? 'Available' : 'Missing');
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export default function Checkout() {
+  const { t } = useTranslation('checkout');
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -50,8 +52,8 @@ export default function Checkout() {
     const initializeCheckout = async () => {
       if (!doctorId || !slot || !price) {
         toast({
-          title: "Invalid Booking Request",
-          description: "Missing booking information. Please start the booking process again.",
+          title: t('checkout.errors.invalid_booking'),
+          description: t('checkout.errors.missing_info'),
           variant: "destructive"
         });
         setLocation('/');
@@ -190,25 +192,25 @@ export default function Checkout() {
           if (appointmentData.status === 'paid') {
             console.log('🎟️ Existing appointment is already paid! Redirecting to dashboard...');
             toast({
-              title: "Appointment Already Confirmed!",
-              description: "Your appointment is already booked and confirmed.",
+              title: t('checkout.success.already_confirmed'),
+              description: t('checkout.success.already_booked'),
             });
-            
+
             // Redirect to dashboard after short delay
             setTimeout(() => {
               setLocation('/dashboard');
             }, 1500);
             return;
           }
-          
+
           // Also check coverage result if available
           if (appointmentData.coverageResult?.isCovered) {
             console.log('🎟️ Existing appointment covered by membership! Redirecting to dashboard...');
             toast({
-              title: "Appointment Confirmed!",
-              description: `Your appointment has been booked using your membership credits. ${appointmentData.coverageResult.remainingAllowance} credits remaining.`,
+              title: t('checkout.success.membership_confirmed'),
+              description: t('checkout.success.membership_credits').replace('{{remaining}}', appointmentData.coverageResult.remainingAllowance),
             });
-            
+
             // Redirect to dashboard after short delay
             setTimeout(() => {
               setLocation('/dashboard');
@@ -302,10 +304,10 @@ export default function Checkout() {
           if (appointmentData.coverageResult?.isCovered) {
             console.log('🎟️ Appointment covered by membership! Redirecting to dashboard...');
             toast({
-              title: "Appointment Confirmed!",
-              description: `Your appointment has been booked using your membership credits. ${appointmentData.coverageResult.remainingAllowance} credits remaining.`,
+              title: t('checkout.success.membership_confirmed'),
+              description: t('checkout.success.membership_credits').replace('{{remaining}}', appointmentData.coverageResult.remainingAllowance),
             });
-            
+
             // Redirect to dashboard after short delay
             setTimeout(() => {
               setLocation('/dashboard');
@@ -359,8 +361,8 @@ export default function Checkout() {
       } catch (error) {
         console.error('Checkout initialization error:', error);
         toast({
-          title: "Error",
-          description: "Failed to initialize payment. Please try again.",
+          title: t('checkout.errors.general_error'),
+          description: t('checkout.errors.payment_init_failed'),
           variant: "destructive"
         });
         setLocation('/');
@@ -390,8 +392,8 @@ export default function Checkout() {
 
   const handlePaymentSuccess = () => {
     toast({
-      title: "Payment Successful!",
-      description: "Your appointment has been confirmed.",
+      title: t('checkout.success.title'),
+      description: t('checkout.success.message'),
     });
     setLocation('/dashboard');
   };
@@ -399,8 +401,8 @@ export default function Checkout() {
   const handlePayWithSavedCard = async () => {
     if (!selectedPaymentMethod || !bookingData?.appointmentId) {
       toast({
-        title: "Error",
-        description: "Missing payment method or appointment information",
+        title: t('checkout.errors.general_error'),
+        description: t('checkout.errors.missing_payment_method'),
         variant: "destructive"
       });
       return;
@@ -437,8 +439,8 @@ export default function Checkout() {
     } catch (error: any) {
       console.error('❌ Payment error:', error);
       toast({
-        title: "Payment Failed",
-        description: error.message || "Unable to process payment. Please try again.",
+        title: t('checkout.errors.payment_failed'),
+        description: error.message || t('checkout.errors.payment_failed_message'),
         variant: "destructive"
       });
       setIsProcessingPayment(false);
@@ -478,7 +480,7 @@ export default function Checkout() {
           <Card className="p-8">
             <div className="flex items-center space-x-4">
               <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-              <span className="text-lg">Preparing your appointment...</span>
+              <span className="text-lg">{t('checkout.loading')}</span>
             </div>
           </Card>
         </div>
@@ -494,15 +496,15 @@ export default function Checkout() {
           <div className="max-w-md mx-auto">
             <Card className="p-8 text-center">
               <AlertTriangle className="h-16 w-16 text-orange-500 mx-auto mb-4" />
-              <CardTitle className="text-xl mb-4">Slot Expired</CardTitle>
+              <CardTitle className="text-xl mb-4">{t('checkout.expired_title')}</CardTitle>
               <p className="text-gray-600 mb-6">
-                Your reserved time slot has expired. Please choose a new time.
+                {t('checkout.expired_message')}
               </p>
-              <Button 
+              <Button
                 onClick={() => setLocation(`/doctor/${doctorId}`)}
                 className="w-full"
               >
-                Choose New Time
+                {t('checkout.expired_button')}
               </Button>
             </Card>
           </div>
@@ -531,7 +533,7 @@ export default function Checkout() {
                 <div className="flex items-center space-x-2 text-orange-800">
                   <Clock className="h-4 w-4" />
                   <span className="text-sm font-medium">
-                    Time remaining: {formatTimeRemaining(timeRemaining)}
+                    {t('checkout.time_remaining')} {formatTimeRemaining(timeRemaining)}
                   </span>
                 </div>
               </CardContent>
@@ -541,12 +543,12 @@ export default function Checkout() {
           {/* Booking Summary */}
           <Card>
             <CardHeader>
-              <CardTitle>Confirm Your Appointment</CardTitle>
+              <CardTitle>{t('checkout.confirm_title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center text-gray-600">
-                  <strong className="text-gray-900 mr-2">Doctor:</strong>
+                  <strong className="text-gray-900 mr-2">{t('checkout.doctor_label')}</strong>
                   {doctor.firstName} {doctor.lastName}
                 </div>
                 <div className="flex items-center text-gray-600">
@@ -568,7 +570,7 @@ export default function Checkout() {
           {/* Payment Form */}
           <Card>
             <CardHeader>
-              <CardTitle>Payment Details</CardTitle>
+              <CardTitle>{t('checkout.payment_title')}</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               {/* Show saved payment methods if available */}
@@ -576,7 +578,7 @@ export default function Checkout() {
                 <div className="space-y-4">
                   {/* Saved Payment Methods */}
                   <div>
-                    <Label className="text-sm font-medium mb-3 block">Select Payment Method</Label>
+                    <Label className="text-sm font-medium mb-3 block">{t('checkout.saved_method_label')}</Label>
                     <RadioGroup
                       value={selectedPaymentMethod || ''}
                       onValueChange={setSelectedPaymentMethod}
@@ -598,12 +600,12 @@ export default function Checkout() {
                                 {formatCardBrand(method.card?.brand || 'Card')} •••• {method.card?.last4}
                               </div>
                               <div className="text-sm text-gray-500">
-                                Expires {method.card?.exp_month}/{method.card?.exp_year}
+                                {t('checkout.card_expires')} {method.card?.exp_month}/{method.card?.exp_year}
                               </div>
                             </div>
                             {method.is_default && (
                               <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                Default
+                                {t('checkout.card_default')}
                               </span>
                             )}
                           </Label>
@@ -622,11 +624,11 @@ export default function Checkout() {
                     {isProcessingPayment ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Processing Payment...
+                        {t('checkout.processing')}
                       </>
                     ) : (
                       <>
-                        Pay €{bookingData.price}
+                        {t('checkout.pay_button').replace('{{amount}}', bookingData.price)}
                       </>
                     )}
                   </Button>
@@ -638,7 +640,7 @@ export default function Checkout() {
                       onClick={() => setUseNewCard(true)}
                       className="w-full"
                     >
-                      Use a Different Card
+                      {t('checkout.use_different_card')}
                     </Button>
                   </div>
                 </div>
@@ -652,7 +654,7 @@ export default function Checkout() {
                         onClick={() => setUseNewCard(false)}
                         className="text-sm"
                       >
-                        ← Back to Saved Cards
+                        {t('checkout.back_to_saved')}
                       </Button>
                     </div>
                   )}
@@ -676,14 +678,14 @@ export default function Checkout() {
                   ) : (
                     <div className="flex items-center justify-center py-8">
                       <Loader2 className="h-6 w-6 animate-spin text-blue-600 mr-2" />
-                      <span>Preparing payment...</span>
+                      <span>{t('checkout.preparing_payment')}</span>
                     </div>
                   )}
                 </>
               )}
 
               <p className="text-xs text-gray-500 text-center mt-4">
-                Secure payment powered by Stripe
+                {t('checkout.secure_by_stripe')}
               </p>
             </CardContent>
           </Card>
