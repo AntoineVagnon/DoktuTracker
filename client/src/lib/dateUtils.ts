@@ -123,42 +123,42 @@ export interface AppointmentWithTiming {
 
 /**
  * Get the timing status of an appointment based on current time
- * - upcoming: 5+ minutes before start time
- * - live: within 5 minutes of start time until end time (assumes 30-minute duration)
+ * - upcoming: 10+ minutes before start time
+ * - live: within 10 minutes of start time until end time (assumes 30-minute duration)
  * - completed: past the end time
  */
 export function getAppointmentTimingStatus(appointmentDate: string): AppointmentTimingStatus {
   const now = new Date();
-  
+
   // Convert UTC appointment time to local time
   const localAppointmentTime = utcToLocal(appointmentDate);
-  
+
   // Remove detailed logging now that timezone fix is confirmed working
   // console.log('📊 Timing Status Check for appointment:', { appointmentDate, status: 'checking...' });
-  
+
   // Validate date
   if (isNaN(localAppointmentTime.getTime())) {
     console.error('Invalid appointment date:', appointmentDate);
     return 'upcoming'; // Default to upcoming for invalid dates
   }
-  
+
   // Calculate time differences in minutes
   const timeDifference = (localAppointmentTime.getTime() - now.getTime()) / (1000 * 60);
-  
+
   // Assume 30-minute appointment duration
   const appointmentDurationMinutes = 30;
   const appointmentEndTime = localAppointmentTime.getTime() + (appointmentDurationMinutes * 60 * 1000);
   const timeUntilEnd = (appointmentEndTime - now.getTime()) / (1000 * 60);
-  
+
   // console.log('📊 Time calculations:', { timeDifference: timeDifference.toFixed(1), timeUntilEnd: timeUntilEnd.toFixed(1) });
-  
-  // Logic for timing status
+
+  // Logic for timing status - updated to match 10-minute video call access window
   if (timeUntilEnd <= 0) {
     return 'completed'; // Past the end time
-  } else if (timeDifference <= 5) {
-    return 'live'; // Within 5 minutes of start time (or already started but not ended)
+  } else if (timeDifference <= 10) {
+    return 'live'; // Within 10 minutes of start time (or already started but not ended)
   } else {
-    return 'upcoming'; // More than 5 minutes before start time
+    return 'upcoming'; // More than 10 minutes before start time
   }
 }
 
