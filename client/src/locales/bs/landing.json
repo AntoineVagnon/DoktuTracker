@@ -40,7 +40,16 @@
     },
     "testimonials": {
       "title": "Šta naši pacijenti kažu",
-      "subtitle": "Pridružite se hiljadama zadovoljnih pacijenata koji su iskusili kvalitetnu zdravstvenu njegu kroz našu platformu."
+      "subtitle": "Pridružite se hiljadama zadovoljnih pacijenata koji su iskusili kvalitetnu zdravstvenu njegu kroz našu platformu.",
+      "testimonial_1_name": "Maria Kowalski",
+      "testimonial_1_location": "Berlin, Njemačka",
+      "testimonial_1_comment": "Izvanredna usluga! Uspjela sam da se konsultujem sa specijalistom za nekoliko minuta. Doktor je bio profesionalan i pružio je izvrsnu njegu.",
+      "testimonial_2_name": "Jean Dubois",
+      "testimonial_2_location": "Pariz, Francuska",
+      "testimonial_2_comment": "Vrlo prikladna i sigurna platforma. Kvalitet videa je bio izvrstan i dobila sam recept odmah nakon konsultacije.",
+      "testimonial_3_name": "Anna Rodriguez",
+      "testimonial_3_location": "Madrid, Španija",
+      "testimonial_3_comment": "Savršeno za zaposlene profesionalce. Uspjela sam da dobijem medicinski savjet tokom pauze za ručak bez napuštanja kancelarije."
     },
     "pricing": {
       "title": "Odaberite svoj plan",

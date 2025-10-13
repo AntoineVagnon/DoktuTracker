@@ -205,24 +205,24 @@ export default function Landing() {
 
   const testimonials = [
     {
-      name: "Maria Kowalski",
-      location: "Berlin, Germany",
+      nameKey: "landing.testimonials.testimonial_1_name",
+      locationKey: "landing.testimonials.testimonial_1_location",
       rating: 5,
-      comment: "Outstanding service! I was able to consult with a specialist within minutes. The doctor was professional and provided excellent care.",
+      commentKey: "landing.testimonials.testimonial_1_comment",
       initials: "MK",
     },
     {
-      name: "Jean Dubois",
-      location: "Paris, France",
+      nameKey: "landing.testimonials.testimonial_2_name",
+      locationKey: "landing.testimonials.testimonial_2_location",
       rating: 5,
-      comment: "Very convenient and secure platform. The video quality was excellent and I received my prescription immediately after the consultation.",
+      commentKey: "landing.testimonials.testimonial_2_comment",
       initials: "JD",
     },
     {
-      name: "Anna Rodriguez",
-      location: "Madrid, Spain",
+      nameKey: "landing.testimonials.testimonial_3_name",
+      locationKey: "landing.testimonials.testimonial_3_location",
       rating: 5,
-      comment: "Perfect for busy professionals. I was able to get medical advice during my lunch break without leaving the office.",
+      commentKey: "landing.testimonials.testimonial_3_comment",
       initials: "AR",
     },
   ];
@@ -522,14 +522,14 @@ export default function Landing() {
                       <Star key={i} className="h-4 w-4 fill-current" />
                     ))}
                   </div>
-                  <p className="text-gray-600 mb-6">"{testimonial.comment}"</p>
+                  <p className="text-gray-600 mb-6">"{t(testimonial.commentKey)}"</p>
                   <div className="flex items-center">
                     <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
                       <span className="text-gray-600 font-semibold">{testimonial.initials}</span>
                     </div>
                     <div className="ml-4">
-                      <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-600">{testimonial.location}</p>
+                      <h4 className="font-semibold text-gray-900">{t(testimonial.nameKey)}</h4>
+                      <p className="text-sm text-gray-600">{t(testimonial.locationKey)}</p>
                     </div>
                   </div>
                 </CardContent>

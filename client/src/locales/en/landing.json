@@ -11,6 +11,7 @@
     "features": {
       "title": "Our Most Picked Medical Team",
       "subtitle": "Connect with certified specialists across various medical fields. All our doctors are verified and highly rated by patients.",
+      "see_all_doctors": "See All Doctors",
       "feature_1_title": "GDPR Compliant",
       "feature_1_description": "Your medical data is protected with the highest security standards and European privacy regulations.",
       "feature_2_title": "24/7 Availability",
@@ -24,6 +25,8 @@
     },
     "how_it_works": {
       "title": "Simple booking process—set if available doctors first",
+      "subtitle": "Get professional medical care from the comfort of your home in just three simple steps.",
+      "start_booking_cta": "Start Booking Now",
       "step_1_title": "1. Find Your Doctor",
       "step_1_description": "Browse our verified specialists and check their real-time availability. Filter by specialty language and rating.",
       "step_2_title": "2. Book Instantly",
@@ -37,7 +40,16 @@
     },
     "testimonials": {
       "title": "What Our Patients Say",
-      "subtitle": "Join thousands of satisfied patients who have experienced quality healthcare through our platform."
+      "subtitle": "Join thousands of satisfied patients who have experienced quality healthcare through our platform.",
+      "testimonial_1_name": "Maria Kowalski",
+      "testimonial_1_location": "Berlin, Germany",
+      "testimonial_1_comment": "Outstanding service! I was able to consult with a specialist within minutes. The doctor was professional and provided excellent care.",
+      "testimonial_2_name": "Jean Dubois",
+      "testimonial_2_location": "Paris, France",
+      "testimonial_2_comment": "Very convenient and secure platform. The video quality was excellent and I received my prescription immediately after the consultation.",
+      "testimonial_3_name": "Anna Rodriguez",
+      "testimonial_3_location": "Madrid, Spain",
+      "testimonial_3_comment": "Perfect for busy professionals. I was able to get medical advice during my lunch break without leaving the office."
     },
     "pricing": {
       "title": "Choose Your Plan",
