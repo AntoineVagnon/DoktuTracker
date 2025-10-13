@@ -555,7 +555,6 @@ export default function DoctorProfile() {
                                 const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${slot.id}`;
                                 console.log('Slot held successfully, redirecting to register:', registerUrl);
                                 window.location.href = registerUrl;
-                                }
                               } else {
                                 // Slot couldn't be held (probably taken by another user)
                                 const error = await response.json();
