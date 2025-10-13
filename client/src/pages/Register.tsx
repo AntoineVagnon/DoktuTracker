@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, Euro } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useEffect } from "react";
 
 export default function Register() {
   const [location] = useLocation();
@@ -22,6 +23,26 @@ export default function Register() {
   console.log('Window URL search:', window.location.search);
   console.log('Full window URL:', window.location.href);
   console.log('Parsed booking params:', { doctorId, slot, price });
+
+  // Check if user is already authenticated and redirect to checkout
+  useEffect(() => {
+    const authData = localStorage.getItem('doktu_auth');
+    if (authData) {
+      try {
+        const authObj = JSON.parse(authData);
+        // Validate that we have a valid access token
+        if (authObj.session?.access_token && doctorId && slot && price) {
+          console.log('✅ User already authenticated, redirecting to checkout');
+          const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}${slotId ? `&slotId=${slotId}` : ''}`;
+          window.location.href = checkoutUrl;
+        }
+      } catch (e) {
+        console.log('⚠️ Invalid auth data, clearing and showing register page');
+        localStorage.removeItem('doktu_auth');
+      }
+    }
+  }, [doctorId, slot, price, slotId]);
+
 
   const handleCreateAccount = () => {
     console.log('Create Account button clicked');
