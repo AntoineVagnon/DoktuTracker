@@ -15,25 +15,28 @@ app.set("trust proxy", 1); // Trust first proxy (required for rate limiting behi
 // ============================================================================
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  
+
   // Allow specific origins (no wildcard due to credentials)
-  if (origin === 'https://doktu-tracker.vercel.app' || 
-      origin === 'http://localhost:5000' || 
+  if (origin === 'https://www.doktu.co' ||
+      origin === 'https://doktu.co' ||
+      origin === 'https://doktu-tracker.vercel.app' ||
+      origin === 'http://localhost:5173' ||
+      origin === 'http://localhost:5000' ||
       origin === 'http://localhost:3000') {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  
+
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cache-Control, Pragma, X-Requested-With, Accept, Origin');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Max-Age', '86400'); // Cache preflight for 24 hours
-  
+
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
-  
+
   next();
 });
 
