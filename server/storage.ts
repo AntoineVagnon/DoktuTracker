@@ -3187,13 +3187,13 @@ export class PostgresStorage implements IStorage {
         or(
           // Live meetings: appointments happening now (started within last 15 mins)
           and(
-            eq(appointments.status, 'paid'),
+            inArray(appointments.status, ['paid', 'confirmed']),
             gte(appointments.appointmentDate, fifteenMinutesAgo),
             lte(appointments.appointmentDate, now)
           ),
           // Planned meetings: upcoming appointments within next 7 days
           and(
-            eq(appointments.status, 'paid'),
+            inArray(appointments.status, ['paid', 'confirmed']),
             gte(appointments.appointmentDate, now),
             lte(appointments.appointmentDate, sevenDaysFromNow)
           ),
@@ -3219,7 +3219,7 @@ export class PostgresStorage implements IStorage {
       } else if (apt.status === 'completed') {
         status = 'completed';
       } else if (minutesFromNow <= -15) {
-        // Meeting should have started more than 15 mins ago but still marked as paid
+        // Meeting should have started more than 15 mins ago but still marked as paid/confirmed
         status = 'issue';
         alertDetails = 'Meeting overdue - no connection established';
       } else if (minutesFromNow <= 0) {
