@@ -2613,7 +2613,24 @@ export async function registerRoutes(app: Express): Promise<void> {
       });
 
       console.log(`✅ Admin created appointment: ${appointment.id} for patient ${patientId} with doctor ${doctorId}`);
-      res.json(appointment);
+
+      // Create Zoom meeting for the appointment
+      try {
+        console.log(`📹 Creating Zoom meeting for appointment ${appointment.id}...`);
+        const zoomMeeting = await zoomService.createMeeting(appointment.id);
+        if (zoomMeeting) {
+          console.log(`✅ Zoom meeting created successfully: ${zoomMeeting.join_url}`);
+        } else {
+          console.warn(`⚠️ Zoom meeting creation skipped (Zoom not configured or failed)`);
+        }
+      } catch (zoomError: any) {
+        console.error(`❌ Error creating Zoom meeting for appointment ${appointment.id}:`, zoomError.message);
+        // Continue without Zoom - appointment is still valid
+      }
+
+      // Fetch the updated appointment with Zoom details
+      const updatedAppointment = await storage.getAppointment(appointment.id);
+      res.json(updatedAppointment || appointment);
     } catch (error: any) {
       console.error("Error creating admin appointment:", error);
       res.status(500).json({ message: error.message || "Failed to create appointment" });
