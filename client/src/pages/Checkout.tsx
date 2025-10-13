@@ -52,6 +52,16 @@ export default function Checkout() {
         return;
       }
 
+      // Check if user is authenticated before proceeding
+      const authData = localStorage.getItem('doktu_auth');
+      if (!authData) {
+        console.log('❌ User not authenticated, redirecting to login');
+        // Redirect to login with booking parameters to continue after login
+        const loginUrl = `/test-login?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}${slotId ? `&slotId=${slotId}` : ''}`;
+        window.location.href = loginUrl;
+        return;
+      }
+
       try {
         // Only check for held slots if we don't have an existing appointment
         let heldSlotData: any = {};
