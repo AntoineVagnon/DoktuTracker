@@ -16,6 +16,7 @@ import Header from "@/components/Header";
 import { analytics } from "@/lib/analytics";
 import { convertSlotTimeToLocal } from "@/lib/dateUtils";
 import { BannerSystem } from "@/components/BannerSystem";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Helper function to translate French specialties to English
 function translateSpecialty(specialty: string): string {
@@ -63,6 +64,7 @@ interface TimeSlot {
 }
 
 export default function DoctorProfile() {
+  const { t } = useTranslation('doctors');
   const params = useParams();
   const doctorId = params.id;
   const { user } = useAuth();
@@ -148,10 +150,10 @@ export default function DoctorProfile() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Invalid Doctor ID</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('doctors.profile.error_invalid_id')}</h2>
           <p className="text-gray-600">Doctor ID: {doctorId || 'undefined'}</p>
           <p className="text-gray-600">Params: {JSON.stringify(params)}</p>
-          <p className="text-gray-600">Please check the URL and try again.</p>
+          <p className="text-gray-600">{t('doctors.profile.error_invalid_message')}</p>
         </div>
       </div>
     );
@@ -169,7 +171,7 @@ export default function DoctorProfile() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Error Loading Doctor</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('doctors.profile.error_loading')}</h2>
           <p className="text-gray-600">Error: {doctorError.message}</p>
           <p className="text-gray-600">Doctor ID: {doctorId}</p>
         </div>
@@ -181,8 +183,8 @@ export default function DoctorProfile() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Doctor not found</h2>
-          <p className="text-gray-600">Please check the URL and try again.</p>
+          <h2 className="text-2xl font-bold text-gray-900">{t('doctors.profile.error_not_found')}</h2>
+          <p className="text-gray-600">{t('doctors.profile.error_invalid_message')}</p>
         </div>
       </div>
     );
@@ -245,7 +247,7 @@ export default function DoctorProfile() {
         <div className="max-w-7xl mx-auto">
           <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
             <ArrowLeft className="h-4 w-4 mr-1" />
-            Back to doctors
+            {t('doctors.profile.back_to_doctors')}
           </Link>
         </div>
       </div>
@@ -275,17 +277,17 @@ export default function DoctorProfile() {
               <div className="flex items-center space-x-6">
                 <div className="flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
-                  <span>Paris, France</span>
+                  <span>{t('doctors.profile.location')}</span>
                 </div>
-                
+
                 <div className="flex items-center">
                   {doctor.reviewCount > 0 ? (
                     <>
                       <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                      <span>{doctor.rating} ({doctor.reviewCount} reviews)</span>
+                      <span>{doctor.rating} ({doctor.reviewCount} {t('doctors.profile.reviews')})</span>
                     </>
                   ) : (
-                    <span>No ratings yet</span>
+                    <span>{t('doctors.profile.no_ratings')}</span>
                   )}
                 </div>
               </div>
@@ -303,11 +305,11 @@ export default function DoctorProfile() {
             {/* About section */}
             <Card>
               <CardHeader>
-                <CardTitle>About</CardTitle>
+                <CardTitle>{t('doctors.profile.about_title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 leading-relaxed">
-                  {doctor.bio || "Specialist focused on providing excellent patient care with years of experience in medical practice. Committed to delivering personalized treatment approaches tailored to each patient's unique needs."}
+                  {doctor.bio || t('doctors.profile.about_default')}
                 </p>
               </CardContent>
             </Card>
@@ -315,20 +317,20 @@ export default function DoctorProfile() {
             {/* Education and Experience */}
             <Card>
               <CardHeader>
-                <CardTitle>Education and Experience</CardTitle>
+                <CardTitle>{t('doctors.profile.education_title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {doctor.education || doctor.experience ? (
                   <div className="space-y-4">
                     {doctor.education && (
                       <div>
-                        <h4 className="font-semibold mb-2">Education</h4>
+                        <h4 className="font-semibold mb-2">{t('doctors.profile.education_label')}</h4>
                         <p className="text-gray-700 whitespace-pre-wrap">{doctor.education}</p>
                       </div>
                     )}
                     {doctor.experience && (
                       <div>
-                        <h4 className="font-semibold mb-2">Experience</h4>
+                        <h4 className="font-semibold mb-2">{t('doctors.profile.experience_label')}</h4>
                         <p className="text-gray-700 whitespace-pre-wrap">{doctor.experience}</p>
                       </div>
                     )}
@@ -337,11 +339,11 @@ export default function DoctorProfile() {
                   <ul className="space-y-3">
                     <li className="flex items-start">
                       <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
-                      <span>Specialized certification in {translateSpecialty(doctor.specialty)}</span>
+                      <span>{t('doctors.profile.education_bullet_1')} {translateSpecialty(doctor.specialty)}</span>
                     </li>
                     <li className="flex items-start">
                       <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></span>
-                      <span>Licensed medical practitioner</span>
+                      <span>{t('doctors.profile.education_bullet_2')}</span>
                     </li>
                   </ul>
                 )}
@@ -351,15 +353,15 @@ export default function DoctorProfile() {
             {/* Areas of expertise */}
             <Card>
               <CardHeader>
-                <CardTitle>Areas of Expertise</CardTitle>
+                <CardTitle>{t('doctors.profile.expertise_title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">General consultations</Badge>
-                  <Badge variant="secondary">Preventive care</Badge>
-                  <Badge variant="secondary">Chronic conditions</Badge>
-                  <Badge variant="secondary">Telemedicine</Badge>
-                  <Badge variant="secondary">Patient education</Badge>
+                  <Badge variant="secondary">{t('doctors.profile.expertise_consultations')}</Badge>
+                  <Badge variant="secondary">{t('doctors.profile.expertise_preventive')}</Badge>
+                  <Badge variant="secondary">{t('doctors.profile.expertise_chronic')}</Badge>
+                  <Badge variant="secondary">{t('doctors.profile.expertise_telemedicine')}</Badge>
+                  <Badge variant="secondary">{t('doctors.profile.expertise_education')}</Badge>
                 </div>
               </CardContent>
             </Card>
@@ -367,7 +369,7 @@ export default function DoctorProfile() {
             {/* Languages */}
             <Card>
               <CardHeader>
-                <CardTitle>Languages Spoken</CardTitle>
+                <CardTitle>{t('doctors.profile.languages_title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-4">
@@ -378,7 +380,7 @@ export default function DoctorProfile() {
                       </span>
                     ))
                   ) : (
-                    <span className="text-gray-500">No languages specified</span>
+                    <span className="text-gray-500">{t('doctors.profile.languages_none')}</span>
                   )}
                 </div>
               </CardContent>
@@ -387,11 +389,11 @@ export default function DoctorProfile() {
             {/* Medical approach */}
             <Card>
               <CardHeader>
-                <CardTitle>Medical Approach</CardTitle>
+                <CardTitle>{t('doctors.profile.approach_title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {doctor.medicalApproach || "Committed to providing compassionate, evidence-based medical care focused on patient well-being."}
+                  {doctor.medicalApproach || t('doctors.profile.approach_default')}
                 </p>
               </CardContent>
             </Card>
@@ -408,7 +410,7 @@ export default function DoctorProfile() {
                   <div>
                     <p className="font-semibold">{doctorName}</p>
                     <p className="text-sm text-gray-600">{translateSpecialty(doctor.specialty)}</p>
-                    <p className="text-sm text-gray-500">Medical ID: DOC-{doctor.id}</p>
+                    <p className="text-sm text-gray-500">{t('doctors.profile.medical_id')}{doctor.id}</p>
                   </div>
                 </div>
               </CardContent>
@@ -417,20 +419,20 @@ export default function DoctorProfile() {
             {/* FAQ */}
             <Card>
               <CardHeader>
-                <CardTitle>FAQ</CardTitle>
+                <CardTitle>{t('doctors.profile.faq_title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible>
                   <AccordionItem value="hours">
-                    <AccordionTrigger>What are Dr. {doctor.user?.firstName || "Doctor"}'s office hours?</AccordionTrigger>
+                    <AccordionTrigger>{t('doctors.profile.faq_hours_question').replace('{{name}}', doctor.user?.firstName || "Doctor")}</AccordionTrigger>
                     <AccordionContent>
-                      Available consultation times are shown in real-time in the booking calendar. Appointment availability may vary based on schedule and demand.
+                      {t('doctors.profile.faq_hours_answer')}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="new-patients">
-                    <AccordionTrigger>Does Dr. {doctor.user?.firstName || "Doctor"} accept new patients?</AccordionTrigger>
+                    <AccordionTrigger>{t('doctors.profile.faq_new_patients_question').replace('{{name}}', doctor.user?.firstName || "Doctor")}</AccordionTrigger>
                     <AccordionContent>
-                      Yes, new patients are welcome. You can book your consultation directly through our online platform by selecting an available time slot.
+                      {t('doctors.profile.faq_new_patients_answer')}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
@@ -443,28 +445,28 @@ export default function DoctorProfile() {
             <div className="sticky top-8">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-center">Available slots</CardTitle>
+                  <CardTitle className="text-center">{t('doctors.profile.slots_title')}</CardTitle>
                   <div className="text-center">
                     <Badge variant="outline" className="text-lg font-semibold text-blue-600">
-                      €{parseFloat(doctor.consultationPrice).toFixed(2)} - 30 min consultation
+                      €{parseFloat(doctor.consultationPrice).toFixed(2)} {t('doctors.profile.slots_consultation')}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Week navigation */}
                   <div className="flex items-center justify-between">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => setWeekStart(addDays(weekStart, -7))}
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
                     <span className="text-sm font-medium">
-                      Week of {format(weekStart, 'MMM d')}
+                      {t('doctors.profile.slots_week_of')} {format(weekStart, 'MMM d')}
                     </span>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => setWeekStart(addDays(weekStart, 7))}
                     >
@@ -504,9 +506,9 @@ export default function DoctorProfile() {
 
                   {/* Selected day header */}
                   <div className="text-center pt-2">
-                    <h3 className="font-medium">Today {format(selectedDate, 'dd MMM')}</h3>
-                    <p className="text-xs text-gray-500">{selectedDateSlots.length} available slots</p>
-                    <p className="text-xs text-gray-400">Times in Central European Time (GMT+1)</p>
+                    <h3 className="font-medium">{t('doctors.profile.slots_today')} {format(selectedDate, 'dd MMM')}</h3>
+                    <p className="text-xs text-gray-500">{selectedDateSlots.length} {t('doctors.profile.slots_available')}</p>
+                    <p className="text-xs text-gray-400">{t('doctors.profile.slots_timezone')}</p>
                   </div>
 
                   {/* Time slots for selected day */}
@@ -573,7 +575,7 @@ export default function DoctorProfile() {
                         </Button>
                       ))
                     ) : (
-                      <p className="text-center text-gray-500 py-4">No slots available</p>
+                      <p className="text-center text-gray-500 py-4">{t('doctors.profile.slots_none')}</p>
                     )}
                   </div>
                 </CardContent>
