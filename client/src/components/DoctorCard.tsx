@@ -140,7 +140,7 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
             {!isLoading && hasAvailability && nextSlot ? (
               <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-200">
                 <Clock className="h-3 w-3 mr-1" />
-                Next: {format(new Date(`${nextSlot.date}T00:00:00`), 'MMM d')}, {convertSlotTimeToLocal(nextSlot.date, nextSlot.startTime)}
+                {t('doctors.card.next_available')} {format(new Date(`${nextSlot.date}T00:00:00`), 'MMM d')}, {convertSlotTimeToLocal(nextSlot.date, nextSlot.startTime)}
               </Badge>
             ) : !isLoading ? (
               <Badge variant="secondary" className="bg-gray-100 text-gray-600">

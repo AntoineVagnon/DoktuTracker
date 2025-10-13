@@ -15,7 +15,8 @@
       "price_suffix": "/ consultation",
       "rating": "rating",
       "available": "Available",
-      "offline": "Offline"
+      "offline": "Offline",
+      "next_available": "Next:"
     },
     "profile": {
       "back_to_doctors": "Back to doctors",

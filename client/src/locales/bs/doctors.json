@@ -15,7 +15,8 @@
       "price_suffix": "/ konsultacija",
       "rating": "ocjena",
       "available": "Dostupan",
-      "offline": "Nedostupan"
+      "offline": "Nedostupan",
+      "next_available": "Sljedeći:"
     },
     "profile": {
       "back_to_doctors": "Nazad na doktore",
