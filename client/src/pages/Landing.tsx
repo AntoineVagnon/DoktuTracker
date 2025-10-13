@@ -297,7 +297,7 @@ export default function Landing() {
                   }}
                 >
                   <Calendar className="mr-3 h-5 w-5" />
-                  {t('landing.hero.button')}
+                  {t('landing.hero.button_1')}
                 </Button>
                 <Button
                   variant="outline"
@@ -307,7 +307,7 @@ export default function Landing() {
                 >
                   <a href="#how-it-works">
                     <Play className="mr-3 h-5 w-5" />
-                    {t('landing.hero.button')}
+                    {t('landing.hero.button_2')}
                   </a>
                 </Button>
               </div>
@@ -315,24 +315,24 @@ export default function Landing() {
               <div className="mt-8 flex items-center space-x-6">
                 <div className="flex items-center">
                   <div className="flex -space-x-2">
-                    <img 
-                      src={patientPhoto1} 
-                      alt="Patient testimonial" 
+                    <img
+                      src={patientPhoto1}
+                      alt="Patient testimonial"
                       className="w-8 h-8 rounded-full border-2 border-white object-cover"
                     />
-                    <img 
-                      src={patientPhoto2} 
-                      alt="Patient testimonial" 
+                    <img
+                      src={patientPhoto2}
+                      alt="Patient testimonial"
                       className="w-8 h-8 rounded-full border-2 border-white object-cover"
                     />
-                    <img 
-                      src={patientPhoto3} 
-                      alt="Patient testimonial" 
+                    <img
+                      src={patientPhoto3}
+                      alt="Patient testimonial"
                       className="w-8 h-8 rounded-full border-2 border-white object-cover"
                     />
                   </div>
                   <span className="ml-3 text-sm text-gray-600">
-                    {t('landing.hero.stats')}
+                    {t('landing.hero.stats_patients')}
                   </span>
                 </div>
                 <div className="flex items-center">
@@ -341,7 +341,7 @@ export default function Landing() {
                       <Star key={i} className="h-4 w-4 fill-current" />
                     ))}
                   </div>
-                  <span className="ml-2 text-sm text-gray-600">{t('landing.hero.stats')}</span>
+                  <span className="ml-2 text-sm text-gray-600">{t('landing.hero.stats_rating')}</span>
                 </div>
               </div>
             </div>

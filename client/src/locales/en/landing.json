@@ -3,8 +3,10 @@
     "hero": {
       "title": "Book one of our hand-picked doctors in under 2 minutes",
       "subtitle": "Connect with certified healthcare professionals for secure video consultations. Available 24/7 across Europe.",
-      "button": "See How it Works",
-      "stats": "4.9/5 rating"
+      "button_1": "Book Appointment",
+      "button_2": "See How it Works",
+      "stats_patients": "50000+ patients treated",
+      "stats_rating": "4.9/5 rating"
     },
     "features": {
       "title": "Our Most Picked Medical Team",

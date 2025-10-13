@@ -3,8 +3,10 @@
     "hero": {
       "title": "Zakažite termin kod naših pažljivo odabranih doktora za manje od 2 minute",
       "subtitle": "Povežite se sa certificiranim zdravstvenim radnicima za sigurne video konsultacije. Dostupno 24/7 širom Evrope.",
-      "button": "Pogledajte kako funkcionira",
-      "stats": "4.9/5 ocjena"
+      "button_1": "Zakažite termin",
+      "button_2": "Pogledajte kako funkcionira",
+      "stats_patients": "50000+ liječenih pacijenata",
+      "stats_rating": "4.9/5 ocjena"
     },
     "features": {
       "title": "Naš najtraženiji medicinski tim",
