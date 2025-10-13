@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Star, Search, Calendar, Video, Shield, Clock, UserCheck, Smartphone, History, CheckCircle, Phone, ArrowRight, Play } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -24,6 +25,7 @@ export default function Landing() {
   const [authModalTab, setAuthModalTab] = useState<"login" | "signup">("login");
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation('landing');
 
   // Log to verify new deployment (will remove after testing)
   console.log('🚀 Landing page loaded - CORS fix v2 - ' + new Date().toISOString());
@@ -278,13 +280,10 @@ export default function Landing() {
           <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
             <div className="lg:pr-8">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Book one of our hand-picked doctors in{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
-                  under 2 minutes
-                </span>
+                {t('landing.hero.title')}
               </h1>
               <p className="mt-6 text-xl text-gray-600 leading-relaxed">
-                Connect with certified healthcare professionals for secure video consultations. Available 24/7 across Europe.
+                {t('landing.hero.subtitle')}
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Button
@@ -297,7 +296,7 @@ export default function Landing() {
                   }}
                 >
                   <Calendar className="mr-3 h-5 w-5" />
-                  Book Appointment
+                  {t('landing.hero.button')}
                 </Button>
                 <Button
                   variant="outline"
@@ -307,7 +306,7 @@ export default function Landing() {
                 >
                   <a href="#how-it-works">
                     <Play className="mr-3 h-5 w-5" />
-                    See How it Works
+                    {t('landing.hero.button')}
                   </a>
                 </Button>
               </div>
@@ -332,7 +331,7 @@ export default function Landing() {
                     />
                   </div>
                   <span className="ml-3 text-sm text-gray-600">
-                    <span className="font-semibold text-gray-900">50,000+</span> patients treated
+                    {t('landing.hero.stats')}
                   </span>
                 </div>
                 <div className="flex items-center">
@@ -341,7 +340,7 @@ export default function Landing() {
                       <Star key={i} className="h-4 w-4 fill-current" />
                     ))}
                   </div>
-                  <span className="ml-2 text-sm text-gray-600">4.9/5 rating</span>
+                  <span className="ml-2 text-sm text-gray-600">{t('landing.hero.stats')}</span>
                 </div>
               </div>
             </div>
@@ -366,10 +365,10 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Our Most Picked Medical Team
+              {t('landing.features.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Connect with certified specialists across various medical fields. All our doctors are verified and highly rated by patients.
+              {t('landing.features.subtitle')}
             </p>
           </div>
 
@@ -422,7 +421,7 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Simple booking process—set if available doctors first
+              {t('landing.how_it_works.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Get professional medical care from the comfort of your home in just three simple steps.
