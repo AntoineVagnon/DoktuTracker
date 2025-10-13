@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import AuthModal from "@/components/AuthModal";
 import { AllowanceDashboard } from "@/components/AllowanceDashboard";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -122,7 +123,9 @@ export default function Header() {
 
           {/* Right side - Auth buttons or User menu */}
           <div className="flex items-center space-x-4">
-            
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+
             {!isAuthenticated ? (
               <>
                 <Button 

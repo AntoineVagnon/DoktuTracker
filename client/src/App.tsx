@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { CookieBanner } from "@/components/CookieBanner";
+import { Suspense } from "react";
+import "./i18n"; // Initialize i18n
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
@@ -117,11 +119,13 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <CookieBanner />
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+        <TooltipProvider>
+          <CookieBanner />
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </Suspense>
     </QueryClientProvider>
   );
 }

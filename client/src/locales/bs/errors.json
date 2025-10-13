@@ -1,0 +1,13 @@
+{
+  "error": {
+    "404": {
+      "title": "Stranica nije pronađena",
+      "message": "Stranica koju tražite ne postoji.",
+      "button": "Idite na početnu stranicu"
+    },
+    "general": {
+      "title": "Nešto je pošlo po zlu",
+      "message": "Došlo je do greške. Molimo pokušajte ponovo."
+    }
+  }
+}

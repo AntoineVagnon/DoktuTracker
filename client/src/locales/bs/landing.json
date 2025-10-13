@@ -1,0 +1,76 @@
+{
+  "landing": {
+    "hero": {
+      "title": "Zakažite termin kod naših pažljivo odabranih doktora za manje od 2 minute",
+      "subtitle": "Povežite se sa certificiranim zdravstvenim radnicima za sigurne video konsultacije. Dostupno 24/7 širom Evrope.",
+      "button": "Pogledajte kako funkcionira",
+      "stats": "4.9/5 ocjena"
+    },
+    "features": {
+      "title": "Naš najtraženiji medicinski tim",
+      "subtitle": "Povežite se sa certificiranim specijalistima iz različitih medicinskih oblasti. Svi naši doktori su verificirani i visoko ocijenjeni od strane pacijenata.",
+      "feature_1_title": "Usklađeno sa GDPR-om",
+      "feature_1_description": "Vaši medicinski podaci su zaštićeni najvišim sigurnosnim standardima i evropskim propisima o privatnosti.",
+      "feature_2_title": "Dostupnost 24/7",
+      "feature_2_description": "Pristupite zdravstvenim radnicima tokom cijelog dana uključujući vikende i praznike.",
+      "feature_3_title": "Verificirani doktori",
+      "feature_3_description": "Svi naši pružaoci zdravstvenih usluga su licencirani certificirani i redovno revidirani od strane našeg medicinskog odbora.",
+      "feature_4_title": "Prilagođeno mobilnim uređajima",
+      "feature_4_description": "Pristupite konsultacijama sa bilo kojeg uređaja - desktop tablet ili pametnog telefona sa besprijekornim iskustvom.",
+      "feature_5_title": "Medicinska dokumentacija",
+      "feature_5_description": "Pratite svoju historiju konsultacija recepte i medicinsku dokumentaciju na jednom sigurnom mjestu."
+    },
+    "how_it_works": {
+      "title": "Jednostavan proces rezervacije—prvo provjerite dostupne doktore",
+      "step_1_title": "1. Pronađite svog doktora",
+      "step_1_description": "Pregledajte naše verificirane specijaliste i provjerite njihovu dostupnost u realnom vremenu. Filtrirajte prema specijalnosti jeziku i ocjeni.",
+      "step_2_title": "2. Rezervišite odmah",
+      "step_2_description": "Odaberite dostupan termin i završite rezervaciju za manje od 2 minute. Uključena je sigurna obrada plaćanja.",
+      "step_3_title": "3. Započnite konsultaciju",
+      "step_3_description": "Pridružite se vašoj sigurnoj video konsultaciji u zakazano vrijeme. Dobijte profesionalni medicinski savjet i recepte."
+    },
+    "why_choose": {
+      "title": "Zašto odabrati Doktu?",
+      "subtitle": "Iskusite zdravstvenu njegu na moderan način sa našom sveobuhvatnom telemedicinskom platformom."
+    },
+    "testimonials": {
+      "title": "Šta naši pacijenti kažu",
+      "subtitle": "Pridružite se hiljadama zadovoljnih pacijenata koji su iskusili kvalitetnu zdravstvenu njegu kroz našu platformu."
+    },
+    "pricing": {
+      "title": "Odaberite svoj plan",
+      "subtitle": "Transparentne cijene bez skrivenih naknada. Odaberite plan koji vam najbolje odgovara.",
+      "plan_1_name": "Plaćanje po posjeti",
+      "plan_1_price": "€35",
+      "plan_1_period": "po konsultaciji",
+      "plan_1_feature_1": "30-minutna video konsultacija",
+      "plan_1_feature_2": "Zakažite certificirane doktore",
+      "plan_1_feature_3": "Siguran privatni poziv",
+      "plan_1_feature_4": "Pretplata nije potrebna",
+      "plan_1_button": "Zakažite konsultaciju",
+      "plan_2_name": "Mjesečno članstvo",
+      "plan_2_price": "€45",
+      "plan_2_period": "mjesečno",
+      "plan_2_feature_1": "2 × 30-minutne konsultacije mjesečno",
+      "plan_2_feature_2": "Zakažite bilo kojeg dostupnog doktora",
+      "plan_2_feature_3": "Učitajte i podijelite zdravstvene podatke",
+      "plan_2_feature_4": "Uključene sve prednosti osnovnog plana",
+      "plan_2_button": "Odaberite mjesečni plan",
+      "plan_2_badge": "Najpopularnije",
+      "plan_3_name": "6-mjesečno članstvo",
+      "plan_3_price": "€219",
+      "plan_3_period": "na 6 mjeseci",
+      "plan_3_feature_1": "12 konsultacija (2 mjesečno)",
+      "plan_3_feature_2": "23% uštede u odnosu na mjesečni plan",
+      "plan_3_feature_3": "Zakažite bilo kojeg dostupnog doktora",
+      "plan_3_feature_4": "Uključene sve prednosti osnovnog plana",
+      "plan_3_button": "Odaberite 6-mjesečni plan"
+    },
+    "cta": {
+      "title": "Preskočite čekaonicu. Zakažite odmah.",
+      "subtitle": "Pridružite se hiljadama pacijenata koji su već iskusili budućnost zdravstvene njege. Započnite sa vašom prvom konsultacijom danas.",
+      "button_1": "Zakažite vaš prvi termin",
+      "button_2": "Pozovite nas: +33 1 23 45 67 89"
+    }
+  }
+}

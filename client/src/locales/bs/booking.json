@@ -1,0 +1,12 @@
+{
+  "booking": {
+    "page": {
+      "title": "Zakažite termin",
+      "select_date": "Odaberite datum",
+      "select_time": "Odaberite vremenski termin",
+      "no_slots": "Nema dostupnih termina za ovaj datum",
+      "confirm_button": "Potvrdite rezervaciju",
+      "cancel_button": "Otkaži"
+    }
+  }
+}

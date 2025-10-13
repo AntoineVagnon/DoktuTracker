@@ -1,0 +1,17 @@
+{
+  "doctors": {
+    "list": {
+      "title": "Find a Doctor",
+      "search_placeholder": "Search by name or specialty...",
+      "filter_specialty": "Specialty",
+      "filter_all": "All Specialties",
+      "no_results": "No doctors found"
+    },
+    "card": {
+      "book_now": "Book Now",
+      "rating": "rating",
+      "available": "Available",
+      "offline": "Offline"
+    }
+  }
+}

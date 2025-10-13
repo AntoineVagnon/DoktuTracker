@@ -1,0 +1,17 @@
+{
+  "dashboard": {
+    "patient": {
+      "title": "Kontrolna tabla pacijenta",
+      "welcome": "Dobrodošli",
+      "my_appointments": "Moji termini",
+      "book_new": "Zakažite novi termin",
+      "no_appointments": "Nema predstojećih termina"
+    },
+    "doctor": {
+      "title": "Kontrolna tabla doktora",
+      "my_calendar": "Moj kalendar",
+      "my_patients": "Moji pacijenti",
+      "settings": "Postavke"
+    }
+  }
+}

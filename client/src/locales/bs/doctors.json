@@ -1,0 +1,17 @@
+{
+  "doctors": {
+    "list": {
+      "title": "Pronađite doktora",
+      "search_placeholder": "Pretražite po imenu ili specijalnosti...",
+      "filter_specialty": "Specijalnost",
+      "filter_all": "Sve specijalnosti",
+      "no_results": "Nisu pronađeni doktori"
+    },
+    "card": {
+      "book_now": "Zakažite odmah",
+      "rating": "ocjena",
+      "available": "Dostupan",
+      "offline": "Nedostupan"
+    }
+  }
+}

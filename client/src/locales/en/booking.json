@@ -1,0 +1,12 @@
+{
+  "booking": {
+    "page": {
+      "title": "Book an Appointment",
+      "select_date": "Select Date",
+      "select_time": "Select Time Slot",
+      "no_slots": "No available slots for this date",
+      "confirm_button": "Confirm Booking",
+      "cancel_button": "Cancel"
+    }
+  }
+}

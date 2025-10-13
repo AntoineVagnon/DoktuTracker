@@ -1,0 +1,76 @@
+{
+  "landing": {
+    "hero": {
+      "title": "Book one of our hand-picked doctors in under 2 minutes",
+      "subtitle": "Connect with certified healthcare professionals for secure video consultations. Available 24/7 across Europe.",
+      "button": "See How it Works",
+      "stats": "4.9/5 rating"
+    },
+    "features": {
+      "title": "Our Most Picked Medical Team",
+      "subtitle": "Connect with certified specialists across various medical fields. All our doctors are verified and highly rated by patients.",
+      "feature_1_title": "GDPR Compliant",
+      "feature_1_description": "Your medical data is protected with the highest security standards and European privacy regulations.",
+      "feature_2_title": "24/7 Availability",
+      "feature_2_description": "Access healthcare professionals around the clock including weekends and holidays.",
+      "feature_3_title": "Verified Doctors",
+      "feature_3_description": "All our healthcare providers are licensed certified and regularly reviewed by our medical board.",
+      "feature_4_title": "Mobile Friendly",
+      "feature_4_description": "Access consultations from any device - desktop tablet or smartphone with seamless experience.",
+      "feature_5_title": "Medical Records",
+      "feature_5_description": "Keep track of your consultation history prescriptions and medical records in one secure place."
+    },
+    "how_it_works": {
+      "title": "Simple booking process—set if available doctors first",
+      "step_1_title": "1. Find Your Doctor",
+      "step_1_description": "Browse our verified specialists and check their real-time availability. Filter by specialty language and rating.",
+      "step_2_title": "2. Book Instantly",
+      "step_2_description": "Select an available time slot and complete your booking in under 2 minutes. Secure payment processing included.",
+      "step_3_title": "3. Start Consultation",
+      "step_3_description": "Join your secure video consultation at the scheduled time. Get professional medical advice and prescriptions."
+    },
+    "why_choose": {
+      "title": "Why choose Doktu?",
+      "subtitle": "Experience healthcare the modern way with our comprehensive telemedicine platform."
+    },
+    "testimonials": {
+      "title": "What Our Patients Say",
+      "subtitle": "Join thousands of satisfied patients who have experienced quality healthcare through our platform."
+    },
+    "pricing": {
+      "title": "Choose Your Plan",
+      "subtitle": "Transparent pricing with no hidden fees. Choose the plan that works best for you.",
+      "plan_1_name": "Pay-per-visit",
+      "plan_1_price": "€35",
+      "plan_1_period": "per consultation",
+      "plan_1_feature_1": "30-minute video consultation",
+      "plan_1_feature_2": "Book certified doctors",
+      "plan_1_feature_3": "Secure private call",
+      "plan_1_feature_4": "No subscription required",
+      "plan_1_button": "Book Consultation",
+      "plan_2_name": "Monthly Membership",
+      "plan_2_price": "€45",
+      "plan_2_period": "per month",
+      "plan_2_feature_1": "2 × 30-minute consultations per month",
+      "plan_2_feature_2": "Book any eligible doctor",
+      "plan_2_feature_3": "Upload & share health data",
+      "plan_2_feature_4": "All Basic plan benefits included",
+      "plan_2_button": "Choose Monthly",
+      "plan_2_badge": "Most popular",
+      "plan_3_name": "6-Month Membership",
+      "plan_3_price": "€219",
+      "plan_3_period": "per 6 months",
+      "plan_3_feature_1": "12 consultations (2 per month)",
+      "plan_3_feature_2": "23% savings vs monthly",
+      "plan_3_feature_3": "Book any eligible doctor",
+      "plan_3_feature_4": "All Basic plan benefits included",
+      "plan_3_button": "Choose 6-Month"
+    },
+    "cta": {
+      "title": "Skip the waiting room. Book now.",
+      "subtitle": "Join thousands of patients who have already experienced the future of healthcare. Get started with your first consultation today.",
+      "button_1": "Book Your First Appointment",
+      "button_2": "Call Us: +33 1 23 45 67 89"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "header": {
+    "navigation": {
+      "menu_item": "Tableau de bord",
+      "button": "Déconnexion"
+    }
+  },
+  "footer": {
+    "links": {
+      "column_1_title": "Company",
+      "about": "À propos",
+      "contact": "Contact",
+      "column_2_title": "Legal",
+      "privacy": "Confidentialité",
+      "terms": "Conditions d'utilisation"
+    },
+    "copyright": {
+      "text": "© 2024 Doktu. All rights reserved."
+    }
+  },
+  "common": {
+    "button": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "confirm": "Confirm",
+      "back": "Back"
+    },
+    "message": {
+      "loading": "Loading...",
+      "success": "Success!",
+      "error": "Error occurred"
+    },
+    "form": {
+      "required": "This field is required",
+      "invalid_email": "Invalid email address",
+      "password_too_short": "Password must be at least 8 characters"
+    }
+  }
+}

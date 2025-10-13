@@ -1,0 +1,41 @@
+{
+  "header": {
+    "navigation": {
+      "menu_item": "Kontrolna tabla",
+      "button": "Odjava"
+    }
+  },
+  "footer": {
+    "links": {
+      "column_1_title": "Kompanija",
+      "about": "O nama",
+      "contact": "Kontakt",
+      "column_2_title": "Pravno",
+      "privacy": "Privatnost",
+      "terms": "Uslovi korištenja"
+    },
+    "copyright": {
+      "text": "© 2024 Doktu. Sva prava zadržana."
+    }
+  },
+  "common": {
+    "button": {
+      "save": "Sačuvaj",
+      "cancel": "Otkaži",
+      "delete": "Obriši",
+      "edit": "Uredi",
+      "confirm": "Potvrdi",
+      "back": "Nazad"
+    },
+    "message": {
+      "loading": "Učitavanje...",
+      "success": "Uspjeh!",
+      "error": "Došlo je do greške"
+    },
+    "form": {
+      "required": "Ovo polje je obavezno",
+      "invalid_email": "Neispravna email adresa",
+      "password_too_short": "Lozinka mora imati najmanje 8 znakova"
+    }
+  }
+}
