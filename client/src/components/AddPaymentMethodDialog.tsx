@@ -8,6 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Loader2, CreditCard, AlertCircle } from "lucide-react";
 import { loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Load Stripe with your publishable key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "");
@@ -18,6 +19,7 @@ interface AddPaymentMethodDialogProps {
 }
 
 function PaymentForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel: () => void }) {
+  const { t } = useTranslation('checkout');
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -45,23 +47,23 @@ function PaymentForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel:
       });
 
       if (error) {
-        setErrorMessage(error.message || "An error occurred");
+        setErrorMessage(error.message || t('checkout.errors.unexpected_error'));
         setIsProcessing(false);
         return;
       }
 
       if (setupIntent && setupIntent.status === "succeeded") {
         toast({
-          title: "Payment method added",
-          description: "Your payment method has been successfully added.",
+          title: t('checkout.payment_method_added'),
+          description: t('checkout.payment_method_added_description'),
         });
         onSuccess();
       } else {
-        setErrorMessage("Failed to add payment method");
+        setErrorMessage(t('checkout.errors.payment_method_add_failed'));
         setIsProcessing(false);
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "An unexpected error occurred");
+      setErrorMessage(err.message || t('checkout.errors.unexpected_error'));
       setIsProcessing(false);
     }
   };
@@ -85,7 +87,7 @@ function PaymentForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel:
           disabled={isProcessing}
           className="flex-1"
         >
-          Cancel
+          {t('checkout.cancel')}
         </Button>
         <Button
           type="submit"
@@ -95,12 +97,12 @@ function PaymentForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel:
           {isProcessing ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Processing...
+              {t('checkout.processing_short')}
             </>
           ) : (
             <>
               <CreditCard className="h-4 w-4 mr-2" />
-              Add Payment Method
+              {t('checkout.add_payment_method')}
             </>
           )}
         </Button>
@@ -110,6 +112,7 @@ function PaymentForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel:
 }
 
 export function AddPaymentMethodDialog({ open, onOpenChange }: AddPaymentMethodDialogProps) {
+  const { t } = useTranslation('checkout');
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -133,10 +136,10 @@ export function AddPaymentMethodDialog({ open, onOpenChange }: AddPaymentMethodD
       if (data.clientSecret) {
         setClientSecret(data.clientSecret);
       } else {
-        setError("Failed to initialize payment setup");
+        setError(t('checkout.errors.payment_setup_failed'));
       }
     } catch (err: any) {
-      setError(err.message || "Failed to load payment form");
+      setError(err.message || t('checkout.errors.payment_form_load_failed'));
     } finally {
       setIsLoading(false);
     }
@@ -184,9 +187,9 @@ export function AddPaymentMethodDialog({ open, onOpenChange }: AddPaymentMethodD
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Payment Method</DialogTitle>
+          <DialogTitle>{t('checkout.add_payment_method')}</DialogTitle>
           <DialogDescription>
-            Add a credit or debit card to your account
+            {t('checkout.add_card_description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -207,13 +210,13 @@ export function AddPaymentMethodDialog({ open, onOpenChange }: AddPaymentMethodD
                   onClick={handleCancel}
                   className="flex-1"
                 >
-                  Cancel
+                  {t('checkout.cancel')}
                 </Button>
                 <Button
                   onClick={fetchSetupIntent}
                   className="flex-1"
                 >
-                  Try Again
+                  {t('checkout.try_again')}
                 </Button>
               </div>
             </div>
@@ -225,8 +228,8 @@ export function AddPaymentMethodDialog({ open, onOpenChange }: AddPaymentMethodD
         </div>
 
         <div className="text-xs text-gray-500 space-y-1">
-          <p>🔒 Your payment information is encrypted and secure</p>
-          <p>Powered by Stripe</p>
+          <p>{t('checkout.payment_secure')}</p>
+          <p>{t('checkout.powered_by_stripe')}</p>
         </div>
       </DialogContent>
     </Dialog>

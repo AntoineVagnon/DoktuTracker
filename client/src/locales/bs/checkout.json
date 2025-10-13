@@ -26,6 +26,13 @@
     "back_to_saved": "← Nazad na sačuvane kartice",
     "preparing_payment": "Priprema plaćanja...",
     "secure_by_stripe": "Sigurno plaćanje putem Stripe-a",
+    "add_payment_method": "Dodaj način plaćanja",
+    "add_card_description": "Dodajte kreditnu ili debitnu karticu na vaš račun",
+    "payment_method_added": "Način plaćanja dodan",
+    "payment_method_added_description": "Vaš način plaćanja je uspješno dodan.",
+    "try_again": "Pokušajte ponovo",
+    "payment_secure": "🔒 Vaši podaci o plaćanju su šifrirani i sigurni",
+    "powered_by_stripe": "Omogućava Stripe",
     "errors": {
       "invalid_booking": "Neispravna rezervacija",
       "missing_info": "Nedostaju podaci o rezervaciji. Molimo započnite proces rezervacije ponovo.",
@@ -33,7 +40,11 @@
       "missing_payment_method": "Nedostaje način plaćanja ili podaci o terminu",
       "payment_failed": "Plaćanje neuspjelo",
       "payment_failed_message": "Nije moguće obraditi plaćanje. Molimo pokušajte ponovo.",
-      "general_error": "Greška"
+      "general_error": "Greška",
+      "payment_setup_failed": "Neuspjela inicijalizacija postavke plaćanja",
+      "payment_form_load_failed": "Neuspjelo učitavanje formulara za plaćanje",
+      "payment_method_add_failed": "Neuspjelo dodavanje načina plaćanja",
+      "unexpected_error": "Došlo je do neočekivane greške"
     },
     "success": {
       "title": "Plaćanje uspješno!",

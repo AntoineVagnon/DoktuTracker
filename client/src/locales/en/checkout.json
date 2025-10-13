@@ -26,6 +26,13 @@
     "back_to_saved": "← Back to Saved Cards",
     "preparing_payment": "Preparing payment...",
     "secure_by_stripe": "Secure payment powered by Stripe",
+    "add_payment_method": "Add Payment Method",
+    "add_card_description": "Add a credit or debit card to your account",
+    "payment_method_added": "Payment method added",
+    "payment_method_added_description": "Your payment method has been successfully added.",
+    "try_again": "Try Again",
+    "payment_secure": "🔒 Your payment information is encrypted and secure",
+    "powered_by_stripe": "Powered by Stripe",
     "errors": {
       "invalid_booking": "Invalid Booking Request",
       "missing_info": "Missing booking information. Please start the booking process again.",
@@ -33,7 +40,11 @@
       "missing_payment_method": "Missing payment method or appointment information",
       "payment_failed": "Payment Failed",
       "payment_failed_message": "Unable to process payment. Please try again.",
-      "general_error": "Error"
+      "general_error": "Error",
+      "payment_setup_failed": "Failed to initialize payment setup",
+      "payment_form_load_failed": "Failed to load payment form",
+      "payment_method_add_failed": "Failed to add payment method",
+      "unexpected_error": "An unexpected error occurred"
     },
     "success": {
       "title": "Payment Successful!",
