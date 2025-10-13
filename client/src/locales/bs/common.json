@@ -15,15 +15,28 @@
     }
   },
   "footer": {
-    "links": {
-      "company": "Kompanija",
-      "about": "O nama",
-      "contact": "Kontakt",
-      "legal": "Pravno",
-      "privacy": "Privatnost",
-      "terms": "Uslovi korištenja"
+    "quick_links": {
+      "title": "Brzi linkovi",
+      "find_doctors": "Pronađite doktore",
+      "how_it_works": "Kako funkcionira",
+      "pricing": "Cijene",
+      "for_doctors": "Za doktore",
+      "support": "Podrška"
     },
-    "copyright": "© 2024 Doktu. Sva prava zadržana."
+    "legal": {
+      "title": "Pravno i podrška",
+      "privacy": "Politika privatnosti",
+      "terms": "Uslovi korištenja",
+      "gdpr": "GDPR usklađenost",
+      "disclaimer": "Medicinska izjava",
+      "contact": "Kontaktirajte nas"
+    },
+    "description": "Profesionalna telemedicinska platforma koja povezuje pacijente sa certificiranim zdravstvenim radnicima širom Evrope. Usklađeno sa GDPR-om i sigurno.",
+    "copyright": "© 2025 Doktu. Sva prava zadržana. Licencirana zdravstvena platforma u EU.",
+    "badges": {
+      "gdpr": "Usklađeno sa GDPR-om",
+      "ssl": "SSL zaštićeno"
+    }
   },
   "common": {
     "button": {

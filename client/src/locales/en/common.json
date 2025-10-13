@@ -15,15 +15,28 @@
     }
   },
   "footer": {
-    "links": {
-      "company": "Company",
-      "about": "About",
-      "contact": "Contact",
-      "legal": "Legal",
-      "privacy": "Privacy",
-      "terms": "Terms of Service"
+    "quick_links": {
+      "title": "Quick Links",
+      "find_doctors": "Find Doctors",
+      "how_it_works": "How it Works",
+      "pricing": "Pricing",
+      "for_doctors": "For Doctors",
+      "support": "Support"
     },
-    "copyright": "© 2024 Doktu. All rights reserved."
+    "legal": {
+      "title": "Legal & Support",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "gdpr": "GDPR Compliance",
+      "disclaimer": "Medical Disclaimer",
+      "contact": "Contact Us"
+    },
+    "description": "Professional telemedicine platform connecting patients with certified healthcare providers across Europe. GDPR compliant and secure.",
+    "copyright": "© 2025 Doktu. All rights reserved. Licensed healthcare platform in the EU.",
+    "badges": {
+      "gdpr": "GDPR Compliant",
+      "ssl": "SSL Secured"
+    }
   },
   "common": {
     "button": {

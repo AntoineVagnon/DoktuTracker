@@ -1,21 +1,24 @@
 import { Link } from "wouter";
 import { Facebook, Twitter, Linkedin, Shield, Lock } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Footer() {
+  const { t } = useTranslation('common');
+
   const quickLinks = [
-    { name: "Find Doctors", href: "#doctors" },
-    { name: "How it Works", href: "#how-it-works" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "For Doctors", href: "/doctor-signup" },
-    { name: "Support", href: "/support" },
+    { nameKey: "footer.quick_links.find_doctors", href: "#doctors" },
+    { nameKey: "footer.quick_links.how_it_works", href: "#how-it-works" },
+    { nameKey: "footer.quick_links.pricing", href: "#pricing" },
+    { nameKey: "footer.quick_links.for_doctors", href: "/doctor-signup" },
+    { nameKey: "footer.quick_links.support", href: "/support" },
   ];
 
   const legalLinks = [
-    { name: "Privacy Policy", href: "/privacy" },
-    { name: "Terms of Service", href: "/terms" },
-    { name: "GDPR Compliance", href: "/gdpr" },
-    { name: "Medical Disclaimer", href: "/disclaimer" },
-    { name: "Contact Us", href: "/contact" },
+    { nameKey: "footer.legal.privacy", href: "/privacy" },
+    { nameKey: "footer.legal.terms", href: "/terms" },
+    { nameKey: "footer.legal.gdpr", href: "/gdpr" },
+    { nameKey: "footer.legal.disclaimer", href: "/disclaimer" },
+    { nameKey: "footer.legal.contact", href: "/contact" },
   ];
 
   return (
@@ -31,7 +34,7 @@ export default function Footer() {
               <span className="ml-3 text-xl font-bold">Doktu</span>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
-              Professional telemedicine platform connecting patients with certified healthcare providers across Europe. GDPR compliant and secure.
+              {t('footer.description')}
             </p>
             <div className="flex space-x-4">
               <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-[hsl(207,100%,52%)] transition-colors">
@@ -48,12 +51,12 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-6">{t('footer.quick_links.title')}</h3>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
-                <li key={link.name}>
+                <li key={link.nameKey}>
                   <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
-                    {link.name}
+                    {t(link.nameKey)}
                   </a>
                 </li>
               ))}
@@ -62,12 +65,12 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-lg font-semibold mb-6">Legal & Support</h3>
+            <h3 className="text-lg font-semibold mb-6">{t('footer.legal.title')}</h3>
             <ul className="space-y-3">
               {legalLinks.map((link) => (
-                <li key={link.name}>
+                <li key={link.nameKey}>
                   <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
-                    {link.name}
+                    {t(link.nameKey)}
                   </a>
                 </li>
               ))}
@@ -77,16 +80,16 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2025 Doktu. All rights reserved. Licensed healthcare platform in the EU.
+            {t('footer.copyright')}
           </p>
           <div className="flex items-center space-x-6 mt-4 md:mt-0">
             <div className="flex items-center">
               <Shield className="h-4 w-4 text-green-500 mr-2" />
-              <span className="text-gray-400 text-sm">GDPR Compliant</span>
+              <span className="text-gray-400 text-sm">{t('footer.badges.gdpr')}</span>
             </div>
             <div className="flex items-center">
               <Lock className="h-4 w-4 text-green-500 mr-2" />
-              <span className="text-gray-400 text-sm">SSL Secured</span>
+              <span className="text-gray-400 text-sm">{t('footer.badges.ssl')}</span>
             </div>
           </div>
         </div>
