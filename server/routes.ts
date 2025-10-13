@@ -96,6 +96,42 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // SendGrid Test Email Endpoint (for debugging)
+  app.post('/api/test/send-email', async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ error: 'Email address required' });
+      }
+
+      console.log('🧪 Test email request for:', email);
+
+      const { sendEmail } = await import('./services/emailService');
+
+      await sendEmail({
+        to: email,
+        subject: 'Doktu Test Email',
+        html: '<h1>Test Email</h1><p>If you receive this email, SendGrid is working correctly!</p>',
+        text: 'Test Email - If you receive this email, SendGrid is working correctly!'
+      });
+
+      console.log('✅ Test email sent successfully to:', email);
+      res.status(200).json({
+        success: true,
+        message: 'Test email sent successfully',
+        recipient: email
+      });
+    } catch (error: any) {
+      console.error('❌ Test email failed:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to send test email',
+        details: error.response?.body || error.toString()
+      });
+    }
+  });
+
   // ============================================================================
   // TOP-LEVEL TRACER - FIRST MIDDLEWARE TO PROVE NO INTERCEPTION
   // ============================================================================
