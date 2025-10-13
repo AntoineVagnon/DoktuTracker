@@ -113,12 +113,16 @@ export default function CreateAppointmentModal({
 
     setIsSubmitting(true);
     try {
+      // Create a Date object in the user's local timezone
+      const localDateTime = new Date(`${format(selectedDate, 'yyyy-MM-dd')}T${startTime}:00`);
+
+      // Convert to ISO string (UTC) for the backend
+      const appointmentDateUTC = localDateTime.toISOString();
+
       const appointmentData = {
         doctorId,
         patientId: parseInt(selectedPatientId),
-        date: format(selectedDate, 'yyyy-MM-dd'),
-        startTime,
-        endTime,
+        appointmentDateUTC, // Send UTC timestamp directly
         reason: reason || 'Admin-created appointment',
         notes,
         status: 'confirmed',

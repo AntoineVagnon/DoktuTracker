@@ -2578,24 +2578,28 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const { doctorId, patientId, date, startTime, endTime, reason, notes, status } = req.body;
+      const { doctorId, patientId, appointmentDateUTC, reason, notes, status } = req.body;
 
       // Validate required fields
-      if (!doctorId || !patientId || !date || !startTime || !endTime) {
+      if (!doctorId || !patientId || !appointmentDateUTC) {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      // Combine date and startTime into a single timestamp for appointmentDate
-      // Parse as local time (no 'Z' suffix) to match admin's timezone
-      const appointmentDate = new Date(`${date}T${startTime}:00`);
+      // Parse the UTC timestamp sent from the frontend
+      // The frontend creates a Date in the user's local time and converts to ISO string (UTC)
+      const appointmentDate = new Date(appointmentDateUTC);
+
+      // Validate the date
+      if (isNaN(appointmentDate.getTime())) {
+        return res.status(400).json({ message: "Invalid appointment date" });
+      }
 
       console.log('📅 Creating admin appointment:', {
         doctorId,
         patientId,
-        date,
-        startTime,
+        appointmentDateUTC,
         appointmentDate: appointmentDate.toISOString(),
-        note: 'Date parsed as local time to match admin timezone'
+        note: 'Using UTC timestamp from frontend - no timezone conversion needed'
       });
 
       // Create appointment directly without constraints
