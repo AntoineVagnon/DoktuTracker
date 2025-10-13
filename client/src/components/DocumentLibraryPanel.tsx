@@ -203,22 +203,71 @@ export function DocumentLibraryPanel({ appointmentId, isOpen, onClose }: Documen
     },
   });
 
-  // Handle document download - Use Railway backend
-  const handleDownload = (doc: any) => {
-    // Use Railway API URL for downloads
-    const apiUrl = import.meta.env.VITE_API_URL ||
-      (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
-    const downloadUrl = `${apiUrl}/api/download/${doc.id}`;
+  // Handle document download - Use Railway backend with authentication
+  const handleDownload = async (doc: any) => {
+    try {
+      // Get auth token from localStorage
+      const authData = localStorage.getItem('doktu_auth');
+      const token = authData ? JSON.parse(authData).session?.access_token : null;
 
-    console.log('📥 [DOWNLOAD] Initiating download:', downloadUrl);
+      if (!token) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to download documents.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    // Navigate to Railway download endpoint
-    window.location.href = downloadUrl;
+      // Use Railway API URL for downloads
+      const apiUrl = import.meta.env.VITE_API_URL ||
+        (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+      const downloadUrl = `${apiUrl}/api/download/${doc.id}`;
 
-    toast({
-      title: "Download started",
-      description: `${doc.fileName} is downloading...`,
-    });
+      console.log('📥 [DOWNLOAD] Initiating authenticated download:', downloadUrl);
+
+      // Fetch with authentication headers
+      const response = await fetch(downloadUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+      }
+
+      // Get the blob from the response
+      const blob = await response.blob();
+
+      // Create a temporary URL for the blob
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Create a temporary anchor element and trigger download
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = doc.fileName || 'document';
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(blobUrl);
+
+      toast({
+        title: "Download complete",
+        description: `${doc.fileName} has been downloaded.`,
+      });
+    } catch (error) {
+      console.error('❌ [DOWNLOAD] Error:', error);
+      toast({
+        title: "Download failed",
+        description: "There was an error downloading the document. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (!isOpen) return null;
