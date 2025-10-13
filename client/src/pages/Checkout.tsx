@@ -54,9 +54,30 @@ export default function Checkout() {
 
       // Check if user is authenticated before proceeding
       const authData = localStorage.getItem('doktu_auth');
+      console.log('🔐 Auth check:', { hasAuthData: !!authData, authData: authData ? 'exists' : 'missing' });
+
       if (!authData) {
         console.log('❌ User not authenticated, redirecting to login');
         // Redirect to login with booking parameters to continue after login
+        const loginUrl = `/test-login?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}${slotId ? `&slotId=${slotId}` : ''}`;
+        window.location.href = loginUrl;
+        return;
+      }
+
+      // Validate the token by checking if it has required fields
+      try {
+        const authObj = JSON.parse(authData);
+        if (!authObj.session?.access_token) {
+          console.log('❌ Invalid auth data (missing access_token), redirecting to login');
+          localStorage.removeItem('doktu_auth'); // Clear invalid data
+          const loginUrl = `/test-login?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}${slotId ? `&slotId=${slotId}` : ''}`;
+          window.location.href = loginUrl;
+          return;
+        }
+        console.log('✅ Valid auth token found');
+      } catch (e) {
+        console.log('❌ Failed to parse auth data, redirecting to login');
+        localStorage.removeItem('doktu_auth'); // Clear invalid data
         const loginUrl = `/test-login?doctorId=${doctorId}&slot=${encodeURIComponent(slot)}&price=${price}${slotId ? `&slotId=${slotId}` : ''}`;
         window.location.href = loginUrl;
         return;
