@@ -9,6 +9,7 @@ import { useNextAvailableSlot } from "@/hooks/useNextAvailableSlot";
 import { format } from "date-fns";
 import { convertSlotTimeToLocal } from "@/lib/dateUtils";
 import { analytics } from "@/lib/analytics";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Import doctor profile images
 import doctorPhoto1 from "@assets/generated_images/Male_doctor_professional_headshot_cea73805.png";
@@ -42,10 +43,12 @@ interface DoctorCardProps {
 }
 
 export default function DoctorCard({ doctor, availableSlots = [], onBookClick }: DoctorCardProps) {
+  const { t } = useTranslation('doctors');
+
   // Use structured name functions for proper display
   const doctorName = doctor.user ? formatUserFullName({ ...doctor.user, role: 'doctor' }) : 'Unknown Doctor';
   const initials = doctor.user ? getUserInitials(doctor.user) : 'DR';
-  
+
   // Get real-time next available slot
   const { nextSlot, hasAvailability, isLoading } = useNextAvailableSlot(doctor.id);
   
@@ -141,12 +144,12 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
               </Badge>
             ) : !isLoading ? (
               <Badge variant="secondary" className="bg-gray-100 text-gray-600">
-                No availability
+                {t('doctors.card.no_availability')}
               </Badge>
             ) : (
               <Badge variant="secondary" className="bg-blue-100 text-blue-600">
                 <Clock className="h-3 w-3 mr-1 animate-spin" />
-                Loading...
+                {t('doctors.card.loading')}
               </Badge>
             )}
           </div>
@@ -154,7 +157,7 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
           {/* Price */}
           <div className="mb-4">
             <span className="text-lg font-bold text-gray-900">€{doctor.consultationPrice}</span>
-            <span className="text-sm text-gray-500 ml-1">/ consultation</span>
+            <span className="text-sm text-gray-500 ml-1">{t('doctors.card.price_suffix')}</span>
           </div>
 
           {/* Book Button */}
@@ -164,11 +167,11 @@ export default function DoctorCard({ doctor, availableSlots = [], onBookClick }:
               onClick={handleBookClick}
               className="w-full bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-md transition-all duration-200"
             >
-              Book Now
+              {t('doctors.card.book_now')}
             </Button>
-            
+
             <Button variant="ghost" size="sm" asChild className="w-full text-xs">
-              <Link href={`/doctor/${doctor.id}`}>View Full Profile</Link>
+              <Link href={`/doctor/${doctor.id}`}>{t('doctors.card.view_profile')}</Link>
             </Button>
           </div>
         </div>

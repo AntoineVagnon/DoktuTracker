@@ -9,6 +9,10 @@
     },
     "card": {
       "book_now": "Zakažite odmah",
+      "view_profile": "Pogledajte cijeli profil",
+      "no_availability": "Nema dostupnosti",
+      "loading": "Učitavanje...",
+      "price_suffix": "/ konsultacija",
       "rating": "ocjena",
       "available": "Dostupan",
       "offline": "Nedostupan"

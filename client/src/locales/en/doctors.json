@@ -9,6 +9,10 @@
     },
     "card": {
       "book_now": "Book Now",
+      "view_profile": "View Full Profile",
+      "no_availability": "No availability",
+      "loading": "Loading...",
+      "price_suffix": "/ consultation",
       "rating": "rating",
       "available": "Available",
       "offline": "Offline"
