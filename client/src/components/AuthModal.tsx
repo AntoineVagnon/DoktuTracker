@@ -246,9 +246,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
 
         {/* Modal content */}
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-center mb-2">Welcome to Doktu</h2>
+          <h2 className="text-2xl font-bold text-center mb-2">{t('auth.modal.title')}</h2>
           <p className="text-gray-600 dark:text-gray-400 text-center text-sm">
-            Access your account or create a new one
+            {t('auth.modal.subtitle')}
           </p>
         </div>
 
