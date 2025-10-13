@@ -153,6 +153,7 @@ export function getAppointmentTimingStatus(appointmentDate: string): Appointment
   // console.log('📊 Time calculations:', { timeDifference: timeDifference.toFixed(1), timeUntilEnd: timeUntilEnd.toFixed(1) });
 
   // Logic for timing status - updated to match 10-minute video call access window
+  console.log(`[TIMING] Appointment timing check: timeDiff=${timeDifference.toFixed(1)}min, using 10min threshold`);
   if (timeUntilEnd <= 0) {
     return 'completed'; // Past the end time
   } else if (timeDifference <= 10) {
