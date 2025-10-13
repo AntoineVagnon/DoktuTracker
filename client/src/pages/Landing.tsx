@@ -404,13 +404,13 @@ export default function Landing() {
           )}
 
           <div className="mt-8 flex justify-center">
-            <Button 
+            <Button
               variant="ghost"
               className="text-[hsl(207,100%,52%)] font-semibold hover:text-[hsl(225,99%,52%)] transition-colors"
               asChild
             >
               <a href="/doctors">
-                See All Doctors <ArrowRight className="ml-2 h-4 w-4 inline" />
+                {t('landing.features.see_all_doctors')} <ArrowRight className="ml-2 h-4 w-4 inline" />
               </a>
             </Button>
           </div>
@@ -425,7 +425,7 @@ export default function Landing() {
               {t('landing.how_it_works.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Get professional medical care from the comfort of your home in just three simple steps.
+              {t('landing.how_it_works.subtitle')}
             </p>
           </div>
 
@@ -462,12 +462,12 @@ export default function Landing() {
           </div>
 
           <div className="mt-12 text-center">
-            <Button 
+            <Button
               size="lg"
               className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] hover:shadow-xl transition-all duration-200 text-lg px-8 py-4"
               asChild
             >
-              <a href="#doctors">Start Booking Now</a>
+              <a href="#doctors">{t('landing.how_it_works.start_booking_cta')}</a>
             </Button>
           </div>
         </div>

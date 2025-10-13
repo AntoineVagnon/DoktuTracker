@@ -11,6 +11,7 @@
     "features": {
       "title": "Naš najtraženiji medicinski tim",
       "subtitle": "Povežite se sa certificiranim specijalistima iz različitih medicinskih oblasti. Svi naši doktori su verificirani i visoko ocijenjeni od strane pacijenata.",
+      "see_all_doctors": "Pogledajte sve doktore",
       "feature_1_title": "Usklađeno sa GDPR-om",
       "feature_1_description": "Vaši medicinski podaci su zaštićeni najvišim sigurnosnim standardima i evropskim propisima o privatnosti.",
       "feature_2_title": "Dostupnost 24/7",
@@ -24,6 +25,8 @@
     },
     "how_it_works": {
       "title": "Jednostavan proces rezervacije—prvo provjerite dostupne doktore",
+      "subtitle": "Dobijte profesionalnu medicinsku njegu iz udobnosti vašeg doma u samo tri jednostavna koraka.",
+      "start_booking_cta": "Započnite rezervaciju odmah",
       "step_1_title": "1. Pronađite svog doktora",
       "step_1_description": "Pregledajte naše verificirane specijaliste i provjerite njihovu dostupnost u realnom vremenu. Filtrirajte prema specijalnosti jeziku i ocjeni.",
       "step_2_title": "2. Rezervišite odmah",
