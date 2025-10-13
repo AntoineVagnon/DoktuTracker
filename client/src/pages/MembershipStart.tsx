@@ -14,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { analytics } from "@/lib/analytics";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
@@ -100,6 +101,7 @@ const PaymentForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [elementsReady, setElementsReady] = useState(false);
   const [paymentElementError, setPaymentElementError] = useState<string | null>(null);
+  const [savePaymentMethod, setSavePaymentMethod] = useState(true); // Pre-selected to save payment method
 
   useEffect(() => {
     if (elements && stripe) {
@@ -289,6 +291,22 @@ const PaymentForm = ({
                   className="p-3 border border-gray-300 rounded"
                 />
               </div>
+
+              {/* Save payment method checkbox */}
+              <div className="flex items-center space-x-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <Checkbox
+                  id="savePaymentMethod"
+                  checked={savePaymentMethod}
+                  onCheckedChange={(checked) => setSavePaymentMethod(checked as boolean)}
+                />
+                <label
+                  htmlFor="savePaymentMethod"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Save this card for future purchases and automatic renewal
+                </label>
+              </div>
+
               <div className="text-xs text-gray-500">
                 Enter your card details to complete the membership activation.
               </div>
