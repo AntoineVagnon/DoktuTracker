@@ -46,9 +46,9 @@ type Doctor = {
   id: string;
   specialty: string;
   bio: string;
-  rating: number;
+  rating: string;
   reviewCount: number;
-  consultationPrice: number;
+  consultationPrice: string;
   user: {
     id: string;
     email: string;
