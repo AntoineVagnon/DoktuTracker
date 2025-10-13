@@ -3610,6 +3610,172 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // ============================================================================
+  // PAYMENT METHODS MANAGEMENT ENDPOINTS
+  // ============================================================================
+
+  // Get all payment methods for the authenticated user
+  app.get("/api/payment-methods", isAuthenticated, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.user.id.toString());
+
+      if (!user || !user.stripeCustomerId) {
+        // Return empty array if user has no Stripe customer ID yet
+        return res.json([]);
+      }
+
+      // Retrieve payment methods from Stripe
+      const paymentMethods = await stripe.paymentMethods.list({
+        customer: user.stripeCustomerId,
+        type: 'card',
+      });
+
+      // Get customer to check default payment method
+      const customer = await stripe.customers.retrieve(user.stripeCustomerId);
+      const defaultPaymentMethodId = typeof customer !== 'deleted' && customer.invoice_settings?.default_payment_method;
+
+      // Map payment methods with default flag
+      const methods = paymentMethods.data.map(pm => ({
+        id: pm.id,
+        type: pm.type,
+        card: pm.card,
+        billing_details: pm.billing_details,
+        is_default: pm.id === defaultPaymentMethodId
+      }));
+
+      res.json(methods);
+    } catch (error) {
+      console.error("Error fetching payment methods:", error);
+      res.status(500).json({ error: "Failed to fetch payment methods" });
+    }
+  });
+
+  // Delete a payment method
+  app.delete("/api/payment-methods/:paymentMethodId", isAuthenticated, async (req, res) => {
+    try {
+      const { paymentMethodId } = req.params;
+      const user = await storage.getUser(req.user.id.toString());
+
+      if (!user || !user.stripeCustomerId) {
+        return res.status(404).json({ error: "Stripe customer not found" });
+      }
+
+      // Verify the payment method belongs to the user
+      const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
+      if (paymentMethod.customer !== user.stripeCustomerId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      // Detach payment method from customer (Stripe automatically deletes it)
+      await stripe.paymentMethods.detach(paymentMethodId);
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting payment method:", error);
+      res.status(500).json({ error: "Failed to delete payment method" });
+    }
+  });
+
+  // Set default payment method
+  app.post("/api/payment-methods/:paymentMethodId/set-default", isAuthenticated, async (req, res) => {
+    try {
+      const { paymentMethodId } = req.params;
+      const user = await storage.getUser(req.user.id.toString());
+
+      if (!user || !user.stripeCustomerId) {
+        return res.status(404).json({ error: "Stripe customer not found" });
+      }
+
+      // Verify the payment method belongs to the user
+      const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
+      if (paymentMethod.customer !== user.stripeCustomerId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      // Update customer's default payment method
+      await stripe.customers.update(user.stripeCustomerId, {
+        invoice_settings: {
+          default_payment_method: paymentMethodId,
+        },
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error setting default payment method:", error);
+      res.status(500).json({ error: "Failed to set default payment method" });
+    }
+  });
+
+  // Create Setup Intent for adding payment method
+  app.post("/api/payment-methods/setup-intent", isAuthenticated, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.user.id.toString());
+
+      // Create Stripe customer if doesn't exist
+      let customerId = user?.stripeCustomerId;
+
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: user?.email || undefined,
+          name: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : undefined,
+          metadata: {
+            userId: req.user.id.toString(),
+          },
+        });
+        customerId = customer.id;
+
+        // Update user with Stripe customer ID
+        await storage.updateUser(req.user.id.toString(), {
+          stripeCustomerId: customerId,
+        });
+
+        console.log(`✅ Created Stripe customer ${customerId} for user ${req.user.id}`);
+      }
+
+      // Create Setup Intent
+      const setupIntent = await stripe.setupIntents.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+        usage: 'off_session', // Allow future off-session payments
+      });
+
+      res.json({
+        clientSecret: setupIntent.client_secret,
+      });
+    } catch (error) {
+      console.error("Error creating setup intent:", error);
+      res.status(500).json({ error: "Failed to create setup intent" });
+    }
+  });
+
+  // Confirm payment method was attached (optional verification endpoint)
+  app.post("/api/payment-methods/confirm", isAuthenticated, async (req, res) => {
+    try {
+      const { setupIntentId } = req.body;
+
+      if (!setupIntentId) {
+        return res.status(400).json({ error: "Missing setupIntentId" });
+      }
+
+      const setupIntent = await stripe.setupIntents.retrieve(setupIntentId);
+
+      if (setupIntent.status === 'succeeded') {
+        res.json({
+          success: true,
+          paymentMethodId: setupIntent.payment_method
+        });
+      } else {
+        res.json({
+          success: false,
+          status: setupIntent.status
+        });
+      }
+    } catch (error) {
+      console.error("Error confirming payment method:", error);
+      res.status(500).json({ error: "Failed to confirm payment method" });
+    }
+  });
+
   // EMERGENCY: Cancel appointment 72 that should have been auto-cancelled
   app.post("/api/emergency-cancel-72", async (req, res) => {
     try {

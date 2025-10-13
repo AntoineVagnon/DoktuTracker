@@ -23,6 +23,7 @@ import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSa
 import { BannerSystem } from "@/components/BannerSystem";
 import { HealthProfileSidebar } from "@/components/HealthProfileSidebar";
 import { DocumentLibraryPanel } from "@/components/DocumentLibraryPanel";
+import { PaymentMethodsTab } from "@/components/PaymentMethodsTab";
 import { AppointmentActionsModal } from "@/components/AppointmentActionsModal";
 import { PostConsultationSurvey } from "@/components/PostConsultationSurvey";
 import { CalendarView } from "@/components/CalendarView";
@@ -1052,21 +1053,7 @@ export default function Dashboard() {
 
 
                       <TabsContent value="payment">
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-medium">Payment Methods</h3>
-                          <p className="text-gray-600 mb-4">Manage your saved payment methods for faster checkout.</p>
-                          
-                          <div className="border rounded-lg p-4">
-                            <div className="text-center py-8">
-                              <CreditCard className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                              <p className="text-gray-600 mb-4">No payment methods saved</p>
-                              <Button variant="outline">
-                                <Plus className="h-4 w-4 mr-2" />
-                                Add Payment Method
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
+                        <PaymentMethodsTab />
                       </TabsContent>
 
                       <TabsContent value="security">
