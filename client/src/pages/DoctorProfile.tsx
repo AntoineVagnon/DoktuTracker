@@ -18,7 +18,6 @@ import { analytics } from "@/lib/analytics";
 import { convertSlotTimeToLocal } from "@/lib/dateUtils";
 import { BannerSystem } from "@/components/BannerSystem";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useLanguage } from "@/hooks/useLanguage";
 
 // Helper function to translate French specialties to English
 function translateSpecialty(specialty: string): string {
@@ -67,14 +66,13 @@ interface TimeSlot {
 }
 
 export default function DoctorProfile() {
-  const { t } = useTranslation('doctors');
-  const { language } = useLanguage();
+  const { t, i18n } = useTranslation('doctors');
   const params = useParams();
   const doctorId = params.id;
   const { user } = useAuth();
 
   // Get date-fns locale based on current language
-  const dateLocale = language === 'bs' ? bosnianLocale : undefined;
+  const dateLocale = i18n.language === 'bs' ? bosnianLocale : undefined;
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 })); // Monday start
   const [isNewBookingInProgress, setIsNewBookingInProgress] = useState(false);
