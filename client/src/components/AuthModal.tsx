@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 import { apiRequest } from "@/lib/queryClient";
 
 const loginSchema = z.object({
@@ -38,6 +39,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation('auth');
 
   // Sync activeTab with defaultTab when modal opens
   useEffect(() => {
