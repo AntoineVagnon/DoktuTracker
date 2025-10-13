@@ -30,14 +30,14 @@ import { PatientCalendar } from "@/pages/PatientCalendar";
 import { calculateHealthProfileCompletion } from "@/lib/healthProfileUtils";
 import { MembershipChip } from "@/components/MembershipChip";
 
-// Function to check if appointment is currently joinable (within 10 minutes of start time)
+// Function to check if appointment is currently joinable (within 5 minutes of start time)
 function isAppointmentJoinable(appointmentDate: string): boolean {
   const now = new Date();
   const appointmentTime = new Date(appointmentDate);
   const minutesUntilStart = (appointmentTime.getTime() - now.getTime()) / (1000 * 60);
-  
-  // Allow joining 10 minutes before appointment until 60 minutes after (for consultation duration)
-  return minutesUntilStart <= 10 && minutesUntilStart >= -60;
+
+  // Allow joining 5 minutes before appointment until 60 minutes after (for consultation duration)
+  return minutesUntilStart <= 5 && minutesUntilStart >= -60;
 }
 
 export default function Dashboard() {
@@ -293,7 +293,7 @@ export default function Dashboard() {
     const timeDiff = appointmentTime.getTime() - now.getTime();
     const minutesDiff = timeDiff / (1000 * 60);
 
-    return minutesDiff <= 10 && minutesDiff >= -60 && (appointment.status === "paid" || appointment.status === "confirmed");
+    return minutesDiff <= 5 && minutesDiff >= -60 && (appointment.status === "paid" || appointment.status === "confirmed");
   };
 
 
@@ -668,7 +668,7 @@ export default function Dashboard() {
                                 {(appointment.status === 'paid' || appointment.status === 'confirmed') && appointment.zoomMeetingId && !isAppointmentJoinable(appointment.appointmentDate) && (
                                   <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-md">
                                     <Video className="h-4 w-4 mr-2" />
-                                    <span>Video call available 10 min before appointment</span>
+                                    <span>Video call available 5 min before appointment</span>
                                   </div>
                                 )}
 
