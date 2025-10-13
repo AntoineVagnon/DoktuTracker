@@ -328,6 +328,12 @@ export default function Checkout() {
           }
         }
 
+        // Store appointment ID in bookingData for later use
+        setBookingData((prev: any) => ({
+          ...prev,
+          appointmentId: appointmentData.appointmentId || appointmentData.id
+        }));
+
         // Create payment intent only if appointment is not already paid and not covered by membership
         if (appointmentData.status !== 'paid' && !appointmentData.coverageResult?.isCovered) {
           // Only create payment intent if using a new card
@@ -344,11 +350,6 @@ export default function Checkout() {
             }
           } else {
             console.log('💳 Will use saved payment method:', selectedPaymentMethod);
-            // Store appointment ID for later use with saved payment method
-            setBookingData((prev: any) => ({
-              ...prev,
-              appointmentId: appointmentData.appointmentId || appointmentData.id
-            }));
           }
         } else {
           console.log('💎 Skipping payment intent creation - appointment already paid or covered');
