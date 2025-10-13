@@ -173,32 +173,32 @@ export default function Landing() {
   const features = [
     {
       icon: Shield,
-      title: "GDPR Compliant",
-      description: "Your medical data is protected with the highest security standards and European privacy regulations.",
+      titleKey: "landing.features.feature_1_title",
+      descriptionKey: "landing.features.feature_1_description",
       color: "green",
     },
     {
       icon: Clock,
-      title: "24/7 Availability",
-      description: "Access healthcare professionals around the clock, including weekends and holidays.",
+      titleKey: "landing.features.feature_2_title",
+      descriptionKey: "landing.features.feature_2_description",
       color: "blue",
     },
     {
       icon: UserCheck,
-      title: "Verified Doctors",
-      description: "All our healthcare providers are licensed, certified, and regularly reviewed by our medical board.",
+      titleKey: "landing.features.feature_3_title",
+      descriptionKey: "landing.features.feature_3_description",
       color: "purple",
     },
     {
       icon: Smartphone,
-      title: "Mobile Friendly",
-      description: "Access consultations from any device - desktop, tablet, or smartphone with seamless experience.",
+      titleKey: "landing.features.feature_4_title",
+      descriptionKey: "landing.features.feature_4_description",
       color: "yellow",
     },
     {
       icon: History,
-      title: "Medical Records",
-      description: "Keep track of your consultation history, prescriptions, and medical records in one secure place.",
+      titleKey: "landing.features.feature_5_title",
+      descriptionKey: "landing.features.feature_5_description",
       color: "indigo",
     },
   ];
@@ -229,43 +229,44 @@ export default function Landing() {
 
   const pricingPlans = [
     {
-      name: "Pay-per-visit",
-      price: "€35",
-      period: "per consultation",
-      features: [
-        "30-minute video consultation",
-        "Book certified doctors",
-        "Secure, private call",
-        "No subscription required",
+      nameKey: "landing.pricing.plan_1_name",
+      priceKey: "landing.pricing.plan_1_price",
+      periodKey: "landing.pricing.plan_1_period",
+      featureKeys: [
+        "landing.pricing.plan_1_feature_1",
+        "landing.pricing.plan_1_feature_2",
+        "landing.pricing.plan_1_feature_3",
+        "landing.pricing.plan_1_feature_4",
       ],
-      buttonText: "Book Consultation",
+      buttonTextKey: "landing.pricing.plan_1_button",
       buttonVariant: "outline" as const,
     },
     {
-      name: "Monthly Membership",
-      price: "€45",
-      period: "per month",
-      features: [
-        "2 × 30-minute consultations per month",
-        "Book any eligible doctor",
-        "Upload & share health data",
-        "All Basic plan benefits included",
+      nameKey: "landing.pricing.plan_2_name",
+      priceKey: "landing.pricing.plan_2_price",
+      periodKey: "landing.pricing.plan_2_period",
+      featureKeys: [
+        "landing.pricing.plan_2_feature_1",
+        "landing.pricing.plan_2_feature_2",
+        "landing.pricing.plan_2_feature_3",
+        "landing.pricing.plan_2_feature_4",
       ],
-      buttonText: "Choose Monthly",
+      buttonTextKey: "landing.pricing.plan_2_button",
+      badgeKey: "landing.pricing.plan_2_badge",
       buttonVariant: "default" as const,
       popular: true,
     },
     {
-      name: "6-Month Membership",
-      price: "€219",
-      period: "per 6 months",
-      features: [
-        "12 consultations (2 per month)",
-        "23% savings vs monthly",
-        "Book any eligible doctor",
-        "All Basic plan benefits included",
+      nameKey: "landing.pricing.plan_3_name",
+      priceKey: "landing.pricing.plan_3_price",
+      periodKey: "landing.pricing.plan_3_period",
+      featureKeys: [
+        "landing.pricing.plan_3_feature_1",
+        "landing.pricing.plan_3_feature_2",
+        "landing.pricing.plan_3_feature_3",
+        "landing.pricing.plan_3_feature_4",
       ],
-      buttonText: "Choose 6-Month",
+      buttonTextKey: "landing.pricing.plan_3_button",
       buttonVariant: "outline" as const,
     },
   ];
@@ -433,9 +434,9 @@ export default function Landing() {
               <div className="w-16 h-16 bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] rounded-full flex items-center justify-center mx-auto mb-6">
                 <Search className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">1. Find Your Doctor</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('landing.how_it_works.step_1_title')}</h3>
               <p className="text-gray-600">
-                Browse our verified specialists and check their real-time availability. Filter by specialty, language, and rating.
+                {t('landing.how_it_works.step_1_description')}
               </p>
             </div>
 
@@ -443,9 +444,9 @@ export default function Landing() {
               <div className="w-16 h-16 bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] rounded-full flex items-center justify-center mx-auto mb-6">
                 <Calendar className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">2. Book Instantly</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('landing.how_it_works.step_2_title')}</h3>
               <p className="text-gray-600">
-                Select an available time slot and complete your booking in under 2 minutes. Secure payment processing included.
+                {t('landing.how_it_works.step_2_description')}
               </p>
             </div>
 
@@ -453,9 +454,9 @@ export default function Landing() {
               <div className="w-16 h-16 bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] rounded-full flex items-center justify-center mx-auto mb-6">
                 <Video className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">3. Start Consultation</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('landing.how_it_works.step_3_title')}</h3>
               <p className="text-gray-600">
-                Join your secure video consultation at the scheduled time. Get professional medical advice and prescriptions.
+                {t('landing.how_it_works.step_3_description')}
               </p>
             </div>
           </div>
@@ -477,10 +478,10 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Why choose Doktu?
+              {t('landing.why_choose.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Experience healthcare the modern way with our comprehensive telemedicine platform.
+              {t('landing.why_choose.subtitle')}
             </p>
           </div>
 
@@ -491,8 +492,8 @@ export default function Landing() {
                   <div className={`w-12 h-12 bg-${feature.color}-100 rounded-lg flex items-center justify-center mb-4`}>
                     <feature.icon className={`h-6 w-6 text-${feature.color}-600`} />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">{t(feature.titleKey)}</h3>
+                  <p className="text-gray-600">{t(feature.descriptionKey)}</p>
                 </CardContent>
               </Card>
             ))}
@@ -505,10 +506,10 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              What Our Patients Say
+              {t('landing.testimonials.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join thousands of satisfied patients who have experienced quality healthcare through our platform.
+              {t('landing.testimonials.subtitle')}
             </p>
           </div>
 
@@ -543,10 +544,10 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Choose Your Plan
+              {t('landing.pricing.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Transparent pricing with no hidden fees. Choose the plan that works best for you.
+              {t('landing.pricing.subtitle')}
             </p>
           </div>
 
@@ -562,54 +563,55 @@ export default function Landing() {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-white text-[hsl(207,100%,52%)] px-3 py-1">Most popular</Badge>
+                    <Badge className="bg-white text-[hsl(207,100%,52%)] px-3 py-1">{t(plan.badgeKey!)}</Badge>
                   </div>
                 )}
                 <CardContent className="p-8">
                   <div className="text-center">
                     <h3 className={`text-xl font-semibold mb-2 ${plan.popular ? "text-white" : "text-gray-900"}`}>
-                      {plan.name}
+                      {t(plan.nameKey)}
                     </h3>
                     <div className={`text-4xl font-bold mb-1 ${plan.popular ? "text-white" : "text-gray-900"}`}>
-                      {plan.price}
+                      {t(plan.priceKey)}
                     </div>
                     <p className={`mb-6 ${plan.popular ? "text-blue-100" : "text-gray-600"}`}>
-                      {plan.period}
+                      {t(plan.periodKey)}
                     </p>
 
                     <ul className="text-left space-y-3 mb-8">
-                      {plan.features.map((feature, featureIndex) => (
+                      {plan.featureKeys.map((featureKey, featureIndex) => (
                         <li key={featureIndex} className="flex items-start">
-                          <CheckCircle 
+                          <CheckCircle
                             className={`mr-3 h-5 w-5 flex-shrink-0 ${plan.popular ? "text-white" : "text-green-500"}`}
                             aria-hidden="true"
                           />
-                          <span className={`leading-normal ${plan.popular ? "text-white" : "text-gray-600"}`}>{feature}</span>
+                          <span className={`leading-normal ${plan.popular ? "text-white" : "text-gray-600"}`}>{t(featureKey)}</span>
                         </li>
                       ))}
                     </ul>
 
                     <Button
                       variant={plan.popular ? "secondary" : plan.buttonVariant}
-                      disabled={isButtonDisabled(plan.name)}
+                      disabled={isButtonDisabled(t(plan.nameKey))}
                       className={`w-full ${
-                        plan.popular 
-                          ? "bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50" 
-                          : plan.buttonVariant === "outline" 
+                        plan.popular
+                          ? "bg-white text-[hsl(207,100%,52%)] hover:bg-gray-50"
+                          : plan.buttonVariant === "outline"
                             ? "border-2 border-[hsl(207,100%,52%)] text-[hsl(207,100%,52%)] hover:bg-[hsl(207,100%,97%)]"
                             : ""
-                      } ${isButtonDisabled(plan.name) ? "opacity-50 cursor-not-allowed" : ""}`}
-                      aria-label={`${plan.buttonText} – ${plan.price} ${plan.period}`}
+                      } ${isButtonDisabled(t(plan.nameKey)) ? "opacity-50 cursor-not-allowed" : ""}`}
+                      aria-label={`${t(plan.buttonTextKey)} – ${t(plan.priceKey)} ${t(plan.periodKey)}`}
                       onClick={() => {
                         // Track pricing card CTA click
-                        const cardType = plan.name === "Pay-per-visit" ? 'pay_per_visit' : 
-                                        plan.name === "Monthly Membership" ? 'monthly' : 'six_month';
+                        const planName = t(plan.nameKey);
+                        const cardType = planName === "Pay-per-visit" ? 'pay_per_visit' :
+                                        planName === "Monthly Membership" ? 'monthly' : 'six_month';
                         analytics.track('pricing_card_cta_click', {
                           card: cardType,
-                          price_eur: parseInt(plan.price.replace('€', ''))
+                          price_eur: parseInt(t(plan.priceKey).replace('€', ''))
                         });
-                        
-                        if (plan.name === "Pay-per-visit") {
+
+                        if (planName === "Pay-per-visit") {
                           // Scroll to doctors section for booking
                           const doctorsSection = document.getElementById('doctors');
                           if (doctorsSection) {
@@ -617,8 +619,8 @@ export default function Landing() {
                           }
                         } else {
                           // Check if user is authenticated
-                          const planParam = plan.name === "Monthly Membership" ? 'monthly' : 'semiannual';
-                          
+                          const planParam = planName === "Monthly Membership" ? 'monthly' : 'semiannual';
+
                           if (isAuthenticated) {
                             // User is logged in, go directly to membership page
                             setLocation(`/membership-start?plan=${planParam}`);
@@ -629,7 +631,7 @@ export default function Landing() {
                         }
                       }}
                     >
-                      {plan.buttonText}
+                      {t(plan.buttonTextKey)}
                     </Button>
                   </div>
                 </CardContent>
@@ -643,10 +645,10 @@ export default function Landing() {
       <section className="py-20 bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)]">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-            Skip the waiting room. Book now.
+            {t('landing.cta.title')}
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of patients who have already experienced the future of healthcare. Get started with your first consultation today.
+            {t('landing.cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -656,7 +658,7 @@ export default function Landing() {
             >
               <a href="#doctors">
                 <Calendar className="mr-3 h-5 w-5" />
-                Book Your First Appointment
+                {t('landing.cta.button_1')}
               </a>
             </Button>
             <Button
@@ -666,7 +668,7 @@ export default function Landing() {
             >
               <a href="tel:+33123456789">
                 <Phone className="mr-3 h-5 w-5" />
-                Call Us: +33 1 23 45 67 89
+                {t('landing.cta.button_2')}
               </a>
             </Button>
           </div>
