@@ -211,10 +211,11 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
     }
 
     // 9. Create user record in database
+    // NOTE: Do NOT set id manually - let PostgreSQL auto-generate the serial id
+    // The Supabase UUID is not used for database id (users.id is serial/INTEGER)
     const [newUser] = await db
       .insert(users)
       .values({
-        id: authData.user.id,
         email: authData.user.email!,
         firstName,
         lastName,
