@@ -183,16 +183,15 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
       });
     }
 
-    // 8. Create Supabase auth user with 'doctor' role
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    // 8. Create Supabase auth user with 'doctor' role using admin API
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email,
       password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          role: 'doctor'
-        }
+      email_confirm: true, // Auto-confirm email for doctor accounts
+      user_metadata: {
+        first_name: firstName,
+        last_name: lastName,
+        role: 'doctor'
       }
     });
 

@@ -36,9 +36,27 @@ class SendGridManager {
     }
     
     // Validate API key format (should be at least 50 chars and start with SG.)
-    if (!apiKey.startsWith('SG.') || apiKey.length < 50) {
-      console.error('❌ CRITICAL: Invalid SendGrid API key format');
+    // Allow dev-dummy keys in development environment
+    const isDevelopmentKey = apiKey.includes('dev-dummy') || apiKey.includes('dummy');
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    if (!apiKey.startsWith('SG.')) {
+      console.error('❌ CRITICAL: Invalid SendGrid API key format - must start with SG.');
       throw new Error('Invalid SendGrid API key format');
+    }
+
+    if (!isDevelopmentKey && apiKey.length < 50) {
+      console.error('❌ CRITICAL: Invalid SendGrid API key format - key too short');
+      throw new Error('Invalid SendGrid API key format');
+    }
+
+    if (isDevelopmentKey && isProduction) {
+      console.error('❌ CRITICAL: Development SendGrid key cannot be used in production');
+      throw new Error('Development SendGrid key not allowed in production');
+    }
+
+    if (isDevelopmentKey) {
+      console.warn('⚠️ Using development SendGrid key - emails will not be sent');
     }
     
     // Set configuration
