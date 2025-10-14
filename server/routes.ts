@@ -167,6 +167,15 @@ export async function registerRoutes(app: Express): Promise<void> {
   await setupSupabaseAuth(app);
 
   // ============================================================================
+  // MODULAR ROUTE REGISTRATION - BEFORE LEGACY ROUTES TO PREVENT CONFLICTS
+  // ============================================================================
+
+  // Register admin doctor management routes FIRST (prevents conflicts with legacy /api/admin/doctors/:id)
+  const { adminDoctorManagementRouter } = await import('./routes/adminDoctorManagement');
+  app.use('/api/admin/doctors', adminDoctorManagementRouter);
+  console.log('✅ Admin doctor management router registered at /api/admin/doctors');
+
+  // ============================================================================
   // CRITICAL: APPOINTMENT ROUTES FIRST - BEFORE ALL OTHER ROUTE MODULES
   // ============================================================================
   
@@ -6190,9 +6199,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   const { doctorRegistrationRouter } = await import('./routes/doctorRegistration');
   app.use('/api/doctor-registration', doctorRegistrationRouter);
 
-  // Register admin doctor management routes
-  const { adminDoctorManagementRouter } = await import('./routes/adminDoctorManagement');
-  app.use('/api/admin/doctors', adminDoctorManagementRouter);
+  // Admin doctor management routes already registered earlier (line ~174) to prevent route conflicts
 
   // Register doctor dashboard routes
   const { doctorDashboardRouter } = await import('./routes/doctorDashboard');
