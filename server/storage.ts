@@ -485,7 +485,7 @@ export class PostgresStorage implements IStorage {
     await db.delete(users).where(eq(users.id, userId));
   }
 
-  async getDoctors(): Promise<(Doctor & { user: User, availableSlots?: number })[]> {
+  async getDoctors(statusFilter: string = 'active'): Promise<(Doctor & { user: User, availableSlots?: number })[]> {
     const result = await db
       .select({
         // Doctor fields
@@ -503,12 +503,13 @@ export class PostgresStorage implements IStorage {
         reviewCount: doctors.reviewCount,
         createdAt: doctors.createdAt,
         updatedAt: doctors.updatedAt,
+        status: doctors.status, // Added status field
         // User fields with structured names only
         user: {
           id: users.id,
           email: users.email,
           title: users.title,
-          firstName: users.firstName, 
+          firstName: users.firstName,
           lastName: users.lastName,
           profileImageUrl: users.profileImageUrl,
           role: users.role,
@@ -520,7 +521,8 @@ export class PostgresStorage implements IStorage {
         }
       })
       .from(doctors)
-      .innerJoin(users, eq(doctors.userId, users.id));
+      .innerJoin(users, eq(doctors.userId, users.id))
+      .where(eq(doctors.status, statusFilter));
 
     // Get availability count for each doctor
     const doctorsWithAvailability = await Promise.all(
