@@ -342,7 +342,7 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Doctors table  
+// Doctors table with registration workflow fields
 export const doctors = pgTable("doctors", {
   id: serial("id").primaryKey(), // Use serial for auto-increment
   userId: integer("user_id").references(() => users.id).notNull(),
@@ -357,11 +357,52 @@ export const doctors = pgTable("doctors", {
   rating: decimal("rating", { precision: 3, scale: 2 }).default("5.00"),
   reviewCount: integer("review_count").default(0),
   // isOnline: boolean("is_online").default(false), // Column not in Supabase
+
+  // Doctor registration workflow fields
+  status: varchar("status", { length: 50 }).notNull().default("pending_review"), // pending_review, approved, profile_incomplete, active, suspended, rejected_soft, rejected_hard
+  licenseNumber: varchar("license_number", { length: 255 }),
+  licenseExpirationDate: date("license_expiration_date"),
+  countries: text("countries").array().default(sql`ARRAY[]::text[]`), // EU + Balkan countries where licensed
+  iban: varchar("iban", { length: 34 }), // International Bank Account Number
+  ibanVerificationStatus: varchar("iban_verification_status", { length: 50 }).default("pending"),
+  profileCompletionPercentage: integer("profile_completion_percentage").default(0),
+  rejectionReason: text("rejection_reason"),
+  rejectionType: varchar("rejection_type", { length: 20 }), // 'soft' or 'hard'
+  rejectedAt: timestamp("rejected_at"),
+  approvedAt: timestamp("approved_at"),
+  activatedAt: timestamp("activated_at"),
+  lastLoginAt: timestamp("last_login_at"),
+
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Doctor time slots for availability  
+// Doctor application audit trail - tracks all status changes
+export const doctorApplicationAudit = pgTable("doctor_application_audit", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  doctorId: integer("doctor_id").references(() => doctors.id, { onDelete: 'cascade' }).notNull(),
+  adminId: integer("admin_id").references(() => users.id),
+  oldStatus: varchar("old_status", { length: 50 }),
+  newStatus: varchar("new_status", { length: 50 }).notNull(),
+  reason: text("reason"),
+  notes: text("notes"),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Email blacklist for hard-rejected doctor applications
+export const emailBlacklist = pgTable("email_blacklist", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  emailHash: varchar("email_hash", { length: 64 }).notNull().unique(), // SHA-256 hash
+  reason: text("reason").notNull(),
+  blacklistedBy: integer("blacklisted_by").references(() => users.id),
+  blacklistedAt: timestamp("blacklisted_at").defaultNow(),
+  expiresAt: timestamp("expires_at"), // NULL = permanent
+  metadata: jsonb("metadata").default(sql`'{}'::jsonb`),
+});
+
+// Doctor time slots for availability
 export const doctorTimeSlots = pgTable("doctor_time_slots", {
   id: uuid("id").primaryKey().defaultRandom(),
   doctorId: integer("doctor_id").notNull(), // Use integer to match doctors.id

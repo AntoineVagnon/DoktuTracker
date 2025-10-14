@@ -53,6 +53,10 @@ import Membership from "@/pages/Membership";
 import MembershipSuccess from "@/pages/MembershipSuccess";
 import MembershipStart from "@/pages/MembershipStart";
 import CompleteSubscription from "@/pages/CompleteSubscription";
+import Contact from "@/pages/Contact";
+import Support from "@/pages/Support";
+import DoctorSignup from "@/pages/DoctorSignup";
+import DoctorSignupSuccess from "@/pages/DoctorSignupSuccess";
 
 
 function Router() {
@@ -110,7 +114,13 @@ function Router() {
       <Route path="/doctor/:doctorId/qualifications" component={DoctorQualifications} />
       <Route path="/data-security" component={DataSecurity} />
       <Route path="/security-dashboard" component={SecurityDashboard} />
-      
+
+      {/* Public Pages */}
+      <Route path="/contact" component={Contact} />
+      <Route path="/support" component={Support} />
+      <Route path="/doctor-signup" component={DoctorSignup} />
+      <Route path="/doctor-signup-success" component={DoctorSignupSuccess} />
+
       <Route component={NotFound} />
     </Switch>
   );

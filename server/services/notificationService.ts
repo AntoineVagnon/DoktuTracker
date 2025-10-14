@@ -85,6 +85,14 @@ export enum TriggerCode {
   GROWTH_DOCTOR_RATING_REQUEST = "G11", // Doctor rating request
   GROWTH_APP_UPDATE_AVAILABLE = "G12", // App update available
 
+  // Doctor Registration & Application Management (D1-D6)
+  DOCTOR_APP_APPROVED = "D1", // Doctor application approved
+  DOCTOR_APP_REJECTED_SOFT = "D2", // Doctor application rejected (soft - can reapply)
+  DOCTOR_APP_REJECTED_HARD = "D3", // Doctor application rejected (hard - permanent)
+  DOCTOR_ACCOUNT_SUSPENDED = "D4", // Doctor account suspended
+  DOCTOR_ACCOUNT_REACTIVATED = "D5", // Doctor account reactivated
+  DOCTOR_PROFILE_ACTIVATION_COMPLETE = "D6", // Doctor profile 100% complete and activated
+
   // Legacy support
   BOOK_CONF = "B3", // Legacy mapping
   REM_24H = "B4", // Legacy mapping
@@ -156,7 +164,15 @@ const TRIGGER_PRIORITY: Record<TriggerCode, number> = {
   [TriggerCode.GROWTH_REFERRAL_PROGRAM]: 15,
   [TriggerCode.GROWTH_FEATURE_ANNOUNCEMENT]: 13,
   [TriggerCode.GROWTH_SEASONAL_CAMPAIGN]: 12,
-  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: 10
+  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: 10,
+
+  // Doctor Registration & Account Management (56-49) - Operational priority
+  [TriggerCode.DOCTOR_ACCOUNT_SUSPENDED]: 56, // Higher than normal operational (suspension is critical)
+  [TriggerCode.DOCTOR_APP_REJECTED_HARD]: 53, // Important rejection notification
+  [TriggerCode.DOCTOR_APP_REJECTED_SOFT]: 52, // Important rejection notification
+  [TriggerCode.DOCTOR_APP_APPROVED]: 51, // Good news, important operational
+  [TriggerCode.DOCTOR_ACCOUNT_REACTIVATED]: 50, // Good news, operational
+  [TriggerCode.DOCTOR_PROFILE_ACTIVATION_COMPLETE]: 49 // Profile complete and activated
 };
 
 // Template key mapping - maps trigger codes to email template identifiers
@@ -220,7 +236,15 @@ const TRIGGER_TEMPLATES: Record<TriggerCode, string> = {
   [TriggerCode.GROWTH_SEASONAL_CAMPAIGN]: "growth_seasonal_campaign",
   [TriggerCode.GROWTH_MEMBERSHIP_UPSELL]: "growth_membership_upsell",
   [TriggerCode.GROWTH_DOCTOR_RATING_REQUEST]: "growth_doctor_rating_request",
-  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: "growth_app_update_available"
+  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: "growth_app_update_available",
+
+  // Doctor Registration & Account Management
+  [TriggerCode.DOCTOR_APP_APPROVED]: "doctor_application_approved",
+  [TriggerCode.DOCTOR_APP_REJECTED_SOFT]: "doctor_application_rejected_soft",
+  [TriggerCode.DOCTOR_APP_REJECTED_HARD]: "doctor_application_rejected_hard",
+  [TriggerCode.DOCTOR_ACCOUNT_SUSPENDED]: "doctor_account_suspended",
+  [TriggerCode.DOCTOR_ACCOUNT_REACTIVATED]: "doctor_account_reactivated",
+  [TriggerCode.DOCTOR_PROFILE_ACTIVATION_COMPLETE]: "doctor_profile_activated"
 };
 
 // Category mapping for notification preferences
@@ -286,7 +310,15 @@ const TRIGGER_CATEGORIES: Record<TriggerCode, string> = {
   [TriggerCode.GROWTH_SEASONAL_CAMPAIGN]: "marketing_emails",
   [TriggerCode.GROWTH_MEMBERSHIP_UPSELL]: "marketing_emails",
   [TriggerCode.GROWTH_DOCTOR_RATING_REQUEST]: "life_cycle",
-  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: "life_cycle"
+  [TriggerCode.GROWTH_APP_UPDATE_AVAILABLE]: "life_cycle",
+
+  // Doctor Registration & Account Management (transactional - cannot be disabled)
+  [TriggerCode.DOCTOR_APP_APPROVED]: "transactional",
+  [TriggerCode.DOCTOR_APP_REJECTED_SOFT]: "transactional",
+  [TriggerCode.DOCTOR_APP_REJECTED_HARD]: "transactional",
+  [TriggerCode.DOCTOR_ACCOUNT_SUSPENDED]: "transactional",
+  [TriggerCode.DOCTOR_ACCOUNT_REACTIVATED]: "transactional",
+  [TriggerCode.DOCTOR_PROFILE_ACTIVATION_COMPLETE]: "transactional"
 };
 
 // In-app notification configuration (which triggers should show banners/inbox)
@@ -359,6 +391,14 @@ const IN_APP_NOTIFICATION_CONFIG: Record<TriggerCode, { banner: boolean; inbox: 
   // Calendar & Availability (missing ones)
   [TriggerCode.CALENDAR_AVAILABILITY_UPDATED]: { banner: false, inbox: true, style: "info", persistent: false },
   [TriggerCode.CALENDAR_CONFLICT_DETECTED]: { banner: true, inbox: true, style: "warning", persistent: false },
+
+  // Doctor Registration & Account Management
+  [TriggerCode.DOCTOR_APP_APPROVED]: { banner: true, inbox: true, style: "success", persistent: false },
+  [TriggerCode.DOCTOR_APP_REJECTED_SOFT]: { banner: true, inbox: true, style: "warning", persistent: false },
+  [TriggerCode.DOCTOR_APP_REJECTED_HARD]: { banner: true, inbox: true, style: "error", persistent: false },
+  [TriggerCode.DOCTOR_ACCOUNT_SUSPENDED]: { banner: true, inbox: true, style: "error", persistent: true },
+  [TriggerCode.DOCTOR_ACCOUNT_REACTIVATED]: { banner: true, inbox: true, style: "success", persistent: false },
+  [TriggerCode.DOCTOR_PROFILE_ACTIVATION_COMPLETE]: { banner: true, inbox: true, style: "success", persistent: false }
 };
 
 export class UniversalNotificationService {

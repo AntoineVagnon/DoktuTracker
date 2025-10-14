@@ -19,7 +19,7 @@ import {
   ArrowUp, ArrowDown, Target, Zap, Heart, TrendingDown,
   BarChart3, PieChart, ArrowUpRight, ArrowDownRight,
   FileText, User, DollarSign, Percent, Check, ExternalLink, Info,
-  Menu, LogIn, Edit, Eye, Search
+  Menu, LogIn, Edit, Eye, Search, InfoIcon, Camera
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { mutate as mutateSWR } from "swr";
@@ -30,7 +30,6 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import { InfoIcon, Camera, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -1394,14 +1393,17 @@ export default function AdminDashboard() {
     );
   };
 
-  // DoctorsSection Component - Enhanced
+  // DoctorsSection Component - Enhanced with Tabs
   const DoctorsSection = () => {
+    const [activeTab, setActiveTab] = useState('pending'); // 'pending', 'active', 'rejected'
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
     const [showPhotoModal, setShowPhotoModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [rejectionData, setRejectionData] = useState({ reason: '', type: 'soft', notes: '' });
     const [formData, setFormData] = useState({
       email: '',
       password: '',
@@ -1461,6 +1463,26 @@ export default function AdminDashboard() {
         return await response.json();
       },
       enabled: !!selectedDoctor && showDetailModal,
+    });
+
+    // Fetch doctor applications (pending review)
+    const { data: applications, isLoading: applicationsLoading, refetch: refetchApplications } = useQuery({
+      queryKey: ['/api/admin/doctors/applications', 'pending_review'],
+      queryFn: async () => {
+        const response = await apiRequest('GET', '/api/admin/doctors/applications?status=pending_review');
+        return await response.json();
+      },
+      refetchInterval: 30000,
+    });
+
+    // Fetch rejected/suspended doctors
+    const { data: rejectedDoctors, isLoading: rejectedLoading, refetch: refetchRejected } = useQuery({
+      queryKey: ['/api/admin/doctors/applications', 'rejected'],
+      queryFn: async () => {
+        const response = await apiRequest('GET', '/api/admin/doctors/applications?status=rejected_soft,rejected_hard,suspended');
+        return await response.json();
+      },
+      refetchInterval: 30000,
     });
 
     // Filter doctors by search query
@@ -1585,22 +1607,260 @@ export default function AdminDashboard() {
       }
     };
 
+    // Handle approve application
+    const handleApproveApplication = async (doctorId: number) => {
+      try {
+        const response = await apiRequest('POST', `/api/admin/doctors/applications/${doctorId}/approve`, {
+          notes: 'Application approved by admin'
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Application Approved",
+            description: "The doctor has been notified and can now complete their profile.",
+          });
+          refetchApplications();
+          refetchDoctors();
+        } else {
+          throw new Error(result.error || 'Failed to approve application');
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to approve application",
+          variant: "destructive",
+        });
+      }
+    };
+
+    // Handle reject application
+    const handleRejectApplication = async () => {
+      if (!selectedDoctor || !rejectionData.reason) {
+        toast({
+          title: "Error",
+          description: "Please provide a rejection reason",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        const response = await apiRequest('POST', `/api/admin/doctors/applications/${selectedDoctor.id}/reject`, rejectionData);
+        const result = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Application Rejected",
+            description: `The doctor has been notified. Type: ${rejectionData.type}`,
+          });
+          setShowRejectModal(false);
+          setRejectionData({ reason: '', type: 'soft', notes: '' });
+          setSelectedDoctor(null);
+          refetchApplications();
+          refetchRejected();
+        } else {
+          throw new Error(result.error || 'Failed to reject application');
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to reject application",
+          variant: "destructive",
+        });
+      }
+    };
+
+    // Handle suspend doctor
+    const handleSuspendDoctor = async (doctorId: number) => {
+      const reason = prompt('Please provide a reason for suspension:');
+      if (!reason) return;
+
+      try {
+        const response = await apiRequest('POST', `/api/admin/doctors/${doctorId}/suspend`, { reason });
+        const result = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Doctor Suspended",
+            description: "The doctor account has been suspended.",
+          });
+          refetchDoctors();
+          refetchRejected();
+        } else {
+          throw new Error(result.error || 'Failed to suspend doctor');
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to suspend doctor",
+          variant: "destructive",
+        });
+      }
+    };
+
+    // Handle reactivate doctor
+    const handleReactivateDoctor = async (doctorId: number) => {
+      try {
+        const response = await apiRequest('POST', `/api/admin/doctors/${doctorId}/reactivate`, {});
+        const result = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Doctor Reactivated",
+            description: "The doctor account has been reactivated.",
+          });
+          refetchDoctors();
+          refetchRejected();
+        } else {
+          throw new Error(result.error || 'Failed to reactivate doctor');
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to reactivate doctor",
+          variant: "destructive",
+        });
+      }
+    };
+
     return (
       <div className="space-y-6">
         {/* Header with Create Button */}
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold">Doctor Management</h2>
-            <p className="text-gray-600">Create and manage doctor accounts</p>
+            <p className="text-gray-600">Review applications and manage doctor accounts</p>
           </div>
-          <Button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="gap-2"
-          >
-            <UserPlus className="h-4 w-4" />
-            {showCreateForm ? 'Cancel' : 'Create New Doctor'}
-          </Button>
+          {activeTab === 'active' && (
+            <Button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="gap-2"
+            >
+              <UserPlus className="h-4 w-4" />
+              {showCreateForm ? 'Cancel' : 'Create New Doctor'}
+            </Button>
+          )}
         </div>
+
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="pending" className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Pending Review
+              {applications?.pagination?.total > 0 && (
+                <Badge variant="secondary" className="ml-1">{applications.pagination.total}</Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="active" className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4" />
+              Active Doctors
+              {doctors?.length > 0 && (
+                <Badge variant="secondary" className="ml-1">{doctors.length}</Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="rejected" className="flex items-center gap-2">
+              <XCircle className="h-4 w-4" />
+              Rejected/Suspended
+              {rejectedDoctors?.pagination?.total > 0 && (
+                <Badge variant="secondary" className="ml-1">{rejectedDoctors.pagination.total}</Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Tab Content - Pending Review */}
+          <TabsContent value="pending" className="space-y-4">
+            {applicationsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+                <span className="ml-2 text-gray-600">Loading applications...</span>
+              </div>
+            ) : !applications?.applications || applications.applications.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center text-gray-500">
+                  <Clock className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <p>No pending applications</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {applications.applications.map((app: any) => (
+                  <Card key={app.doctor.id}>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-lg">
+                            Dr. {app.user.firstName} {app.user.lastName}
+                          </CardTitle>
+                          <p className="text-sm text-gray-600 mt-1">{app.doctor.specialty}</p>
+                        </div>
+                        <Badge variant="secondary">
+                          <Clock className="h-3 w-3 mr-1" />
+                          Pending
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-600">Email</p>
+                          <p className="font-medium">{app.user.email}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Phone</p>
+                          <p className="font-medium">{app.user.phone || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">License Number</p>
+                          <p className="font-medium">{app.doctor.licenseNumber}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Countries</p>
+                          <p className="font-medium">{app.doctor.countries?.length || 0} countries</p>
+                        </div>
+                      </div>
+
+                      {app.doctor.countries && app.doctor.countries.length > 0 && (
+                        <div>
+                          <p className="text-sm text-gray-600 mb-2">Licensed Countries:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {app.doctor.countries.map((country: string) => (
+                              <Badge key={country} variant="outline">{country}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2 pt-4">
+                        <Button
+                          onClick={() => handleApproveApplication(app.doctor.id)}
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                        >
+                          <CheckCircle2 className="h-4 w-4 mr-2" />
+                          Approve
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setSelectedDoctor(app.doctor);
+                            setShowRejectModal(true);
+                          }}
+                          variant="destructive"
+                          className="flex-1"
+                        >
+                          <XCircle className="h-4 w-4 mr-2" />
+                          Reject
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Tab Content - Active Doctors (existing functionality) */}
+          <TabsContent value="active" className="space-y-4">
 
         {/* Created Credentials Display */}
         {createdCredentials && (
@@ -1887,7 +2147,9 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Doctor Detail Modal */}
+          </TabsContent>
+
+        {/* Modals - Doctor Detail and Edit Form */}
         <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
@@ -2290,6 +2552,175 @@ export default function AdminDashboard() {
                 </Button>
               </div>
             </form>
+          </DialogContent>
+        </Dialog>
+
+          {/* Tab Content - Rejected/Suspended */}
+          <TabsContent value="rejected" className="space-y-4">
+            {rejectedLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <RefreshCw className="h-6 w-6 animate-spin text-red-500" />
+                <span className="ml-2 text-gray-600">Loading rejected doctors...</span>
+              </div>
+            ) : !rejectedDoctors?.applications || rejectedDoctors.applications.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center text-gray-500">
+                  <XCircle className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <p>No rejected or suspended doctors</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {rejectedDoctors.applications.map((app: any) => (
+                  <Card key={app.doctor.id}>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-lg">
+                            Dr. {app.user.firstName} {app.user.lastName}
+                          </CardTitle>
+                          <p className="text-sm text-gray-600 mt-1">{app.doctor.specialty}</p>
+                        </div>
+                        <Badge variant={app.doctor.status === 'suspended' ? 'destructive' : 'secondary'}>
+                          {app.doctor.status === 'suspended' && <Ban className="h-3 w-3 mr-1" />}
+                          {app.doctor.status === 'rejected_soft' && 'Rejected (Soft)'}
+                          {app.doctor.status === 'rejected_hard' && 'Rejected (Hard)'}
+                          {app.doctor.status === 'suspended' && 'Suspended'}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-600">Email</p>
+                          <p className="font-medium">{app.user.email}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">License Number</p>
+                          <p className="font-medium">{app.doctor.licenseNumber}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Date</p>
+                          <p className="font-medium">
+                            {app.doctor.rejectedAt ? format(new Date(app.doctor.rejectedAt), 'PPP') : 'N/A'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {app.doctor.rejectionReason && (
+                        <Alert variant="destructive">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>
+                            <strong>Reason:</strong> {app.doctor.rejectionReason}
+                          </AlertDescription>
+                        </Alert>
+                      )}
+
+                      {app.doctor.status === 'suspended' && (
+                        <div className="flex gap-2 pt-4">
+                          <Button
+                            onClick={() => handleReactivateDoctor(app.doctor.id)}
+                            className="flex-1 bg-green-600 hover:bg-green-700"
+                          >
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            Reactivate
+                          </Button>
+                        </div>
+                      )}
+
+                      {app.doctor.status === 'rejected_soft' && (
+                        <p className="text-sm text-gray-600 pt-4">
+                          This doctor can reapply after 30 days from the rejection date.
+                        </p>
+                      )}
+
+                      {app.doctor.status === 'rejected_hard' && (
+                        <p className="text-sm text-red-600 pt-4">
+                          This email address is permanently blacklisted and cannot reapply.
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+
+        {/* Rejection Modal */}
+        <Dialog open={showRejectModal} onOpenChange={setShowRejectModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Reject Application</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Rejection Type *</Label>
+                <Select
+                  value={rejectionData.type}
+                  onValueChange={(value) => setRejectionData({ ...rejectionData, type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="soft">Soft Rejection (Can reapply in 30 days)</SelectItem>
+                    <SelectItem value="hard">Hard Rejection (Email blacklisted)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Rejection Reason *</Label>
+                <Textarea
+                  value={rejectionData.reason}
+                  onChange={(e) => setRejectionData({ ...rejectionData, reason: e.target.value })}
+                  placeholder="Please provide a clear reason for rejection"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label>Internal Notes (Optional)</Label>
+                <Textarea
+                  value={rejectionData.notes}
+                  onChange={(e) => setRejectionData({ ...rejectionData, notes: e.target.value })}
+                  placeholder="Internal notes for admin records"
+                  rows={2}
+                />
+              </div>
+
+              {rejectionData.type === 'hard' && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>Warning:</strong> Hard rejection will permanently blacklist this email address.
+                    The doctor will not be able to register again with this email.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={handleRejectApplication}
+                  variant="destructive"
+                  className="flex-1"
+                  disabled={!rejectionData.reason}
+                >
+                  <XCircle className="h-4 w-4 mr-2" />
+                  Confirm Rejection
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowRejectModal(false);
+                    setRejectionData({ reason: '', type: 'soft', notes: '' });
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
 

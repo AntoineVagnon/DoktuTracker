@@ -1,9 +1,12 @@
 import React from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Eye, Clock, Video } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Calendar, Eye, Clock, Video, CheckCircle2, AlertCircle, XCircle, Ban } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import DoctorLayout from "@/components/DoctorLayout";
 import { formatUserFullName } from "@/lib/nameUtils";
@@ -16,6 +19,12 @@ export default function DoctorDashboard() {
   const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<any[]>({
     queryKey: ["/api/appointments", "doctor"],
     enabled: !!user,
+  });
+
+  // Fetch doctor dashboard data (status, profile completion)
+  const { data: doctorData, isLoading: doctorDataLoading } = useQuery<any>({
+    queryKey: ["/api/doctor/dashboard"],
+    enabled: !!user && user?.role === 'doctor',
   });
 
   // Redirect unauthenticated users to home page
@@ -71,6 +80,55 @@ export default function DoctorDashboard() {
 
   const firstName = user?.firstName || user?.email?.split('@')[0] || '';
 
+  // Helper function to get status badge color and icon
+  const getStatusDisplay = (status: string) => {
+    switch (status) {
+      case 'pending_review':
+        return {
+          variant: 'secondary' as const,
+          icon: Clock,
+          label: 'Under Review',
+          color: 'text-yellow-600'
+        };
+      case 'approved':
+        return {
+          variant: 'default' as const,
+          icon: CheckCircle2,
+          label: 'Approved',
+          color: 'text-blue-600'
+        };
+      case 'active':
+        return {
+          variant: 'default' as const,
+          icon: CheckCircle2,
+          label: 'Active',
+          color: 'text-green-600'
+        };
+      case 'suspended':
+        return {
+          variant: 'destructive' as const,
+          icon: Ban,
+          label: 'Suspended',
+          color: 'text-red-600'
+        };
+      case 'rejected_soft':
+      case 'rejected_hard':
+        return {
+          variant: 'destructive' as const,
+          icon: XCircle,
+          label: 'Rejected',
+          color: 'text-red-600'
+        };
+      default:
+        return {
+          variant: 'secondary' as const,
+          icon: AlertCircle,
+          label: status,
+          color: 'text-gray-600'
+        };
+    }
+  };
+
   return (
     <DoctorLayout>
       <div className="space-y-4 sm:space-y-6">
@@ -81,6 +139,111 @@ export default function DoctorDashboard() {
             Welcome back {firstName}
           </p>
         </div>
+
+        {/* Profile Completion & Status Card */}
+        {!doctorDataLoading && doctorData && (
+          <Card className="mx-2 sm:mx-0">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg sm:text-xl">Account Status</CardTitle>
+                  <CardDescription className="mt-1">
+                    Complete your profile to activate your account
+                  </CardDescription>
+                </div>
+                <Badge
+                  variant={getStatusDisplay(doctorData.doctor.status).variant}
+                  className="flex items-center gap-1"
+                >
+                  {React.createElement(getStatusDisplay(doctorData.doctor.status).icon, { className: "h-3 w-3" })}
+                  {getStatusDisplay(doctorData.doctor.status).label}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Profile Completion Progress */}
+              {doctorData.doctor.status !== 'active' && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">Profile Completion</span>
+                    <span className="text-gray-600">
+                      {doctorData.doctor.profileCompletionPercentage}%
+                    </span>
+                  </div>
+                  <Progress value={doctorData.doctor.profileCompletionPercentage} className="h-2" />
+                </div>
+              )}
+
+              {/* Status-specific alerts */}
+              {doctorData.doctor.status === 'pending_review' && (
+                <Alert>
+                  <Clock className="h-4 w-4" />
+                  <AlertDescription>
+                    Your application is under review. You'll receive an email within 2-3 business days.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {doctorData.doctor.status === 'approved' && doctorData.doctor.profileCompletionPercentage < 100 && (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Complete your profile to {doctorData.doctor.profileCompletionPercentage}% to activate your account and start accepting patients.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {doctorData.doctor.status === 'approved' && doctorData.profileCompletion && doctorData.profileCompletion.missingFields.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Missing Information:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {doctorData.profileCompletion.missingFields.map((field: any) => (
+                      <div key={field.field} className="flex items-center gap-2 text-sm p-2 bg-gray-50 rounded">
+                        <XCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                        <span className="text-gray-700">{field.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <Link href="/doctor-settings">
+                    <Button className="w-full mt-3 bg-green-600 hover:bg-green-700">
+                      Complete Profile
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
+              {doctorData.doctor.status === 'active' && (
+                <Alert className="bg-green-50 border-green-200">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">
+                    Your account is fully activated! You can now accept patient consultations.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {doctorData.doctor.status === 'suspended' && (
+                <Alert variant="destructive">
+                  <Ban className="h-4 w-4" />
+                  <AlertDescription>
+                    Your account has been suspended. Please contact support@doktu.co for assistance.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {(doctorData.doctor.status === 'rejected_soft' || doctorData.doctor.status === 'rejected_hard') && (
+                <Alert variant="destructive">
+                  <XCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    {doctorData.doctor.rejectionReason || 'Your application was not approved.'}
+                    {doctorData.doctor.status === 'rejected_soft' && (
+                      <span className="block mt-2">You can reapply after 30 days from the rejection date.</span>
+                    )}
+                  </AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Live Appointments Banner */}
         {liveAppointments.length > 0 && (
