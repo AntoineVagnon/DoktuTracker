@@ -19,7 +19,7 @@ import {
   ArrowUp, ArrowDown, Target, Zap, Heart, TrendingDown,
   BarChart3, PieChart, ArrowUpRight, ArrowDownRight,
   FileText, User, DollarSign, Percent, Check, ExternalLink, Info,
-  Menu, LogIn, Edit, Eye, Search, InfoIcon, Camera, CheckCircle2
+  Menu, LogIn, Edit, Eye, Search, InfoIcon, Camera, CheckCircle2, XCircle, Ban
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { mutate as mutateSWR } from "swr";
