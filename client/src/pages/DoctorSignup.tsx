@@ -205,13 +205,7 @@ export default function DoctorSignup() {
     const finalData = { ...formData, ...data };
 
     try {
-      // Prepare countries array
-      const countries = [finalData.primaryCountry];
-      if (finalData.additionalCountries && finalData.additionalCountries.length > 0) {
-        countries.push(...finalData.additionalCountries);
-      }
-
-      // Prepare request body
+      // Prepare request body matching backend API expectations
       const requestBody = {
         email: finalData.email,
         password: finalData.password,
@@ -220,11 +214,8 @@ export default function DoctorSignup() {
         phone: finalData.phone,
         specialty: finalData.specialty,
         licenseNumber: finalData.licenseNumber,
-        licenseExpirationDate: finalData.licenseExpirationDate.toISOString(),
-        countries: countries,
-        ...(finalData.rppsNumber && { rppsNumber: finalData.rppsNumber }),
+        licenseCountry: finalData.primaryCountry, // Backend expects 'licenseCountry' not 'primaryCountry'
         ...(finalData.bio && { bio: finalData.bio }),
-        ...(finalData.consultationPrice && { consultationPrice: parseFloat(finalData.consultationPrice) }),
       };
 
       // Call registration API
