@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Facebook, Twitter, Linkedin, Shield, Lock } from "lucide-react";
+import { Shield, Lock } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Footer() {
@@ -36,17 +36,6 @@ export default function Footer() {
             <p className="text-gray-400 mb-6 max-w-md">
               {t('footer.description')}
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-[hsl(207,100%,52%)] transition-colors">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-[hsl(207,100%,52%)] transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-[hsl(207,100%,52%)] transition-colors">
-                <Linkedin className="h-5 w-5" />
-              </a>
-            </div>
           </div>
 
           {/* Quick Links */}
