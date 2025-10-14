@@ -9,20 +9,45 @@ export const adminDoctorManagementRouter = Router();
 
 /**
  * Middleware to check if user is admin
+ * Checks database role (source of truth) instead of JWT role to handle role mismatches
  */
-function requireAdmin(req: any, res: any, next: any) {
+async function requireAdmin(req: any, res: any, next: any) {
   const session = req.session.supabaseSession;
 
   if (!session || !session.user) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
-  // Check if user has admin role
-  if (session.user.user_metadata?.role !== 'admin' && session.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
-  }
+  try {
+    // Query database for user's role (source of truth)
+    const [user] = await db
+      .select({ id: users.id, role: users.role, email: users.email })
+      .from(users)
+      .where(eq(users.email, session.user.email))
+      .limit(1);
 
-  next();
+    if (!user) {
+      return res.status(401).json({ error: 'User not found in database' });
+    }
+
+    // Check if user has admin role in database
+    if (user.role !== 'admin') {
+      return res.status(403).json({
+        error: 'Admin access required',
+        debug: {
+          dbRole: user.role,
+          jwtRole: session.user.user_metadata?.role || session.user.role
+        }
+      });
+    }
+
+    // Store user info for downstream use
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Error checking admin role:', error);
+    return res.status(500).json({ error: 'Failed to verify admin access' });
+  }
 }
 
 // Apply admin middleware to all routes
