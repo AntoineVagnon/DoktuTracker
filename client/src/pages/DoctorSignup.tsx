@@ -235,8 +235,8 @@ export default function DoctorSignup() {
 
       // Show success message
       toast({
-        title: 'Application Submitted Successfully!',
-        description: 'Your application is now under review. You will receive an email within 2-3 business days.',
+        title: t('doctors.signup.toasts.success_title'),
+        description: t('doctors.signup.toasts.success_description'),
         variant: 'default',
       });
 
@@ -248,8 +248,8 @@ export default function DoctorSignup() {
     } catch (error: any) {
       console.error('Registration error:', error);
       toast({
-        title: 'Registration Failed',
-        description: error.message || 'An error occurred during registration. Please try again.',
+        title: t('doctors.signup.toasts.error_title'),
+        description: error.message || t('doctors.signup.toasts.error_description'),
         variant: 'destructive',
       });
     } finally {
@@ -286,14 +286,14 @@ export default function DoctorSignup() {
           <Link href="/">
             <Button variant="ghost" className="text-white hover:bg-white/10 mb-8">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {t('doctors.signup.back_to_home')}
             </Button>
           </Link>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Join Doktu Platform
+            {t('doctors.signup.hero_title')}
           </h1>
           <p className="text-xl text-green-100">
-            Expand your practice and help patients across Europe
+            {t('doctors.signup.hero_subtitle')}
           </p>
         </div>
       </div>
@@ -304,32 +304,32 @@ export default function DoctorSignup() {
           <Card>
             <CardContent className="pt-6">
               <Users className="h-8 w-8 text-green-600 mb-3" />
-              <h3 className="font-semibold mb-2">New Patients</h3>
-              <p className="text-sm text-gray-600">Access patients across Europe</p>
+              <h3 className="font-semibold mb-2">{t('doctors.signup.benefits.new_patients_title')}</h3>
+              <p className="text-sm text-gray-600">{t('doctors.signup.benefits.new_patients_desc')}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="pt-6">
               <Clock className="h-8 w-8 text-green-600 mb-3" />
-              <h3 className="font-semibold mb-2">Flexible Schedule</h3>
-              <p className="text-sm text-gray-600">Work when it suits you</p>
+              <h3 className="font-semibold mb-2">{t('doctors.signup.benefits.flexible_schedule_title')}</h3>
+              <p className="text-sm text-gray-600">{t('doctors.signup.benefits.flexible_schedule_desc')}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="pt-6">
               <Shield className="h-8 w-8 text-green-600 mb-3" />
-              <h3 className="font-semibold mb-2">Secure Platform</h3>
-              <p className="text-sm text-gray-600">GDPR-compliant telemedicine</p>
+              <h3 className="font-semibold mb-2">{t('doctors.signup.benefits.secure_platform_title')}</h3>
+              <p className="text-sm text-gray-600">{t('doctors.signup.benefits.secure_platform_desc')}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="pt-6">
               <Stethoscope className="h-8 w-8 text-green-600 mb-3" />
-              <h3 className="font-semibold mb-2">Modern Technology</h3>
-              <p className="text-sm text-gray-600">High-quality video consultations</p>
+              <h3 className="font-semibold mb-2">{t('doctors.signup.benefits.modern_tech_title')}</h3>
+              <p className="text-sm text-gray-600">{t('doctors.signup.benefits.modern_tech_desc')}</p>
             </CardContent>
           </Card>
         </div>
@@ -339,15 +339,15 @@ export default function DoctorSignup() {
           <CardHeader>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <CardTitle>Doctor Registration - Step {currentStep} of 4</CardTitle>
-                <span className="text-sm text-gray-500">{Math.round(progressPercentage)}% Complete</span>
+                <CardTitle>{t('doctors.signup.progress.title', { step: currentStep })}</CardTitle>
+                <span className="text-sm text-gray-500">{t('doctors.signup.progress.percentage', { percent: Math.round(progressPercentage) })}</span>
               </div>
               <Progress value={progressPercentage} className="w-full" />
               <CardDescription>
-                {currentStep === 1 && 'Personal Information'}
-                {currentStep === 2 && 'Medical Credentials'}
-                {currentStep === 3 && 'Professional Details'}
-                {currentStep === 4 && 'Terms & Conditions'}
+                {currentStep === 1 && t('doctors.signup.progress.step1_title')}
+                {currentStep === 2 && t('doctors.signup.progress.step2_title')}
+                {currentStep === 3 && t('doctors.signup.progress.step3_title')}
+                {currentStep === 4 && t('doctors.signup.progress.step4_title')}
               </CardDescription>
             </div>
           </CardHeader>
@@ -362,9 +362,9 @@ export default function DoctorSignup() {
                       name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>First Name *</FormLabel>
+                          <FormLabel>{t('doctors.signup.step1.first_name_label')}</FormLabel>
                           <FormControl>
-                            <Input placeholder="John" {...field} />
+                            <Input placeholder={t('doctors.signup.step1.first_name_placeholder')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -375,9 +375,9 @@ export default function DoctorSignup() {
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Last Name *</FormLabel>
+                          <FormLabel>{t('doctors.signup.step1.last_name_label')}</FormLabel>
                           <FormControl>
-                            <Input placeholder="Doe" {...field} />
+                            <Input placeholder={t('doctors.signup.step1.last_name_placeholder')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -390,9 +390,9 @@ export default function DoctorSignup() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email Address *</FormLabel>
+                        <FormLabel>{t('doctors.signup.step1.email_label')}</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="doctor@example.com" {...field} />
+                          <Input type="email" placeholder={t('doctors.signup.step1.email_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -404,9 +404,9 @@ export default function DoctorSignup() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number *</FormLabel>
+                        <FormLabel>{t('doctors.signup.step1.phone_label')}</FormLabel>
                         <FormControl>
-                          <Input type="tel" placeholder="+33 1 23 45 67 89" {...field} />
+                          <Input type="tel" placeholder={t('doctors.signup.step1.phone_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -418,9 +418,9 @@ export default function DoctorSignup() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password *</FormLabel>
+                        <FormLabel>{t('doctors.signup.step1.password_label')}</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="Min 8 characters" {...field} />
+                          <Input type="password" placeholder={t('doctors.signup.step1.password_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -432,9 +432,9 @@ export default function DoctorSignup() {
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Confirm Password *</FormLabel>
+                        <FormLabel>{t('doctors.signup.step1.confirm_password_label')}</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="Re-enter password" {...field} />
+                          <Input type="password" placeholder={t('doctors.signup.step1.confirm_password_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -443,7 +443,7 @@ export default function DoctorSignup() {
 
                   <div className="flex justify-end pt-4">
                     <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                      Next Step <ArrowRight className="ml-2 h-4 w-4" />
+                      {t('doctors.signup.step1.next_button')} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </form>
@@ -459,11 +459,11 @@ export default function DoctorSignup() {
                     name="specialty"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Medical Specialty *</FormLabel>
+                        <FormLabel>{t('doctors.signup.step2.specialty_label')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select your specialty" />
+                              <SelectValue placeholder={t('doctors.signup.step2.specialty_placeholder')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -484,9 +484,9 @@ export default function DoctorSignup() {
                     name="licenseNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Medical License Number *</FormLabel>
+                        <FormLabel>{t('doctors.signup.step2.license_number_label')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your license number" {...field} />
+                          <Input placeholder={t('doctors.signup.step2.license_number_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -498,7 +498,7 @@ export default function DoctorSignup() {
                     name="licenseExpirationDate"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>License Expiration Date *</FormLabel>
+                        <FormLabel>{t('doctors.signup.step2.license_expiration_label')}</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -512,7 +512,7 @@ export default function DoctorSignup() {
                                 {field.value ? (
                                   format(field.value, "PPP")
                                 ) : (
-                                  <span>Pick expiration date</span>
+                                  <span>{t('doctors.signup.step2.license_expiration_placeholder')}</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
@@ -540,11 +540,11 @@ export default function DoctorSignup() {
                     name="primaryCountry"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Primary Country of Practice *</FormLabel>
+                        <FormLabel>{t('doctors.signup.step2.primary_country_label')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select your primary country" />
+                              <SelectValue placeholder={t('doctors.signup.step2.primary_country_placeholder')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -561,7 +561,7 @@ export default function DoctorSignup() {
                   />
 
                   <div className="space-y-2">
-                    <Label>Additional Licensed Countries (Optional)</Label>
+                    <Label>{t('doctors.signup.step2.additional_countries_label')}</Label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border rounded-lg p-3">
                       {ELIGIBLE_COUNTRIES.map((country) => (
                         <div key={country.code} className="flex items-center space-x-2">
@@ -580,7 +580,7 @@ export default function DoctorSignup() {
                       ))}
                     </div>
                     <p className="text-xs text-gray-500">
-                      Select countries where you hold valid medical licenses
+                      {t('doctors.signup.step2.additional_countries_help')}
                     </p>
                   </div>
 
@@ -589,9 +589,9 @@ export default function DoctorSignup() {
                     name="rppsNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>RPPS Number (For France) - Optional</FormLabel>
+                        <FormLabel>{t('doctors.signup.step2.rpps_label')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="11-digit RPPS number" {...field} />
+                          <Input placeholder={t('doctors.signup.step2.rpps_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -600,10 +600,10 @@ export default function DoctorSignup() {
 
                   <div className="flex justify-between pt-4">
                     <Button type="button" variant="outline" onClick={handleBack}>
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                      <ArrowLeft className="mr-2 h-4 w-4" /> {t('doctors.signup.step2.back_button')}
                     </Button>
                     <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                      Next Step <ArrowRight className="ml-2 h-4 w-4" />
+                      {t('doctors.signup.step2.next_button')} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </form>
@@ -617,7 +617,7 @@ export default function DoctorSignup() {
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      These fields are optional but help complete your profile faster. You can also complete them later from your dashboard.
+                      {t('doctors.signup.step3.optional_notice')}
                     </AlertDescription>
                   </Alert>
 
@@ -626,10 +626,10 @@ export default function DoctorSignup() {
                     name="bio"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Professional Bio (Optional)</FormLabel>
+                        <FormLabel>{t('doctors.signup.step3.bio_label')}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Tell patients about your experience, specializations, and approach to care..."
+                            placeholder={t('doctors.signup.step3.bio_placeholder')}
                             rows={6}
                             {...field}
                           />
@@ -644,12 +644,12 @@ export default function DoctorSignup() {
                     name="consultationPrice"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Consultation Price (EUR) - Optional</FormLabel>
+                        <FormLabel>{t('doctors.signup.step3.price_label')}</FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" placeholder="50.00" {...field} />
+                          <Input type="number" step="0.01" placeholder={t('doctors.signup.step3.price_placeholder')} {...field} />
                         </FormControl>
                         <p className="text-xs text-gray-500">
-                          Set your consultation fee. Average range: €30-100
+                          {t('doctors.signup.step3.price_help')}
                         </p>
                         <FormMessage />
                       </FormItem>
@@ -658,21 +658,21 @@ export default function DoctorSignup() {
 
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <p className="text-sm text-blue-800 font-medium mb-2">
-                      After approval, you'll need to complete:
+                      {t('doctors.signup.step3.after_approval_title')}
                     </p>
                     <ul className="text-sm text-blue-800 ml-4 list-disc space-y-1">
-                      <li>Profile photo upload</li>
-                      <li>IBAN verification for payments</li>
-                      <li>Availability schedule setup</li>
+                      <li>{t('doctors.signup.step3.after_approval_photo')}</li>
+                      <li>{t('doctors.signup.step3.after_approval_iban')}</li>
+                      <li>{t('doctors.signup.step3.after_approval_schedule')}</li>
                     </ul>
                   </div>
 
                   <div className="flex justify-between pt-4">
                     <Button type="button" variant="outline" onClick={handleBack}>
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                      <ArrowLeft className="mr-2 h-4 w-4" /> {t('doctors.signup.step3.back_button')}
                     </Button>
                     <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                      Next Step <ArrowRight className="ml-2 h-4 w-4" />
+                      {t('doctors.signup.step3.next_button')} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </form>
@@ -686,7 +686,7 @@ export default function DoctorSignup() {
                   <Alert>
                     <CheckCircle2 className="h-4 w-4" />
                     <AlertDescription>
-                      Almost done! Please review and accept our terms to complete your application.
+                      {t('doctors.signup.step4.almost_done')}
                     </AlertDescription>
                   </Alert>
 
@@ -704,23 +704,23 @@ export default function DoctorSignup() {
                           </FormControl>
                           <div className="space-y-1 leading-none">
                             <FormLabel className="text-sm font-normal">
-                              I agree to the{' '}
+                              {t('doctors.signup.step4.agree_terms')}{' '}
                               <a
                                 href="/terms"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-green-600 hover:text-green-500 underline font-medium"
                               >
-                                Terms of Service
+                                {t('doctors.signup.step4.terms_link')}
                               </a>
-                              {' '}and{' '}
+                              {' '}{t('doctors.signup.step4.and')}{' '}
                               <a
                                 href="/medical-disclaimer"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-green-600 hover:text-green-500 underline font-medium"
                               >
-                                Medical Disclaimer
+                                {t('doctors.signup.step4.medical_disclaimer_link')}
                               </a>
                             </FormLabel>
                             <FormMessage />
@@ -742,14 +742,14 @@ export default function DoctorSignup() {
                           </FormControl>
                           <div className="space-y-1 leading-none">
                             <FormLabel className="text-sm font-normal">
-                              I acknowledge and accept the{' '}
+                              {t('doctors.signup.step4.agree_privacy')}{' '}
                               <a
                                 href="/privacy"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-green-600 hover:text-green-500 underline font-medium"
                               >
-                                Privacy Policy
+                                {t('doctors.signup.step4.privacy_link')}
                               </a>
                             </FormLabel>
                             <FormMessage />
@@ -771,16 +771,16 @@ export default function DoctorSignup() {
                           </FormControl>
                           <div className="space-y-1 leading-none">
                             <FormLabel className="text-sm font-normal">
-                              I have read and understand the{' '}
+                              {t('doctors.signup.step4.agree_gdpr')}{' '}
                               <a
                                 href="/gdpr"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-green-600 hover:text-green-500 underline font-medium"
                               >
-                                GDPR Compliance
+                                {t('doctors.signup.step4.gdpr_link')}
                               </a>
-                              {' '}requirements
+                              {' '}{t('doctors.signup.step4.requirements')}
                             </FormLabel>
                             <FormMessage />
                           </div>
@@ -791,26 +791,26 @@ export default function DoctorSignup() {
 
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <p className="text-sm text-green-800 font-medium mb-2">
-                      What happens next?
+                      {t('doctors.signup.step4.what_next_title')}
                     </p>
                     <ol className="text-sm text-green-800 ml-4 list-decimal space-y-1">
-                      <li>Your application will be reviewed by our team</li>
-                      <li>You'll receive an email within 2-3 business days</li>
-                      <li>Once approved, complete your profile to activate your account</li>
-                      <li>Start accepting patient consultations!</li>
+                      <li>{t('doctors.signup.step4.what_next_step1')}</li>
+                      <li>{t('doctors.signup.step4.what_next_step2')}</li>
+                      <li>{t('doctors.signup.step4.what_next_step3')}</li>
+                      <li>{t('doctors.signup.step4.what_next_step4')}</li>
                     </ol>
                   </div>
 
                   <div className="flex justify-between pt-4">
                     <Button type="button" variant="outline" onClick={handleBack}>
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                      <ArrowLeft className="mr-2 h-4 w-4" /> {t('doctors.signup.step4.back_button')}
                     </Button>
                     <Button
                       type="submit"
                       className="bg-green-600 hover:bg-green-700"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                      {isSubmitting ? t('doctors.signup.step4.submitting') : t('doctors.signup.step4.submit_button')}
                       {!isSubmitting && <CheckCircle2 className="ml-2 h-4 w-4" />}
                     </Button>
                   </div>
@@ -822,49 +822,49 @@ export default function DoctorSignup() {
 
         {/* FAQ Section */}
         <div className="mt-12 max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center">{t('doctors.signup.faq.title')}</h2>
 
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">How long does the verification process take?</CardTitle>
+                <CardTitle className="text-lg">{t('doctors.signup.faq.verification_question')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  The verification process typically takes 2-3 business days. We'll contact you as soon as we review your application.
+                  {t('doctors.signup.faq.verification_answer')}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">What are the platform fees?</CardTitle>
+                <CardTitle className="text-lg">{t('doctors.signup.faq.fees_question')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  The platform takes a 15% commission from each consultation. You set your own consultation price.
+                  {t('doctors.signup.faq.fees_answer')}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Can I work with patients from different countries?</CardTitle>
+                <CardTitle className="text-lg">{t('doctors.signup.faq.countries_question')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Yes, our platform allows you to work with patients across Europe, in accordance with local regulations and your medical licenses.
+                  {t('doctors.signup.faq.countries_answer')}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">What documents do I need?</CardTitle>
+                <CardTitle className="text-lg">{t('doctors.signup.faq.documents_question')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  You'll need a valid medical license, proof of identity, and your professional credentials. Additional documents may be requested during the review process.
+                  {t('doctors.signup.faq.documents_answer')}
                 </p>
               </CardContent>
             </Card>
