@@ -921,6 +921,118 @@ adminDoctorManagementRouter.post('/:doctorId/reactivate', async (req, res) => {
 });
 
 /**
+ * POST /api/admin/doctors/:doctorId/activate
+ * Manually activate an approved doctor account
+ */
+adminDoctorManagementRouter.post('/:doctorId/activate', async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const { notes } = req.body;
+    const adminId = req.user.id; // Set by requireAdmin middleware
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+
+    // Get current doctor status
+    const [doctor] = await db
+      .select({
+        id: doctors.id,
+        userId: doctors.userId,
+        status: doctors.status,
+        profileCompletionPercentage: doctors.profileCompletionPercentage,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName
+      })
+      .from(doctors)
+      .innerJoin(users, eq(doctors.userId, users.id))
+      .where(eq(doctors.id, parseInt(doctorId)))
+      .limit(1);
+
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor not found' });
+    }
+
+    // Can only activate approved doctors
+    if (doctor.status !== 'approved') {
+      return res.status(400).json({
+        error: 'Invalid status transition',
+        message: `Can only activate doctors in approved status. Current status: ${doctor.status}`
+      });
+    }
+
+    // Check profile completion before activating
+    if (doctor.profileCompletionPercentage < 100) {
+      return res.status(400).json({
+        error: 'Profile incomplete',
+        message: 'Doctor profile must be 100% complete before activation',
+        profileCompletionPercentage: doctor.profileCompletionPercentage
+      });
+    }
+
+    const now = new Date();
+
+    // Update doctor status to active
+    await db
+      .update(doctors)
+      .set({
+        status: 'active',
+        activatedAt: now
+      })
+      .where(eq(doctors.id, parseInt(doctorId)));
+
+    // Update user approved flag (should already be true, but ensure it)
+    await db
+      .update(users)
+      .set({ approved: true })
+      .where(eq(users.id, doctor.userId));
+
+    // Create audit log entry
+    await db.insert(doctorApplicationAudit).values({
+      doctorId: parseInt(doctorId),
+      adminId: parseInt(adminId),
+      oldStatus: 'approved',
+      newStatus: 'active',
+      reason: 'Account manually activated by admin',
+      notes: notes || null,
+      ipAddress: ip,
+      userAgent: req.headers['user-agent'] || null
+    });
+
+    // Send activation email notification
+    try {
+      await notificationService.scheduleNotification({
+        userId: doctor.userId,
+        triggerCode: TriggerCode.DOCTOR_APP_APPROVED,
+        scheduledFor: new Date(),
+        mergeData: {
+          first_name: doctor.firstName,
+          last_name: doctor.lastName,
+          dashboard_link: `${process.env.CLIENT_URL}/doctor/dashboard`,
+          next_steps: 'Your account is now active and ready to use!'
+        }
+      });
+      console.log(`✅ Doctor activation email queued for user ${doctor.userId}`);
+    } catch (emailError) {
+      console.error('❌ Error queueing activation email:', emailError);
+    }
+
+    return res.json({
+      success: true,
+      message: 'Doctor account activated successfully',
+      data: {
+        doctorId: doctor.id,
+        userId: doctor.userId,
+        newStatus: 'active',
+        activatedAt: now
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error activating doctor account:', error);
+    return res.status(500).json({ error: 'Failed to activate account' });
+  }
+});
+
+/**
  * GET /api/admin/doctors/statistics
  * Get doctor application statistics
  */

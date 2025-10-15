@@ -1726,6 +1726,30 @@ export default function AdminDashboard() {
       }
     };
 
+    // Handle activate approved doctor
+    const handleActivateDoctor = async (doctorId: number) => {
+      try {
+        const response = await apiRequest('POST', `/api/admin/doctors/${doctorId}/activate`, {});
+        const result = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Doctor Activated",
+            description: "The doctor account has been activated and is now publicly visible.",
+          });
+          refetchDoctors();
+        } else {
+          throw new Error(result.error || result.message || 'Failed to activate doctor');
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to activate doctor",
+          variant: "destructive",
+        });
+      }
+    };
+
     return (
       <div className="space-y-6">
         {/* Header with Create Button */}
@@ -2098,6 +2122,12 @@ export default function AdminDashboard() {
                                 Dr. {doctor.firstName} {doctor.lastName}
                               </div>
                               <div className="text-sm text-gray-500">{doctor.email}</div>
+                              {doctor.status === 'approved' && (
+                                <Badge variant="secondary" className="mt-1 text-xs">
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  Awaiting Activation
+                                </Badge>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -2120,6 +2150,17 @@ export default function AdminDashboard() {
                         </td>
                         <td className="py-4">
                           <div className="flex items-center justify-end gap-2">
+                            {doctor.status === 'approved' && (
+                              <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => handleActivateDoctor(doctor.id)}
+                                className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
+                              >
+                                <CheckCircle2 className="h-4 w-4" />
+                                Activate
+                              </Button>
+                            )}
                             <Button
                               variant="outline"
                               size="sm"
