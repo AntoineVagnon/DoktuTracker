@@ -11,6 +11,11 @@ import enDoctors from '../locales/en/doctors.json';
 import enBooking from '../locales/en/booking.json';
 import enErrors from '../locales/en/errors.json';
 import enSupport from '../locales/en/support.json';
+import enContact from '../locales/en/contact.json';
+import enTermsOfService from '../locales/en/terms_of_service.json';
+import enPrivacyPolicy from '../locales/en/privacy_policy.json';
+import enGdpr from '../locales/en/gdpr.json';
+import enMedicalDisclaimer from '../locales/en/medical_disclaimer.json';
 
 import bsCommon from '../locales/bs/common.json';
 import bsLanding from '../locales/bs/landing.json';
@@ -20,6 +25,11 @@ import bsDoctors from '../locales/bs/doctors.json';
 import bsBooking from '../locales/bs/booking.json';
 import bsErrors from '../locales/bs/errors.json';
 import bsSupport from '../locales/bs/support.json';
+import bsContact from '../locales/bs/contact.json';
+import bsTermsOfService from '../locales/bs/terms_of_service.json';
+import bsPrivacyPolicy from '../locales/bs/privacy_policy.json';
+import bsGdpr from '../locales/bs/gdpr.json';
+import bsMedicalDisclaimer from '../locales/bs/medical_disclaimer.json';
 
 // Initialize i18next
 i18n
@@ -37,6 +47,11 @@ i18n
         booking: enBooking,
         errors: enErrors,
         support: enSupport,
+        contact: enContact,
+        terms_of_service: enTermsOfService,
+        privacy_policy: enPrivacyPolicy,
+        gdpr: enGdpr,
+        medical_disclaimer: enMedicalDisclaimer,
       },
       bs: {
         common: bsCommon,
@@ -47,6 +62,11 @@ i18n
         booking: bsBooking,
         errors: bsErrors,
         support: bsSupport,
+        contact: bsContact,
+        terms_of_service: bsTermsOfService,
+        privacy_policy: bsPrivacyPolicy,
+        gdpr: bsGdpr,
+        medical_disclaimer: bsMedicalDisclaimer,
       },
     },
     // Default language
@@ -54,7 +74,7 @@ i18n
     // Default namespace
     defaultNS: 'common',
     // Namespaces to load
-    ns: ['common', 'landing', 'auth', 'dashboard', 'doctors', 'booking', 'errors', 'support'],
+    ns: ['common', 'landing', 'auth', 'dashboard', 'doctors', 'booking', 'errors', 'support', 'contact', 'terms_of_service', 'privacy_policy', 'gdpr', 'medical_disclaimer'],
 
     // Language detection options
     detection: {

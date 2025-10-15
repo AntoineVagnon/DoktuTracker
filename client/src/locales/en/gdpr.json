@@ -1,186 +1,184 @@
 {
-  "gdpr": {
-    "header": {
-      "back_to_home": "Back to Home",
-      "title": "GDPR Compliance Statement",
-      "last_updated": "Last Updated:",
-      "version": "Version:"
+  "header": {
+    "back_to_home": "Back to Home",
+    "title": "GDPR Compliance Statement",
+    "last_updated": "Last Updated:",
+    "version": "Version:"
+  },
+  "commitment": {
+    "title": "Our Commitment to GDPR",
+    "description": "Doktu is fully committed to compliance with the General Data Protection Regulation (GDPR) (EU) 2016/679. As a healthcare platform processing special category data under Article 9, we implement the highest standards of data protection.",
+    "registration": "We are registered with the French Data Protection Authority (CNIL) and comply with all EU data protection regulations."
+  },
+  "legal_framework": {
+    "title": "Legal Framework",
+    "article9": {
+      "title": "GDPR Article 9 - Processing of Health Data",
+      "description": "We process health data under the following legal bases:",
+      "basis_h": "Healthcare provision and management",
+      "basis_a": "Explicit consent where required",
+      "basis_i": "Public health interests"
     },
-    "commitment": {
-      "title": "Our Commitment to GDPR",
-      "description": "Doktu is fully committed to compliance with the General Data Protection Regulation (GDPR) (EU) 2016/679. As a healthcare platform processing special category data under Article 9, we implement the highest standards of data protection.",
-      "registration": "We are registered with the French Data Protection Authority (CNIL) and comply with all EU data protection regulations."
-    },
-    "legal_framework": {
-      "title": "Legal Framework",
-      "article9": {
-        "title": "GDPR Article 9 - Processing of Health Data",
-        "description": "We process health data under the following legal bases:",
-        "basis_h": "Healthcare provision and management",
-        "basis_a": "Explicit consent where required",
-        "basis_i": "Public health interests"
-      },
-      "article6": {
-        "title": "GDPR Article 6 - Lawfulness of Processing",
-        "description": "General data processing is based on:",
-        "basis_b": "Contract performance",
-        "basis_c": "Legal obligations",
-        "basis_a": "Consent for marketing"
-      }
-    },
-    "protection_measures": {
-      "title": "Data Protection Measures",
-      "technical": {
-        "title": "Technical Measures",
-        "encryption": "End-to-end encryption",
-        "aes": "AES-256 data encryption",
-        "access": "Secure access controls",
-        "audits": "Regular security audits"
-      },
-      "organizational": {
-        "title": "Organizational Measures",
-        "training": "Staff training programs",
-        "policies": "Data protection policies",
-        "restrictions": "Access restrictions",
-        "response": "Incident response plans"
-      }
-    },
-    "dpia": {
-      "title": "Data Protection Impact Assessment (DPIA)",
-      "description": "We have conducted a comprehensive DPIA for our telemedicine platform, addressing:",
-      "health_data": "Processing of health data at large scale",
-      "video": "Use of video consultation technology",
-      "transfers": "Cross-border data transfers within EU",
-      "third_party": "Integration with third-party services (Zoom, Stripe)",
-      "storage": "Long-term storage of medical records"
-    },
-    "rights": {
-      "title": "Data Subject Rights",
-      "description": "We fully support all rights granted under GDPR:",
-      "access": {
-        "name": "Right to Access",
-        "article": "Article 15",
-        "description": "Request copies of your personal data"
-      },
-      "rectification": {
-        "name": "Right to Rectification",
-        "article": "Article 16",
-        "description": "Correct inaccurate personal data"
-      },
-      "erasure": {
-        "name": "Right to Erasure",
-        "article": "Article 17",
-        "description": "Request deletion of your data"
-      },
-      "restriction": {
-        "name": "Right to Restriction",
-        "article": "Article 18",
-        "description": "Limit processing of your data"
-      },
-      "portability": {
-        "name": "Right to Portability",
-        "article": "Article 20",
-        "description": "Transfer data to another provider"
-      },
-      "object": {
-        "name": "Right to Object",
-        "article": "Article 21",
-        "description": "Object to certain processing"
-      },
-      "withdraw": {
-        "name": "Right to Withdraw Consent",
-        "article": "Article 7",
-        "description": "Withdraw consent at any time"
-      },
-      "complain": {
-        "name": "Right to Complain",
-        "article": "Article 77",
-        "description": "Lodge complaint with supervisory authority"
-      }
-    },
-    "processing": {
-      "title": "Data Processing Activities",
-      "table": {
-        "activity": "Activity",
-        "legal_basis": "Legal Basis",
-        "retention": "Retention"
-      },
-      "rows": {
-        "consultations": {
-          "activity": "Medical consultations",
-          "basis": "Article 9(2)(h)",
-          "retention": "10 years"
-        },
-        "payment": {
-          "activity": "Payment processing",
-          "basis": "Article 6(1)(b)",
-          "retention": "7 years"
-        },
-        "account": {
-          "activity": "Account management",
-          "basis": "Article 6(1)(b)",
-          "retention": "Active + 3 years"
-        },
-        "marketing": {
-          "activity": "Marketing communications",
-          "basis": "Article 6(1)(a)",
-          "retention": "Until withdrawn"
-        }
-      }
-    },
-    "breach": {
-      "title": "Data Breach Response",
-      "description": "Our incident response plan ensures compliance with GDPR breach notification requirements:",
-      "authority": "Supervisory authority notification within 72 hours (Article 33)",
-      "subject": "Data subject notification for high-risk breaches (Article 34)",
-      "documentation": "Comprehensive breach documentation and remediation",
-      "testing": "Regular security testing and vulnerability assessments"
-    },
-    "processors": {
-      "title": "Third-Party Processors",
-      "description": "All our data processors are GDPR-compliant and bound by data processing agreements:",
-      "supabase": "Database hosting (EU servers)",
-      "zoom": "Video consultations (GDPR-compliant)",
-      "stripe": "Payment processing (PCI DSS Level 1)",
-      "sendgrid": "Email communications (GDPR-compliant)"
-    },
-    "transfers": {
-      "title": "International Data Transfers",
-      "description": "All data processing occurs within the European Economic Area (EEA). Any transfers outside the EEA are protected by:",
-      "adequacy": "EU Commission adequacy decisions",
-      "scc": "Standard Contractual Clauses (SCCs)",
-      "bcr": "Binding Corporate Rules (BCRs)"
-    },
-    "dpo": {
-      "title": "Contact Our Data Protection Officer",
-      "description": "For any GDPR-related inquiries or to exercise your data protection rights:",
-      "officer": "Data Protection Officer:",
-      "officer_name": "Jean-Pierre Martin",
-      "email": "Email:",
-      "email_address": "dpo@doktu.co",
-      "phone": "Phone:",
-      "phone_number": "+33 1 23 45 67 89",
-      "address": "Address:",
-      "address_value": "123 Rue de la Santé, 75014 Paris, France",
-      "response_time": "Response time: We aim to respond to all requests within 30 days as required by GDPR."
-    },
-    "authorities": {
-      "title": "Supervisory Authorities",
-      "description": "You have the right to lodge a complaint with your national data protection authority:",
-      "france_title": "France (Lead Authority):",
-      "france_name": "Commission Nationale de l'Informatique et des Libertés (CNIL)",
-      "france_website": "www.cnil.fr",
-      "other": "For other EU member states, please contact your national data protection authority."
-    },
-    "certifications": {
-      "title": "Compliance Certifications",
-      "gdpr": "GDPR Compliant since May 25, 2018",
-      "iso": "ISO 27001 Information Security (In Progress)",
-      "hipaa": "HIPAA Compliant Infrastructure",
-      "eprivacy": "ePrivacy Directive Compliant"
-    },
-    "footer": {
-      "note": "This GDPR Compliance Statement is regularly reviewed and updated to ensure ongoing compliance with evolving data protection regulations."
+    "article6": {
+      "title": "GDPR Article 6 - Lawfulness of Processing",
+      "description": "General data processing is based on:",
+      "basis_b": "Contract performance",
+      "basis_c": "Legal obligations",
+      "basis_a": "Consent for marketing"
     }
+  },
+  "protection_measures": {
+    "title": "Data Protection Measures",
+    "technical": {
+      "title": "Technical Measures",
+      "encryption": "End-to-end encryption",
+      "aes": "AES-256 data encryption",
+      "access": "Secure access controls",
+      "audits": "Regular security audits"
+    },
+    "organizational": {
+      "title": "Organizational Measures",
+      "training": "Staff training programs",
+      "policies": "Data protection policies",
+      "restrictions": "Access restrictions",
+      "response": "Incident response plans"
+    }
+  },
+  "dpia": {
+    "title": "Data Protection Impact Assessment (DPIA)",
+    "description": "We have conducted a comprehensive DPIA for our telemedicine platform, addressing:",
+    "health_data": "Processing of health data at large scale",
+    "video": "Use of video consultation technology",
+    "transfers": "Cross-border data transfers within EU",
+    "third_party": "Integration with third-party services (Zoom, Stripe)",
+    "storage": "Long-term storage of medical records"
+  },
+  "rights": {
+    "title": "Data Subject Rights",
+    "description": "We fully support all rights granted under GDPR:",
+    "access": {
+      "name": "Right to Access",
+      "article": "Article 15",
+      "description": "Request copies of your personal data"
+    },
+    "rectification": {
+      "name": "Right to Rectification",
+      "article": "Article 16",
+      "description": "Correct inaccurate personal data"
+    },
+    "erasure": {
+      "name": "Right to Erasure",
+      "article": "Article 17",
+      "description": "Request deletion of your data"
+    },
+    "restriction": {
+      "name": "Right to Restriction",
+      "article": "Article 18",
+      "description": "Limit processing of your data"
+    },
+    "portability": {
+      "name": "Right to Portability",
+      "article": "Article 20",
+      "description": "Transfer data to another provider"
+    },
+    "object": {
+      "name": "Right to Object",
+      "article": "Article 21",
+      "description": "Object to certain processing"
+    },
+    "withdraw": {
+      "name": "Right to Withdraw Consent",
+      "article": "Article 7",
+      "description": "Withdraw consent at any time"
+    },
+    "complain": {
+      "name": "Right to Complain",
+      "article": "Article 77",
+      "description": "Lodge complaint with supervisory authority"
+    }
+  },
+  "processing": {
+    "title": "Data Processing Activities",
+    "table": {
+      "activity": "Activity",
+      "legal_basis": "Legal Basis",
+      "retention": "Retention"
+    },
+    "rows": {
+      "consultations": {
+        "activity": "Medical consultations",
+        "basis": "Article 9(2)(h)",
+        "retention": "10 years"
+      },
+      "payment": {
+        "activity": "Payment processing",
+        "basis": "Article 6(1)(b)",
+        "retention": "7 years"
+      },
+      "account": {
+        "activity": "Account management",
+        "basis": "Article 6(1)(b)",
+        "retention": "Active + 3 years"
+      },
+      "marketing": {
+        "activity": "Marketing communications",
+        "basis": "Article 6(1)(a)",
+        "retention": "Until withdrawn"
+      }
+    }
+  },
+  "breach": {
+    "title": "Data Breach Response",
+    "description": "Our incident response plan ensures compliance with GDPR breach notification requirements:",
+    "authority": "Supervisory authority notification within 72 hours (Article 33)",
+    "subject": "Data subject notification for high-risk breaches (Article 34)",
+    "documentation": "Comprehensive breach documentation and remediation",
+    "testing": "Regular security testing and vulnerability assessments"
+  },
+  "processors": {
+    "title": "Third-Party Processors",
+    "description": "All our data processors are GDPR-compliant and bound by data processing agreements:",
+    "supabase": "Database hosting (EU servers)",
+    "zoom": "Video consultations (GDPR-compliant)",
+    "stripe": "Payment processing (PCI DSS Level 1)",
+    "sendgrid": "Email communications (GDPR-compliant)"
+  },
+  "transfers": {
+    "title": "International Data Transfers",
+    "description": "All data processing occurs within the European Economic Area (EEA). Any transfers outside the EEA are protected by:",
+    "adequacy": "EU Commission adequacy decisions",
+    "scc": "Standard Contractual Clauses (SCCs)",
+    "bcr": "Binding Corporate Rules (BCRs)"
+  },
+  "dpo": {
+    "title": "Contact Our Data Protection Officer",
+    "description": "For any GDPR-related inquiries or to exercise your data protection rights:",
+    "officer": "Data Protection Officer:",
+    "officer_name": "Jean-Pierre Martin",
+    "email": "Email:",
+    "email_address": "dpo@doktu.co",
+    "phone": "Phone:",
+    "phone_number": "+33 1 23 45 67 89",
+    "address": "Address:",
+    "address_value": "123 Rue de la Santé, 75014 Paris, France",
+    "response_time": "Response time: We aim to respond to all requests within 30 days as required by GDPR."
+  },
+  "authorities": {
+    "title": "Supervisory Authorities",
+    "description": "You have the right to lodge a complaint with your national data protection authority:",
+    "france_title": "France (Lead Authority):",
+    "france_name": "Commission Nationale de l'Informatique et des Libertés (CNIL)",
+    "france_website": "www.cnil.fr",
+    "other": "For other EU member states, please contact your national data protection authority."
+  },
+  "certifications": {
+    "title": "Compliance Certifications",
+    "gdpr": "GDPR Compliant since May 25, 2018",
+    "iso": "ISO 27001 Information Security (In Progress)",
+    "hipaa": "HIPAA Compliant Infrastructure",
+    "eprivacy": "ePrivacy Directive Compliant"
+  },
+  "footer": {
+    "note": "This GDPR Compliance Statement is regularly reviewed and updated to ensure ongoing compliance with evolving data protection regulations."
   }
 }

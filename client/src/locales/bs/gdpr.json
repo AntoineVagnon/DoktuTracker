@@ -1,186 +1,184 @@
 {
-  "gdpr": {
-    "header": {
-      "back_to_home": "Nazad na početnu",
-      "title": "Izjava o usklađenosti sa RGPD",
-      "last_updated": "Posljednje ažurirano:",
-      "version": "Verzija:"
+  "header": {
+    "back_to_home": "Nazad na početnu",
+    "title": "Izjava o usklađenosti sa RGPD",
+    "last_updated": "Posljednje ažurirano:",
+    "version": "Verzija:"
+  },
+  "commitment": {
+    "title": "Naša posvećenost RGPD",
+    "description": "Doktu je u potpunosti posvećen usklađenosti sa Općom uredbom o zaštiti podataka (RGPD) (EU) 2016/679. Kao zdravstvena platforma koja obrađuje posebne kategorije podataka prema Članu 9, implementiramo najviše standarde zaštite podataka.",
+    "registration": "Registrirani smo kod Francuske agencije za zaštitu podataka (CNIL) i u skladu smo sa svim propisima EU o zaštiti podataka."
+  },
+  "legal_framework": {
+    "title": "Pravni okvir",
+    "article9": {
+      "title": "RGPD Član 9 - Obrada zdravstvenih podataka",
+      "description": "Obrađujemo zdravstvene podatke na sljedećim pravnim osnovama:",
+      "basis_h": "Pružanje i upravljanje zdravstvenom zaštitom",
+      "basis_a": "Izričita saglasnost gdje je potrebna",
+      "basis_i": "Interesi javnog zdravlja"
     },
-    "commitment": {
-      "title": "Naša posvećenost RGPD",
-      "description": "Doktu je u potpunosti posvećen usklađenosti sa Općom uredbom o zaštiti podataka (RGPD) (EU) 2016/679. Kao zdravstvena platforma koja obrađuje posebne kategorije podataka prema Članu 9, implementiramo najviše standarde zaštite podataka.",
-      "registration": "Registrirani smo kod Francuske agencije za zaštitu podataka (CNIL) i u skladu smo sa svim propisima EU o zaštiti podataka."
-    },
-    "legal_framework": {
-      "title": "Pravni okvir",
-      "article9": {
-        "title": "RGPD Član 9 - Obrada zdravstvenih podataka",
-        "description": "Obrađujemo zdravstvene podatke na sljedećim pravnim osnovama:",
-        "basis_h": "Pružanje i upravljanje zdravstvenom zaštitom",
-        "basis_a": "Izričita saglasnost gdje je potrebna",
-        "basis_i": "Interesi javnog zdravlja"
-      },
-      "article6": {
-        "title": "RGPD Član 6 - Zakonitost obrade",
-        "description": "Općenita obrada podataka se zasniva na:",
-        "basis_b": "Izvršenje ugovora",
-        "basis_c": "Pravne obaveze",
-        "basis_a": "Saglasnost za marketing"
-      }
-    },
-    "protection_measures": {
-      "title": "Mjere zaštite podataka",
-      "technical": {
-        "title": "Tehničke mjere",
-        "encryption": "End-to-end enkripcija",
-        "aes": "AES-256 enkripcija podataka",
-        "access": "Sigurna kontrola pristupa",
-        "audits": "Redovne sigurnosne revizije"
-      },
-      "organizational": {
-        "title": "Organizacijske mjere",
-        "training": "Programi obuke osoblja",
-        "policies": "Politike zaštite podataka",
-        "restrictions": "Ograničenja pristupa",
-        "response": "Planovi odgovora na incident"
-      }
-    },
-    "dpia": {
-      "title": "Procjena uticaja na zaštitu podataka (DPIA)",
-      "description": "Proveli smo sveobuhvatnu DPIA za našu telemedicinsku platformu, koja se bavi:",
-      "health_data": "Obrada zdravstvenih podataka na velikoj skali",
-      "video": "Korištenje tehnologije video konsultacija",
-      "transfers": "Prekogranični prijenosi podataka unutar EU",
-      "third_party": "Integracija sa uslugama trećih strana (Zoom, Stripe)",
-      "storage": "Dugoročno čuvanje medicinskih zapisa"
-    },
-    "rights": {
-      "title": "Prava subjekata podataka",
-      "description": "U potpunosti podržavamo sva prava garantirana RGPD-om:",
-      "access": {
-        "name": "Pravo na pristup",
-        "article": "Član 15",
-        "description": "Zatražite kopije vaših ličnih podataka"
-      },
-      "rectification": {
-        "name": "Pravo na ispravku",
-        "article": "Član 16",
-        "description": "Ispravite netočne lične podatke"
-      },
-      "erasure": {
-        "name": "Pravo na brisanje",
-        "article": "Član 17",
-        "description": "Zatražite brisanje vaših podataka"
-      },
-      "restriction": {
-        "name": "Pravo na ograničenje",
-        "article": "Član 18",
-        "description": "Ograničite obradu vaših podataka"
-      },
-      "portability": {
-        "name": "Pravo na prenosivost",
-        "article": "Član 20",
-        "description": "Prenesite podatke drugom pružaocu usluga"
-      },
-      "object": {
-        "name": "Pravo na prigovor",
-        "article": "Član 21",
-        "description": "Uložite prigovor na određenu obradu"
-      },
-      "withdraw": {
-        "name": "Pravo na povlačenje saglasnosti",
-        "article": "Član 7",
-        "description": "Povucite saglasnost u bilo kojem trenutku"
-      },
-      "complain": {
-        "name": "Pravo na žalbu",
-        "article": "Član 77",
-        "description": "Podnesite žalbu nadzornom tijelu"
-      }
-    },
-    "processing": {
-      "title": "Aktivnosti obrade podataka",
-      "table": {
-        "activity": "Aktivnost",
-        "legal_basis": "Pravna osnova",
-        "retention": "Zadržavanje"
-      },
-      "rows": {
-        "consultations": {
-          "activity": "Medicinske konsultacije",
-          "basis": "Član 9(2)(h)",
-          "retention": "10 godina"
-        },
-        "payment": {
-          "activity": "Obrada plaćanja",
-          "basis": "Član 6(1)(b)",
-          "retention": "7 godina"
-        },
-        "account": {
-          "activity": "Upravljanje nalogom",
-          "basis": "Član 6(1)(b)",
-          "retention": "Aktivno + 3 godine"
-        },
-        "marketing": {
-          "activity": "Marketing komunikacije",
-          "basis": "Član 6(1)(a)",
-          "retention": "Do povlačenja"
-        }
-      }
-    },
-    "breach": {
-      "title": "Odgovor na kršenje podataka",
-      "description": "Naš plan odgovora na incident osigurava usklađenost sa zahtjevima RGPD-a za obavještavanje o kršenju:",
-      "authority": "Obavještavanje nadzornog tijela u roku od 72 sata (Član 33)",
-      "subject": "Obavještavanje subjekta podataka za visokorizična kršenja (Član 34)",
-      "documentation": "Sveobuhvatna dokumentacija kršenja i sanacija",
-      "testing": "Redovno testiranje sigurnosti i procjene ranjivosti"
-    },
-    "processors": {
-      "title": "Obrađivači trećih strana",
-      "description": "Svi naši obrađivači podataka su usklađeni sa RGPD-om i vezani ugovorima o obradi podataka:",
-      "supabase": "Hosting baze podataka (EU serveri)",
-      "zoom": "Video konsultacije (usklađeno sa RGPD)",
-      "stripe": "Obrada plaćanja (PCI DSS Level 1)",
-      "sendgrid": "Email komunikacije (usklađeno sa RGPD)"
-    },
-    "transfers": {
-      "title": "Međunarodni prijenosi podataka",
-      "description": "Sva obrada podataka se odvija unutar Evropskog ekonomskog prostora (EEA). Svi prijenosi izvan EEA su zaštićeni:",
-      "adequacy": "Odluke EU Komisije o adekvatnosti",
-      "scc": "Standardne ugovorne klauzule (SCC)",
-      "bcr": "Obvezujuća korporativna pravila (BCR)"
-    },
-    "dpo": {
-      "title": "Kontaktirajte našeg službenika za zaštitu podataka",
-      "description": "Za sva pitanja vezana za RGPD ili za ostvarivanje vaših prava zaštite podataka:",
-      "officer": "Službenik za zaštitu podataka:",
-      "officer_name": "Jean-Pierre Martin",
-      "email": "Email:",
-      "email_address": "dpo@doktu.co",
-      "phone": "Telefon:",
-      "phone_number": "+33 1 23 45 67 89",
-      "address": "Adresa:",
-      "address_value": "123 Rue de la Santé, 75014 Paris, Francuska",
-      "response_time": "Vrijeme odgovora: Cilj nam je odgovoriti na sve zahtjeve u roku od 30 dana kako RGPD zahtijeva."
-    },
-    "authorities": {
-      "title": "Nadzorna tijela",
-      "description": "Imate pravo podnijeti žalbu vašem nacionalnom tijelu za zaštitu podataka:",
-      "france_title": "Francuska (Glavno tijelo):",
-      "france_name": "Commission Nationale de l'Informatique et des Libertés (CNIL)",
-      "france_website": "www.cnil.fr",
-      "other": "Za druge zemlje članice EU, molimo kontaktirajte vaše nacionalno tijelo za zaštitu podataka."
-    },
-    "certifications": {
-      "title": "Certifikati usklađenosti",
-      "gdpr": "Usklađeno sa RGPD od 25. maja 2018.",
-      "iso": "ISO 27001 Informacijska sigurnost (U toku)",
-      "hipaa": "HIPAA usklađena infrastruktura",
-      "eprivacy": "Usklađeno sa Direktivom o e-privatnosti"
-    },
-    "footer": {
-      "note": "Ova Izjava o usklađenosti sa RGPD se redovno pregleda i ažurira kako bi se osigurala kontinuirana usklađenost sa propulsima o zaštiti podataka koji se razvijaju."
+    "article6": {
+      "title": "RGPD Član 6 - Zakonitost obrade",
+      "description": "Općenita obrada podataka se zasniva na:",
+      "basis_b": "Izvršenje ugovora",
+      "basis_c": "Pravne obaveze",
+      "basis_a": "Saglasnost za marketing"
     }
+  },
+  "protection_measures": {
+    "title": "Mjere zaštite podataka",
+    "technical": {
+      "title": "Tehničke mjere",
+      "encryption": "End-to-end enkripcija",
+      "aes": "AES-256 enkripcija podataka",
+      "access": "Sigurna kontrola pristupa",
+      "audits": "Redovne sigurnosne revizije"
+    },
+    "organizational": {
+      "title": "Organizacijske mjere",
+      "training": "Programi obuke osoblja",
+      "policies": "Politike zaštite podataka",
+      "restrictions": "Ograničenja pristupa",
+      "response": "Planovi odgovora na incident"
+    }
+  },
+  "dpia": {
+    "title": "Procjena uticaja na zaštitu podataka (DPIA)",
+    "description": "Proveli smo sveobuhvatnu DPIA za našu telemedicinsku platformu, koja se bavi:",
+    "health_data": "Obrada zdravstvenih podataka na velikoj skali",
+    "video": "Korištenje tehnologije video konsultacija",
+    "transfers": "Prekogranični prijenosi podataka unutar EU",
+    "third_party": "Integracija sa uslugama trećih strana (Zoom, Stripe)",
+    "storage": "Dugoročno čuvanje medicinskih zapisa"
+  },
+  "rights": {
+    "title": "Prava subjekata podataka",
+    "description": "U potpunosti podržavamo sva prava garantirana RGPD-om:",
+    "access": {
+      "name": "Pravo na pristup",
+      "article": "Član 15",
+      "description": "Zatražite kopije vaših ličnih podataka"
+    },
+    "rectification": {
+      "name": "Pravo na ispravku",
+      "article": "Član 16",
+      "description": "Ispravite netočne lične podatke"
+    },
+    "erasure": {
+      "name": "Pravo na brisanje",
+      "article": "Član 17",
+      "description": "Zatražite brisanje vaših podataka"
+    },
+    "restriction": {
+      "name": "Pravo na ograničenje",
+      "article": "Član 18",
+      "description": "Ograničite obradu vaših podataka"
+    },
+    "portability": {
+      "name": "Pravo na prenosivost",
+      "article": "Član 20",
+      "description": "Prenesite podatke drugom pružaocu usluga"
+    },
+    "object": {
+      "name": "Pravo na prigovor",
+      "article": "Član 21",
+      "description": "Uložite prigovor na određenu obradu"
+    },
+    "withdraw": {
+      "name": "Pravo na povlačenje saglasnosti",
+      "article": "Član 7",
+      "description": "Povucite saglasnost u bilo kojem trenutku"
+    },
+    "complain": {
+      "name": "Pravo na žalbu",
+      "article": "Član 77",
+      "description": "Podnesite žalbu nadzornom tijelu"
+    }
+  },
+  "processing": {
+    "title": "Aktivnosti obrade podataka",
+    "table": {
+      "activity": "Aktivnost",
+      "legal_basis": "Pravna osnova",
+      "retention": "Zadržavanje"
+    },
+    "rows": {
+      "consultations": {
+        "activity": "Medicinske konsultacije",
+        "basis": "Član 9(2)(h)",
+        "retention": "10 godina"
+      },
+      "payment": {
+        "activity": "Obrada plaćanja",
+        "basis": "Član 6(1)(b)",
+        "retention": "7 godina"
+      },
+      "account": {
+        "activity": "Upravljanje nalogom",
+        "basis": "Član 6(1)(b)",
+        "retention": "Aktivno + 3 godine"
+      },
+      "marketing": {
+        "activity": "Marketing komunikacije",
+        "basis": "Član 6(1)(a)",
+        "retention": "Do povlačenja"
+      }
+    }
+  },
+  "breach": {
+    "title": "Odgovor na kršenje podataka",
+    "description": "Naš plan odgovora na incident osigurava usklađenost sa zahtjevima RGPD-a za obavještavanje o kršenju:",
+    "authority": "Obavještavanje nadzornog tijela u roku od 72 sata (Član 33)",
+    "subject": "Obavještavanje subjekta podataka za visokorizična kršenja (Član 34)",
+    "documentation": "Sveobuhvatna dokumentacija kršenja i sanacija",
+    "testing": "Redovno testiranje sigurnosti i procjene ranjivosti"
+  },
+  "processors": {
+    "title": "Obrađivači trećih strana",
+    "description": "Svi naši obrađivači podataka su usklađeni sa RGPD-om i vezani ugovorima o obradi podataka:",
+    "supabase": "Hosting baze podataka (EU serveri)",
+    "zoom": "Video konsultacije (usklađeno sa RGPD)",
+    "stripe": "Obrada plaćanja (PCI DSS Level 1)",
+    "sendgrid": "Email komunikacije (usklađeno sa RGPD)"
+  },
+  "transfers": {
+    "title": "Međunarodni prijenosi podataka",
+    "description": "Sva obrada podataka se odvija unutar Evropskog ekonomskog prostora (EEA). Svi prijenosi izvan EEA su zaštićeni:",
+    "adequacy": "Odluke EU Komisije o adekvatnosti",
+    "scc": "Standardne ugovorne klauzule (SCC)",
+    "bcr": "Obvezujuća korporativna pravila (BCR)"
+  },
+  "dpo": {
+    "title": "Kontaktirajte našeg službenika za zaštitu podataka",
+    "description": "Za sva pitanja vezana za RGPD ili za ostvarivanje vaših prava zaštite podataka:",
+    "officer": "Službenik za zaštitu podataka:",
+    "officer_name": "Jean-Pierre Martin",
+    "email": "Email:",
+    "email_address": "dpo@doktu.co",
+    "phone": "Telefon:",
+    "phone_number": "+33 1 23 45 67 89",
+    "address": "Adresa:",
+    "address_value": "123 Rue de la Santé, 75014 Paris, Francuska",
+    "response_time": "Vrijeme odgovora: Cilj nam je odgovoriti na sve zahtjeve u roku od 30 dana kako RGPD zahtijeva."
+  },
+  "authorities": {
+    "title": "Nadzorna tijela",
+    "description": "Imate pravo podnijeti žalbu vašem nacionalnom tijelu za zaštitu podataka:",
+    "france_title": "Francuska (Glavno tijelo):",
+    "france_name": "Commission Nationale de l'Informatique et des Libertés (CNIL)",
+    "france_website": "www.cnil.fr",
+    "other": "Za druge zemlje članice EU, molimo kontaktirajte vaše nacionalno tijelo za zaštitu podataka."
+  },
+  "certifications": {
+    "title": "Certifikati usklađenosti",
+    "gdpr": "Usklađeno sa RGPD od 25. maja 2018.",
+    "iso": "ISO 27001 Informacijska sigurnost (U toku)",
+    "hipaa": "HIPAA usklađena infrastruktura",
+    "eprivacy": "Usklađeno sa Direktivom o e-privatnosti"
+  },
+  "footer": {
+    "note": "Ova Izjava o usklađenosti sa RGPD se redovno pregleda i ažurira kako bi se osigurala kontinuirana usklađenost sa propulsima o zaštiti podataka koji se razvijaju."
   }
 }

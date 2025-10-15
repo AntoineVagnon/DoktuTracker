@@ -1,222 +1,220 @@
 {
-  "privacy_policy": {
-    "header": {
-      "back_to_home": "Nazad na početnu",
-      "title": "Politika privatnosti - Doktu telemedicinska platforma",
-      "effective_date": "Datum stupanja na snagu:",
-      "last_updated": "Posljednje ažurirano:",
-      "version": "Verzija:"
+  "header": {
+    "back_to_home": "Nazad na početnu",
+    "title": "Politika privatnosti - Doktu telemedicinska platforma",
+    "effective_date": "Datum stupanja na snagu:",
+    "last_updated": "Posljednje ažurirano:",
+    "version": "Verzija:"
+  },
+  "section1": {
+    "title": "1. Informacije o rukovaocu podataka",
+    "controller": "Rukovalac podataka:",
+    "controller_value": "Doktu SAS",
+    "address": "Adresa:",
+    "address_value": "123 Rue de la Santé, 75014 Paris, Francuska",
+    "email": "Email:",
+    "email_value": "privacy@doktu.co",
+    "phone": "Telefon:",
+    "phone_value": "+33 1 23 45 67 89",
+    "dpo": "Službenik za zaštitu podataka:",
+    "dpo_value": "dpo@doktu.co"
+  },
+  "section2": {
+    "title": "2. Pravna osnova za obradu zdravstvenih podataka",
+    "description": "Prema Općoj uredbi o zaštiti podataka (RGPD) Član 9, obrađujemo vaše zdravstvene podatke na osnovu sljedećih pravnih osnova:",
+    "primary": {
+      "title": "Primarna pravna osnova: Član 9(2)(h) - Pružanje zdravstvene zaštite",
+      "description": "Obrađujemo vaše zdravstvene podatke jer je to potrebno za:",
+      "diagnosis": "Medicinsku dijagnozu i procjenu",
+      "provision": "Pružanje zdravstvene zaštite i medicinskog tretmana",
+      "management": "Upravljanje zdravstvenim uslugama",
+      "communication": "Komunikaciju sa zdravstvenim stručnjacima",
+      "note": "Ova obrada se provodi prema ugovoru sa licenciranim zdravstvenim stručnjacima koji su podložni obavezama profesionalne tajne prema pravu EU i država članica."
     },
-    "section1": {
-      "title": "1. Informacije o rukovaocu podataka",
-      "controller": "Rukovalac podataka:",
-      "controller_value": "Doktu SAS",
-      "address": "Adresa:",
-      "address_value": "123 Rue de la Santé, 75014 Paris, Francuska",
-      "email": "Email:",
-      "email_value": "privacy@doktu.co",
-      "phone": "Telefon:",
-      "phone_value": "+33 1 23 45 67 89",
-      "dpo": "Službenik za zaštitu podataka:",
-      "dpo_value": "dpo@doktu.co"
-    },
-    "section2": {
-      "title": "2. Pravna osnova za obradu zdravstvenih podataka",
-      "description": "Prema Općoj uredbi o zaštiti podataka (RGPD) Član 9, obrađujemo vaše zdravstvene podatke na osnovu sljedećih pravnih osnova:",
-      "primary": {
-        "title": "Primarna pravna osnova: Član 9(2)(h) - Pružanje zdravstvene zaštite",
-        "description": "Obrađujemo vaše zdravstvene podatke jer je to potrebno za:",
-        "diagnosis": "Medicinsku dijagnozu i procjenu",
-        "provision": "Pružanje zdravstvene zaštite i medicinskog tretmana",
-        "management": "Upravljanje zdravstvenim uslugama",
-        "communication": "Komunikaciju sa zdravstvenim stručnjacima",
-        "note": "Ova obrada se provodi prema ugovoru sa licenciranim zdravstvenim stručnjacima koji su podložni obavezama profesionalne tajne prema pravu EU i država članica."
-      },
-      "secondary": {
-        "title": "Sekundarna pravna osnova: Član 9(2)(a) - Izričita saglasnost",
-        "description": "Gdje je potrebno, dobijamo vašu izričitu saglasnost za obradu zdravstvenih podataka u specifične svrhe uključujući:",
-        "history": "Čuvanje istorije konsultacija za kontinuitet njege",
-        "sharing": "Dijeljenje podataka sa specijalistima za upućivanje",
-        "anonymized": "Korištenje anonimiziranih podataka za poboljšanje usluge"
-      }
-    },
-    "section3": {
-      "title": "3. Podaci koje prikupljamo",
-      "health": {
-        "title": "3.1 Zdravstveni podaci (Posebna kategorija podataka)",
-        "history": "Medicinska istorija i simptomi",
-        "notes": "Bilješke konsultacija i dijagnoze",
-        "prescriptions": "Informacije o receptima",
-        "treatment": "Preporuke za tretman",
-        "vitals": "Vitalni znaci i mjerenja",
-        "documents": "Medicinske slike ili dokumenti koje pružite"
-      },
-      "personal": {
-        "title": "3.2 Lični podaci",
-        "identity": "Ime, datum rođenja, pol",
-        "contact": "Kontakt informacije (email, telefon, adresa)",
-        "payment": "Informacije o plaćanju",
-        "credentials": "Pristupni podaci naloga",
-        "communications": "Zapisi komunikacija",
-        "technical": "Tehnički podaci (IP adresa, informacije o pregledniku)"
-      },
-      "video": {
-        "title": "3.3 Podaci video konsultacija",
-        "recordings": "Video i audio snimci (ako ste pristali)",
-        "chat": "Chat poruke tokom konsultacija",
-        "screen": "Sadržaj dijeljenja ekrana",
-        "metadata": "Tehnički metapodaci iz Zoom integracije"
-      }
-    },
-    "section4": {
-      "title": "4. Kako koristimo vaše podatke",
-      "healthcare": {
-        "title": "4.1 Zdravstvene svrhe (Član 9(2)(h))",
-        "consultations": "Olakšavanje video konsultacija sa doktorima",
-        "records": "Održavanje medicinskih zapisa za kontinuitet njege",
-        "prescriptions": "Omogućavanje upravljanja receptima",
-        "followup": "Podrška za nastavak njege",
-        "emergency": "Medicinske hitne situacije"
-      },
-      "service": {
-        "title": "4.2 Upravljanje uslugama (Član 6(1)(b))",
-        "account": "Upravljanje nalogom i autentifikacija",
-        "payment": "Obrada plaćanja",
-        "support": "Korisnička podrška",
-        "improvement": "Poboljšanje i optimizacija usluge"
-      },
-      "legal": {
-        "title": "4.3 Usklađenost sa zakonom (Član 6(1)(c))",
-        "reporting": "Zahtjevi za regulatorno izvještavanje",
-        "licensing": "Usklađenost sa profesionalnim licenciranjem",
-        "tax": "Porezne i računovodstvene obaveze",
-        "law": "Zahtjevi organa za sprovođenje zakona"
-      }
-    },
-    "section5": {
-      "title": "5. Dijeljenje podataka i primaoci",
-      "professionals": {
-        "title": "5.1 Zdravstveni stručnjaci",
-        "description": "Vaši zdravstveni podaci se dijele sa:",
-        "doctors": "Doktorom(ima) sa kojima se konsultujete",
-        "specialists": "Specijalistima za upućivanje (uz vašu saglasnost)",
-        "emergency": "Hitnim službama (u životno ugrožavajućim situacijama)"
-      },
-      "providers": {
-        "title": "5.2 Pružaoci usluga",
-        "description": "Dijelimo ograničene podatke sa:",
-        "supabase": "Supabase: Hosting i upravljanje bazom podataka (EU serveri)",
-        "zoom": "Zoom: Usluge video konsultacija (RGPD usklađena konfiguracija)",
-        "stripe": "Stripe: Obrada plaćanja (PCI DSS usklađeno)",
-        "cloud": "Pružaoci cloud skladištenja: Za sigurno sigurnosno kopiranje podataka (EU)"
-      },
-      "legal_req": {
-        "title": "5.3 Zakonski zahtjevi",
-        "description": "Možemo otkriti podatke kada to zahtijevaju:",
-        "court": "Sudski nalozi ili pravni postupci",
-        "regulatory": "Regulatorna tijela",
-        "law": "Agencije za sprovođenje zakona",
-        "health": "Tijela javnog zdravlja"
-      }
-    },
-    "section6": {
-      "title": "6. Međunarodni prijenosi podataka",
-      "description": "Svi zdravstveni podaci se obrađuju i čuvaju unutar Evropske unije. Svi prijenosi izvan EU se provode uz odgovarajuće zaštitne mjere:",
-      "adequacy": "Odluke o adekvatnosti od strane Evropske komisije",
-      "scc": "Standardne ugovorne klauzule (SCC)",
-      "bcr": "Obvezujuća korporativna pravila (BCR)"
-    },
-    "section7": {
-      "title": "7. Zadržavanje podataka",
-      "health": {
-        "title": "7.1 Zdravstveni podaci",
-        "records": "Aktivni medicinski zapisi: Zadržavaju se 10 godina nakon posljednje konsultacije",
-        "recordings": "Snimci konsultacija: Brišu se nakon 30 dana osim ako je data saglasnost za duže zadržavanje",
-        "prescriptions": "Podaci o receptima: Zadržavaju se prema nacionalnim propisima o apotekama"
-      },
-      "personal": {
-        "title": "7.2 Lični podaci",
-        "account": "Podaci naloga: Zadržavaju se dok je nalog aktivan plus 3 godine",
-        "payment": "Podaci o plaćanju: Zadržavaju se 7 godina zbog poreske usklađenosti",
-        "marketing": "Marketing podaci: Zadržavaju se dok se saglasnost ne povuče"
-      }
-    },
-    "section8": {
-      "title": "8. Vaša prava prema RGPD",
-      "access": {
-        "title": "8.1 Pravo na pristup (Član 15)",
-        "description": "Imate pravo dobiti potvrdu o obradi podataka i pristup svojim ličnim podacima."
-      },
-      "rectification": {
-        "title": "8.2 Pravo na ispravku (Član 16)",
-        "description": "Možete zatražiti ispravku netačnih ili nepotpunih ličnih podataka."
-      },
-      "erasure": {
-        "title": "8.3 Pravo na brisanje (Član 17)",
-        "description": "Možete zatražiti brisanje svojih podataka, uz zakonske zahtjeve za zadržavanje."
-      },
-      "restriction": {
-        "title": "8.4 Pravo na ograničenje (Član 18)",
-        "description": "Možete zatražiti ograničenje obrade u određenim okolnostima."
-      },
-      "portability": {
-        "title": "8.5 Pravo na prenosivost (Član 20)",
-        "description": "Možete zatražiti prijenos svojih podataka drugom pružaocu zdravstvenih usluga."
-      },
-      "objection": {
-        "title": "8.6 Pravo na prigovor (Član 21)",
-        "description": "Možete prigovoriti obradi zasnovanoj na legitimnim interesima."
-      },
-      "withdrawal": {
-        "title": "8.7 Povlačenje saglasnosti",
-        "description": "Možete povući saglasnost u bilo kojem trenutku za obradu zasnovanu na saglasnosti."
-      }
-    },
-    "section9": {
-      "title": "9. Sigurnosne mjere",
-      "description": "Implementiramo odgovarajuće tehničke i organizacijske mjere:",
-      "e2e": "End-to-end enkripcija za video konsultacije",
-      "aes": "AES-256 enkripcija za podatke u mirovanju",
-      "mfa": "Višefaktorska autentifikacija za zdravstvene stručnjake",
-      "audits": "Redovne sigurnosne revizije i testiranje proboja",
-      "training": "Obuka osoblja o zaštiti podataka",
-      "incident": "Procedure odgovora na incident"
-    },
-    "section10": {
-      "title": "10. Obavještenje o kršenju podataka",
-      "description": "U slučaju kršenja podataka koje utiče na vaša prava i slobode:",
-      "authority": "Obavijestit ćemo nadzorno tijelo u roku od 72 sata",
-      "subject": "Obavijestit ćemo vas bez nepotrebnog odlaganja ako postoji visok rizik",
-      "documentation": "Dokumentirat ćemo sva kršenja i korektivne akcije poduzete"
-    },
-    "section11": {
-      "title": "11. Nadzorno tijelo",
-      "description": "Imate pravo podnijeti žalbu vašem nacionalnom tijelu za zaštitu podataka:",
-      "france": "Francuska: Commission Nationale de l'Informatique et des Libertés (CNIL)",
-      "germany": "Njemačka: Federalni povjerenik za zaštitu podataka i slobodu informacija",
-      "other": "Druge zemlje EU: Vaše nacionalno tijelo za zaštitu podataka"
-    },
-    "section12": {
-      "title": "12. Kontakt informacije",
-      "description": "Za sva pitanja vezana za privatnost ili za ostvarivanje vaših prava:",
-      "email": "Email:",
-      "email_value": "privacy@doktu.co",
-      "dpo": "Službenik za zaštitu podataka:",
-      "dpo_value": "dpo@doktu.co",
-      "address": "Adresa:",
-      "address_value": "123 Rue de la Santé, 75014 Paris, Francuska",
-      "phone": "Telefon:",
-      "phone_value": "+33 1 23 45 67 89"
-    },
-    "section13": {
-      "title": "13. Izmjene ove politike",
-      "description": "Možemo ažurirati ovu politiku privatnosti kako bi odražavala izmjene u našim praksama ili zakonskim zahtjevima. Mi ćemo:",
-      "notify": "Obavijestiti vas o materijalnim izmjenama putem emaila",
-      "post": "Objaviti ažuriranja na našoj web stranici",
-      "maintain": "Održavati prethodne verzije za referencu"
-    },
-    "footer": {
-      "note": "Ova politika privatnosti je usklađena sa RGPD, Direktivom o e-privatnosti i primjenjivim nacionalnim zakonima o zaštiti zdravstvenih podataka."
+    "secondary": {
+      "title": "Sekundarna pravna osnova: Član 9(2)(a) - Izričita saglasnost",
+      "description": "Gdje je potrebno, dobijamo vašu izričitu saglasnost za obradu zdravstvenih podataka u specifične svrhe uključujući:",
+      "history": "Čuvanje istorije konsultacija za kontinuitet njege",
+      "sharing": "Dijeljenje podataka sa specijalistima za upućivanje",
+      "anonymized": "Korištenje anonimiziranih podataka za poboljšanje usluge"
     }
+  },
+  "section3": {
+    "title": "3. Podaci koje prikupljamo",
+    "health": {
+      "title": "3.1 Zdravstveni podaci (Posebna kategorija podataka)",
+      "history": "Medicinska istorija i simptomi",
+      "notes": "Bilješke konsultacija i dijagnoze",
+      "prescriptions": "Informacije o receptima",
+      "treatment": "Preporuke za tretman",
+      "vitals": "Vitalni znaci i mjerenja",
+      "documents": "Medicinske slike ili dokumenti koje pružite"
+    },
+    "personal": {
+      "title": "3.2 Lični podaci",
+      "identity": "Ime, datum rođenja, pol",
+      "contact": "Kontakt informacije (email, telefon, adresa)",
+      "payment": "Informacije o plaćanju",
+      "credentials": "Pristupni podaci naloga",
+      "communications": "Zapisi komunikacija",
+      "technical": "Tehnički podaci (IP adresa, informacije o pregledniku)"
+    },
+    "video": {
+      "title": "3.3 Podaci video konsultacija",
+      "recordings": "Video i audio snimci (ako ste pristali)",
+      "chat": "Chat poruke tokom konsultacija",
+      "screen": "Sadržaj dijeljenja ekrana",
+      "metadata": "Tehnički metapodaci iz Zoom integracije"
+    }
+  },
+  "section4": {
+    "title": "4. Kako koristimo vaše podatke",
+    "healthcare": {
+      "title": "4.1 Zdravstvene svrhe (Član 9(2)(h))",
+      "consultations": "Olakšavanje video konsultacija sa doktorima",
+      "records": "Održavanje medicinskih zapisa za kontinuitet njege",
+      "prescriptions": "Omogućavanje upravljanja receptima",
+      "followup": "Podrška za nastavak njege",
+      "emergency": "Medicinske hitne situacije"
+    },
+    "service": {
+      "title": "4.2 Upravljanje uslugama (Član 6(1)(b))",
+      "account": "Upravljanje nalogom i autentifikacija",
+      "payment": "Obrada plaćanja",
+      "support": "Korisnička podrška",
+      "improvement": "Poboljšanje i optimizacija usluge"
+    },
+    "legal": {
+      "title": "4.3 Usklađenost sa zakonom (Član 6(1)(c))",
+      "reporting": "Zahtjevi za regulatorno izvještavanje",
+      "licensing": "Usklađenost sa profesionalnim licenciranjem",
+      "tax": "Porezne i računovodstvene obaveze",
+      "law": "Zahtjevi organa za sprovođenje zakona"
+    }
+  },
+  "section5": {
+    "title": "5. Dijeljenje podataka i primaoci",
+    "professionals": {
+      "title": "5.1 Zdravstveni stručnjaci",
+      "description": "Vaši zdravstveni podaci se dijele sa:",
+      "doctors": "Doktorom(ima) sa kojima se konsultujete",
+      "specialists": "Specijalistima za upućivanje (uz vašu saglasnost)",
+      "emergency": "Hitnim službama (u životno ugrožavajućim situacijama)"
+    },
+    "providers": {
+      "title": "5.2 Pružaoci usluga",
+      "description": "Dijelimo ograničene podatke sa:",
+      "supabase": "Supabase: Hosting i upravljanje bazom podataka (EU serveri)",
+      "zoom": "Zoom: Usluge video konsultacija (RGPD usklađena konfiguracija)",
+      "stripe": "Stripe: Obrada plaćanja (PCI DSS usklađeno)",
+      "cloud": "Pružaoci cloud skladištenja: Za sigurno sigurnosno kopiranje podataka (EU)"
+    },
+    "legal_req": {
+      "title": "5.3 Zakonski zahtjevi",
+      "description": "Možemo otkriti podatke kada to zahtijevaju:",
+      "court": "Sudski nalozi ili pravni postupci",
+      "regulatory": "Regulatorna tijela",
+      "law": "Agencije za sprovođenje zakona",
+      "health": "Tijela javnog zdravlja"
+    }
+  },
+  "section6": {
+    "title": "6. Međunarodni prijenosi podataka",
+    "description": "Svi zdravstveni podaci se obrađuju i čuvaju unutar Evropske unije. Svi prijenosi izvan EU se provode uz odgovarajuće zaštitne mjere:",
+    "adequacy": "Odluke o adekvatnosti od strane Evropske komisije",
+    "scc": "Standardne ugovorne klauzule (SCC)",
+    "bcr": "Obvezujuća korporativna pravila (BCR)"
+  },
+  "section7": {
+    "title": "7. Zadržavanje podataka",
+    "health": {
+      "title": "7.1 Zdravstveni podaci",
+      "records": "Aktivni medicinski zapisi: Zadržavaju se 10 godina nakon posljednje konsultacije",
+      "recordings": "Snimci konsultacija: Brišu se nakon 30 dana osim ako je data saglasnost za duže zadržavanje",
+      "prescriptions": "Podaci o receptima: Zadržavaju se prema nacionalnim propisima o apotekama"
+    },
+    "personal": {
+      "title": "7.2 Lični podaci",
+      "account": "Podaci naloga: Zadržavaju se dok je nalog aktivan plus 3 godine",
+      "payment": "Podaci o plaćanju: Zadržavaju se 7 godina zbog poreske usklađenosti",
+      "marketing": "Marketing podaci: Zadržavaju se dok se saglasnost ne povuče"
+    }
+  },
+  "section8": {
+    "title": "8. Vaša prava prema RGPD",
+    "access": {
+      "title": "8.1 Pravo na pristup (Član 15)",
+      "description": "Imate pravo dobiti potvrdu o obradi podataka i pristup svojim ličnim podacima."
+    },
+    "rectification": {
+      "title": "8.2 Pravo na ispravku (Član 16)",
+      "description": "Možete zatražiti ispravku netačnih ili nepotpunih ličnih podataka."
+    },
+    "erasure": {
+      "title": "8.3 Pravo na brisanje (Član 17)",
+      "description": "Možete zatražiti brisanje svojih podataka, uz zakonske zahtjeve za zadržavanje."
+    },
+    "restriction": {
+      "title": "8.4 Pravo na ograničenje (Član 18)",
+      "description": "Možete zatražiti ograničenje obrade u određenim okolnostima."
+    },
+    "portability": {
+      "title": "8.5 Pravo na prenosivost (Član 20)",
+      "description": "Možete zatražiti prijenos svojih podataka drugom pružaocu zdravstvenih usluga."
+    },
+    "objection": {
+      "title": "8.6 Pravo na prigovor (Član 21)",
+      "description": "Možete prigovoriti obradi zasnovanoj na legitimnim interesima."
+    },
+    "withdrawal": {
+      "title": "8.7 Povlačenje saglasnosti",
+      "description": "Možete povući saglasnost u bilo kojem trenutku za obradu zasnovanu na saglasnosti."
+    }
+  },
+  "section9": {
+    "title": "9. Sigurnosne mjere",
+    "description": "Implementiramo odgovarajuće tehničke i organizacijske mjere:",
+    "e2e": "End-to-end enkripcija za video konsultacije",
+    "aes": "AES-256 enkripcija za podatke u mirovanju",
+    "mfa": "Višefaktorska autentifikacija za zdravstvene stručnjake",
+    "audits": "Redovne sigurnosne revizije i testiranje proboja",
+    "training": "Obuka osoblja o zaštiti podataka",
+    "incident": "Procedure odgovora na incident"
+  },
+  "section10": {
+    "title": "10. Obavještenje o kršenju podataka",
+    "description": "U slučaju kršenja podataka koje utiče na vaša prava i slobode:",
+    "authority": "Obavijestit ćemo nadzorno tijelo u roku od 72 sata",
+    "subject": "Obavijestit ćemo vas bez nepotrebnog odlaganja ako postoji visok rizik",
+    "documentation": "Dokumentirat ćemo sva kršenja i korektivne akcije poduzete"
+  },
+  "section11": {
+    "title": "11. Nadzorno tijelo",
+    "description": "Imate pravo podnijeti žalbu vašem nacionalnom tijelu za zaštitu podataka:",
+    "france": "Francuska: Commission Nationale de l'Informatique et des Libertés (CNIL)",
+    "germany": "Njemačka: Federalni povjerenik za zaštitu podataka i slobodu informacija",
+    "other": "Druge zemlje EU: Vaše nacionalno tijelo za zaštitu podataka"
+  },
+  "section12": {
+    "title": "12. Kontakt informacije",
+    "description": "Za sva pitanja vezana za privatnost ili za ostvarivanje vaših prava:",
+    "email": "Email:",
+    "email_value": "privacy@doktu.co",
+    "dpo": "Službenik za zaštitu podataka:",
+    "dpo_value": "dpo@doktu.co",
+    "address": "Adresa:",
+    "address_value": "123 Rue de la Santé, 75014 Paris, Francuska",
+    "phone": "Telefon:",
+    "phone_value": "+33 1 23 45 67 89"
+  },
+  "section13": {
+    "title": "13. Izmjene ove politike",
+    "description": "Možemo ažurirati ovu politiku privatnosti kako bi odražavala izmjene u našim praksama ili zakonskim zahtjevima. Mi ćemo:",
+    "notify": "Obavijestiti vas o materijalnim izmjenama putem emaila",
+    "post": "Objaviti ažuriranja na našoj web stranici",
+    "maintain": "Održavati prethodne verzije za referencu"
+  },
+  "footer": {
+    "note": "Ova politika privatnosti je usklađena sa RGPD, Direktivom o e-privatnosti i primjenjivim nacionalnim zakonima o zaštiti zdravstvenih podataka."
   }
 }

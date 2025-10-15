@@ -1,71 +1,69 @@
 {
-  "contact": {
-    "hero": {
-      "back_to_home": "Back to Home",
-      "title": "Contact Us",
-      "subtitle": "We'd be happy to answer your questions"
-    },
-    "form": {
-      "title": "Send us a message",
-      "description": "Fill out the form below and we'll get back to you as soon as possible",
-      "name_label": "Full Name *",
-      "email_label": "Email *",
-      "subject_label": "Subject *",
-      "subject_placeholder": "What would you like to discuss?",
-      "message_label": "Message *",
-      "message_placeholder": "Your message...",
-      "privacy_notice": "Your personal information is protected in accordance with GDPR regulations. We will use your data exclusively to respond to your inquiry. More information in our",
-      "privacy_link": "privacy policy",
-      "submit_button": "Send Message"
-    },
-    "gdpr": {
-      "title": "Data Protection (GDPR)",
-      "controller": "Data Controller: Doktu Platform, registered in the European Union",
-      "purpose": "Processing Purpose: Responding to your inquiry and providing support",
-      "legal_basis": "Legal Basis: Your consent (GDPR Article 6(1)(a))",
-      "retention": "Data Retention: 12 months after last communication",
-      "rights": "Your Rights: Access, rectification, erasure, restriction of processing, data portability",
-      "dpo_notice": "For more information or to exercise your rights, contact our DPO (Data Protection Officer) at",
-      "dpo_email": "dpo@doktu.co"
-    },
-    "info": {
-      "title": "Contact Information",
-      "email_label": "Email",
-      "phone_label": "Phone",
-      "address_label": "Address",
-      "address_line1": "123 Avenue de la Santé",
-      "address_line2": "75001 Paris, France",
-      "hours_label": "Business Hours",
-      "hours_weekday": "Mon-Fri: 9:00 - 18:00",
-      "hours_saturday": "Sat: 10:00 - 16:00",
-      "hours_sunday": "Sun: Closed",
-      "registration_label": "Registration",
-      "company_name": "Company: Doktu SAS",
-      "siret": "SIRET: 123 456 789 00010",
-      "vat": "VAT: FR12345678900",
-      "locations_label": "Locations",
-      "locations_desc_line1": "Available throughout the EU",
-      "locations_desc_line2": "Regional offices in",
-      "locations_desc_line3": "Paris, Berlin and Madrid"
-    },
-    "emergency": {
-      "title": "Need Emergency Help?",
-      "description": "If you have a medical emergency, please do not use this form.",
-      "services_title": "Emergency Services:",
-      "france": "France: 15 (SAMU)",
-      "germany": "Germany: 112",
-      "spain": "Spain: 112",
-      "italy": "Italy: 118",
-      "belgium": "Belgium: 112"
-    },
-    "additional": {
-      "title": "Other Ways to Get in Touch",
-      "support_title": "Support Center",
-      "support_description": "Technical support and frequently asked questions",
-      "doctors_title": "For Doctors",
-      "doctors_description": "Join our platform as a doctor",
-      "gdpr_title": "GDPR Requests",
-      "gdpr_description": "Access and manage your data"
-    }
+  "hero": {
+    "back_to_home": "Back to Home",
+    "title": "Contact Us",
+    "subtitle": "We'd be happy to answer your questions"
+  },
+  "form": {
+    "title": "Send us a message",
+    "description": "Fill out the form below and we'll get back to you as soon as possible",
+    "name_label": "Full Name *",
+    "email_label": "Email *",
+    "subject_label": "Subject *",
+    "subject_placeholder": "What would you like to discuss?",
+    "message_label": "Message *",
+    "message_placeholder": "Your message...",
+    "privacy_notice": "Your personal information is protected in accordance with GDPR regulations. We will use your data exclusively to respond to your inquiry. More information in our",
+    "privacy_link": "privacy policy",
+    "submit_button": "Send Message"
+  },
+  "gdpr": {
+    "title": "Data Protection (GDPR)",
+    "controller": "Data Controller: Doktu Platform, registered in the European Union",
+    "purpose": "Processing Purpose: Responding to your inquiry and providing support",
+    "legal_basis": "Legal Basis: Your consent (GDPR Article 6(1)(a))",
+    "retention": "Data Retention: 12 months after last communication",
+    "rights": "Your Rights: Access, rectification, erasure, restriction of processing, data portability",
+    "dpo_notice": "For more information or to exercise your rights, contact our DPO (Data Protection Officer) at",
+    "dpo_email": "dpo@doktu.co"
+  },
+  "info": {
+    "title": "Contact Information",
+    "email_label": "Email",
+    "phone_label": "Phone",
+    "address_label": "Address",
+    "address_line1": "123 Avenue de la Santé",
+    "address_line2": "75001 Paris, France",
+    "hours_label": "Business Hours",
+    "hours_weekday": "Mon-Fri: 9:00 - 18:00",
+    "hours_saturday": "Sat: 10:00 - 16:00",
+    "hours_sunday": "Sun: Closed",
+    "registration_label": "Registration",
+    "company_name": "Company: Doktu SAS",
+    "siret": "SIRET: 123 456 789 00010",
+    "vat": "VAT: FR12345678900",
+    "locations_label": "Locations",
+    "locations_desc_line1": "Available throughout the EU",
+    "locations_desc_line2": "Regional offices in",
+    "locations_desc_line3": "Paris, Berlin and Madrid"
+  },
+  "emergency": {
+    "title": "Need Emergency Help?",
+    "description": "If you have a medical emergency, please do not use this form.",
+    "services_title": "Emergency Services:",
+    "france": "France: 15 (SAMU)",
+    "germany": "Germany: 112",
+    "spain": "Spain: 112",
+    "italy": "Italy: 118",
+    "belgium": "Belgium: 112"
+  },
+  "additional": {
+    "title": "Other Ways to Get in Touch",
+    "support_title": "Support Center",
+    "support_description": "Technical support and frequently asked questions",
+    "doctors_title": "For Doctors",
+    "doctors_description": "Join our platform as a doctor",
+    "gdpr_title": "GDPR Requests",
+    "gdpr_description": "Access and manage your data"
   }
 }

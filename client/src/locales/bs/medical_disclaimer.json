@@ -1,206 +1,204 @@
 {
-  "medical_disclaimer": {
-    "header": {
-      "back_to_home": "Nazad na početnu",
-      "title": "Medicinska izjava o odricanju odgovornosti",
-      "last_updated": "Posljednje ažurirano:",
-      "version": "Verzija:"
+  "header": {
+    "back_to_home": "Nazad na početnu",
+    "title": "Medicinska izjava o odricanju odgovornosti",
+    "last_updated": "Posljednje ažurirano:",
+    "version": "Verzija:"
+  },
+  "emergency_warning": {
+    "title": "UPOZORENJE O MEDICINSKOJ HITNOSTI",
+    "not_for_emergencies": "Ova platforma NIJE za medicinske hitnosti!",
+    "experiencing_emergency": "Ako doživljavate medicinsku hitnost, uključujući ali ne ograničavajući se na:",
+    "symptoms": {
+      "chest_pain": "Bol ili pritisak u grudima",
+      "breathing": "Poteškoće sa disanjem",
+      "bleeding": "Jako krvarenje",
+      "consciousness": "Gubitak svijesti",
+      "allergic": "Ozbiljne alergijske reakcije",
+      "self_harm": "Misli o samoozljeđivanju ili samoubistvu",
+      "life_threatening": "Bilo koje životno ugrožavajuće stanje"
     },
-    "emergency_warning": {
-      "title": "UPOZORENJE O MEDICINSKOJ HITNOSTI",
-      "not_for_emergencies": "Ova platforma NIJE za medicinske hitnosti!",
-      "experiencing_emergency": "Ako doživljavate medicinsku hitnost, uključujući ali ne ograničavajući se na:",
-      "symptoms": {
-        "chest_pain": "Bol ili pritisak u grudima",
-        "breathing": "Poteškoće sa disanjem",
-        "bleeding": "Jako krvarenje",
-        "consciousness": "Gubitak svijesti",
-        "allergic": "Ozbiljne alergijske reakcije",
-        "self_harm": "Misli o samoozljeđivanju ili samoubistvu",
-        "life_threatening": "Bilo koje životno ugrožavajuće stanje"
-      },
-      "call_emergency": "NAZOVITE HITNU SLUŽBU: 112 (EU)"
+    "call_emergency": "NAZOVITE HITNU SLUŽBU: 112 (EU)"
+  },
+  "section1": {
+    "title": "1. Priroda telemedicinskih usluga",
+    "description": "Doktu platforma pruža telemedicinske usluge koje omogućavaju pacijentima da se konsultuju sa licenciranim zdravstvenim stručnjacima putem video konferencije. Ove usluge su:",
+    "items": {
+      "supplementary": "Dopuna, a ne zamjena za ličnu medicinsku njegu",
+      "limited": "Ograničene inherentnim ograničenjima udaljene konsultacije",
+      "not_suitable": "Nisu prikladne za sva medicinska stanja ili situacije",
+      "technology": "Podložne tehnološkim ograničenjima i problemima sa povezivanjem"
+    }
+  },
+  "section2": {
+    "title": "2. Ograničenja udaljenih konsultacija",
+    "important_label": "Važno: Udaljene konsultacije ne mogu pružiti:",
+    "limitations": {
+      "physical": "Fizičke preglede",
+      "emergency": "Neposrednu hitnu njegu",
+      "diagnostic": "Određene dijagnostičke testove",
+      "surgical": "Hirurške procedure",
+      "medications": "Administraciju lijekova"
     },
-    "section1": {
-      "title": "1. Priroda telemedicinskih usluga",
-      "description": "Doktu platforma pruža telemedicinske usluge koje omogućavaju pacijentima da se konsultuju sa licenciranim zdravstvenim stručnjacima putem video konferencije. Ove usluge su:",
-      "items": {
-        "supplementary": "Dopuna, a ne zamjena za ličnu medicinsku njegu",
-        "limited": "Ograničene inherentnim ograničenjima udaljene konsultacije",
-        "not_suitable": "Nisu prikladne za sva medicinska stanja ili situacije",
-        "technology": "Podložne tehnološkim ograničenjima i problemima sa povezivanjem"
-      }
+    "may_require": "Zdravstveni stručnjaci mogu utvrditi da vaše stanje zahtijeva lični pregled i savjetovaće vas u skladu s tim."
+  },
+  "section3": {
+    "title": "3. Izjava o odricanju odgovornosti za medicinske savjete",
+    "description": "Sve medicinske informacije, savjeti i preporuke pruženi putem Doktu platforme:",
+    "items": {
+      "based_on": "Zasnovani su isključivo na informacijama pruženim tokom konsultacije",
+      "may_not_account": "Možda ne uzimaju u obzir sve aspekte vašeg medicinskog stanja",
+      "consider": "Treba razmatrati u vezi sa vašom ukupnom zdravstvenom zaštitom",
+      "no_guarantee": "Ne garantuju specifične medicinske ishode",
+      "verification": "Mogu zahtijevati verifikaciju putem ličnog pregleda"
+    }
+  },
+  "section4": {
+    "title": "4. Nema odnosa doktor-pacijent bez konsultacije",
+    "description": "Važna pojašnjenja:",
+    "items": {
+      "browsing": "Pregledanje platforme ne uspostavlja odnos doktor-pacijent",
+      "paid": "Odnos se uspostavlja samo tokom plaćenih konsultacija",
+      "general_info": "Opće informacije na platformi nisu personalizirani medicinski savjet",
+      "independent": "Svaka konsultacija je nezavisna osim ako nije dogovoren kontinuitet njege"
+    }
+  },
+  "section5": {
+    "title": "5. Lijekovi na recept",
+    "policy_label": "Politika recepata:",
+    "items": {
+      "discretion": "Recepti se izdaju isključivo po nahođenju zdravstvenog stručnjaka",
+      "controlled": "Kontrolisane supstance ne mogu se propisati putem telemedicine u mnogim jurisdikcijama",
+      "licensed": "Recepti se moraju popuniti u licenciranim apotekama",
+      "interactions": "Interakcije lijekova i alergije moraju biti otkrivene",
+      "followup": "Praćenje može biti potrebno za određene lijekove"
+    }
+  },
+  "section6": {
+    "title": "6. Odgovornosti korisnika",
+    "description": "Korištenjem ove platforme, priznajete i slažete se da:",
+    "accurate": {
+      "title": "Pružite tačne informacije",
+      "description": "Morate pružiti potpune, tačne i iskrene informacije o svojoj medicinskoj historiji, simptomima, lijekovima i alergijama."
     },
-    "section2": {
-      "title": "2. Ograničenja udaljenih konsultacija",
-      "important_label": "Važno: Udaljene konsultacije ne mogu pružiti:",
-      "limitations": {
-        "physical": "Fizičke preglede",
-        "emergency": "Neposrednu hitnu njegu",
-        "diagnostic": "Određene dijagnostičke testove",
-        "surgical": "Hirurške procedure",
-        "medications": "Administraciju lijekova"
-      },
-      "may_require": "Zdravstveni stručnjaci mogu utvrditi da vaše stanje zahtijeva lični pregled i savjetovaće vas u skladu s tim."
+    "follow": {
+      "title": "Slijedite medicinske savjete",
+      "description": "Odgovorni ste za slijeđenje medicinskih savjeta pruženih ili traženje alternativne njege ako odlučite ne slijediti preporuke."
     },
-    "section3": {
-      "title": "3. Izjava o odricanju odgovornosti za medicinske savjete",
-      "description": "Sve medicinske informacije, savjeti i preporuke pruženi putem Doktu platforme:",
-      "items": {
-        "based_on": "Zasnovani su isključivo na informacijama pruženim tokom konsultacije",
-        "may_not_account": "Možda ne uzimaju u obzir sve aspekte vašeg medicinskog stanja",
-        "consider": "Treba razmatrati u vezi sa vašom ukupnom zdravstvenom zaštitom",
-        "no_guarantee": "Ne garantuju specifične medicinske ishode",
-        "verification": "Mogu zahtijevati verifikaciju putem ličnog pregleda"
-      }
+    "emergency": {
+      "title": "Potražite hitnu pomoć kada je potrebno",
+      "description": "Morate potražiti neposrednu hitnu pomoć za bilo koje životno ugrožavajuće ili hitne medicinske uslove."
     },
-    "section4": {
-      "title": "4. Nema odnosa doktor-pacijent bez konsultacije",
-      "description": "Važna pojašnjenja:",
-      "items": {
-        "browsing": "Pregledanje platforme ne uspostavlja odnos doktor-pacijent",
-        "paid": "Odnos se uspostavlja samo tokom plaćenih konsultacija",
-        "general_info": "Opće informacije na platformi nisu personalizirani medicinski savjet",
-        "independent": "Svaka konsultacija je nezavisna osim ako nije dogovoren kontinuitet njege"
-      }
-    },
-    "section5": {
-      "title": "5. Lijekovi na recept",
-      "policy_label": "Politika recepata:",
-      "items": {
-        "discretion": "Recepti se izdaju isključivo po nahođenju zdravstvenog stručnjaka",
-        "controlled": "Kontrolisane supstance ne mogu se propisati putem telemedicine u mnogim jurisdikcijama",
-        "licensed": "Recepti se moraju popuniti u licenciranim apotekama",
-        "interactions": "Interakcije lijekova i alergije moraju biti otkrivene",
-        "followup": "Praćenje može biti potrebno za određene lijekove"
-      }
-    },
-    "section6": {
-      "title": "6. Odgovornosti korisnika",
-      "description": "Korištenjem ove platforme, priznajete i slažete se da:",
-      "accurate": {
-        "title": "Pružite tačne informacije",
-        "description": "Morate pružiti potpune, tačne i iskrene informacije o svojoj medicinskoj historiji, simptomima, lijekovima i alergijama."
-      },
-      "follow": {
-        "title": "Slijedite medicinske savjete",
-        "description": "Odgovorni ste za slijeđenje medicinskih savjeta pruženih ili traženje alternativne njege ako odlučite ne slijediti preporuke."
-      },
-      "emergency": {
-        "title": "Potražite hitnu pomoć kada je potrebno",
-        "description": "Morate potražiti neposrednu hitnu pomoć za bilo koje životno ugrožavajuće ili hitne medicinske uslove."
-      },
-      "primary": {
-        "title": "Održavajte primarnu njegu",
-        "description": "Telemedicinske konsultacije ne zamjenjuju potrebu za primarnim ljekarem i redovnom ličnom medicinskom njegom."
-      }
-    },
-    "section7": {
-      "title": "7. Tehnološki zahtjevi i rizici",
-      "description": "Telemedicinske usluge zavise od tehnologije koja može imati ograničenja:",
-      "items": {
-        "connectivity": "Problemi sa internet vezom mogu utjecati na kvalitet konsultacije",
-        "quality": "Kvalitet videa/audio može utjecati na dijagnostičku tačnost",
-        "failures": "Tehnički kvarovi mogu prekinuti ili spriječiti konsultacije",
-        "security": "Postoje rizici za sigurnost podataka uprkos našim sigurnosnim mjerama",
-        "availability": "Dostupnost platforme nije garantirana 24/7"
-      }
-    },
-    "section8": {
-      "title": "8. Privatnost i povjerljivost",
-      "description": "Iako implementiramo jake sigurnosne mjere:",
-      "items": {
-        "risks": "Elektronske komunikacije nose inherentne rizike za privatnost",
-        "ensure": "Trebali biste osigurati privatnost tokom video konsultacija",
-        "family": "Članovi porodice ili drugi prisutni mogu čuti povjerljive informacije",
-        "recording": "Snimanje konsultacija bez saglasnosti je zabranjeno"
-      }
-    },
-    "section9": {
-      "title": "9. Geografska ograničenja",
-      "description": "Važna jurisdikcijska razmatranja:",
-      "items": {
-        "available": "Usluge su dostupne samo gdje je zakonski dozvoljeno",
-        "licensed": "Doktori moraju biti licencirani u odgovarajućoj jurisdikciji",
-        "crossborder": "Prekogranične konsultacije mogu imati zakonska ograničenja",
-        "laws": "Lokalni zakoni i propisi se primjenjuju na sve usluge"
-      }
-    },
-    "section10": {
-      "title": "10. Nema garancije rezultata",
-      "disclaimer_label": "Izjava o odricanju odgovornosti za medicinske ishode:",
-      "description": "Medicina nije egzaktna nauka. Ne može se dati garancija u pogledu tačnosti dijagnoza, efikasnosti tretmana ili medicinskih ishoda. Individualni rezultati mogu varirati na osnovu brojnih faktora uključujući ali ne ograničavajući se na:",
-      "factors": {
-        "conditions": "Individualna zdravstvena stanja",
-        "compliance": "Pridržavanje medicinskih savjeta",
-        "timeliness": "Pravovremnost tretmana",
-        "accuracy": "Tačnost pruženih informacija",
-        "unknown": "Nepoznati ili neotkriveni medicinski faktori"
-      }
-    },
-    "section11": {
-      "title": "11. Ograničenje odgovornosti",
-      "description": "U najvećoj mjeri dozvoljenoj zakonom:",
-      "items": {
-        "malpractice": "Doktu platforma nije odgovorna za medicinsku malpraksu nezavisnih praktičara",
-        "outcomes": "Ne garantujemo specifične medicinske ishode",
-        "misuse": "Nismo odgovorni za zloupotrebu medicinskih savjeta",
-        "technical": "Tehnički kvarovi ne predstavljaju osnovu za medicinsku odgovornost",
-        "risks": "Korisnici preuzimaju rizike inherentne telemedicinskim uslugama"
-      }
-    },
-    "section12": {
-      "title": "12. Saglasnost za telemedicinu",
-      "description": "Korištenjem naših telemedicinskih usluga, pristajete na:",
-      "items": {
-        "electronic": "Primanje medicinske njege putem elektronskih komunikacija",
-        "limitations": "Ograničenja i rizike telemedicine",
-        "transmission": "Korištenje elektronske transmisije medicinskih informacija",
-        "interruption": "Mogućnost da konsultacije mogu biti prekinute ili neuspješne",
-        "alternative": "Traženje alternativne njege ako telemedicina nije prikladna"
-      }
-    },
-    "section13": {
-      "title": "13. Druga mišljenja",
-      "description": "Snažno ohrabrujemo pacijente da:",
-      "items": {
-        "seek": "Traže druga mišljenja za značajne medicinske odluke",
-        "consult": "Konsultuju se sa svojim primarnim ljekarem",
-        "evaluation": "Dobiju lični pregled kada se preporučuje",
-        "not_rely": "Ne oslanjaju se isključivo na telemedicinu za složena stanja"
-      }
-    },
-    "section14": {
-      "title": "14. Djeca i maloljetnici",
-      "description": "Posebna razmatranja za pedijatrijske usluge:",
-      "items": {
-        "consent": "Roditeljska ili starateljska saglasnost potrebna za maloljetnike",
-        "present": "Roditelj/staratelj mora biti prisutan tokom konsultacija",
-        "conditions": "Neka pedijatrijska stanja zahtijevaju lični pregled",
-        "limitations": "Ograničenja prikladna za uzrast se primjenjuju na određene usluge"
-      }
-    },
-    "section15": {
-      "title": "15. Priznanje i prihvatanje",
-      "description": "Korištenjem Doktu telemedicinske platforme, priznajete da ste pročitali, razumjeli i slažete se sa ovom medicinskom izjavom o odricanju odgovornosti. Razumijete da:",
-      "items": {
-        "limitations": "Telemedicina ima inherentna ograničenja",
-        "not_replace": "Ova usluga ne zamjenjuje hitnu medicinsku njegu",
-        "responsible": "Odgovorni ste za traženje odgovarajuće medicinske njege",
-        "no_guarantee": "Medicinski ishodi ne mogu biti garantovani",
-        "assume": "Preuzimate rizike povezane sa telemedicinom"
-      }
-    },
-    "contact": {
-      "title": "Kontakt informacije",
-      "description": "Za pitanja o ovoj medicinskoj izjavi o odricanju odgovornosti:",
-      "email": "Email:",
-      "email_value": "medical@doktu.co",
-      "phone": "Telefon:",
-      "phone_value": "+33 1 23 45 67 89",
-      "address": "Adresa:",
-      "address_value": "123 Rue de la Santé, 75014 Paris, Francuska"
-    },
-    "final_reminder": "Zapamtite: Za bilo koju medicinsku hitnost, odmah nazovite 112!"
-  }
+    "primary": {
+      "title": "Održavajte primarnu njegu",
+      "description": "Telemedicinske konsultacije ne zamjenjuju potrebu za primarnim ljekarem i redovnom ličnom medicinskom njegom."
+    }
+  },
+  "section7": {
+    "title": "7. Tehnološki zahtjevi i rizici",
+    "description": "Telemedicinske usluge zavise od tehnologije koja može imati ograničenja:",
+    "items": {
+      "connectivity": "Problemi sa internet vezom mogu utjecati na kvalitet konsultacije",
+      "quality": "Kvalitet videa/audio može utjecati na dijagnostičku tačnost",
+      "failures": "Tehnički kvarovi mogu prekinuti ili spriječiti konsultacije",
+      "security": "Postoje rizici za sigurnost podataka uprkos našim sigurnosnim mjerama",
+      "availability": "Dostupnost platforme nije garantirana 24/7"
+    }
+  },
+  "section8": {
+    "title": "8. Privatnost i povjerljivost",
+    "description": "Iako implementiramo jake sigurnosne mjere:",
+    "items": {
+      "risks": "Elektronske komunikacije nose inherentne rizike za privatnost",
+      "ensure": "Trebali biste osigurati privatnost tokom video konsultacija",
+      "family": "Članovi porodice ili drugi prisutni mogu čuti povjerljive informacije",
+      "recording": "Snimanje konsultacija bez saglasnosti je zabranjeno"
+    }
+  },
+  "section9": {
+    "title": "9. Geografska ograničenja",
+    "description": "Važna jurisdikcijska razmatranja:",
+    "items": {
+      "available": "Usluge su dostupne samo gdje je zakonski dozvoljeno",
+      "licensed": "Doktori moraju biti licencirani u odgovarajućoj jurisdikciji",
+      "crossborder": "Prekogranične konsultacije mogu imati zakonska ograničenja",
+      "laws": "Lokalni zakoni i propisi se primjenjuju na sve usluge"
+    }
+  },
+  "section10": {
+    "title": "10. Nema garancije rezultata",
+    "disclaimer_label": "Izjava o odricanju odgovornosti za medicinske ishode:",
+    "description": "Medicina nije egzaktna nauka. Ne može se dati garancija u pogledu tačnosti dijagnoza, efikasnosti tretmana ili medicinskih ishoda. Individualni rezultati mogu varirati na osnovu brojnih faktora uključujući ali ne ograničavajući se na:",
+    "factors": {
+      "conditions": "Individualna zdravstvena stanja",
+      "compliance": "Pridržavanje medicinskih savjeta",
+      "timeliness": "Pravovremnost tretmana",
+      "accuracy": "Tačnost pruženih informacija",
+      "unknown": "Nepoznati ili neotkriveni medicinski faktori"
+    }
+  },
+  "section11": {
+    "title": "11. Ograničenje odgovornosti",
+    "description": "U najvećoj mjeri dozvoljenoj zakonom:",
+    "items": {
+      "malpractice": "Doktu platforma nije odgovorna za medicinsku malpraksu nezavisnih praktičara",
+      "outcomes": "Ne garantujemo specifične medicinske ishode",
+      "misuse": "Nismo odgovorni za zloupotrebu medicinskih savjeta",
+      "technical": "Tehnički kvarovi ne predstavljaju osnovu za medicinsku odgovornost",
+      "risks": "Korisnici preuzimaju rizike inherentne telemedicinskim uslugama"
+    }
+  },
+  "section12": {
+    "title": "12. Saglasnost za telemedicinu",
+    "description": "Korištenjem naših telemedicinskih usluga, pristajete na:",
+    "items": {
+      "electronic": "Primanje medicinske njege putem elektronskih komunikacija",
+      "limitations": "Ograničenja i rizike telemedicine",
+      "transmission": "Korištenje elektronske transmisije medicinskih informacija",
+      "interruption": "Mogućnost da konsultacije mogu biti prekinute ili neuspješne",
+      "alternative": "Traženje alternativne njege ako telemedicina nije prikladna"
+    }
+  },
+  "section13": {
+    "title": "13. Druga mišljenja",
+    "description": "Snažno ohrabrujemo pacijente da:",
+    "items": {
+      "seek": "Traže druga mišljenja za značajne medicinske odluke",
+      "consult": "Konsultuju se sa svojim primarnim ljekarem",
+      "evaluation": "Dobiju lični pregled kada se preporučuje",
+      "not_rely": "Ne oslanjaju se isključivo na telemedicinu za složena stanja"
+    }
+  },
+  "section14": {
+    "title": "14. Djeca i maloljetnici",
+    "description": "Posebna razmatranja za pedijatrijske usluge:",
+    "items": {
+      "consent": "Roditeljska ili starateljska saglasnost potrebna za maloljetnike",
+      "present": "Roditelj/staratelj mora biti prisutan tokom konsultacija",
+      "conditions": "Neka pedijatrijska stanja zahtijevaju lični pregled",
+      "limitations": "Ograničenja prikladna za uzrast se primjenjuju na određene usluge"
+    }
+  },
+  "section15": {
+    "title": "15. Priznanje i prihvatanje",
+    "description": "Korištenjem Doktu telemedicinske platforme, priznajete da ste pročitali, razumjeli i slažete se sa ovom medicinskom izjavom o odricanju odgovornosti. Razumijete da:",
+    "items": {
+      "limitations": "Telemedicina ima inherentna ograničenja",
+      "not_replace": "Ova usluga ne zamjenjuje hitnu medicinsku njegu",
+      "responsible": "Odgovorni ste za traženje odgovarajuće medicinske njege",
+      "no_guarantee": "Medicinski ishodi ne mogu biti garantovani",
+      "assume": "Preuzimate rizike povezane sa telemedicinom"
+    }
+  },
+  "contact": {
+    "title": "Kontakt informacije",
+    "description": "Za pitanja o ovoj medicinskoj izjavi o odricanju odgovornosti:",
+    "email": "Email:",
+    "email_value": "medical@doktu.co",
+    "phone": "Telefon:",
+    "phone_value": "+33 1 23 45 67 89",
+    "address": "Adresa:",
+    "address_value": "123 Rue de la Santé, 75014 Paris, Francuska"
+  },
+  "final_reminder": "Zapamtite: Za bilo koju medicinsku hitnost, odmah nazovite 112!"
 }

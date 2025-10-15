@@ -1,71 +1,69 @@
 {
-  "contact": {
-    "hero": {
-      "back_to_home": "Nazad na početnu",
-      "title": "Kontaktirajte nas",
-      "subtitle": "Rado ćemo odgovoriti na vaša pitanja"
-    },
-    "form": {
-      "title": "Pošaljite nam poruku",
-      "description": "Popunite obrazac ispod i odgovorit ćemo vam u najkraćem roku",
-      "name_label": "Ime i prezime *",
-      "email_label": "Email *",
-      "subject_label": "Predmet *",
-      "subject_placeholder": "O čemu želite razgovarati?",
-      "message_label": "Poruka *",
-      "message_placeholder": "Vaša poruka...",
-      "privacy_notice": "Vaše osobne informacije su zaštićene u skladu sa RGPD propisima. Koristit ćemo vaše podatke isključivo za odgovor na vaš upit. Više informacija u našoj",
-      "privacy_link": "politici privatnosti",
-      "submit_button": "Pošalji poruku"
-    },
-    "gdpr": {
-      "title": "Zaštita podataka (RGPD)",
-      "controller": "Odgovorni za obradu: Doktu Platform, registriran u Evropskoj Uniji",
-      "purpose": "Svrha obrade: Odgovor na vaš upit i pružanje podrške",
-      "legal_basis": "Pravna osnova: Vaša saglasnost (RGPD Član 6(1)(a))",
-      "retention": "Zadržavanje podataka: 12 mjeseci nakon posljednje komunikacije",
-      "rights": "Vaša prava: Pristup, ispravka, brisanje, ograničenje obrade, prenosivost podataka",
-      "dpo_notice": "Za više informacija ili za ostvarivanje vaših prava, kontaktirajte našeg DPO (Data Protection Officer) na",
-      "dpo_email": "dpo@doktu.co"
-    },
-    "info": {
-      "title": "Kontakt informacije",
-      "email_label": "Email",
-      "phone_label": "Telefon",
-      "address_label": "Adresa",
-      "address_line1": "123 Avenue de la Santé",
-      "address_line2": "75001 Paris, Francuska",
-      "hours_label": "Radno vrijeme",
-      "hours_weekday": "Pon-Pet: 9:00 - 18:00",
-      "hours_saturday": "Sub: 10:00 - 16:00",
-      "hours_sunday": "Ned: Zatvoreno",
-      "registration_label": "Registracija",
-      "company_name": "Društvo: Doktu SAS",
-      "siret": "SIRET: 123 456 789 00010",
-      "vat": "TVA: FR12345678900",
-      "locations_label": "Lokacije",
-      "locations_desc_line1": "Dostupno u cijeloj EU",
-      "locations_desc_line2": "Regionalne kancelarije u",
-      "locations_desc_line3": "Parizu, Berlinu i Madridu"
-    },
-    "emergency": {
-      "title": "Potrebna hitna pomoć?",
-      "description": "Ako imate medicinsku hitnost, molimo vas da ne koristite ovaj obrazac.",
-      "services_title": "Hitne službe:",
-      "france": "Francuska: 15 (SAMU)",
-      "germany": "Njemačka: 112",
-      "spain": "Španija: 112",
-      "italy": "Italija: 118",
-      "belgium": "Belgija: 112"
-    },
-    "additional": {
-      "title": "Drugi načini da stupite u kontakt",
-      "support_title": "Centar za podršku",
-      "support_description": "Tehnička podrška i česta pitanja",
-      "doctors_title": "Za doktore",
-      "doctors_description": "Pridružite se našoj platformi kao doktor",
-      "gdpr_title": "RGPD zahtjevi",
-      "gdpr_description": "Pristup i upravljanje vašim podacima"
-    }
+  "hero": {
+    "back_to_home": "Nazad na početnu",
+    "title": "Kontaktirajte nas",
+    "subtitle": "Rado ćemo odgovoriti na vaša pitanja"
+  },
+  "form": {
+    "title": "Pošaljite nam poruku",
+    "description": "Popunite obrazac ispod i odgovorit ćemo vam u najkraćem roku",
+    "name_label": "Ime i prezime *",
+    "email_label": "Email *",
+    "subject_label": "Predmet *",
+    "subject_placeholder": "O čemu želite razgovarati?",
+    "message_label": "Poruka *",
+    "message_placeholder": "Vaša poruka...",
+    "privacy_notice": "Vaše osobne informacije su zaštićene u skladu sa RGPD propisima. Koristit ćemo vaše podatke isključivo za odgovor na vaš upit. Više informacija u našoj",
+    "privacy_link": "politici privatnosti",
+    "submit_button": "Pošalji poruku"
+  },
+  "gdpr": {
+    "title": "Zaštita podataka (RGPD)",
+    "controller": "Odgovorni za obradu: Doktu Platform, registriran u Evropskoj Uniji",
+    "purpose": "Svrha obrade: Odgovor na vaš upit i pružanje podrške",
+    "legal_basis": "Pravna osnova: Vaša saglasnost (RGPD Član 6(1)(a))",
+    "retention": "Zadržavanje podataka: 12 mjeseci nakon posljednje komunikacije",
+    "rights": "Vaša prava: Pristup, ispravka, brisanje, ograničenje obrade, prenosivost podataka",
+    "dpo_notice": "Za više informacija ili za ostvarivanje vaših prava, kontaktirajte našeg DPO (Data Protection Officer) na",
+    "dpo_email": "dpo@doktu.co"
+  },
+  "info": {
+    "title": "Kontakt informacije",
+    "email_label": "Email",
+    "phone_label": "Telefon",
+    "address_label": "Adresa",
+    "address_line1": "123 Avenue de la Santé",
+    "address_line2": "75001 Paris, Francuska",
+    "hours_label": "Radno vrijeme",
+    "hours_weekday": "Pon-Pet: 9:00 - 18:00",
+    "hours_saturday": "Sub: 10:00 - 16:00",
+    "hours_sunday": "Ned: Zatvoreno",
+    "registration_label": "Registracija",
+    "company_name": "Društvo: Doktu SAS",
+    "siret": "SIRET: 123 456 789 00010",
+    "vat": "TVA: FR12345678900",
+    "locations_label": "Lokacije",
+    "locations_desc_line1": "Dostupno u cijeloj EU",
+    "locations_desc_line2": "Regionalne kancelarije u",
+    "locations_desc_line3": "Parizu, Berlinu i Madridu"
+  },
+  "emergency": {
+    "title": "Potrebna hitna pomoć?",
+    "description": "Ako imate medicinsku hitnost, molimo vas da ne koristite ovaj obrazac.",
+    "services_title": "Hitne službe:",
+    "france": "Francuska: 15 (SAMU)",
+    "germany": "Njemačka: 112",
+    "spain": "Španija: 112",
+    "italy": "Italija: 118",
+    "belgium": "Belgija: 112"
+  },
+  "additional": {
+    "title": "Drugi načini da stupite u kontakt",
+    "support_title": "Centar za podršku",
+    "support_description": "Tehnička podrška i česta pitanja",
+    "doctors_title": "Za doktore",
+    "doctors_description": "Pridružite se našoj platformi kao doktor",
+    "gdpr_title": "RGPD zahtjevi",
+    "gdpr_description": "Pristup i upravljanje vašim podacima"
   }
 }
