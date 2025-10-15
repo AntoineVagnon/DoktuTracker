@@ -543,51 +543,89 @@ export default function DoctorProfile() {
                             console.log('Slot clicked:', { doctorId, slot: fullSlotDateTime, price: doctor.consultationPrice, isUserLoggedIn: !!user });
 
                             try {
-                              // Hold the slot before redirecting
-                              // Construct full API URL to ensure we hit the backend (Railway), not frontend (Vercel)
-                              const apiUrl = import.meta.env.VITE_API_URL ||
-                                (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
-                              const holdUrl = apiUrl ? `${apiUrl}/api/slots/hold` : '/api/slots/hold';
+                              // For logged-in users: Create appointment immediately to avoid session cookie issues on mobile
+                              // For non-logged users: Hold slot and redirect to register
+                              if (user) {
+                                console.log('💎 User logged in - creating appointment immediately');
 
-                              const response = await fetch(holdUrl, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                credentials: 'include', // Ensure cookies are sent
-                                body: JSON.stringify({
-                                  slotId: slot.id,
-                                  sessionId: undefined // Let server use session ID
-                                })
-                              });
+                                // Get auth token
+                                const authData = localStorage.getItem('doktu_auth');
+                                const token = authData ? JSON.parse(authData).session?.access_token : null;
 
-                              if (response.ok) {
-                                const holdData = await response.json();
-                                console.log('Slot held successfully:', holdData);
-                                // Store the slot ID in sessionStorage as backup
-                                sessionStorage.setItem('heldSlotId', slot.id);
-                                sessionStorage.setItem('heldSlotExpiry', holdData.expiresAt);
+                                // Create appointment directly (bypasses session-based slot holding)
+                                const apiUrl = import.meta.env.VITE_API_URL ||
+                                  (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+                                const appointmentUrl = apiUrl ? `${apiUrl}/api/appointments/create` : '/api/appointments/create';
 
-                                // If user is already logged in, skip register page and go straight to checkout
-                                // This prevents extra redirect on mobile which can waste time
-                                if (user) {
-                                  const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${slot.id}`;
-                                  console.log('User logged in, redirecting directly to checkout:', checkoutUrl);
+                                const appointmentResponse = await fetch(appointmentUrl, {
+                                  method: 'POST',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                  },
+                                  credentials: 'include',
+                                  body: JSON.stringify({
+                                    doctorId: doctorId.toString(),
+                                    timeSlotId: slot.id,
+                                    appointmentDate: new Date(fullSlotDateTime).toISOString(),
+                                    price: doctor.consultationPrice.toString(),
+                                    status: 'pending_payment'
+                                  })
+                                });
+
+                                if (appointmentResponse.ok) {
+                                  const appointmentData = await appointmentResponse.json();
+                                  console.log('✅ Appointment created:', appointmentData);
+
+                                  // Redirect to checkout with appointmentId
+                                  const appointmentId = appointmentData.appointmentId || appointmentData.id;
+                                  const checkoutUrl = `/checkout?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&appointmentId=${appointmentId}`;
+                                  console.log('Redirecting to checkout with appointmentId:', checkoutUrl);
                                   window.location.href = checkoutUrl;
                                 } else {
-                                  // User not logged in, redirect to register page
-                                  const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${slot.id}`;
-                                  console.log('User not logged in, redirecting to register:', registerUrl);
-                                  window.location.href = registerUrl;
+                                  const errorData = await appointmentResponse.json();
+                                  console.error('Failed to create appointment:', errorData);
+                                  setIsNewBookingInProgress(false);
+                                  alert(errorData.error || 'This slot is no longer available. Please select another time.');
+                                  window.location.reload();
                                 }
                               } else {
-                                // Slot couldn't be held (probably taken by another user)
-                                const error = await response.json();
-                                setIsNewBookingInProgress(false); // Reset if error
-                                alert(error.error || 'This slot is no longer available. Please select another time.');
-                                window.location.reload(); // Refresh to show updated availability
+                                // User not logged in - use old flow with session-based holding
+                                console.log('User not logged in - holding slot and redirecting to register');
+
+                                const apiUrl = import.meta.env.VITE_API_URL ||
+                                  (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+                                const holdUrl = apiUrl ? `${apiUrl}/api/slots/hold` : '/api/slots/hold';
+
+                                const response = await fetch(holdUrl, {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  credentials: 'include',
+                                  body: JSON.stringify({
+                                    slotId: slot.id,
+                                    sessionId: undefined
+                                  })
+                                });
+
+                                if (response.ok) {
+                                  const holdData = await response.json();
+                                  console.log('Slot held successfully:', holdData);
+                                  sessionStorage.setItem('heldSlotId', slot.id);
+                                  sessionStorage.setItem('heldSlotExpiry', holdData.expiresAt);
+
+                                  const registerUrl = `/register?doctorId=${doctorId}&slot=${encodeURIComponent(fullSlotDateTime)}&price=${doctor.consultationPrice}&slotId=${slot.id}`;
+                                  console.log('Redirecting to register:', registerUrl);
+                                  window.location.href = registerUrl;
+                                } else {
+                                  const error = await response.json();
+                                  setIsNewBookingInProgress(false);
+                                  alert(error.error || 'This slot is no longer available. Please select another time.');
+                                  window.location.reload();
+                                }
                               }
                             } catch (error) {
-                              console.error('Failed to hold slot:', error);
-                              setIsNewBookingInProgress(false); // Reset if error
+                              console.error('Failed to book slot:', error);
+                              setIsNewBookingInProgress(false);
                               alert('Unable to reserve this slot. Please try again.');
                             }
                           }}
