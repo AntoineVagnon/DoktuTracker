@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Header from '@/components/Header';
 import {
   ArrowLeft,
-  MessageSquare,
   Mail,
   Phone,
   Clock,
@@ -60,7 +59,7 @@ export default function Support() {
 
       <div className="container mx-auto max-w-6xl px-4 py-12">
         {/* Contact Methods */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
           <Card>
             <CardContent className="pt-6">
               <Mail className="h-8 w-8 text-blue-600 mb-3" />
@@ -80,17 +79,6 @@ export default function Support() {
               <a href={`tel:${t('support.contact_methods.phone.number')}`} className="text-blue-600 hover:underline text-sm">
                 {t('support.contact_methods.phone.number')}
               </a>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <MessageSquare className="h-8 w-8 text-blue-600 mb-3" />
-              <h3 className="font-semibold mb-2">{t('support.contact_methods.chat.title')}</h3>
-              <p className="text-sm text-gray-600 mb-3">{t('support.contact_methods.chat.description')}</p>
-              <Button variant="outline" size="sm" className="text-blue-600">
-                {t('support.contact_methods.chat.button')}
-              </Button>
             </CardContent>
           </Card>
         </div>
