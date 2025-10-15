@@ -257,7 +257,7 @@ adminDoctorManagementRouter.get('/applications', async (req, res) => {
     const totalCount = countResult?.count || 0;
 
     // Get paginated applications
-    const applications = await db
+    const applicationsData = await db
       .select({
         doctorId: doctors.id,
         userId: users.id,
@@ -287,6 +287,34 @@ adminDoctorManagementRouter.get('/applications', async (req, res) => {
       .limit(limitNum)
       .offset(offset);
 
+    // Transform flat structure to nested structure expected by frontend
+    const applications = applicationsData.map(app => ({
+      user: {
+        id: app.userId,
+        email: app.email,
+        firstName: app.firstName,
+        lastName: app.lastName,
+        phone: app.phone,
+        createdAt: app.createdAt
+      },
+      doctor: {
+        id: app.doctorId,
+        specialty: app.specialty,
+        licenseNumber: app.licenseNumber,
+        licenseExpirationDate: app.licenseExpirationDate,
+        licenseCountry: app.licenseCountry,
+        countries: app.countries,
+        status: app.status,
+        profileCompletionPercentage: app.profileCompletionPercentage,
+        rejectionReason: app.rejectionReason,
+        rejectionType: app.rejectionType,
+        approvedAt: app.approvedAt,
+        rejectedAt: app.rejectedAt,
+        activatedAt: app.activatedAt,
+        bio: app.bio
+      }
+    }));
+
     return res.json({
       applications,
       pagination: {
@@ -312,7 +340,7 @@ adminDoctorManagementRouter.get('/applications/:doctorId', async (req, res) => {
     const { doctorId } = req.params;
 
     // Get doctor with user information
-    const [application] = await db
+    const [appData] = await db
       .select({
         doctorId: doctors.id,
         userId: users.id,
@@ -320,6 +348,7 @@ adminDoctorManagementRouter.get('/applications/:doctorId', async (req, res) => {
         firstName: users.firstName,
         lastName: users.lastName,
         phone: users.phone,
+        profileImageUrl: users.profileImageUrl,
         specialty: doctors.specialty,
         licenseNumber: doctors.licenseNumber,
         licenseExpirationDate: doctors.licenseExpirationDate,
@@ -347,9 +376,43 @@ adminDoctorManagementRouter.get('/applications/:doctorId', async (req, res) => {
       .where(eq(doctors.id, parseInt(doctorId)))
       .limit(1);
 
-    if (!application) {
+    if (!appData) {
       return res.status(404).json({ error: 'Doctor application not found' });
     }
+
+    // Transform to nested structure expected by frontend
+    const application = {
+      id: appData.doctorId,
+      specialty: appData.specialty,
+      licenseNumber: appData.licenseNumber,
+      licenseExpirationDate: appData.licenseExpirationDate,
+      countries: appData.countries,
+      bio: appData.bio,
+      rppsNumber: appData.rppsNumber,
+      status: appData.status,
+      profileCompletionPercentage: appData.profileCompletionPercentage,
+      rejectionReason: appData.rejectionReason,
+      rejectionType: appData.rejectionType,
+      iban: appData.iban,
+      ibanVerificationStatus: appData.ibanVerificationStatus,
+      consultationPrice: appData.consultationPrice,
+      rating: appData.rating,
+      reviewCount: appData.reviewCount,
+      approvedAt: appData.approvedAt,
+      rejectedAt: appData.rejectedAt,
+      activatedAt: appData.activatedAt,
+      lastLoginAt: appData.lastLoginAt,
+      user: {
+        id: appData.userId,
+        email: appData.email,
+        firstName: appData.firstName,
+        lastName: appData.lastName,
+        phone: appData.phone,
+        profileImageUrl: appData.profileImageUrl,
+        createdAt: appData.createdAt,
+        approved: appData.userApproved
+      }
+    };
 
     // Get audit trail
     const auditTrail = await db
