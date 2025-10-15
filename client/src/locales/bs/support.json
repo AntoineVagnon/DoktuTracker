@@ -1,0 +1,75 @@
+{
+  "support": {
+    "back_home": "Nazad na početnu",
+    "title": "Centar za podršku",
+    "subtitle": "Tu smo da vam pomognemo 24/7",
+    "contact_methods": {
+      "email": {
+        "title": "Email podrška",
+        "description": "Odgovaramo u roku od 24h",
+        "address": "support@doktu.co"
+      },
+      "phone": {
+        "title": "Telefonska podrška",
+        "description": "Pon-Pet 9:00-18:00",
+        "number": "+33 1 23 45 67 89"
+      },
+      "chat": {
+        "title": "Live Chat",
+        "description": "Dostupno 24/7",
+        "button": "Započnite chat"
+      }
+    },
+    "form": {
+      "title": "Pošaljite nam poruku",
+      "description": "Popunite obrazac ispod i odgovorit ćemo vam što prije",
+      "name_label": "Ime i prezime",
+      "email_label": "Email",
+      "category_label": "Kategorija",
+      "category_placeholder": "Odaberite kategoriju",
+      "categories": {
+        "technical": "Tehnička podrška",
+        "billing": "Plaćanje i računi",
+        "appointment": "Termini",
+        "account": "Račun",
+        "medical": "Medicinska pitanja",
+        "other": "Ostalo"
+      },
+      "subject_label": "Predmet",
+      "subject_placeholder": "Ukratko opišite problem",
+      "message_label": "Poruka",
+      "message_placeholder": "Detaljno opišite vaš problem ili pitanje...",
+      "submit_button": "Pošalji poruku"
+    },
+    "faq": {
+      "title": "Često postavljana pitanja",
+      "appointments_link": "Kako zakazati termin?",
+      "payments_link": "Opcije plaćanja",
+      "technical_link": "Tehnički problemi",
+      "all_link": "Sva pitanja"
+    },
+    "hours": {
+      "title": "Radno vrijeme",
+      "monday_friday": "Ponedjeljak - Petak:",
+      "saturday": "Subota:",
+      "sunday": "Nedjelja:",
+      "closed": "Zatvoreno",
+      "email_24_7": "Email podrška 24/7"
+    },
+    "articles": {
+      "title": "Popularni članci pomoći",
+      "video_consultation": {
+        "title": "Kako se pripremiti za video konsultaciju",
+        "description": "Savjeti za uspješnu online konsultaciju sa vašim doktorom"
+      },
+      "subscription": {
+        "title": "Upravljanje pretplatom",
+        "description": "Kako nadograditi, promijeniti ili otkazati vašu pretplatu"
+      },
+      "medical_records": {
+        "title": "Pristup medicinskoj dokumentaciji",
+        "description": "Gdje pronaći i preuzeti vaše medicinske zapise"
+      }
+    }
+  }
+}

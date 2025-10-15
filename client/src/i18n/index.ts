@@ -10,6 +10,7 @@ import enDashboard from '../locales/en/dashboard.json';
 import enDoctors from '../locales/en/doctors.json';
 import enBooking from '../locales/en/booking.json';
 import enErrors from '../locales/en/errors.json';
+import enSupport from '../locales/en/support.json';
 
 import bsCommon from '../locales/bs/common.json';
 import bsLanding from '../locales/bs/landing.json';
@@ -18,6 +19,7 @@ import bsDashboard from '../locales/bs/dashboard.json';
 import bsDoctors from '../locales/bs/doctors.json';
 import bsBooking from '../locales/bs/booking.json';
 import bsErrors from '../locales/bs/errors.json';
+import bsSupport from '../locales/bs/support.json';
 
 // Initialize i18next
 i18n
@@ -34,6 +36,7 @@ i18n
         doctors: enDoctors,
         booking: enBooking,
         errors: enErrors,
+        support: enSupport,
       },
       bs: {
         common: bsCommon,
@@ -43,6 +46,7 @@ i18n
         doctors: bsDoctors,
         booking: bsBooking,
         errors: bsErrors,
+        support: bsSupport,
       },
     },
     // Default language
@@ -50,7 +54,7 @@ i18n
     // Default namespace
     defaultNS: 'common',
     // Namespaces to load
-    ns: ['common', 'landing', 'auth', 'dashboard', 'doctors', 'booking', 'errors'],
+    ns: ['common', 'landing', 'auth', 'dashboard', 'doctors', 'booking', 'errors', 'support'],
 
     // Language detection options
     detection: {

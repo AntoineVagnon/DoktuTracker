@@ -1,0 +1,75 @@
+{
+  "support": {
+    "back_home": "Back to home",
+    "title": "Support Center",
+    "subtitle": "We're here to help you 24/7",
+    "contact_methods": {
+      "email": {
+        "title": "Email support",
+        "description": "Response within 24h",
+        "address": "support@doktu.co"
+      },
+      "phone": {
+        "title": "Phone support",
+        "description": "Mon-Fri 9:00-18:00",
+        "number": "+33 1 23 45 67 89"
+      },
+      "chat": {
+        "title": "Live Chat",
+        "description": "Available 24/7",
+        "button": "Start chat"
+      }
+    },
+    "form": {
+      "title": "Send us a message",
+      "description": "Fill out the form below and we'll respond as soon as possible",
+      "name_label": "Full name",
+      "email_label": "Email",
+      "category_label": "Category",
+      "category_placeholder": "Select category",
+      "categories": {
+        "technical": "Technical support",
+        "billing": "Billing and invoices",
+        "appointment": "Appointments",
+        "account": "Account",
+        "medical": "Medical questions",
+        "other": "Other"
+      },
+      "subject_label": "Subject",
+      "subject_placeholder": "Briefly describe the problem",
+      "message_label": "Message",
+      "message_placeholder": "Describe your problem or question in detail...",
+      "submit_button": "Send message"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "appointments_link": "How to book an appointment?",
+      "payments_link": "Payment options",
+      "technical_link": "Technical issues",
+      "all_link": "All questions"
+    },
+    "hours": {
+      "title": "Business hours",
+      "monday_friday": "Monday - Friday:",
+      "saturday": "Saturday:",
+      "sunday": "Sunday:",
+      "closed": "Closed",
+      "email_24_7": "Email support 24/7"
+    },
+    "articles": {
+      "title": "Popular help articles",
+      "video_consultation": {
+        "title": "How to prepare for a video consultation",
+        "description": "Tips for a successful online consultation with your doctor"
+      },
+      "subscription": {
+        "title": "Managing subscription",
+        "description": "How to upgrade, change or cancel your subscription"
+      },
+      "medical_records": {
+        "title": "Accessing medical records",
+        "description": "Where to find and download your medical records"
+      }
+    }
+  }
+}
