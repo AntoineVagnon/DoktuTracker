@@ -128,7 +128,7 @@ adminDoctorManagementRouter.get('/', async (req, res) => {
         rating: doctors.rating,
         reviewCount: doctors.reviewCount,
         profileCompletionPercentage: doctors.profileCompletionPercentage,
-        profilePhoto: doctors.profilePhoto,
+        profilePhoto: users.profileImageUrl,
         createdAt: users.createdAt,
         approvedAt: doctors.approvedAt,
         activatedAt: doctors.activatedAt,
@@ -294,8 +294,7 @@ adminDoctorManagementRouter.get('/applications/:doctorId', async (req, res) => {
         rejectedAt: doctors.rejectedAt,
         activatedAt: doctors.activatedAt,
         lastLoginAt: doctors.lastLoginAt,
-        userApproved: users.approved,
-        emailVerified: users.emailVerified
+        userApproved: users.approved
       })
       .from(doctors)
       .innerJoin(users, eq(doctors.userId, users.id))
