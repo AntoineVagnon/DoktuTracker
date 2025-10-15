@@ -27,10 +27,9 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Use VITE_API_URL if the url starts with /api/
-  // Force Railway URL for production if env var is not set
-  const apiUrl = import.meta.env.VITE_API_URL ||
-    (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+  // Use VITE_API_URL for explicit API URL override (e.g., local dev against remote backend)
+  // In production, use relative URLs to leverage Vercel proxy (vercel.json rewrites)
+  const apiUrl = import.meta.env.VITE_API_URL || '';
   const fullUrl = url.startsWith('/api/') && apiUrl
     ? `${apiUrl}${url}`
     : url;
@@ -62,10 +61,9 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const url = queryKey[0] as string;
-    // Use VITE_API_URL if the url starts with /api/
-    // Force Railway URL for production if env var is not set
-    const apiUrl = import.meta.env.VITE_API_URL ||
-      (import.meta.env.PROD ? 'https://web-production-b2ce.up.railway.app' : '');
+    // Use VITE_API_URL for explicit API URL override (e.g., local dev against remote backend)
+    // In production, use relative URLs to leverage Vercel proxy (vercel.json rewrites)
+    const apiUrl = import.meta.env.VITE_API_URL || '';
     const fullUrl = url.startsWith('/api/') && apiUrl
       ? `${apiUrl}${url}`
       : url;
