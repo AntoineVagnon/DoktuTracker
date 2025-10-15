@@ -7,7 +7,168 @@
       "no_appointments": "No upcoming appointments",
       "book_appointment": "Book an appointment",
       "my_doctors": "My Doctors",
-      "settings": "Settings"
+      "settings": "Settings",
+      "book_new_appointment": "Book New Appointment",
+      "complete_membership_payment": {
+        "title": "Complete Your Membership Payment",
+        "description": "Your membership subscription requires payment completion to activate your benefits.",
+        "button": "Complete Payment"
+      },
+      "video_consultation": {
+        "title": "Video Consultation",
+        "join_button": "Join Video Call",
+        "available_soon": "Video call available 5 min before appointment"
+      },
+      "tabs": {
+        "appointments": "Appointments",
+        "appointments_short": "Appts",
+        "calendar": "Calendar",
+        "doctors": "My Doctors",
+        "doctors_short": "Doctors",
+        "settings": "Settings"
+      },
+      "appointments": {
+        "see_all": "See All",
+        "docs_badge": "Docs",
+        "upload_docs": "Upload Docs",
+        "upload_short": "Upload",
+        "reschedule": "Reschedule",
+        "cancel": "Cancel",
+        "book_more": "Book more appointments",
+        "video": "Video",
+        "join_video_call": "Join Video Call"
+      },
+      "doctors": {
+        "no_doctors": "No doctor consultations yet",
+        "book_first": "Book your first appointment",
+        "book_first_short": "Book Appointment",
+        "appointments_count": "appointment",
+        "appointments_count_plural": "appointments",
+        "view_profile": "View Profile",
+        "view_short": "View"
+      },
+      "profile": {
+        "title": "Personal Information",
+        "edit": "Edit",
+        "save": "Save",
+        "cancel": "Cancel",
+        "title_label": "Title",
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "select_title": "Select title",
+        "not_specified": "Not specified",
+        "enter_first_name": "Enter first name",
+        "enter_last_name": "Enter last name"
+      },
+      "health_profile": {
+        "complete_title": "Complete Your Health Profile",
+        "complete_description": "Add your health information to enable appointment bookings",
+        "complete_button": "Complete Profile",
+        "status_complete": "Health Profile Complete",
+        "status_in_progress": "Health Profile In Progress",
+        "completion_percent": "% Complete",
+        "title": "Health Information",
+        "edit_button": "Edit Health Profile",
+        "basic_info": {
+          "title": "Basic Information",
+          "date_of_birth": "Date of Birth",
+          "gender": "Gender",
+          "height": "Height",
+          "weight": "Weight",
+          "blood_type": "Blood Type"
+        },
+        "documentation": {
+          "title": "Documentation",
+          "view_library": "View Document Library",
+          "description": "Manage your medical documents, test results, and other health-related files in one secure location.",
+          "help_text": "Upload, download, and organize documents that can be shared with healthcare providers during consultations."
+        },
+        "medical_info": {
+          "title": "Medical Information",
+          "medical_history": "Medical History",
+          "current_medications": "Current Medications",
+          "allergies": "Allergies"
+        },
+        "emergency_contact": {
+          "title": "Emergency Contact",
+          "name": "Contact Name",
+          "phone": "Contact Phone"
+        },
+        "last_updated": "Last updated:",
+        "never": "Never"
+      },
+      "security": {
+        "title": "Security Settings",
+        "email": {
+          "label": "Primary Email",
+          "change_button": "Change Email",
+          "new_label": "New Email Address",
+          "new_placeholder": "Enter new email address",
+          "update_button": "Update Email",
+          "updating": "Updating...",
+          "cancel": "Cancel"
+        },
+        "password": {
+          "label": "Password",
+          "change_button": "Change Password",
+          "current_label": "Current Password",
+          "current_placeholder": "Enter current password",
+          "new_label": "New Password",
+          "new_placeholder": "Enter new password",
+          "confirm_label": "Confirm New Password",
+          "confirm_placeholder": "Confirm new password",
+          "mismatch": "Passwords do not match",
+          "update_button": "Update Password",
+          "updating": "Updating...",
+          "cancel": "Cancel",
+          "hidden": "••••••••••••"
+        },
+        "privacy": {
+          "title": "Privacy & Data Protection",
+          "description": "Manage your privacy preferences and access your data rights under GDPR",
+          "manage_consents": "Manage Consents",
+          "data_processing": "Data Processing Records"
+        }
+      },
+      "payment": {
+        "tab_title": "Payment Methods",
+        "tab_short": "Payment"
+      },
+      "toasts": {
+        "email_change_requested": {
+          "title": "Email Change Requested",
+          "description": "Please check your new email address for a confirmation link."
+        },
+        "password_changed": {
+          "title": "Password Changed",
+          "description": "Your password has been updated successfully."
+        },
+        "profile_updated": {
+          "title": "Profile Updated",
+          "description": "Your profile has been successfully updated."
+        },
+        "update_failed": {
+          "title": "Update Failed",
+          "description": "Failed to update profile."
+        },
+        "error": {
+          "title": "Error",
+          "description": "Failed to change email"
+        },
+        "booking_confirmed": {
+          "title": "Booking Confirmed!",
+          "description": "Your appointment has been successfully booked. You'll receive a confirmation email shortly."
+        }
+      },
+      "tabs_settings": {
+        "profile": "My Profile",
+        "profile_short": "Profile",
+        "health": "Health Profile",
+        "health_short": "Health",
+        "payment": "Payment Methods",
+        "payment_short": "Payment",
+        "security": "Security"
+      }
     },
     "doctor": {
       "title": "Doctor Dashboard",

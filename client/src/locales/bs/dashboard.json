@@ -7,7 +7,168 @@
       "no_appointments": "Nema predstojećih termina",
       "book_appointment": "Zakažite termin",
       "my_doctors": "Moji doktori",
-      "settings": "Postavke"
+      "settings": "Postavke",
+      "book_new_appointment": "Zakažite novi termin",
+      "complete_membership_payment": {
+        "title": "Završite plaćanje članarine",
+        "description": "Vaša pretplata zahtijeva završetak plaćanja kako bi aktivirali beneficije.",
+        "button": "Završi plaćanje"
+      },
+      "video_consultation": {
+        "title": "Video konsultacija",
+        "join_button": "Pridružite se video pozivu",
+        "available_soon": "Video poziv dostupan 5 min prije termina"
+      },
+      "tabs": {
+        "appointments": "Termini",
+        "appointments_short": "Termini",
+        "calendar": "Kalendar",
+        "doctors": "Moji doktori",
+        "doctors_short": "Doktori",
+        "settings": "Postavke"
+      },
+      "appointments": {
+        "see_all": "Vidi sve",
+        "docs_badge": "Dok",
+        "upload_docs": "Otpremi dokumente",
+        "upload_short": "Otpremi",
+        "reschedule": "Pomjeri termin",
+        "cancel": "Otkaži",
+        "book_more": "Zakažite još termina",
+        "video": "Video",
+        "join_video_call": "Pridružite se video pozivu"
+      },
+      "doctors": {
+        "no_doctors": "Još nema konsultacija sa doktorima",
+        "book_first": "Zakažite prvi termin",
+        "book_first_short": "Zakažite termin",
+        "appointments_count": "termin",
+        "appointments_count_plural": "termina",
+        "view_profile": "Pogledaj profil",
+        "view_short": "Pogledaj"
+      },
+      "profile": {
+        "title": "Lične informacije",
+        "edit": "Uredi",
+        "save": "Sačuvaj",
+        "cancel": "Otkaži",
+        "title_label": "Titula",
+        "first_name": "Ime",
+        "last_name": "Prezime",
+        "select_title": "Odaberite titulu",
+        "not_specified": "Nije navedeno",
+        "enter_first_name": "Unesite ime",
+        "enter_last_name": "Unesite prezime"
+      },
+      "health_profile": {
+        "complete_title": "Popunite zdravstveni profil",
+        "complete_description": "Dodajte zdravstvene informacije kako biste omogućili zakazivanje termina",
+        "complete_button": "Popuni profil",
+        "status_complete": "Zdravstveni profil potpun",
+        "status_in_progress": "Zdravstveni profil u toku",
+        "completion_percent": "% Dovršeno",
+        "title": "Zdravstvene informacije",
+        "edit_button": "Uredi zdravstveni profil",
+        "basic_info": {
+          "title": "Osnovne informacije",
+          "date_of_birth": "Datum rođenja",
+          "gender": "Spol",
+          "height": "Visina",
+          "weight": "Težina",
+          "blood_type": "Krvna grupa"
+        },
+        "documentation": {
+          "title": "Dokumentacija",
+          "view_library": "Pogledaj biblioteku dokumenata",
+          "description": "Upravljajte medicinskim dokumentima, rezultatima testova i drugim zdravstvenim fajlovima na jednom sigurnom mjestu.",
+          "help_text": "Otpremite, preuzmite i organizujte dokumente koji se mogu dijeliti sa zdravstvenim radnicima tokom konsultacija."
+        },
+        "medical_info": {
+          "title": "Medicinske informacije",
+          "medical_history": "Medicinska historija",
+          "current_medications": "Trenutni lijekovi",
+          "allergies": "Alergije"
+        },
+        "emergency_contact": {
+          "title": "Kontakt za hitne slučajeve",
+          "name": "Ime kontakta",
+          "phone": "Telefon kontakta"
+        },
+        "last_updated": "Posljednja izmjena:",
+        "never": "Nikada"
+      },
+      "security": {
+        "title": "Sigurnosne postavke",
+        "email": {
+          "label": "Primarni email",
+          "change_button": "Promijeni email",
+          "new_label": "Nova email adresa",
+          "new_placeholder": "Unesite novu email adresu",
+          "update_button": "Ažuriraj email",
+          "updating": "Ažuriranje...",
+          "cancel": "Otkaži"
+        },
+        "password": {
+          "label": "Lozinka",
+          "change_button": "Promijeni lozinku",
+          "current_label": "Trenutna lozinka",
+          "current_placeholder": "Unesite trenutnu lozinku",
+          "new_label": "Nova lozinka",
+          "new_placeholder": "Unesite novu lozinku",
+          "confirm_label": "Potvrdite novu lozinku",
+          "confirm_placeholder": "Potvrdite novu lozinku",
+          "mismatch": "Lozinke se ne podudaraju",
+          "update_button": "Ažuriraj lozinku",
+          "updating": "Ažuriranje...",
+          "cancel": "Otkaži",
+          "hidden": "••••••••••••"
+        },
+        "privacy": {
+          "title": "Privatnost i zaštita podataka",
+          "description": "Upravljajte postavkama privatnosti i pristupite pravima na podatke pod GDPR-om",
+          "manage_consents": "Upravljaj pristancima",
+          "data_processing": "Zapisi obrade podataka"
+        }
+      },
+      "payment": {
+        "tab_title": "Načini plaćanja",
+        "tab_short": "Plaćanje"
+      },
+      "toasts": {
+        "email_change_requested": {
+          "title": "Zahtjev za promjenu emaila",
+          "description": "Molimo provjerite novu email adresu za link potvrde."
+        },
+        "password_changed": {
+          "title": "Lozinka promijenjena",
+          "description": "Vaša lozinka je uspješno ažurirana."
+        },
+        "profile_updated": {
+          "title": "Profil ažuriran",
+          "description": "Vaš profil je uspješno ažuriran."
+        },
+        "update_failed": {
+          "title": "Ažuriranje neuspjelo",
+          "description": "Neuspjelo ažuriranje profila."
+        },
+        "error": {
+          "title": "Greška",
+          "description": "Neuspjela promjena emaila"
+        },
+        "booking_confirmed": {
+          "title": "Rezervacija potvrđena!",
+          "description": "Vaš termin je uspješno zakazan. Uskoro ćete primiti email potvrdu."
+        }
+      },
+      "tabs_settings": {
+        "profile": "Moj profil",
+        "profile_short": "Profil",
+        "health": "Zdravstveni profil",
+        "health_short": "Zdravlje",
+        "payment": "Načini plaćanja",
+        "payment_short": "Plaćanje",
+        "security": "Sigurnost"
+      }
     },
     "doctor": {
       "title": "Kontrolna tabla doktora",

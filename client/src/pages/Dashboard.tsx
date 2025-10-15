@@ -77,8 +77,8 @@ export default function Dashboard() {
     // Check for booking success
     if (urlParams.get('booking') === 'success') {
       toast({
-        title: "Booking Confirmed!",
-        description: "Your appointment has been successfully booked. You'll receive a confirmation email shortly.",
+        title: t('dashboard.patient.toasts.booking_confirmed.title'),
+        description: t('dashboard.patient.toasts.booking_confirmed.description'),
       });
       // Clear the URL parameter
       window.history.replaceState({}, '', '/dashboard');
@@ -146,16 +146,16 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       toast({
-        title: "Email Change Requested",
-        description: "Please check your new email address for a confirmation link.",
+        title: t('dashboard.patient.toasts.email_change_requested.title'),
+        description: t('dashboard.patient.toasts.email_change_requested.description'),
       });
       setShowEmailChange(false);
       setNewEmail('');
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
-        description: error.message || "Failed to change email",
+        title: t('dashboard.patient.toasts.error.title'),
+        description: error.message || t('dashboard.patient.toasts.error.description'),
         variant: "destructive",
       });
     }
@@ -168,8 +168,8 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       toast({
-        title: "Password Changed",
-        description: "Your password has been updated successfully.",
+        title: t('dashboard.patient.toasts.password_changed.title'),
+        description: t('dashboard.patient.toasts.password_changed.description'),
       });
       setShowPasswordChange(false);
       setCurrentPassword('');
@@ -178,7 +178,7 @@ export default function Dashboard() {
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
+        title: t('dashboard.patient.toasts.error.title'),
         description: error.message || "Failed to change password",
         variant: "destructive",
       });
@@ -337,8 +337,8 @@ export default function Dashboard() {
         queryClient.setQueryData(["/api/auth/user"], updatedUser);
         
         toast({
-          title: "Profile Updated",
-          description: "Your profile has been successfully updated.",
+          title: t('dashboard.patient.toasts.profile_updated.title'),
+          description: t('dashboard.patient.toasts.profile_updated.description'),
         });
         
         // Set editing to false after a brief delay to prevent double-click issue
@@ -348,8 +348,8 @@ export default function Dashboard() {
       },
       onError: (error: any) => {
         toast({
-          title: "Update Failed",
-          description: error.message || "Failed to update profile.",
+          title: t('dashboard.patient.toasts.update_failed.title'),
+          description: error.message || t('dashboard.patient.toasts.update_failed.description'),
           variant: "destructive",
         });
       },
@@ -372,30 +372,30 @@ export default function Dashboard() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">Personal Information</h3>
+          <h3 className="text-lg font-medium">{t('dashboard.patient.profile.title')}</h3>
           {!isEditing ? (
             <Button variant="outline" onClick={() => setIsEditing(true)} className="h-10">
               <Edit2 className="h-4 w-4 mr-2" />
-              Edit
+              {t('dashboard.patient.profile.edit')}
             </Button>
           ) : (
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="h-10"
                 onClick={handleCancel}
                 disabled={updateProfileMutation.isPending}
               >
                 <X className="h-4 w-4 mr-2" />
-                Cancel
+                {t('dashboard.patient.profile.cancel')}
               </Button>
-              <Button 
+              <Button
                 className="h-10"
                 onClick={handleSave}
                 disabled={updateProfileMutation.isPending}
               >
                 <Save className="h-4 w-4 mr-2" />
-                Save
+                {t('dashboard.patient.profile.save')}
               </Button>
             </div>
           )}
@@ -403,14 +403,14 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-1">
-            <Label htmlFor="title" className="text-sm font-medium">Title</Label>
+            <Label htmlFor="title" className="text-sm font-medium">{t('dashboard.patient.profile.title_label')}</Label>
             {isEditing ? (
-              <Select 
-                value={formData.title} 
+              <Select
+                value={formData.title}
                 onValueChange={(value) => setFormData({...formData, title: value})}
               >
                 <SelectTrigger className="mt-1 h-11">
-                  <SelectValue placeholder="Select title" />
+                  <SelectValue placeholder={t('dashboard.patient.profile.select_title')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Mr">Mr</SelectItem>
@@ -420,35 +420,35 @@ export default function Dashboard() {
                 </SelectContent>
               </Select>
             ) : (
-              <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.title || 'Not specified'}</p>
-            )}
-          </div>
-          
-          <div className="sm:col-span-1">
-            <Label htmlFor="firstName" className="text-sm font-medium">First Name</Label>
-            {isEditing ? (
-              <Input
-                value={formData.firstName}
-                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                placeholder="Enter first name"
-                className="mt-1 h-11"
-              />
-            ) : (
-              <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.firstName || 'Not specified'}</p>
+              <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.title || t('dashboard.patient.profile.not_specified')}</p>
             )}
           </div>
 
           <div className="sm:col-span-1">
-            <Label htmlFor="lastName" className="text-sm font-medium">Last Name</Label>
+            <Label htmlFor="firstName" className="text-sm font-medium">{t('dashboard.patient.profile.first_name')}</Label>
+            {isEditing ? (
+              <Input
+                value={formData.firstName}
+                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                placeholder={t('dashboard.patient.profile.enter_first_name')}
+                className="mt-1 h-11"
+              />
+            ) : (
+              <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.firstName || t('dashboard.patient.profile.not_specified')}</p>
+            )}
+          </div>
+
+          <div className="sm:col-span-1">
+            <Label htmlFor="lastName" className="text-sm font-medium">{t('dashboard.patient.profile.last_name')}</Label>
             {isEditing ? (
               <Input
                 value={formData.lastName}
                 onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                placeholder="Enter last name"
+                placeholder={t('dashboard.patient.profile.enter_last_name')}
                 className="mt-1 h-11"
               />
             ) : (
-              <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.lastName || 'Not specified'}</p>
+              <p className="text-gray-900 p-3 mt-1 bg-gray-50 rounded-md">{user?.lastName || t('dashboard.patient.profile.not_specified')}</p>
             )}
           </div>
 
@@ -474,13 +474,13 @@ export default function Dashboard() {
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <MembershipChip />
-            <Button 
+            <Button
               onClick={handleBookAppointment}
               className="bg-gradient-to-r from-[hsl(207,100%,52%)] to-[hsl(225,99%,52%)] h-11 w-full sm:w-auto"
             >
               <Plus className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Book New Appointment</span>
-              <span className="sm:hidden">Book Appointment</span>
+              <span className="hidden sm:inline">{t('dashboard.patient.book_new_appointment')}</span>
+              <span className="sm:hidden">{t('dashboard.patient.book_appointment')}</span>
             </Button>
           </div>
         </div>
@@ -491,16 +491,16 @@ export default function Dashboard() {
             <AlertTriangle className="h-4 w-4 text-orange-600" />
             <div className="flex items-center justify-between w-full">
               <div>
-                <h4 className="font-semibold text-orange-900">Complete Your Membership Payment</h4>
+                <h4 className="font-semibold text-orange-900">{t('dashboard.patient.complete_membership_payment.title')}</h4>
                 <p className="text-sm text-orange-800 mt-1">
-                  Your membership subscription requires payment completion to activate your benefits.
+                  {t('dashboard.patient.complete_membership_payment.description')}
                 </p>
               </div>
-              <Button 
+              <Button
                 onClick={() => setLocation('/complete-subscription')}
                 className="bg-orange-600 hover:bg-orange-700 text-white ml-4"
               >
-                Complete Payment
+                {t('dashboard.patient.complete_membership_payment.button')}
               </Button>
             </div>
           </Alert>
@@ -515,7 +515,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-3">
                     <Video className="h-5 w-5 text-blue-600" />
                     <div>
-                      <h3 className="font-medium">Video Consultation</h3>
+                      <h3 className="font-medium">{t('dashboard.patient.video_consultation.title')}</h3>
                       <p className="text-sm text-gray-600">
                         Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName} • {appointment.doctor?.specialty}
                       </p>
@@ -524,15 +524,15 @@ export default function Dashboard() {
                       </p>
                     </div>
                   </div>
-                  <Button 
-                    variant="default" 
-                    size="sm" 
+                  <Button
+                    variant="default"
+                    size="sm"
                     className="bg-blue-600 hover:bg-blue-700"
                     onClick={() => setLocation(`/video-consultation/${appointment.id}`)}
                     data-testid="button-join-video-call"
                   >
                     <Video className="h-4 w-4 mr-2" />
-                    Join Video Call
+                    {t('dashboard.patient.video_consultation.join_button')}
                   </Button>
                 </div>
               </div>
@@ -559,15 +559,15 @@ export default function Dashboard() {
             <Tabs defaultValue="appointments" className="space-y-6">
               <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1 h-auto p-1">
                 <TabsTrigger value="appointments" className="text-xs sm:text-sm py-2 px-2 sm:px-4">
-                  <span className="hidden sm:inline">Appointments</span>
-                  <span className="sm:hidden">Appts</span>
+                  <span className="hidden sm:inline">{t('dashboard.patient.tabs.appointments')}</span>
+                  <span className="sm:hidden">{t('dashboard.patient.tabs.appointments_short')}</span>
                 </TabsTrigger>
-                <TabsTrigger value="calendar" className="text-xs sm:text-sm py-2 px-2 sm:px-4">Calendar</TabsTrigger>
+                <TabsTrigger value="calendar" className="text-xs sm:text-sm py-2 px-2 sm:px-4">{t('dashboard.patient.tabs.calendar')}</TabsTrigger>
                 <TabsTrigger value="doctors" className="text-xs sm:text-sm py-2 px-2 sm:px-4">
-                  <span className="hidden sm:inline">My Doctors</span>
-                  <span className="sm:hidden">Doctors</span>
+                  <span className="hidden sm:inline">{t('dashboard.patient.tabs.doctors')}</span>
+                  <span className="sm:hidden">{t('dashboard.patient.tabs.doctors_short')}</span>
                 </TabsTrigger>
-                <TabsTrigger value="settings" className="text-xs sm:text-sm py-2 px-2 sm:px-4">Settings</TabsTrigger>
+                <TabsTrigger value="settings" className="text-xs sm:text-sm py-2 px-2 sm:px-4">{t('dashboard.patient.tabs.settings')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="appointments" className="space-y-6">
@@ -581,7 +581,7 @@ export default function Dashboard() {
                       </CardTitle>
                       {hasMoreAppointments && (
                         <Button variant="ghost" size="sm" onClick={() => setLocation('/doctors')}>
-                          See All ({upcoming.length})
+                          {t('dashboard.patient.appointments.see_all')} ({upcoming.length})
                         </Button>
                       )}
                     </div>
@@ -626,15 +626,15 @@ export default function Dashboard() {
                                 <div className="flex items-center gap-2">
                                   {/* Document count badge */}
                                   {documentCounts[appointment.id] > 0 && (
-                                    <Badge 
-                                      variant="secondary" 
+                                    <Badge
+                                      variant="secondary"
                                       className="cursor-pointer hover:bg-gray-200 text-xs"
                                       onClick={() => {
                                         setSelectedAppointmentId(appointment.id);
                                         setDocumentUploadOpen(true);
                                       }}
                                     >
-                                      Docs ({documentCounts[appointment.id]})
+                                      {t('dashboard.patient.appointments.docs_badge')} ({documentCounts[appointment.id]})
                                     </Badge>
                                   )}
                                   {getStatusBadge(appointment.status)}
@@ -662,22 +662,22 @@ export default function Dashboard() {
                                     onClick={() => setLocation(`/video-consultation/${appointment.id}`)}
                                   >
                                     <Video className="h-4 w-4 mr-2" />
-                                    <span className="hidden sm:inline">Join Video Call</span>
-                                    <span className="sm:hidden">Video</span>
+                                    <span className="hidden sm:inline">{t('dashboard.patient.appointments.join_video_call')}</span>
+                                    <span className="sm:hidden">{t('dashboard.patient.appointments.video')}</span>
                                   </Button>
                                 )}
-                                
+
                                 {/* Show meeting info for future appointments */}
                                 {(appointment.status === 'paid' || appointment.status === 'confirmed') && appointment.zoomMeetingId && !isAppointmentJoinable(appointment.appointmentDate) && (
                                   <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-md">
                                     <Video className="h-4 w-4 mr-2" />
-                                    <span>Video call available 5 min before appointment</span>
+                                    <span>{t('dashboard.patient.video_consultation.available_soon')}</span>
                                   </div>
                                 )}
 
                                 {/* Pre-consultation actions */}
-                                <Button 
-                                  variant="outline" 
+                                <Button
+                                  variant="outline"
                                   size="sm"
                                   onClick={() => {
                                     setSelectedAppointmentId(appointment.id);
@@ -686,44 +686,44 @@ export default function Dashboard() {
                                   className="h-9 flex-1 sm:flex-none"
                                 >
                                   <Upload className="h-4 w-4 mr-2" />
-                                  <span className="hidden sm:inline">Upload Docs</span>
-                                  <span className="sm:hidden">Upload</span>
+                                  <span className="hidden sm:inline">{t('dashboard.patient.appointments.upload_docs')}</span>
+                                  <span className="sm:hidden">{t('dashboard.patient.appointments.upload_short')}</span>
                                 </Button>
 
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
+                                <Button
+                                  variant="outline"
+                                  size="sm"
                                   className="h-9 flex-1 sm:flex-none"
                                   onClick={() => {
                                     setSelectedAppointment(appointment);
                                     setAppointmentAction("reschedule");
                                   }}
                                 >
-                                  Reschedule
+                                  {t('dashboard.patient.appointments.reschedule')}
                                 </Button>
 
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => {
                                     setSelectedAppointment(appointment);
                                     setAppointmentAction("cancel");
                                   }}
                                   className="h-9 flex-1 sm:flex-none text-red-600 hover:text-red-700"
                                 >
-                                  Cancel
+                                  {t('dashboard.patient.appointments.cancel')}
                                 </Button>
                               </div>
                             </div>
                         ))}
                         {hasMoreAppointments && (
                           <div className="pt-4 border-t">
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               className="w-full"
                               onClick={() => setLocation('/doctors')}
                             >
-                              Book more appointments ({upcoming.length})
+                              {t('dashboard.patient.appointments.book_more')} ({upcoming.length})
                             </Button>
                           </div>
                         )}
@@ -762,11 +762,11 @@ export default function Dashboard() {
                         {uniqueDoctors.length === 0 ? (
                           <div className="text-center py-8">
                             <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-600">No doctor consultations yet</p>
+                            <p className="text-gray-600">{t('dashboard.patient.doctors.no_doctors')}</p>
                             <Button onClick={handleBookAppointment} className="mt-4 h-10 w-full sm:w-auto">
                               <Plus className="h-4 w-4 mr-2" />
-                              <span className="hidden sm:inline">Book your first appointment</span>
-                              <span className="sm:hidden">Book Appointment</span>
+                              <span className="hidden sm:inline">{t('dashboard.patient.doctors.book_first')}</span>
+                              <span className="sm:hidden">{t('dashboard.patient.doctors.book_first_short')}</span>
                             </Button>
                           </div>
                         ) : (
@@ -784,17 +784,17 @@ export default function Dashboard() {
                                   </h3>
                                   <p className="text-sm text-gray-600">{doctor.specialty}</p>
                                   <p className="text-xs text-gray-500">
-                                    {doctor.appointmentCount} appointment{doctor.appointmentCount !== 1 ? 's' : ''}
+                                    {doctor.appointmentCount} {doctor.appointmentCount !== 1 ? t('dashboard.patient.doctors.appointments_count_plural') : t('dashboard.patient.doctors.appointments_count')}
                                   </p>
                                 </div>
-                                <Button 
-                                  variant="outline" 
+                                <Button
+                                  variant="outline"
                                   size="sm"
                                   onClick={() => setLocation(`/doctor/${doctor.id}`)}
                                   className="h-9 px-3"
                                 >
-                                  <span className="hidden sm:inline">View Profile</span>
-                                  <span className="sm:hidden">View</span>
+                                  <span className="hidden sm:inline">{t('dashboard.patient.doctors.view_profile')}</span>
+                                  <span className="sm:hidden">{t('dashboard.patient.doctors.view_short')}</span>
                                 </Button>
                               </div>
                             </Card>
@@ -818,18 +818,18 @@ export default function Dashboard() {
                     <Tabs defaultValue="profile" className="space-y-6">
                       <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-1 h-auto p-1">
                         <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-1 sm:px-3">
-                          <span className="hidden sm:inline">My Profile</span>
-                          <span className="sm:hidden">Profile</span>
+                          <span className="hidden sm:inline">{t('dashboard.patient.tabs_settings.profile')}</span>
+                          <span className="sm:hidden">{t('dashboard.patient.tabs_settings.profile_short')}</span>
                         </TabsTrigger>
                         <TabsTrigger value="health" className="text-xs sm:text-sm py-2 px-1 sm:px-3">
-                          <span className="hidden sm:inline">Health Profile</span>
-                          <span className="sm:hidden">Health</span>
+                          <span className="hidden sm:inline">{t('dashboard.patient.tabs_settings.health')}</span>
+                          <span className="sm:hidden">{t('dashboard.patient.tabs_settings.health_short')}</span>
                         </TabsTrigger>
                         <TabsTrigger value="payment" className="text-xs sm:text-sm py-2 px-1 sm:px-3">
-                          <span className="hidden sm:inline">Payment Methods</span>
-                          <span className="sm:hidden">Payment</span>
+                          <span className="hidden sm:inline">{t('dashboard.patient.tabs_settings.payment')}</span>
+                          <span className="sm:hidden">{t('dashboard.patient.tabs_settings.payment_short')}</span>
                         </TabsTrigger>
-                        <TabsTrigger value="security" className="text-xs sm:text-sm py-2 px-1 sm:px-3">Security</TabsTrigger>
+                        <TabsTrigger value="security" className="text-xs sm:text-sm py-2 px-1 sm:px-3">{t('dashboard.patient.tabs_settings.security')}</TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="profile">
@@ -845,11 +845,11 @@ export default function Dashboard() {
                         ) : !healthProfile ? (
                           <div className="text-center py-8">
                             <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Complete Your Health Profile</h3>
-                            <p className="text-gray-600 mb-4">Add your health information to enable appointment bookings</p>
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('dashboard.patient.health_profile.complete_title')}</h3>
+                            <p className="text-gray-600 mb-4">{t('dashboard.patient.health_profile.complete_description')}</p>
                             <Button onClick={() => setHealthProfileOpen(true)}>
                               <Heart className="h-4 w-4 mr-2" />
-                              Complete Profile
+                              {t('dashboard.patient.health_profile.complete_button')}
                             </Button>
                           </div>
                         ) : (
@@ -867,22 +867,22 @@ export default function Dashboard() {
                                     : 'text-yellow-600'
                                 }`} />
                                 <span className={`font-medium ${
-                                  calculateHealthProfileCompletion(healthProfile) === 100 
-                                    ? 'text-green-900' 
+                                  calculateHealthProfileCompletion(healthProfile) === 100
+                                    ? 'text-green-900'
                                     : 'text-yellow-900'
                                 }`}>
-                                  {calculateHealthProfileCompletion(healthProfile) === 100 
-                                    ? 'Health Profile Complete' 
-                                    : 'Health Profile In Progress'
+                                  {calculateHealthProfileCompletion(healthProfile) === 100
+                                    ? t('dashboard.patient.health_profile.status_complete')
+                                    : t('dashboard.patient.health_profile.status_in_progress')
                                   }
                                 </span>
                               </div>
                               <Badge variant="secondary" className={
-                                calculateHealthProfileCompletion(healthProfile) === 100 
-                                  ? 'bg-green-100 text-green-800' 
+                                calculateHealthProfileCompletion(healthProfile) === 100
+                                  ? 'bg-green-100 text-green-800'
                                   : 'bg-yellow-100 text-yellow-800'
                               }>
-                                {calculateHealthProfileCompletion(healthProfile)}% Complete
+                                {calculateHealthProfileCompletion(healthProfile)}{t('dashboard.patient.health_profile.completion_percent')}
                               </Badge>
                             </div>
 
@@ -891,53 +891,53 @@ export default function Dashboard() {
                             {/* Key Information */}
                             <div className="space-y-6">
                               <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-medium">Health Information</h3>
-                                <Button 
-                                  variant="outline" 
+                                <h3 className="text-lg font-medium">{t('dashboard.patient.health_profile.title')}</h3>
+                                <Button
+                                  variant="outline"
                                   onClick={() => setHealthProfileOpen(true)}
                                 >
-                                  Edit Health Profile
+                                  {t('dashboard.patient.health_profile.edit_button')}
                                 </Button>
                               </div>
 
                               {/* Basic Information */}
                               <div className="space-y-4">
-                                <h4 className="font-medium text-gray-900">Basic Information</h4>
+                                <h4 className="font-medium text-gray-900">{t('dashboard.patient.health_profile.basic_info.title')}</h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                   <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                      Date of Birth
+                                      {t('dashboard.patient.health_profile.basic_info.date_of_birth')}
                                     </label>
                                     <p className="text-gray-900 p-2 bg-gray-50 rounded">
-                                      {(healthProfile as any).dateOfBirth ? 
-                                        new Date((healthProfile as any).dateOfBirth).toLocaleDateString() : 
-                                        'Not specified'
+                                      {(healthProfile as any).dateOfBirth ?
+                                        new Date((healthProfile as any).dateOfBirth).toLocaleDateString() :
+                                        t('dashboard.patient.profile.not_specified')
                                       }
                                     </p>
                                   </div>
                                   <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                      Gender
+                                      {t('dashboard.patient.health_profile.basic_info.gender')}
                                     </label>
-                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).gender || 'Not specified'}</p>
+                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).gender || t('dashboard.patient.profile.not_specified')}</p>
                                   </div>
                                   <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                      Height
+                                      {t('dashboard.patient.health_profile.basic_info.height')}
                                     </label>
-                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).height || 'Not specified'}</p>
+                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).height || t('dashboard.patient.profile.not_specified')}</p>
                                   </div>
                                   <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                      Weight
+                                      {t('dashboard.patient.health_profile.basic_info.weight')}
                                     </label>
-                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).weight || 'Not specified'}</p>
+                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).weight || t('dashboard.patient.profile.not_specified')}</p>
                                   </div>
                                   <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                      Blood Type
+                                      {t('dashboard.patient.health_profile.basic_info.blood_type')}
                                     </label>
-                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).bloodType || 'Not specified'}</p>
+                                    <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).bloodType || t('dashboard.patient.profile.not_specified')}</p>
                                   </div>
                                 </div>
                               </div>
@@ -945,24 +945,24 @@ export default function Dashboard() {
                               {/* Documentation */}
                               <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                  <h4 className="font-medium text-gray-900">Documentation</h4>
-                                  <Button 
-                                    variant="outline" 
+                                  <h4 className="font-medium text-gray-900">{t('dashboard.patient.health_profile.documentation.title')}</h4>
+                                  <Button
+                                    variant="outline"
                                     size="sm"
                                     onClick={() => setDocumentUploadOpen(true)}
                                     className="flex items-center gap-2"
                                     data-testid="button-view-document-library"
                                   >
                                     <FileText className="h-4 w-4" />
-                                    View Document Library
+                                    {t('dashboard.patient.health_profile.documentation.view_library')}
                                   </Button>
                                 </div>
                                 <div className="p-4 bg-gray-50 rounded-lg border">
                                   <p className="text-sm text-gray-600 mb-2">
-                                    Manage your medical documents, test results, and other health-related files in one secure location.
+                                    {t('dashboard.patient.health_profile.documentation.description')}
                                   </p>
                                   <p className="text-xs text-gray-500">
-                                    Upload, download, and organize documents that can be shared with healthcare providers during consultations.
+                                    {t('dashboard.patient.health_profile.documentation.help_text')}
                                   </p>
                                 </div>
                               </div>
@@ -970,12 +970,12 @@ export default function Dashboard() {
                               {/* Medical Information */}
                               {((healthProfile as any).allergies?.length || (healthProfile as any).medications?.length || (healthProfile as any).medicalHistory?.length) && (
                                 <div className="space-y-4">
-                                  <h4 className="font-medium text-gray-900">Medical Information</h4>
-                                  
+                                  <h4 className="font-medium text-gray-900">{t('dashboard.patient.health_profile.medical_info.title')}</h4>
+
                                   {(healthProfile as any).medicalHistory?.length > 0 && (
                                     <div>
                                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Medical History
+                                        {t('dashboard.patient.health_profile.medical_info.medical_history')}
                                       </label>
                                       <div className="p-2 bg-gray-50 rounded">
                                         {(healthProfile as any).medicalHistory.map((history: string, index: number) => (
@@ -990,7 +990,7 @@ export default function Dashboard() {
                                   {(healthProfile as any).medications?.length > 0 && (
                                     <div>
                                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Current Medications
+                                        {t('dashboard.patient.health_profile.medical_info.current_medications')}
                                       </label>
                                       <div className="p-2 bg-gray-50 rounded">
                                         {(healthProfile as any).medications.map((medication: string, index: number) => (
@@ -1001,11 +1001,11 @@ export default function Dashboard() {
                                       </div>
                                     </div>
                                   )}
-                                  
+
                                   {(healthProfile as any).allergies?.length > 0 && (
                                     <div>
                                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Allergies
+                                        {t('dashboard.patient.health_profile.medical_info.allergies')}
                                       </label>
                                       <div className="p-2 bg-gray-50 rounded">
                                         {(healthProfile as any).allergies.map((allergy: string, index: number) => (
@@ -1022,19 +1022,19 @@ export default function Dashboard() {
                               {/* Emergency Contact */}
                               {((healthProfile as any).emergencyContactName || (healthProfile as any).emergencyContactPhone) && (
                                 <div className="space-y-4">
-                                  <h4 className="font-medium text-gray-900">Emergency Contact</h4>
+                                  <h4 className="font-medium text-gray-900">{t('dashboard.patient.health_profile.emergency_contact.title')}</h4>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Contact Name
+                                        {t('dashboard.patient.health_profile.emergency_contact.name')}
                                       </label>
-                                      <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).emergencyContactName || 'Not specified'}</p>
+                                      <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).emergencyContactName || t('dashboard.patient.profile.not_specified')}</p>
                                     </div>
                                     <div>
                                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Contact Phone
+                                        {t('dashboard.patient.health_profile.emergency_contact.phone')}
                                       </label>
-                                      <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).emergencyContactPhone || 'Not specified'}</p>
+                                      <p className="text-gray-900 p-2 bg-gray-50 rounded">{(healthProfile as any).emergencyContactPhone || t('dashboard.patient.profile.not_specified')}</p>
                                     </div>
                                   </div>
                                 </div>
@@ -1043,9 +1043,9 @@ export default function Dashboard() {
 
                             {/* Last Updated */}
                             <div className="text-sm text-gray-500 pt-4 border-t">
-                              Last updated: {(healthProfile as any).lastReviewedAt ? 
-                                new Date((healthProfile as any).lastReviewedAt).toLocaleDateString() : 
-                                'Never'
+                              {t('dashboard.patient.health_profile.last_updated')} {(healthProfile as any).lastReviewedAt ?
+                                new Date((healthProfile as any).lastReviewedAt).toLocaleDateString() :
+                                t('dashboard.patient.health_profile.never')
                               }
                             </div>
                           </div>
@@ -1060,35 +1060,35 @@ export default function Dashboard() {
 
                       <TabsContent value="security">
                         <div className="space-y-6">
-                          <h3 className="text-lg font-medium">Security Settings</h3>
-                          
+                          <h3 className="text-lg font-medium">{t('dashboard.patient.security.title')}</h3>
+
                           <div className="space-y-4">
                             {/* Email Section */}
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Primary Email
+                                {t('dashboard.patient.security.email.label')}
                               </label>
                               {!showEmailChange ? (
                                 <div className="flex items-center justify-between p-3 border rounded-lg">
                                   <span className="text-gray-900">{user?.email}</span>
-                                  <Button 
-                                    variant="outline" 
+                                  <Button
+                                    variant="outline"
                                     size="sm"
                                     onClick={() => setShowEmailChange(true)}
                                   >
-                                    Change Email
+                                    {t('dashboard.patient.security.email.change_button')}
                                   </Button>
                                 </div>
                               ) : (
                                 <div className="space-y-3 p-3 border rounded-lg bg-gray-50">
                                   <div>
-                                    <Label htmlFor="newEmail">New Email Address</Label>
+                                    <Label htmlFor="newEmail">{t('dashboard.patient.security.email.new_label')}</Label>
                                     <Input
                                       id="newEmail"
                                       type="email"
                                       value={newEmail}
                                       onChange={(e) => setNewEmail(e.target.value)}
-                                      placeholder="Enter new email address"
+                                      placeholder={t('dashboard.patient.security.email.new_placeholder')}
                                     />
                                   </div>
                                   <div className="flex gap-2">
@@ -1101,7 +1101,7 @@ export default function Dashboard() {
                                       }}
                                       disabled={changeEmailMutation.isPending || !newEmail || newEmail === user?.email}
                                     >
-                                      {changeEmailMutation.isPending ? 'Updating...' : 'Update Email'}
+                                      {changeEmailMutation.isPending ? t('dashboard.patient.security.email.updating') : t('dashboard.patient.security.email.update_button')}
                                     </Button>
                                     <Button
                                       variant="outline"
@@ -1111,7 +1111,7 @@ export default function Dashboard() {
                                         setNewEmail('');
                                       }}
                                     >
-                                      Cancel
+                                      {t('dashboard.patient.security.email.cancel')}
                                     </Button>
                                   </div>
                                 </div>
@@ -1121,53 +1121,53 @@ export default function Dashboard() {
                             {/* Password Section */}
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Password
+                                {t('dashboard.patient.security.password.label')}
                               </label>
                               {!showPasswordChange ? (
                                 <div className="flex items-center justify-between p-3 border rounded-lg">
-                                  <span className="text-gray-500">••••••••••••</span>
-                                  <Button 
-                                    variant="outline" 
+                                  <span className="text-gray-500">{t('dashboard.patient.security.password.hidden')}</span>
+                                  <Button
+                                    variant="outline"
                                     size="sm"
                                     onClick={() => setShowPasswordChange(true)}
                                   >
-                                    Change Password
+                                    {t('dashboard.patient.security.password.change_button')}
                                   </Button>
                                 </div>
                               ) : (
                                 <div className="space-y-3 p-3 border rounded-lg bg-gray-50">
                                   <div>
-                                    <Label htmlFor="currentPassword">Current Password</Label>
+                                    <Label htmlFor="currentPassword">{t('dashboard.patient.security.password.current_label')}</Label>
                                     <Input
                                       id="currentPassword"
                                       type="password"
                                       value={currentPassword}
                                       onChange={(e) => setCurrentPassword(e.target.value)}
-                                      placeholder="Enter current password"
+                                      placeholder={t('dashboard.patient.security.password.current_placeholder')}
                                     />
                                   </div>
                                   <div>
-                                    <Label htmlFor="newPassword">New Password</Label>
+                                    <Label htmlFor="newPassword">{t('dashboard.patient.security.password.new_label')}</Label>
                                     <Input
                                       id="newPassword"
                                       type="password"
                                       value={newPassword}
                                       onChange={(e) => setNewPassword(e.target.value)}
-                                      placeholder="Enter new password"
+                                      placeholder={t('dashboard.patient.security.password.new_placeholder')}
                                     />
                                   </div>
                                   <div>
-                                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                                    <Label htmlFor="confirmPassword">{t('dashboard.patient.security.password.confirm_label')}</Label>
                                     <Input
                                       id="confirmPassword"
                                       type="password"
                                       value={confirmPassword}
                                       onChange={(e) => setConfirmPassword(e.target.value)}
-                                      placeholder="Confirm new password"
+                                      placeholder={t('dashboard.patient.security.password.confirm_placeholder')}
                                     />
                                   </div>
                                   {newPassword && confirmPassword && newPassword !== confirmPassword && (
-                                    <p className="text-sm text-red-600">Passwords do not match</p>
+                                    <p className="text-sm text-red-600">{t('dashboard.patient.security.password.mismatch')}</p>
                                   )}
                                   <div className="flex gap-2">
                                     <Button
@@ -1181,14 +1181,14 @@ export default function Dashboard() {
                                         }
                                       }}
                                       disabled={
-                                        changePasswordMutation.isPending || 
-                                        !currentPassword || 
-                                        !newPassword || 
+                                        changePasswordMutation.isPending ||
+                                        !currentPassword ||
+                                        !newPassword ||
                                         !confirmPassword ||
                                         newPassword !== confirmPassword
                                       }
                                     >
-                                      {changePasswordMutation.isPending ? 'Updating...' : 'Update Password'}
+                                      {changePasswordMutation.isPending ? t('dashboard.patient.security.password.updating') : t('dashboard.patient.security.password.update_button')}
                                     </Button>
                                     <Button
                                       variant="outline"
@@ -1200,7 +1200,7 @@ export default function Dashboard() {
                                         setConfirmPassword('');
                                       }}
                                     >
-                                      Cancel
+                                      {t('dashboard.patient.security.password.cancel')}
                                     </Button>
                                   </div>
                                 </div>
@@ -1210,11 +1210,11 @@ export default function Dashboard() {
 
                           {/* GDPR & Privacy Section */}
                           <div className="space-y-4">
-                            <h3 className="font-medium text-gray-900">Privacy & Data Protection</h3>
+                            <h3 className="font-medium text-gray-900">{t('dashboard.patient.security.privacy.title')}</h3>
                             <div className="space-y-3">
                               <div>
                                 <p className="text-sm text-gray-600 mb-3">
-                                  Manage your privacy preferences and access your data rights under GDPR
+                                  {t('dashboard.patient.security.privacy.description')}
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-2">
                                   <Button
@@ -1223,7 +1223,7 @@ export default function Dashboard() {
                                     onClick={() => setLocation("/consent-management")}
                                   >
                                     <Settings className="h-4 w-4 mr-2" />
-                                    Manage Consents
+                                    {t('dashboard.patient.security.privacy.manage_consents')}
                                   </Button>
                                   <Button
                                     variant="outline"
@@ -1231,7 +1231,7 @@ export default function Dashboard() {
                                     onClick={() => setLocation("/data-processing-records")}
                                   >
                                     <Shield className="h-4 w-4 mr-2" />
-                                    Data Processing Records
+                                    {t('dashboard.patient.security.privacy.data_processing')}
                                   </Button>
                                 </div>
                               </div>
