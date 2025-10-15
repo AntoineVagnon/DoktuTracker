@@ -1033,6 +1033,125 @@ adminDoctorManagementRouter.post('/:doctorId/activate', async (req, res) => {
 });
 
 /**
+ * PUT /api/admin/doctors/:doctorId
+ * Update doctor profile from admin dashboard
+ */
+adminDoctorManagementRouter.put('/:doctorId', async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const {
+      specialty,
+      bio,
+      education,
+      experience,
+      medicalApproach,
+      rppsNumber,
+      consultationPrice,
+      languages,
+      title,
+      firstName,
+      lastName,
+      phone,
+      licenseNumber,
+      licenseExpirationDate,
+      countries,
+      iban,
+      ibanVerificationStatus
+    } = req.body;
+    const adminId = req.user.id;
+
+    // Get doctor and user IDs
+    const [doctor] = await db
+      .select({ id: doctors.id, userId: doctors.userId })
+      .from(doctors)
+      .where(eq(doctors.id, parseInt(doctorId)))
+      .limit(1);
+
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor not found' });
+    }
+
+    // Update user fields if provided
+    const userUpdates: any = {};
+    if (firstName !== undefined) userUpdates.firstName = firstName;
+    if (lastName !== undefined) userUpdates.lastName = lastName;
+    if (phone !== undefined) userUpdates.phone = phone;
+
+    if (Object.keys(userUpdates).length > 0) {
+      await db
+        .update(users)
+        .set(userUpdates)
+        .where(eq(users.id, doctor.userId));
+    }
+
+    // Update doctor fields if provided
+    const doctorUpdates: any = {};
+    if (specialty !== undefined) doctorUpdates.specialty = specialty;
+    if (bio !== undefined) doctorUpdates.bio = bio;
+    if (education !== undefined) doctorUpdates.education = education;
+    if (experience !== undefined) doctorUpdates.experience = experience;
+    if (medicalApproach !== undefined) doctorUpdates.medicalApproach = medicalApproach;
+    if (rppsNumber !== undefined) doctorUpdates.rppsNumber = rppsNumber;
+    if (consultationPrice !== undefined) doctorUpdates.consultationPrice = consultationPrice;
+    if (languages !== undefined) doctorUpdates.languages = languages;
+    if (title !== undefined) doctorUpdates.title = title;
+    if (licenseNumber !== undefined) doctorUpdates.licenseNumber = licenseNumber;
+    if (licenseExpirationDate !== undefined) doctorUpdates.licenseExpirationDate = licenseExpirationDate;
+    if (countries !== undefined) doctorUpdates.countries = countries;
+    if (iban !== undefined) doctorUpdates.iban = iban;
+    if (ibanVerificationStatus !== undefined) doctorUpdates.ibanVerificationStatus = ibanVerificationStatus;
+
+    if (Object.keys(doctorUpdates).length > 0) {
+      await db
+        .update(doctors)
+        .set(doctorUpdates)
+        .where(eq(doctors.id, parseInt(doctorId)));
+    }
+
+    // Recalculate profile completion using the service
+    const { doctorProfileService } = await import('../services/doctorProfileService');
+    const profileResult = await doctorProfileService.updateProfileCompletion(
+      parseInt(doctorId),
+      adminId
+    );
+
+    // Create audit log for significant changes
+    if (Object.keys(doctorUpdates).length > 0 || Object.keys(userUpdates).length > 0) {
+      const changedFields = [
+        ...Object.keys(userUpdates),
+        ...Object.keys(doctorUpdates)
+      ].join(', ');
+
+      await db.insert(doctorApplicationAudit).values({
+        doctorId: parseInt(doctorId),
+        adminId: parseInt(adminId),
+        oldStatus: null,
+        newStatus: null,
+        reason: 'Profile updated by admin',
+        notes: `Updated fields: ${changedFields}. Profile completion: ${profileResult.previousPercentage}% → ${profileResult.percentage}%`,
+        ipAddress: req.ip || req.socket.remoteAddress || 'unknown',
+        userAgent: req.headers['user-agent'] || null
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Doctor profile updated successfully',
+      data: {
+        doctorId: parseInt(doctorId),
+        profileCompletion: profileResult.percentage,
+        statusChanged: profileResult.statusChanged,
+        newStatus: profileResult.newStatus
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error updating doctor profile:', error);
+    return res.status(500).json({ error: 'Failed to update doctor profile' });
+  }
+});
+
+/**
  * GET /api/admin/doctors/statistics
  * Get doctor application statistics
  */

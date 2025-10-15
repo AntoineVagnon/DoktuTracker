@@ -1569,12 +1569,17 @@ export default function AdminDashboard() {
         experience: doctor.experience || '',
         medicalApproach: doctor.medicalApproach || '',
         rppsNumber: doctor.rppsNumber || '',
+        licenseNumber: doctor.licenseNumber || '',
+        licenseExpirationDate: doctor.licenseExpirationDate || '',
+        countries: doctor.countries || [],
         consultationPrice: doctor.consultationPrice || '',
         languages: doctor.languages || ['English'],
         title: doctor.title || '',
         firstName: doctor.firstName || '',
         lastName: doctor.lastName || '',
         phone: doctor.phone || '',
+        iban: doctor.iban || '',
+        ibanVerificationStatus: doctor.ibanVerificationStatus || 'pending',
       });
       setShowEditForm(true);
     };
@@ -2435,14 +2440,81 @@ export default function AdminDashboard() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  RPPS Number (License)
+                  RPPS Number (License) <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="text"
-                  value={editFormData.rppsNumber}
-                  onChange={(e) => setEditFormData({ ...editFormData, rppsNumber: e.target.value })}
+                  value={editFormData.rppsNumber || editFormData.licenseNumber}
+                  onChange={(e) => setEditFormData({
+                    ...editFormData,
+                    rppsNumber: e.target.value,
+                    licenseNumber: e.target.value
+                  })}
                   placeholder="Professional license number"
+                  required
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  License Expiration Date <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="date"
+                  value={editFormData.licenseExpirationDate ? new Date(editFormData.licenseExpirationDate).toISOString().split('T')[0] : ''}
+                  onChange={(e) => setEditFormData({ ...editFormData, licenseExpirationDate: e.target.value })}
+                  required
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Licensed Countries <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  value={Array.isArray(editFormData.countries) ? editFormData.countries.join(', ') : ''}
+                  onChange={(e) => setEditFormData({
+                    ...editFormData,
+                    countries: e.target.value.split(',').map(c => c.trim()).filter(c => c)
+                  })}
+                  placeholder="France, Belgium, Switzerland"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">Enter countries separated by commas</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  IBAN (Bank Account) <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  value={editFormData.iban}
+                  onChange={(e) => setEditFormData({ ...editFormData, iban: e.target.value })}
+                  placeholder="FR76 1234 5678 9012 3456 7890 123"
+                  required
+                  minLength={15}
+                />
+                <div className="flex items-center mt-2">
+                  <input
+                    type="checkbox"
+                    id="ibanVerified"
+                    checked={editFormData.ibanVerificationStatus === 'verified'}
+                    onChange={(e) => setEditFormData({
+                      ...editFormData,
+                      ibanVerificationStatus: e.target.checked ? 'verified' : 'pending'
+                    })}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="ibanVerified" className="ml-2 text-sm text-gray-700">
+                    Mark IBAN as verified <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  IBAN must be verified for profile activation. Check this box after verifying the bank account.
+                </p>
               </div>
 
               <div>
