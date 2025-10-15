@@ -132,7 +132,34 @@
       },
       "payment": {
         "tab_title": "Payment Methods",
-        "tab_short": "Payment"
+        "tab_short": "Payment",
+        "title": "Payment Methods",
+        "description": "Manage your payment methods for appointments and subscriptions",
+        "add_button": "Add Payment Method",
+        "set_default": "Set as Default",
+        "secure_payments_title": "Secure Payments",
+        "secure_payments_description": "All payment information is encrypted and processed securely through Stripe. We never store your full card details.",
+        "default_method_title": "Default Payment Method",
+        "default_method_description": "Your default payment method will be used for all future appointments and subscription renewals."
+      },
+      "calendar": {
+        "title": "My Appointments",
+        "description": "View and manage your appointments",
+        "view_day": "Day",
+        "view_week": "Week",
+        "view_month": "Month",
+        "today": "Today",
+        "booked": "Booked",
+        "paid": "Paid",
+        "days": {
+          "monday": "MON",
+          "tuesday": "TUE",
+          "wednesday": "WED",
+          "thursday": "THU",
+          "friday": "FRI",
+          "saturday": "SAT",
+          "sunday": "SUN"
+        }
       },
       "toasts": {
         "email_change_requested": {

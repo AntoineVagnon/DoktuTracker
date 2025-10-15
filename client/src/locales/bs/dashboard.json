@@ -132,7 +132,34 @@
       },
       "payment": {
         "tab_title": "Načini plaćanja",
-        "tab_short": "Plaćanje"
+        "tab_short": "Plaćanje",
+        "title": "Načini plaćanja",
+        "description": "Upravljajte načinima plaćanja za termine i pretplate",
+        "add_button": "Dodaj način plaćanja",
+        "set_default": "Postavi kao zadano",
+        "secure_payments_title": "Sigurna plaćanja",
+        "secure_payments_description": "Sve informacije o plaćanju su enkriptovane i obrađuju se sigurno putem Stripe-a. Nikada ne čuvamo potpune podatke o vašoj kartici.",
+        "default_method_title": "Zadani način plaćanja",
+        "default_method_description": "Vaš zadani način plaćanja će se koristiti za sve buduće termine i obnove pretplate."
+      },
+      "calendar": {
+        "title": "Moji termini",
+        "description": "Pogledajte i upravljajte svojim terminima",
+        "view_day": "Dan",
+        "view_week": "Sedmica",
+        "view_month": "Mjesec",
+        "today": "Danas",
+        "booked": "Zakazano",
+        "paid": "Plaćeno",
+        "days": {
+          "monday": "PON",
+          "tuesday": "UTO",
+          "wednesday": "SRI",
+          "thursday": "ČET",
+          "friday": "PET",
+          "saturday": "SUB",
+          "sunday": "NED"
+        }
       },
       "toasts": {
         "email_change_requested": {

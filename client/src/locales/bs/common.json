@@ -45,7 +45,8 @@
       "delete": "Obriši",
       "edit": "Uredi",
       "confirm": "Potvrdi",
-      "back": "Nazad"
+      "back": "Nazad",
+      "back_to_dashboard": "Nazad na kontrolnu tablu"
     },
     "message": {
       "loading": "Učitavanje...",
@@ -56,6 +57,61 @@
       "required": "Ovo polje je obavezno",
       "invalid_email": "Neispravna email adresa",
       "password_too_short": "Lozinka mora imati najmanje 8 znakova"
+    }
+  },
+  "consent": {
+    "title": "Upravljanje privatnošću i pristancima",
+    "subtitle": "Kontrolišite kako se vaši podaci koriste i obrađuju u skladu sa GDPR propisima",
+    "manage_title": "Upravljajte kako koristimo vaše podatke u skladu sa GDPR-om",
+    "health_data": {
+      "title": "Obrada zdravstvenih podataka",
+      "required": "Obavezno",
+      "description": "Dozvolite nam da obrađujemo vaše zdravstvene podatke za medicinske konsultacije i zdravstvene usluge.",
+      "legal_basis": "Pravna osnova: član_9_2_h",
+      "purposes_title": "Svrhe:",
+      "medical_diagnosis": "Medicinska dijagnoza",
+      "treatment_provision": "Pružanje tretmana",
+      "healthcare_management": "Upravljanje zdravstvenom zaštitom"
+    },
+    "marketing": {
+      "title": "Marketinške komunikacije",
+      "description": "Primajte ažuriranja o našim uslugama, zdravstvenim savjetima i promotivnim ponudama.",
+      "legal_basis": "Pravna osnova: član_6_1_a",
+      "purposes_title": "Svrhe:",
+      "service_updates": "Ažuriranja usluga",
+      "health_newsletters": "Zdravstveni bilteni",
+      "promotional_offers": "Promotivne ponude"
+    },
+    "analytics": {
+      "title": "Analitički i izvedbeni kolačići",
+      "description": "Pomozite nam da poboljšamo vaše iskustvo praćenjem korištenja."
+    }
+  },
+  "data_processing": {
+    "title": "Zapisi obrade podataka",
+    "subtitle": "Pogledajte kako se vaši podaci obrađuju i ostvarite svoja GDPR prava",
+    "gdpr_notice": "Prema GDPR-u, imate pravo znati kako se vaši lični podaci obrađuju, zatražiti pristup vašim podacima i zatražiti ispravke ili brisanje.",
+    "tabs": {
+      "processing_records": "Zapisi obrade",
+      "my_requests": "Moji zahtjevi",
+      "my_rights": "Moja prava"
+    },
+    "rights": {
+      "access": {
+        "title": "Pravo na pristup",
+        "description": "Imate pravo dobiti potvrdu o tome da li obrađujemo vaše lične podatke i pristup tim podacima zajedno sa određenim informacijama o obradi.",
+        "button": "Zatražite pristup"
+      },
+      "rectification": {
+        "title": "Pravo na ispravku",
+        "description": "Imate pravo dobiti ispravku netačnih ličnih podataka i dopunu nepotpunih ličnih podataka.",
+        "button": "Zatražite ispravku"
+      },
+      "erasure": {
+        "title": "Pravo na brisanje",
+        "description": "Imate pravo zatražiti brisanje vaših ličnih podataka u određenim okolnostima.",
+        "button": "Zatražite brisanje"
+      }
     }
   }
 }

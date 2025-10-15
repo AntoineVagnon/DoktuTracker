@@ -45,7 +45,8 @@
       "delete": "Delete",
       "edit": "Edit",
       "confirm": "Confirm",
-      "back": "Back"
+      "back": "Back",
+      "back_to_dashboard": "Back to Dashboard"
     },
     "message": {
       "loading": "Loading...",
@@ -56,6 +57,61 @@
       "required": "This field is required",
       "invalid_email": "Invalid email address",
       "password_too_short": "Password must be at least 8 characters"
+    }
+  },
+  "consent": {
+    "title": "Privacy & Consent Management",
+    "subtitle": "Control how your data is used and processed in compliance with GDPR regulations",
+    "manage_title": "Manage how we use your data in compliance with GDPR",
+    "health_data": {
+      "title": "Health Data Processing",
+      "required": "Required",
+      "description": "Allow us to process your health data for medical consultations and healthcare services.",
+      "legal_basis": "Legal Basis: article_9_2_h",
+      "purposes_title": "Purposes:",
+      "medical_diagnosis": "Medical diagnosis",
+      "treatment_provision": "Treatment provision",
+      "healthcare_management": "Healthcare management"
+    },
+    "marketing": {
+      "title": "Marketing Communications",
+      "description": "Receive updates about our services, health tips, and promotional offers.",
+      "legal_basis": "Legal Basis: article_6_1_a",
+      "purposes_title": "Purposes:",
+      "service_updates": "Service updates",
+      "health_newsletters": "Health newsletters",
+      "promotional_offers": "Promotional offers"
+    },
+    "analytics": {
+      "title": "Analytics & Performance Cookies",
+      "description": "Help us improve your experience with usage tracking."
+    }
+  },
+  "data_processing": {
+    "title": "Data Processing Records",
+    "subtitle": "View how your data is processed and exercise your GDPR rights",
+    "gdpr_notice": "Under GDPR, you have the right to know how your personal data is processed, request access to your data, and request corrections or deletion.",
+    "tabs": {
+      "processing_records": "Processing Records",
+      "my_requests": "My Requests",
+      "my_rights": "My Rights"
+    },
+    "rights": {
+      "access": {
+        "title": "Right to Access",
+        "description": "You have the right to obtain confirmation of whether we process your personal data and access to that data along with certain information about the processing.",
+        "button": "Request Access"
+      },
+      "rectification": {
+        "title": "Right to Rectification",
+        "description": "You have the right to obtain rectification of inaccurate personal data and to have incomplete personal data completed.",
+        "button": "Request Rectification"
+      },
+      "erasure": {
+        "title": "Right to Erasure",
+        "description": "You have the right to request deletion of your personal data in certain circumstances.",
+        "button": "Request Erasure"
+      }
     }
   }
 }
