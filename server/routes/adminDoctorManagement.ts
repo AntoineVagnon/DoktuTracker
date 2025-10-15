@@ -1082,6 +1082,7 @@ adminDoctorManagementRouter.put('/:doctorId', async (req, res) => {
     if (firstName !== undefined) userUpdates.firstName = firstName;
     if (lastName !== undefined) userUpdates.lastName = lastName;
     if (phone !== undefined) userUpdates.phone = phone;
+    if (title !== undefined) userUpdates.title = title;  // Fixed: title is in users table
 
     if (Object.keys(userUpdates).length > 0) {
       await db
@@ -1100,7 +1101,7 @@ adminDoctorManagementRouter.put('/:doctorId', async (req, res) => {
     if (rppsNumber !== undefined) doctorUpdates.rppsNumber = rppsNumber;
     if (consultationPrice !== undefined) doctorUpdates.consultationPrice = consultationPrice;
     if (languages !== undefined) doctorUpdates.languages = languages;
-    if (title !== undefined) doctorUpdates.title = title;
+    // title is in users table, not doctors table
     if (licenseNumber !== undefined) doctorUpdates.licenseNumber = licenseNumber;
     if (licenseExpirationDate !== undefined) doctorUpdates.licenseExpirationDate = licenseExpirationDate;
     if (countries !== undefined) doctorUpdates.countries = countries;
