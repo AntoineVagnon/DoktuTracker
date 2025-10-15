@@ -1,0 +1,222 @@
+{
+  "privacy_policy": {
+    "header": {
+      "back_to_home": "Back to Home",
+      "title": "Privacy Policy - Doktu Telemedicine Platform",
+      "effective_date": "Effective Date:",
+      "last_updated": "Last Updated:",
+      "version": "Version:"
+    },
+    "section1": {
+      "title": "1. Controller Information",
+      "controller": "Data Controller:",
+      "controller_value": "Doktu SAS",
+      "address": "Address:",
+      "address_value": "123 Rue de la Santé, 75014 Paris, France",
+      "email": "Email:",
+      "email_value": "privacy@doktu.co",
+      "phone": "Phone:",
+      "phone_value": "+33 1 23 45 67 89",
+      "dpo": "Data Protection Officer:",
+      "dpo_value": "dpo@doktu.co"
+    },
+    "section2": {
+      "title": "2. Legal Basis for Processing Health Data",
+      "description": "Under the General Data Protection Regulation (GDPR) Article 9, we process your health data based on the following legal grounds:",
+      "primary": {
+        "title": "Primary Legal Basis: Article 9(2)(h) - Healthcare Provision",
+        "description": "We process your health data as it is necessary for:",
+        "diagnosis": "Medical diagnosis and assessment",
+        "provision": "Provision of healthcare and medical treatment",
+        "management": "Management of healthcare services",
+        "communication": "Communication with healthcare professionals",
+        "note": "This processing is conducted under contract with licensed healthcare professionals who are subject to professional secrecy obligations under EU and Member State law."
+      },
+      "secondary": {
+        "title": "Secondary Legal Basis: Article 9(2)(a) - Explicit Consent",
+        "description": "Where required, we obtain your explicit consent for processing health data for specific purposes including:",
+        "history": "Storing consultation history for continuity of care",
+        "sharing": "Sharing data with specialists for referrals",
+        "anonymized": "Using anonymized data for service improvement"
+      }
+    },
+    "section3": {
+      "title": "3. Data We Collect",
+      "health": {
+        "title": "3.1 Health Data (Special Category Data)",
+        "history": "Medical history and symptoms",
+        "notes": "Consultation notes and diagnoses",
+        "prescriptions": "Prescription information",
+        "treatment": "Treatment recommendations",
+        "vitals": "Vital signs and measurements",
+        "documents": "Medical images or documents you provide"
+      },
+      "personal": {
+        "title": "3.2 Personal Data",
+        "identity": "Name, date of birth, gender",
+        "contact": "Contact information (email, phone, address)",
+        "payment": "Payment information",
+        "credentials": "Account credentials",
+        "communications": "Communication records",
+        "technical": "Technical data (IP address, browser information)"
+      },
+      "video": {
+        "title": "3.3 Video Consultation Data",
+        "recordings": "Video and audio recordings (if consented)",
+        "chat": "Chat messages during consultations",
+        "screen": "Screen sharing content",
+        "metadata": "Technical metadata from Zoom integration"
+      }
+    },
+    "section4": {
+      "title": "4. How We Use Your Data",
+      "healthcare": {
+        "title": "4.1 Healthcare Purposes (Article 9(2)(h))",
+        "consultations": "Facilitating video consultations with doctors",
+        "records": "Maintaining medical records for continuity of care",
+        "prescriptions": "Enabling prescription management",
+        "followup": "Supporting follow-up care",
+        "emergency": "Emergency medical situations"
+      },
+      "service": {
+        "title": "4.2 Service Management (Article 6(1)(b))",
+        "account": "Account management and authentication",
+        "payment": "Payment processing",
+        "support": "Customer support",
+        "improvement": "Service improvement and optimization"
+      },
+      "legal": {
+        "title": "4.3 Legal Compliance (Article 6(1)(c))",
+        "reporting": "Regulatory reporting requirements",
+        "licensing": "Professional licensing compliance",
+        "tax": "Tax and accounting obligations",
+        "law": "Law enforcement requests"
+      }
+    },
+    "section5": {
+      "title": "5. Data Sharing and Recipients",
+      "professionals": {
+        "title": "5.1 Healthcare Professionals",
+        "description": "Your health data is shared with:",
+        "doctors": "The doctor(s) you consult with",
+        "specialists": "Specialist doctors for referrals (with your consent)",
+        "emergency": "Emergency services (in life-threatening situations)"
+      },
+      "providers": {
+        "title": "5.2 Service Providers",
+        "description": "We share limited data with:",
+        "supabase": "Supabase: Database hosting and management (EU-based servers)",
+        "zoom": "Zoom: Video consultation services (GDPR-compliant configuration)",
+        "stripe": "Stripe: Payment processing (PCI DSS compliant)",
+        "cloud": "Cloud storage providers: For secure data backup (EU-based)"
+      },
+      "legal_req": {
+        "title": "5.3 Legal Requirements",
+        "description": "We may disclose data when required by:",
+        "court": "Court orders or legal proceedings",
+        "regulatory": "Regulatory authorities",
+        "law": "Law enforcement agencies",
+        "health": "Public health authorities"
+      }
+    },
+    "section6": {
+      "title": "6. International Data Transfers",
+      "description": "All health data is processed and stored within the European Union. Any transfers outside the EU are conducted under appropriate safeguards:",
+      "adequacy": "Adequacy decisions by the European Commission",
+      "scc": "Standard Contractual Clauses (SCCs)",
+      "bcr": "Binding Corporate Rules (BCRs)"
+    },
+    "section7": {
+      "title": "7. Data Retention",
+      "health": {
+        "title": "7.1 Health Data",
+        "records": "Active medical records: Retained for 10 years after last consultation",
+        "recordings": "Consultation recordings: Deleted after 30 days unless consent given for longer retention",
+        "prescriptions": "Prescription data: Retained as required by national pharmacy regulations"
+      },
+      "personal": {
+        "title": "7.2 Personal Data",
+        "account": "Account data: Retained while account is active plus 3 years",
+        "payment": "Payment data: Retained for 7 years for tax compliance",
+        "marketing": "Marketing data: Retained until consent is withdrawn"
+      }
+    },
+    "section8": {
+      "title": "8. Your Rights Under GDPR",
+      "access": {
+        "title": "8.1 Access Rights (Article 15)",
+        "description": "You have the right to obtain confirmation of data processing and access to your personal data."
+      },
+      "rectification": {
+        "title": "8.2 Rectification Rights (Article 16)",
+        "description": "You can request correction of inaccurate or incomplete personal data."
+      },
+      "erasure": {
+        "title": "8.3 Erasure Rights (Article 17)",
+        "description": "You can request deletion of your data, subject to legal retention requirements."
+      },
+      "restriction": {
+        "title": "8.4 Restriction Rights (Article 18)",
+        "description": "You can request restriction of processing in certain circumstances."
+      },
+      "portability": {
+        "title": "8.5 Portability Rights (Article 20)",
+        "description": "You can request transfer of your data to another healthcare provider."
+      },
+      "objection": {
+        "title": "8.6 Objection Rights (Article 21)",
+        "description": "You can object to processing based on legitimate interests."
+      },
+      "withdrawal": {
+        "title": "8.7 Consent Withdrawal",
+        "description": "You can withdraw consent at any time for processing based on consent."
+      }
+    },
+    "section9": {
+      "title": "9. Security Measures",
+      "description": "We implement appropriate technical and organizational measures:",
+      "e2e": "End-to-end encryption for video consultations",
+      "aes": "AES-256 encryption for data at rest",
+      "mfa": "Multi-factor authentication for healthcare professionals",
+      "audits": "Regular security audits and penetration testing",
+      "training": "Staff training on data protection",
+      "incident": "Incident response procedures"
+    },
+    "section10": {
+      "title": "10. Data Breach Notification",
+      "description": "In case of a data breach affecting your rights and freedoms:",
+      "authority": "We will notify the supervisory authority within 72 hours",
+      "subject": "We will inform you without undue delay if high risk is involved",
+      "documentation": "We will document all breaches and remedial actions taken"
+    },
+    "section11": {
+      "title": "11. Supervisory Authority",
+      "description": "You have the right to lodge a complaint with your national data protection authority:",
+      "france": "France: Commission Nationale de l'Informatique et des Libertés (CNIL)",
+      "germany": "Germany: Federal Commissioner for Data Protection and Freedom of Information",
+      "other": "Other EU countries: Your national data protection authority"
+    },
+    "section12": {
+      "title": "12. Contact Information",
+      "description": "For any privacy-related questions or to exercise your rights:",
+      "email": "Email:",
+      "email_value": "privacy@doktu.co",
+      "dpo": "Data Protection Officer:",
+      "dpo_value": "dpo@doktu.co",
+      "address": "Address:",
+      "address_value": "123 Rue de la Santé, 75014 Paris, France",
+      "phone": "Phone:",
+      "phone_value": "+33 1 23 45 67 89"
+    },
+    "section13": {
+      "title": "13. Changes to This Policy",
+      "description": "We may update this privacy policy to reflect changes in our practices or legal requirements. We will:",
+      "notify": "Notify you of material changes via email",
+      "post": "Post updates on our website",
+      "maintain": "Maintain previous versions for reference"
+    },
+    "footer": {
+      "note": "This privacy policy complies with GDPR, ePrivacy Directive, and applicable national healthcare data protection laws."
+    }
+  }
+}

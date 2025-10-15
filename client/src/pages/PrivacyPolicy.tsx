@@ -2,8 +2,11 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function PrivacyPolicy() {
+  const { t } = useTranslation('privacy_policy');
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -17,7 +20,7 @@ export default function PrivacyPolicy() {
             <Link href="/">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                {t('privacy_policy.header.back_to_home')}
               </Button>
             </Link>
           </div>
@@ -27,309 +30,309 @@ export default function PrivacyPolicy() {
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold mb-8">Privacy Policy - Doktu Telemedicine Platform</h1>
-          
+          <h1 className="text-3xl font-bold mb-8">{t('privacy_policy.header.title')}</h1>
+
           <div className="text-sm text-gray-600 mb-6">
-            <p><strong>Effective Date:</strong> {new Date().toLocaleDateString()}</p>
-            <p><strong>Last Updated:</strong> {new Date().toLocaleDateString()}</p>
-            <p><strong>Version:</strong> 1.0</p>
+            <p><strong>{t('privacy_policy.header.effective_date')}</strong> {new Date().toLocaleDateString()}</p>
+            <p><strong>{t('privacy_policy.header.last_updated')}</strong> {new Date().toLocaleDateString()}</p>
+            <p><strong>{t('privacy_policy.header.version')}</strong> 1.0</p>
           </div>
 
           <div className="space-y-8 text-gray-700">
             <section>
-              <h2 className="text-2xl font-semibold mb-4">1. Controller Information</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section1.title')}</h2>
               <div className="space-y-2">
-                <p><strong>Data Controller:</strong> Doktu SAS</p>
-                <p><strong>Address:</strong> 123 Rue de la Santé, 75014 Paris, France</p>
-                <p><strong>Email:</strong> privacy@doktu.co</p>
-                <p><strong>Phone:</strong> +33 1 23 45 67 89</p>
-                <p><strong>Data Protection Officer:</strong> dpo@doktu.co</p>
+                <p><strong>{t('privacy_policy.section1.controller')}</strong> {t('privacy_policy.section1.controller_value')}</p>
+                <p><strong>{t('privacy_policy.section1.address')}</strong> {t('privacy_policy.section1.address_value')}</p>
+                <p><strong>{t('privacy_policy.section1.email')}</strong> {t('privacy_policy.section1.email_value')}</p>
+                <p><strong>{t('privacy_policy.section1.phone')}</strong> {t('privacy_policy.section1.phone_value')}</p>
+                <p><strong>{t('privacy_policy.section1.dpo')}</strong> {t('privacy_policy.section1.dpo_value')}</p>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">2. Legal Basis for Processing Health Data</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section2.title')}</h2>
               <p className="mb-4">
-                Under the General Data Protection Regulation (GDPR) Article 9, we process your health data based on the following legal grounds:
+                {t('privacy_policy.section2.description')}
               </p>
-              
+
               <div className="space-y-4">
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2">Primary Legal Basis: Article 9(2)(h) - Healthcare Provision</h3>
-                  <p className="mb-2">We process your health data as it is necessary for:</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section2.primary.title')}</h3>
+                  <p className="mb-2">{t('privacy_policy.section2.primary.description')}</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Medical diagnosis and assessment</li>
-                    <li>Provision of healthcare and medical treatment</li>
-                    <li>Management of healthcare services</li>
-                    <li>Communication with healthcare professionals</li>
+                    <li>{t('privacy_policy.section2.primary.diagnosis')}</li>
+                    <li>{t('privacy_policy.section2.primary.provision')}</li>
+                    <li>{t('privacy_policy.section2.primary.management')}</li>
+                    <li>{t('privacy_policy.section2.primary.communication')}</li>
                   </ul>
                   <p className="mt-2 text-sm">
-                    This processing is conducted under contract with licensed healthcare professionals who are subject to professional secrecy obligations under EU and Member State law.
+                    {t('privacy_policy.section2.primary.note')}
                   </p>
                 </div>
 
                 <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2">Secondary Legal Basis: Article 9(2)(a) - Explicit Consent</h3>
-                  <p className="mb-2">Where required, we obtain your explicit consent for processing health data for specific purposes including:</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section2.secondary.title')}</h3>
+                  <p className="mb-2">{t('privacy_policy.section2.secondary.description')}</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Storing consultation history for continuity of care</li>
-                    <li>Sharing data with specialists for referrals</li>
-                    <li>Using anonymized data for service improvement</li>
+                    <li>{t('privacy_policy.section2.secondary.history')}</li>
+                    <li>{t('privacy_policy.section2.secondary.sharing')}</li>
+                    <li>{t('privacy_policy.section2.secondary.anonymized')}</li>
                   </ul>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">3. Data We Collect</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section3.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">3.1 Health Data (Special Category Data)</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section3.health.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Medical history and symptoms</li>
-                    <li>Consultation notes and diagnoses</li>
-                    <li>Prescription information</li>
-                    <li>Treatment recommendations</li>
-                    <li>Vital signs and measurements</li>
-                    <li>Medical images or documents you provide</li>
+                    <li>{t('privacy_policy.section3.health.history')}</li>
+                    <li>{t('privacy_policy.section3.health.notes')}</li>
+                    <li>{t('privacy_policy.section3.health.prescriptions')}</li>
+                    <li>{t('privacy_policy.section3.health.treatment')}</li>
+                    <li>{t('privacy_policy.section3.health.vitals')}</li>
+                    <li>{t('privacy_policy.section3.health.documents')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">3.2 Personal Data</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section3.personal.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Name, date of birth, gender</li>
-                    <li>Contact information (email, phone, address)</li>
-                    <li>Payment information</li>
-                    <li>Account credentials</li>
-                    <li>Communication records</li>
-                    <li>Technical data (IP address, browser information)</li>
+                    <li>{t('privacy_policy.section3.personal.identity')}</li>
+                    <li>{t('privacy_policy.section3.personal.contact')}</li>
+                    <li>{t('privacy_policy.section3.personal.payment')}</li>
+                    <li>{t('privacy_policy.section3.personal.credentials')}</li>
+                    <li>{t('privacy_policy.section3.personal.communications')}</li>
+                    <li>{t('privacy_policy.section3.personal.technical')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">3.3 Video Consultation Data</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section3.video.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Video and audio recordings (if consented)</li>
-                    <li>Chat messages during consultations</li>
-                    <li>Screen sharing content</li>
-                    <li>Technical metadata from Zoom integration</li>
+                    <li>{t('privacy_policy.section3.video.recordings')}</li>
+                    <li>{t('privacy_policy.section3.video.chat')}</li>
+                    <li>{t('privacy_policy.section3.video.screen')}</li>
+                    <li>{t('privacy_policy.section3.video.metadata')}</li>
                   </ul>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">4. How We Use Your Data</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section4.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">4.1 Healthcare Purposes (Article 9(2)(h))</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section4.healthcare.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Facilitating video consultations with doctors</li>
-                    <li>Maintaining medical records for continuity of care</li>
-                    <li>Enabling prescription management</li>
-                    <li>Supporting follow-up care</li>
-                    <li>Emergency medical situations</li>
+                    <li>{t('privacy_policy.section4.healthcare.consultations')}</li>
+                    <li>{t('privacy_policy.section4.healthcare.records')}</li>
+                    <li>{t('privacy_policy.section4.healthcare.prescriptions')}</li>
+                    <li>{t('privacy_policy.section4.healthcare.followup')}</li>
+                    <li>{t('privacy_policy.section4.healthcare.emergency')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">4.2 Service Management (Article 6(1)(b))</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section4.service.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Account management and authentication</li>
-                    <li>Payment processing</li>
-                    <li>Customer support</li>
-                    <li>Service improvement and optimization</li>
+                    <li>{t('privacy_policy.section4.service.account')}</li>
+                    <li>{t('privacy_policy.section4.service.payment')}</li>
+                    <li>{t('privacy_policy.section4.service.support')}</li>
+                    <li>{t('privacy_policy.section4.service.improvement')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">4.3 Legal Compliance (Article 6(1)(c))</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section4.legal.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Regulatory reporting requirements</li>
-                    <li>Professional licensing compliance</li>
-                    <li>Tax and accounting obligations</li>
-                    <li>Law enforcement requests</li>
+                    <li>{t('privacy_policy.section4.legal.reporting')}</li>
+                    <li>{t('privacy_policy.section4.legal.licensing')}</li>
+                    <li>{t('privacy_policy.section4.legal.tax')}</li>
+                    <li>{t('privacy_policy.section4.legal.law')}</li>
                   </ul>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">5. Data Sharing and Recipients</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section5.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">5.1 Healthcare Professionals</h3>
-                  <p className="mb-2">Your health data is shared with:</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section5.professionals.title')}</h3>
+                  <p className="mb-2">{t('privacy_policy.section5.professionals.description')}</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>The doctor(s) you consult with</li>
-                    <li>Specialist doctors for referrals (with your consent)</li>
-                    <li>Emergency services (in life-threatening situations)</li>
+                    <li>{t('privacy_policy.section5.professionals.doctors')}</li>
+                    <li>{t('privacy_policy.section5.professionals.specialists')}</li>
+                    <li>{t('privacy_policy.section5.professionals.emergency')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">5.2 Service Providers</h3>
-                  <p className="mb-2">We share limited data with:</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section5.providers.title')}</h3>
+                  <p className="mb-2">{t('privacy_policy.section5.providers.description')}</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li><strong>Supabase:</strong> Database hosting and management (EU-based servers)</li>
-                    <li><strong>Zoom:</strong> Video consultation services (GDPR-compliant configuration)</li>
-                    <li><strong>Stripe:</strong> Payment processing (PCI DSS compliant)</li>
-                    <li><strong>Cloud storage providers:</strong> For secure data backup (EU-based)</li>
+                    <li>{t('privacy_policy.section5.providers.supabase')}</li>
+                    <li>{t('privacy_policy.section5.providers.zoom')}</li>
+                    <li>{t('privacy_policy.section5.providers.stripe')}</li>
+                    <li>{t('privacy_policy.section5.providers.cloud')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">5.3 Legal Requirements</h3>
-                  <p className="mb-2">We may disclose data when required by:</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section5.legal_req.title')}</h3>
+                  <p className="mb-2">{t('privacy_policy.section5.legal_req.description')}</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Court orders or legal proceedings</li>
-                    <li>Regulatory authorities</li>
-                    <li>Law enforcement agencies</li>
-                    <li>Public health authorities</li>
+                    <li>{t('privacy_policy.section5.legal_req.court')}</li>
+                    <li>{t('privacy_policy.section5.legal_req.regulatory')}</li>
+                    <li>{t('privacy_policy.section5.legal_req.law')}</li>
+                    <li>{t('privacy_policy.section5.legal_req.health')}</li>
                   </ul>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">6. International Data Transfers</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section6.title')}</h2>
               <p className="mb-4">
-                All health data is processed and stored within the European Union. Any transfers outside the EU are conducted under appropriate safeguards:
+                {t('privacy_policy.section6.description')}
               </p>
               <ul className="list-disc pl-6 space-y-1">
-                <li>Adequacy decisions by the European Commission</li>
-                <li>Standard Contractual Clauses (SCCs)</li>
-                <li>Binding Corporate Rules (BCRs)</li>
+                <li>{t('privacy_policy.section6.adequacy')}</li>
+                <li>{t('privacy_policy.section6.scc')}</li>
+                <li>{t('privacy_policy.section6.bcr')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">7. Data Retention</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section7.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">7.1 Health Data</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section7.health.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li><strong>Active medical records:</strong> Retained for 10 years after last consultation</li>
-                    <li><strong>Consultation recordings:</strong> Deleted after 30 days unless consent given for longer retention</li>
-                    <li><strong>Prescription data:</strong> Retained as required by national pharmacy regulations</li>
+                    <li>{t('privacy_policy.section7.health.records')}</li>
+                    <li>{t('privacy_policy.section7.health.recordings')}</li>
+                    <li>{t('privacy_policy.section7.health.prescriptions')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">7.2 Personal Data</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('privacy_policy.section7.personal.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li><strong>Account data:</strong> Retained while account is active plus 3 years</li>
-                    <li><strong>Payment data:</strong> Retained for 7 years for tax compliance</li>
-                    <li><strong>Marketing data:</strong> Retained until consent is withdrawn</li>
+                    <li>{t('privacy_policy.section7.personal.account')}</li>
+                    <li>{t('privacy_policy.section7.personal.payment')}</li>
+                    <li>{t('privacy_policy.section7.personal.marketing')}</li>
                   </ul>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">8. Your Rights Under GDPR</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section8.title')}</h2>
+
               <div className="space-y-3">
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-1">8.1 Access Rights (Article 15)</h3>
-                  <p>You have the right to obtain confirmation of data processing and access to your personal data.</p>
+                  <h3 className="font-semibold mb-1">{t('privacy_policy.section8.access.title')}</h3>
+                  <p>{t('privacy_policy.section8.access.description')}</p>
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-1">8.2 Rectification Rights (Article 16)</h3>
-                  <p>You can request correction of inaccurate or incomplete personal data.</p>
+                  <h3 className="font-semibold mb-1">{t('privacy_policy.section8.rectification.title')}</h3>
+                  <p>{t('privacy_policy.section8.rectification.description')}</p>
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-1">8.3 Erasure Rights (Article 17)</h3>
-                  <p>You can request deletion of your data, subject to legal retention requirements.</p>
+                  <h3 className="font-semibold mb-1">{t('privacy_policy.section8.erasure.title')}</h3>
+                  <p>{t('privacy_policy.section8.erasure.description')}</p>
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-1">8.4 Restriction Rights (Article 18)</h3>
-                  <p>You can request restriction of processing in certain circumstances.</p>
+                  <h3 className="font-semibold mb-1">{t('privacy_policy.section8.restriction.title')}</h3>
+                  <p>{t('privacy_policy.section8.restriction.description')}</p>
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-1">8.5 Portability Rights (Article 20)</h3>
-                  <p>You can request transfer of your data to another healthcare provider.</p>
+                  <h3 className="font-semibold mb-1">{t('privacy_policy.section8.portability.title')}</h3>
+                  <p>{t('privacy_policy.section8.portability.description')}</p>
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-1">8.6 Objection Rights (Article 21)</h3>
-                  <p>You can object to processing based on legitimate interests.</p>
+                  <h3 className="font-semibold mb-1">{t('privacy_policy.section8.objection.title')}</h3>
+                  <p>{t('privacy_policy.section8.objection.description')}</p>
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-1">8.7 Consent Withdrawal</h3>
-                  <p>You can withdraw consent at any time for processing based on consent.</p>
+                  <h3 className="font-semibold mb-1">{t('privacy_policy.section8.withdrawal.title')}</h3>
+                  <p>{t('privacy_policy.section8.withdrawal.description')}</p>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">9. Security Measures</h2>
-              <p className="mb-4">We implement appropriate technical and organizational measures:</p>
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section9.title')}</h2>
+              <p className="mb-4">{t('privacy_policy.section9.description')}</p>
               <ul className="list-disc pl-6 space-y-1">
-                <li>End-to-end encryption for video consultations</li>
-                <li>AES-256 encryption for data at rest</li>
-                <li>Multi-factor authentication for healthcare professionals</li>
-                <li>Regular security audits and penetration testing</li>
-                <li>Staff training on data protection</li>
-                <li>Incident response procedures</li>
+                <li>{t('privacy_policy.section9.e2e')}</li>
+                <li>{t('privacy_policy.section9.aes')}</li>
+                <li>{t('privacy_policy.section9.mfa')}</li>
+                <li>{t('privacy_policy.section9.audits')}</li>
+                <li>{t('privacy_policy.section9.training')}</li>
+                <li>{t('privacy_policy.section9.incident')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">10. Data Breach Notification</h2>
-              <p className="mb-4">In case of a data breach affecting your rights and freedoms:</p>
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section10.title')}</h2>
+              <p className="mb-4">{t('privacy_policy.section10.description')}</p>
               <ul className="list-disc pl-6 space-y-1">
-                <li>We will notify the supervisory authority within 72 hours</li>
-                <li>We will inform you without undue delay if high risk is involved</li>
-                <li>We will document all breaches and remedial actions taken</li>
+                <li>{t('privacy_policy.section10.authority')}</li>
+                <li>{t('privacy_policy.section10.subject')}</li>
+                <li>{t('privacy_policy.section10.documentation')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">11. Supervisory Authority</h2>
-              <p className="mb-4">You have the right to lodge a complaint with your national data protection authority:</p>
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section11.title')}</h2>
+              <p className="mb-4">{t('privacy_policy.section11.description')}</p>
               <ul className="list-disc pl-6 space-y-1">
-                <li><strong>France:</strong> Commission Nationale de l'Informatique et des Libertés (CNIL)</li>
-                <li><strong>Germany:</strong> Federal Commissioner for Data Protection and Freedom of Information</li>
-                <li><strong>Other EU countries:</strong> Your national data protection authority</li>
+                <li>{t('privacy_policy.section11.france')}</li>
+                <li>{t('privacy_policy.section11.germany')}</li>
+                <li>{t('privacy_policy.section11.other')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">12. Contact Information</h2>
-              <p className="mb-4">For any privacy-related questions or to exercise your rights:</p>
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section12.title')}</h2>
+              <p className="mb-4">{t('privacy_policy.section12.description')}</p>
               <div className="bg-blue-50 p-4 rounded-lg space-y-2">
-                <p><strong>Email:</strong> privacy@doktu.co</p>
-                <p><strong>Data Protection Officer:</strong> dpo@doktu.co</p>
-                <p><strong>Address:</strong> 123 Rue de la Santé, 75014 Paris, France</p>
-                <p><strong>Phone:</strong> +33 1 23 45 67 89</p>
+                <p><strong>{t('privacy_policy.section12.email')}</strong> {t('privacy_policy.section12.email_value')}</p>
+                <p><strong>{t('privacy_policy.section12.dpo')}</strong> {t('privacy_policy.section12.dpo_value')}</p>
+                <p><strong>{t('privacy_policy.section12.address')}</strong> {t('privacy_policy.section12.address_value')}</p>
+                <p><strong>{t('privacy_policy.section12.phone')}</strong> {t('privacy_policy.section12.phone_value')}</p>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">13. Changes to This Policy</h2>
-              <p className="mb-4">We may update this privacy policy to reflect changes in our practices or legal requirements. We will:</p>
+              <h2 className="text-2xl font-semibold mb-4">{t('privacy_policy.section13.title')}</h2>
+              <p className="mb-4">{t('privacy_policy.section13.description')}</p>
               <ul className="list-disc pl-6 space-y-1">
-                <li>Notify you of material changes via email</li>
-                <li>Post updates on our website</li>
-                <li>Maintain previous versions for reference</li>
+                <li>{t('privacy_policy.section13.notify')}</li>
+                <li>{t('privacy_policy.section13.post')}</li>
+                <li>{t('privacy_policy.section13.maintain')}</li>
               </ul>
             </section>
           </div>
 
           <div className="mt-12 p-4 bg-gray-100 rounded-lg text-sm text-gray-600">
             <p className="italic">
-              This privacy policy complies with GDPR, ePrivacy Directive, and applicable national healthcare data protection laws.
+              {t('privacy_policy.footer.note')}
             </p>
           </div>
         </div>
