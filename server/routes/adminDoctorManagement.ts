@@ -1195,3 +1195,88 @@ adminDoctorManagementRouter.get('/statistics', async (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch statistics' });
   }
 });
+
+/**
+ * GET /api/admin/doctors/:doctorId
+ * Get a single doctor's details (flat structure for consistency)
+ * IMPORTANT: This route must come AFTER all specific routes like /applications and /statistics
+ * to avoid matching those paths as doctorId parameters
+ */
+adminDoctorManagementRouter.get('/:doctorId', async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+
+    // Get doctor with user information (flat structure)
+    const [doctorData] = await db
+      .select({
+        id: doctors.id,
+        userId: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        phone: users.phone,
+        profileImageUrl: users.profileImageUrl,
+        specialty: doctors.specialty,
+        licenseNumber: doctors.licenseNumber,
+        licenseExpirationDate: doctors.licenseExpirationDate,
+        countries: doctors.countries,
+        bio: doctors.bio,
+        education: doctors.education,
+        experience: doctors.experience,
+        languages: doctors.languages,
+        rppsNumber: doctors.rppsNumber,
+        consultationPrice: doctors.consultationPrice,
+        rating: doctors.rating,
+        reviewCount: doctors.reviewCount,
+        status: doctors.status,
+        profileCompletionPercentage: doctors.profileCompletionPercentage,
+        iban: doctors.iban,
+        ibanVerificationStatus: doctors.ibanVerificationStatus,
+        title: doctors.title,
+        createdAt: users.createdAt,
+        approvedAt: doctors.approvedAt,
+        activatedAt: doctors.activatedAt,
+        lastLoginAt: doctors.lastLoginAt,
+        approved: users.approved
+      })
+      .from(doctors)
+      .innerJoin(users, eq(doctors.userId, users.id))
+      .where(eq(doctors.id, parseInt(doctorId)))
+      .limit(1);
+
+    if (!doctorData) {
+      return res.status(404).json({ error: 'Doctor not found' });
+    }
+
+    // Get basic stats
+    const stats = {
+      totalAppointments: 0,
+      completedAppointments: 0,
+      completionRate: 0,
+      averageRating: doctorData.rating || 5.0,
+      totalRevenue: 0,
+      availableSlotsCount: 0
+    };
+
+    return res.json({
+      ...doctorData,
+      stats,
+      // Keep nested user object for compatibility with view modal
+      user: {
+        id: doctorData.userId,
+        email: doctorData.email,
+        firstName: doctorData.firstName,
+        lastName: doctorData.lastName,
+        phone: doctorData.phone,
+        profileImageUrl: doctorData.profileImageUrl,
+        createdAt: doctorData.createdAt,
+        approved: doctorData.approved
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error fetching doctor details:', error);
+    return res.status(500).json({ error: 'Failed to fetch doctor details' });
+  }
+});
+

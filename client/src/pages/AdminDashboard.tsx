@@ -1562,22 +1562,36 @@ export default function AdminDashboard() {
 
     const handleEditDoctor = (doctor: any) => {
       setSelectedDoctor(doctor);
+
+      // Handle both flat structure (from list) and nested structure (from detail view)
+      const firstName = doctor.firstName || doctor.user?.firstName || '';
+      const lastName = doctor.lastName || doctor.user?.lastName || '';
+      const phone = doctor.phone || doctor.user?.phone || '';
+
+      // Format date for input field (YYYY-MM-DD)
+      let licenseExpDate = '';
+      if (doctor.licenseExpirationDate) {
+        const date = new Date(doctor.licenseExpirationDate);
+        if (!isNaN(date.getTime())) {
+          licenseExpDate = date.toISOString().split('T')[0];
+        }
+      }
+
       setEditFormData({
         specialty: doctor.specialty || '',
         bio: doctor.bio || '',
         education: doctor.education || '',
         experience: doctor.experience || '',
-        medicalApproach: doctor.medicalApproach || '',
-        rppsNumber: doctor.rppsNumber || '',
-        licenseNumber: doctor.licenseNumber || '',
-        licenseExpirationDate: doctor.licenseExpirationDate || '',
+        rppsNumber: doctor.rppsNumber || doctor.licenseNumber || '',
+        licenseNumber: doctor.licenseNumber || doctor.rppsNumber || '',
+        licenseExpirationDate: licenseExpDate,
         countries: doctor.countries || [],
         consultationPrice: doctor.consultationPrice || '',
         languages: doctor.languages || ['English'],
         title: doctor.title || '',
-        firstName: doctor.firstName || '',
-        lastName: doctor.lastName || '',
-        phone: doctor.phone || '',
+        firstName,
+        lastName,
+        phone,
         iban: doctor.iban || '',
         ibanVerificationStatus: doctor.ibanVerificationStatus || 'pending',
       });
@@ -1589,21 +1603,38 @@ export default function AdminDashboard() {
       setIsUpdating(true);
 
       try {
+        console.log('[Admin] Updating doctor:', selectedDoctor.id);
+        console.log('[Admin] Form data:', editFormData);
+
         const response = await apiRequest('PUT', `/api/admin/doctors/${selectedDoctor.id}`, editFormData);
-        const result = await response.json();
+
+        let result;
+        try {
+          result = await response.json();
+        } catch (jsonError) {
+          console.error('[Admin] Failed to parse response as JSON:', jsonError);
+          throw new Error(`Server returned invalid response (${response.status})`);
+        }
+
+        console.log('[Admin] Response:', { status: response.status, data: result });
 
         if (response.ok) {
           toast({
             title: "Doctor Updated Successfully",
-            description: "The doctor profile has been updated.",
+            description: result.data?.statusChanged
+              ? `Profile updated and automatically activated!`
+              : `The doctor profile has been updated. Profile completion: ${result.data?.profileCompletion || 0}%`,
           });
           setShowEditForm(false);
           setShowDetailModal(false);
           refetchDoctors();
         } else {
-          throw new Error(result.message || 'Failed to update doctor');
+          const errorMsg = result.error || result.message || `Update failed with status ${response.status}`;
+          console.error('[Admin] Update failed:', errorMsg, result);
+          throw new Error(errorMsg);
         }
       } catch (error: any) {
+        console.error('[Admin] Error updating doctor:', error);
         toast({
           title: "Error",
           description: error.message || "Failed to update doctor profile",
