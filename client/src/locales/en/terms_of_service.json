@@ -1,0 +1,218 @@
+{
+  "terms_of_service": {
+    "header": {
+      "back_to_home": "Back to Home",
+      "title": "Terms of Service - Doktu Telemedicine Platform",
+      "effective_date": "Effective Date:",
+      "last_updated": "Last Updated:",
+      "version": "Version:"
+    },
+    "section1": {
+      "title": "1. Service Provider Information",
+      "company": "Company:",
+      "company_value": "Doktu SAS",
+      "registration": "Registration:",
+      "registration_value": "RCS Paris B 123 456 789",
+      "address": "Address:",
+      "address_value": "123 Rue de la Santé, 75014 Paris, France",
+      "email": "Email:",
+      "email_value": "legal@doktu.co",
+      "phone": "Phone:",
+      "phone_value": "+33 1 23 45 67 89"
+    },
+    "section2": {
+      "title": "2. Service Description",
+      "description": "Doktu provides a telemedicine platform connecting patients with licensed healthcare professionals for remote medical consultations via secure video conferencing technology.",
+      "included": {
+        "title": "2.1 Services Included",
+        "video": "Video consultations with verified healthcare professionals",
+        "messaging": "Secure messaging with healthcare providers",
+        "records": "Medical record storage and management",
+        "scheduling": "Appointment scheduling and management",
+        "membership": "Membership subscription plans with consultation allowances"
+      },
+      "not_included": {
+        "title": "2.2 Services Not Included",
+        "emergency": "Emergency medical services",
+        "in_person": "In-person medical examinations",
+        "surgical": "Surgical procedures",
+        "controlled": "Prescription of controlled substances (where prohibited)",
+        "crisis": "Mental health crisis intervention"
+      }
+    },
+    "section3": {
+      "title": "3. Eligibility and Registration",
+      "patient": {
+        "title": "3.1 Patient Eligibility",
+        "age": "Must be 18 years or older (or have parental consent)",
+        "location": "Must be located in a jurisdiction where telemedicine is legally permitted",
+        "information": "Must provide accurate and complete registration information",
+        "internet": "Must have stable internet connection for video consultations"
+      },
+      "professional": {
+        "title": "3.2 Healthcare Professional Requirements",
+        "license": "Must hold valid medical license in EU Member State",
+        "insurance": "Must maintain professional indemnity insurance",
+        "standards": "Must comply with professional medical standards",
+        "training": "Must complete platform training and certification"
+      }
+    },
+    "section4": {
+      "title": "4. Medical Disclaimer and Limitations",
+      "emergency": {
+        "title": "4.1 Not Emergency Services",
+        "description": "This platform is NOT intended for medical emergencies. For life-threatening conditions, contact emergency services immediately (112 in EU)."
+      },
+      "diagnostic": {
+        "title": "4.2 Diagnostic Limitations",
+        "remote": "Remote consultations have inherent limitations",
+        "physical": "Physical examinations cannot be performed remotely",
+        "in_person": "Certain conditions require in-person evaluation",
+        "technology": "Technology limitations may affect consultation quality"
+      },
+      "guarantee": {
+        "title": "4.3 No Guarantee of Outcomes",
+        "description": "Medical outcomes cannot be guaranteed. All medical advice is provided based on information available during consultation."
+      }
+    },
+    "section5": {
+      "title": "5. User Responsibilities",
+      "accurate": {
+        "title": "5.1 Accurate Information",
+        "agree": "You agree to:",
+        "history": "Provide complete and accurate medical history",
+        "symptoms": "Report all symptoms truthfully",
+        "medications": "Disclose all medications and allergies",
+        "updates": "Update information as changes occur"
+      },
+      "compliance": {
+        "title": "5.2 Compliance with Medical Advice",
+        "description": "You acknowledge that following medical advice is your responsibility. Non-compliance may result in adverse health outcomes."
+      }
+    },
+    "section6": {
+      "title": "6. Payment Terms",
+      "fees": {
+        "title": "6.1 Consultation Fees",
+        "standard": "Standard consultation fee: €35 per session",
+        "specialist": "Specialist consultations may have different rates",
+        "displayed": "Prices are displayed before booking",
+        "vat": "All prices include applicable VAT"
+      },
+      "processing": {
+        "title": "6.2 Payment Processing",
+        "stripe": "Payments processed securely via Stripe",
+        "required": "Payment required before consultation",
+        "methods": "Accepted methods: Credit/Debit cards, SEPA",
+        "compliant": "PCI DSS compliant processing"
+      },
+      "refund": {
+        "title": "6.3 Refund Policy",
+        "full_24": "Full refund if cancelled 24+ hours before appointment",
+        "half_2": "50% refund if cancelled 2-24 hours before",
+        "no_refund": "No refund for cancellations within 2 hours",
+        "technical": "Full refund for technical failures on our end"
+      }
+    },
+    "section7": {
+      "title": "7. Intellectual Property",
+      "description": "All content, trademarks, and intellectual property on the platform remain the property of Doktu or its licensors. Users may not:",
+      "copy": "Copy, modify, or distribute platform content",
+      "trademarks": "Use trademarks without permission",
+      "reverse": "Reverse engineer platform technology",
+      "derivative": "Create derivative works"
+    },
+    "section8": {
+      "title": "8. Privacy and Data Protection",
+      "description": "Your privacy is protected under our Privacy Policy, which complies with GDPR and healthcare data protection regulations. Key points:",
+      "article9": "Health data processed under Article 9(2)(h) GDPR",
+      "encrypted": "Data encrypted at rest and in transit",
+      "access": "Access restricted to authorized personnel",
+      "rights": "Your rights under GDPR are fully respected"
+    },
+    "section9": {
+      "title": "9. Liability and Indemnification",
+      "platform": {
+        "title": "9.1 Platform Liability",
+        "description": "Doktu's liability is limited to:",
+        "access": "Providing access to the telemedicine platform",
+        "functionality": "Ensuring technical functionality",
+        "security": "Protecting data security and privacy",
+        "credentials": "Verifying healthcare professional credentials"
+      },
+      "medical": {
+        "title": "9.2 Medical Liability",
+        "description": "Healthcare professionals are independently liable for medical advice and treatment. They maintain their own professional indemnity insurance."
+      },
+      "user": {
+        "title": "9.3 User Indemnification",
+        "description": "You agree to indemnify Doktu against claims arising from your misuse of the platform or violation of these terms."
+      }
+    },
+    "section10": {
+      "title": "10. Termination",
+      "user": {
+        "title": "10.1 User Termination",
+        "description": "You may terminate your account at any time by contacting support."
+      },
+      "platform": {
+        "title": "10.2 Platform Termination",
+        "description": "We may terminate or suspend accounts for:",
+        "violation": "Violation of terms of service",
+        "fraud": "Fraudulent or illegal activity",
+        "risk": "Risk to other users or the platform",
+        "payment": "Non-payment of fees"
+      }
+    },
+    "section11": {
+      "title": "11. Governing Law and Disputes",
+      "law": {
+        "title": "11.1 Governing Law",
+        "description": "These terms are governed by French law and EU regulations."
+      },
+      "resolution": {
+        "title": "11.2 Dispute Resolution",
+        "first": "First attempt: Direct negotiation",
+        "second": "Second attempt: Mediation",
+        "final": "Final resort: Courts of Paris, France"
+      },
+      "odr": {
+        "title": "11.3 EU Online Dispute Resolution",
+        "description": "EU residents may use the ODR platform:"
+      }
+    },
+    "section12": {
+      "title": "12. Changes to Terms",
+      "description": "We may update these terms to reflect:",
+      "law": "Changes in law or regulations",
+      "features": "New features or services",
+      "security": "Security or operational requirements",
+      "notification": "Material changes will be notified 30 days in advance via email and platform notification."
+    },
+    "section13": {
+      "title": "13. Contact Information",
+      "general": "General Inquiries:",
+      "general_value": "support@doktu.co",
+      "legal": "Legal Department:",
+      "legal_value": "legal@doktu.co",
+      "dpo": "Data Protection Officer:",
+      "dpo_value": "dpo@doktu.co",
+      "address": "Address:",
+      "address_value": "123 Rue de la Santé, 75014 Paris, France",
+      "phone": "Phone:",
+      "phone_value": "+33 1 23 45 67 89"
+    },
+    "section14": {
+      "title": "14. Severability",
+      "description": "If any provision of these terms is found invalid or unenforceable, the remaining provisions will continue in full force and effect."
+    },
+    "section15": {
+      "title": "15. Entire Agreement",
+      "description": "These Terms of Service, together with our Privacy Policy and other legal documents, constitute the entire agreement between you and Doktu regarding the use of our platform."
+    },
+    "footer": {
+      "acknowledgment": "By using the Doktu platform, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
+      "compliance": "These terms comply with EU consumer protection laws, telemedicine regulations, and the Directive 2011/24/EU on patients' rights in cross-border healthcare."
+    }
+  }
+}

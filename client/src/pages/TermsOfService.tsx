@@ -2,8 +2,11 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function TermsOfService() {
+  const { t } = useTranslation('terms_of_service');
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -17,7 +20,7 @@ export default function TermsOfService() {
             <Link href="/">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                {t('terms_of_service.header.back_to_home')}
               </Button>
             </Link>
           </div>
@@ -27,79 +30,78 @@ export default function TermsOfService() {
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold mb-8">Terms of Service - Doktu Telemedicine Platform</h1>
-          
+          <h1 className="text-3xl font-bold mb-8">{t('terms_of_service.header.title')}</h1>
+
           <div className="text-sm text-gray-600 mb-6">
-            <p><strong>Effective Date:</strong> {new Date().toLocaleDateString()}</p>
-            <p><strong>Last Updated:</strong> {new Date().toLocaleDateString()}</p>
-            <p><strong>Version:</strong> 1.0</p>
+            <p><strong>{t('terms_of_service.header.effective_date')}</strong> {new Date().toLocaleDateString()}</p>
+            <p><strong>{t('terms_of_service.header.last_updated')}</strong> {new Date().toLocaleDateString()}</p>
+            <p><strong>{t('terms_of_service.header.version')}</strong> 1.0</p>
           </div>
 
           <div className="space-y-8 text-gray-700">
             <section>
-              <h2 className="text-2xl font-semibold mb-4">1. Service Provider Information</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section1.title')}</h2>
               <div className="space-y-2">
-                <p><strong>Company:</strong> Doktu SAS</p>
-                <p><strong>Registration:</strong> RCS Paris B 123 456 789</p>
-                <p><strong>Address:</strong> 123 Rue de la Santé, 75014 Paris, France</p>
-                <p><strong>Email:</strong> legal@doktu.co</p>
-                <p><strong>Phone:</strong> +33 1 23 45 67 89</p>
+                <p><strong>{t('terms_of_service.section1.company')}</strong> {t('terms_of_service.section1.company_value')}</p>
+                <p><strong>{t('terms_of_service.section1.registration')}</strong> {t('terms_of_service.section1.registration_value')}</p>
+                <p><strong>{t('terms_of_service.section1.address')}</strong> {t('terms_of_service.section1.address_value')}</p>
+                <p><strong>{t('terms_of_service.section1.email')}</strong> {t('terms_of_service.section1.email_value')}</p>
+                <p><strong>{t('terms_of_service.section1.phone')}</strong> {t('terms_of_service.section1.phone_value')}</p>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">2. Service Description</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section2.title')}</h2>
               <p className="mb-4">
-                Doktu provides a telemedicine platform connecting patients with licensed healthcare professionals 
-                for remote medical consultations via secure video conferencing technology.
+                {t('terms_of_service.section2.description')}
               </p>
-              
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">2.1 Services Included</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section2.included.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Video consultations with verified healthcare professionals</li>
-                    <li>Secure messaging with healthcare providers</li>
-                    <li>Medical record storage and management</li>
-                    <li>Appointment scheduling and management</li>
-                    <li>Membership subscription plans with consultation allowances</li>
+                    <li>{t('terms_of_service.section2.included.video')}</li>
+                    <li>{t('terms_of_service.section2.included.messaging')}</li>
+                    <li>{t('terms_of_service.section2.included.records')}</li>
+                    <li>{t('terms_of_service.section2.included.scheduling')}</li>
+                    <li>{t('terms_of_service.section2.included.membership')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">2.2 Services Not Included</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section2.not_included.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Emergency medical services</li>
-                    <li>In-person medical examinations</li>
-                    <li>Surgical procedures</li>
-                    <li>Prescription of controlled substances (where prohibited)</li>
-                    <li>Mental health crisis intervention</li>
+                    <li>{t('terms_of_service.section2.not_included.emergency')}</li>
+                    <li>{t('terms_of_service.section2.not_included.in_person')}</li>
+                    <li>{t('terms_of_service.section2.not_included.surgical')}</li>
+                    <li>{t('terms_of_service.section2.not_included.controlled')}</li>
+                    <li>{t('terms_of_service.section2.not_included.crisis')}</li>
                   </ul>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">3. Eligibility and Registration</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section3.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">3.1 Patient Eligibility</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section3.patient.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Must be 18 years or older (or have parental consent)</li>
-                    <li>Must be located in a jurisdiction where telemedicine is legally permitted</li>
-                    <li>Must provide accurate and complete registration information</li>
-                    <li>Must have stable internet connection for video consultations</li>
+                    <li>{t('terms_of_service.section3.patient.age')}</li>
+                    <li>{t('terms_of_service.section3.patient.location')}</li>
+                    <li>{t('terms_of_service.section3.patient.information')}</li>
+                    <li>{t('terms_of_service.section3.patient.internet')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">3.2 Healthcare Professional Requirements</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section3.professional.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Must hold valid medical license in EU Member State</li>
-                    <li>Must maintain professional indemnity insurance</li>
-                    <li>Must comply with professional medical standards</li>
-                    <li>Must complete platform training and certification</li>
+                    <li>{t('terms_of_service.section3.professional.license')}</li>
+                    <li>{t('terms_of_service.section3.professional.insurance')}</li>
+                    <li>{t('terms_of_service.section3.professional.standards')}</li>
+                    <li>{t('terms_of_service.section3.professional.training')}</li>
                   </ul>
                 </div>
               </div>
@@ -108,204 +110,197 @@ export default function TermsOfService() {
             <section className="bg-red-50 p-6 rounded-lg">
               <h2 className="text-2xl font-semibold mb-4 flex items-center">
                 <AlertTriangle className="h-6 w-6 mr-2 text-red-600" />
-                4. Medical Disclaimer and Limitations
+                {t('terms_of_service.section4.title')}
               </h2>
-              
+
               <div className="space-y-4">
                 <div className="bg-red-100 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2 text-red-800">4.1 Not Emergency Services</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-red-800">{t('terms_of_service.section4.emergency.title')}</h3>
                   <p className="text-red-700 font-semibold">
-                    This platform is NOT intended for medical emergencies. 
-                    For life-threatening conditions, contact emergency services immediately (112 in EU).
+                    {t('terms_of_service.section4.emergency.description')}
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">4.2 Diagnostic Limitations</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section4.diagnostic.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Remote consultations have inherent limitations</li>
-                    <li>Physical examinations cannot be performed remotely</li>
-                    <li>Certain conditions require in-person evaluation</li>
-                    <li>Technology limitations may affect consultation quality</li>
+                    <li>{t('terms_of_service.section4.diagnostic.remote')}</li>
+                    <li>{t('terms_of_service.section4.diagnostic.physical')}</li>
+                    <li>{t('terms_of_service.section4.diagnostic.in_person')}</li>
+                    <li>{t('terms_of_service.section4.diagnostic.technology')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">4.3 No Guarantee of Outcomes</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section4.guarantee.title')}</h3>
                   <p>
-                    Medical outcomes cannot be guaranteed. All medical advice is provided based on 
-                    information available during consultation.
+                    {t('terms_of_service.section4.guarantee.description')}
                   </p>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">5. User Responsibilities</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section5.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">5.1 Accurate Information</h3>
-                  <p className="mb-2">You agree to:</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section5.accurate.title')}</h3>
+                  <p className="mb-2">{t('terms_of_service.section5.accurate.agree')}</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Provide complete and accurate medical history</li>
-                    <li>Report all symptoms truthfully</li>
-                    <li>Disclose all medications and allergies</li>
-                    <li>Update information as changes occur</li>
+                    <li>{t('terms_of_service.section5.accurate.history')}</li>
+                    <li>{t('terms_of_service.section5.accurate.symptoms')}</li>
+                    <li>{t('terms_of_service.section5.accurate.medications')}</li>
+                    <li>{t('terms_of_service.section5.accurate.updates')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">5.2 Compliance with Medical Advice</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section5.compliance.title')}</h3>
                   <p>
-                    You acknowledge that following medical advice is your responsibility. 
-                    Non-compliance may result in adverse health outcomes.
+                    {t('terms_of_service.section5.compliance.description')}
                   </p>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">6. Payment Terms</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section6.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">6.1 Consultation Fees</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section6.fees.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Standard consultation fee: €35 per session</li>
-                    <li>Specialist consultations may have different rates</li>
-                    <li>Prices are displayed before booking</li>
-                    <li>All prices include applicable VAT</li>
+                    <li>{t('terms_of_service.section6.fees.standard')}</li>
+                    <li>{t('terms_of_service.section6.fees.specialist')}</li>
+                    <li>{t('terms_of_service.section6.fees.displayed')}</li>
+                    <li>{t('terms_of_service.section6.fees.vat')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">6.2 Payment Processing</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section6.processing.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Payments processed securely via Stripe</li>
-                    <li>Payment required before consultation</li>
-                    <li>Accepted methods: Credit/Debit cards, SEPA</li>
-                    <li>PCI DSS compliant processing</li>
+                    <li>{t('terms_of_service.section6.processing.stripe')}</li>
+                    <li>{t('terms_of_service.section6.processing.required')}</li>
+                    <li>{t('terms_of_service.section6.processing.methods')}</li>
+                    <li>{t('terms_of_service.section6.processing.compliant')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">6.3 Refund Policy</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section6.refund.title')}</h3>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Full refund if cancelled 24+ hours before appointment</li>
-                    <li>50% refund if cancelled 2-24 hours before</li>
-                    <li>No refund for cancellations within 2 hours</li>
-                    <li>Full refund for technical failures on our end</li>
+                    <li>{t('terms_of_service.section6.refund.full_24')}</li>
+                    <li>{t('terms_of_service.section6.refund.half_2')}</li>
+                    <li>{t('terms_of_service.section6.refund.no_refund')}</li>
+                    <li>{t('terms_of_service.section6.refund.technical')}</li>
                   </ul>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">7. Intellectual Property</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section7.title')}</h2>
               <p className="mb-4">
-                All content, trademarks, and intellectual property on the platform remain the property of 
-                Doktu or its licensors. Users may not:
+                {t('terms_of_service.section7.description')}
               </p>
               <ul className="list-disc pl-6 space-y-1">
-                <li>Copy, modify, or distribute platform content</li>
-                <li>Use trademarks without permission</li>
-                <li>Reverse engineer platform technology</li>
-                <li>Create derivative works</li>
+                <li>{t('terms_of_service.section7.copy')}</li>
+                <li>{t('terms_of_service.section7.trademarks')}</li>
+                <li>{t('terms_of_service.section7.reverse')}</li>
+                <li>{t('terms_of_service.section7.derivative')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">8. Privacy and Data Protection</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section8.title')}</h2>
               <p className="mb-4">
-                Your privacy is protected under our Privacy Policy, which complies with GDPR and 
-                healthcare data protection regulations. Key points:
+                {t('terms_of_service.section8.description')}
               </p>
               <ul className="list-disc pl-6 space-y-1">
-                <li>Health data processed under Article 9(2)(h) GDPR</li>
-                <li>Data encrypted at rest and in transit</li>
-                <li>Access restricted to authorized personnel</li>
-                <li>Your rights under GDPR are fully respected</li>
+                <li>{t('terms_of_service.section8.article9')}</li>
+                <li>{t('terms_of_service.section8.encrypted')}</li>
+                <li>{t('terms_of_service.section8.access')}</li>
+                <li>{t('terms_of_service.section8.rights')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">9. Liability and Indemnification</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section9.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">9.1 Platform Liability</h3>
-                  <p className="mb-2">Doktu's liability is limited to:</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section9.platform.title')}</h3>
+                  <p className="mb-2">{t('terms_of_service.section9.platform.description')}</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Providing access to the telemedicine platform</li>
-                    <li>Ensuring technical functionality</li>
-                    <li>Protecting data security and privacy</li>
-                    <li>Verifying healthcare professional credentials</li>
+                    <li>{t('terms_of_service.section9.platform.access')}</li>
+                    <li>{t('terms_of_service.section9.platform.functionality')}</li>
+                    <li>{t('terms_of_service.section9.platform.security')}</li>
+                    <li>{t('terms_of_service.section9.platform.credentials')}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">9.2 Medical Liability</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section9.medical.title')}</h3>
                   <p>
-                    Healthcare professionals are independently liable for medical advice and treatment. 
-                    They maintain their own professional indemnity insurance.
+                    {t('terms_of_service.section9.medical.description')}
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">9.3 User Indemnification</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section9.user.title')}</h3>
                   <p>
-                    You agree to indemnify Doktu against claims arising from your misuse of the platform 
-                    or violation of these terms.
+                    {t('terms_of_service.section9.user.description')}
                   </p>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">10. Termination</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section10.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">10.1 User Termination</h3>
-                  <p>You may terminate your account at any time by contacting support.</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section10.user.title')}</h3>
+                  <p>{t('terms_of_service.section10.user.description')}</p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">10.2 Platform Termination</h3>
-                  <p className="mb-2">We may terminate or suspend accounts for:</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section10.platform.title')}</h3>
+                  <p className="mb-2">{t('terms_of_service.section10.platform.description')}</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Violation of terms of service</li>
-                    <li>Fraudulent or illegal activity</li>
-                    <li>Risk to other users or the platform</li>
-                    <li>Non-payment of fees</li>
+                    <li>{t('terms_of_service.section10.platform.violation')}</li>
+                    <li>{t('terms_of_service.section10.platform.fraud')}</li>
+                    <li>{t('terms_of_service.section10.platform.risk')}</li>
+                    <li>{t('terms_of_service.section10.platform.payment')}</li>
                   </ul>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">11. Governing Law and Disputes</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section11.title')}</h2>
+
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">11.1 Governing Law</h3>
-                  <p>These terms are governed by French law and EU regulations.</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section11.law.title')}</h3>
+                  <p>{t('terms_of_service.section11.law.description')}</p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">11.2 Dispute Resolution</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section11.resolution.title')}</h3>
                   <ol className="list-decimal pl-6 space-y-1">
-                    <li>First attempt: Direct negotiation</li>
-                    <li>Second attempt: Mediation</li>
-                    <li>Final resort: Courts of Paris, France</li>
+                    <li>{t('terms_of_service.section11.resolution.first')}</li>
+                    <li>{t('terms_of_service.section11.resolution.second')}</li>
+                    <li>{t('terms_of_service.section11.resolution.final')}</li>
                   </ol>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">11.3 EU Online Dispute Resolution</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('terms_of_service.section11.odr.title')}</h3>
                   <p>
-                    EU residents may use the ODR platform: 
+                    {t('terms_of_service.section11.odr.description')}
                     <a href="https://ec.europa.eu/consumers/odr" className="text-blue-600 underline ml-1">
                       ec.europa.eu/consumers/odr
                     </a>
@@ -315,54 +310,50 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">12. Changes to Terms</h2>
-              <p className="mb-4">We may update these terms to reflect:</p>
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section12.title')}</h2>
+              <p className="mb-4">{t('terms_of_service.section12.description')}</p>
               <ul className="list-disc pl-6 space-y-1">
-                <li>Changes in law or regulations</li>
-                <li>New features or services</li>
-                <li>Security or operational requirements</li>
+                <li>{t('terms_of_service.section12.law')}</li>
+                <li>{t('terms_of_service.section12.features')}</li>
+                <li>{t('terms_of_service.section12.security')}</li>
               </ul>
               <p className="mt-4">
-                Material changes will be notified 30 days in advance via email and platform notification.
+                {t('terms_of_service.section12.notification')}
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">13. Contact Information</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section13.title')}</h2>
               <div className="bg-blue-50 p-4 rounded-lg space-y-2">
-                <p><strong>General Inquiries:</strong> support@doktu.co</p>
-                <p><strong>Legal Department:</strong> legal@doktu.co</p>
-                <p><strong>Data Protection Officer:</strong> dpo@doktu.co</p>
-                <p><strong>Address:</strong> 123 Rue de la Santé, 75014 Paris, France</p>
-                <p><strong>Phone:</strong> +33 1 23 45 67 89</p>
+                <p><strong>{t('terms_of_service.section13.general')}</strong> {t('terms_of_service.section13.general_value')}</p>
+                <p><strong>{t('terms_of_service.section13.legal')}</strong> {t('terms_of_service.section13.legal_value')}</p>
+                <p><strong>{t('terms_of_service.section13.dpo')}</strong> {t('terms_of_service.section13.dpo_value')}</p>
+                <p><strong>{t('terms_of_service.section13.address')}</strong> {t('terms_of_service.section13.address_value')}</p>
+                <p><strong>{t('terms_of_service.section13.phone')}</strong> {t('terms_of_service.section13.phone_value')}</p>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">14. Severability</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section14.title')}</h2>
               <p>
-                If any provision of these terms is found invalid or unenforceable, the remaining provisions 
-                will continue in full force and effect.
+                {t('terms_of_service.section14.description')}
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">15. Entire Agreement</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('terms_of_service.section15.title')}</h2>
               <p>
-                These Terms of Service, together with our Privacy Policy and other legal documents, 
-                constitute the entire agreement between you and Doktu regarding the use of our platform.
+                {t('terms_of_service.section15.description')}
               </p>
             </section>
           </div>
 
           <div className="mt-12 p-4 bg-gray-100 rounded-lg">
             <p className="text-sm text-gray-600 mb-4">
-              By using the Doktu platform, you acknowledge that you have read, understood, and agree to be 
-              bound by these Terms of Service.
+              {t('terms_of_service.footer.acknowledgment')}
             </p>
             <p className="text-sm text-gray-600 italic">
-              These terms comply with EU consumer protection laws, telemedicine regulations, and the 
-              Directive 2011/24/EU on patients' rights in cross-border healthcare.
+              {t('terms_of_service.footer.compliance')}
             </p>
           </div>
         </div>

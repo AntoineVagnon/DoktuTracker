@@ -1,0 +1,218 @@
+{
+  "terms_of_service": {
+    "header": {
+      "back_to_home": "Nazad na početnu",
+      "title": "Uslovi korištenja - Doktu telemedicinska platforma",
+      "effective_date": "Datum stupanja na snagu:",
+      "last_updated": "Posljednje ažurirano:",
+      "version": "Verzija:"
+    },
+    "section1": {
+      "title": "1. Informacije o pružaocu usluga",
+      "company": "Društvo:",
+      "company_value": "Doktu SAS",
+      "registration": "Registracija:",
+      "registration_value": "RCS Paris B 123 456 789",
+      "address": "Adresa:",
+      "address_value": "123 Rue de la Santé, 75014 Paris, Francuska",
+      "email": "Email:",
+      "email_value": "legal@doktu.co",
+      "phone": "Telefon:",
+      "phone_value": "+33 1 23 45 67 89"
+    },
+    "section2": {
+      "title": "2. Opis usluge",
+      "description": "Doktu pruža telemedicinsku platformu koja povezuje pacijente sa licenciranim zdravstvenim stručnjacima za udaljene medicinske konsultacije putem sigurne video konferencijske tehnologije.",
+      "included": {
+        "title": "2.1 Usluge uključene",
+        "video": "Video konsultacije sa verifikovanim zdravstvenim stručnjacima",
+        "messaging": "Sigurno slanje poruka sa pružaocima zdravstvenih usluga",
+        "records": "Čuvanje i upravljanje medicinskim zapisima",
+        "scheduling": "Zakazivanje i upravljanje terminima",
+        "membership": "Pretplatnički planovi članstva sa dozvolama za konsultacije"
+      },
+      "not_included": {
+        "title": "2.2 Usluge koje nisu uključene",
+        "emergency": "Hitne medicinske usluge",
+        "in_person": "Lični medicinski pregledi",
+        "surgical": "Hirurške procedure",
+        "controlled": "Propisivanje kontrolisanih supstanci (gdje je zabranjeno)",
+        "crisis": "Intervencija u kriznim situacijama mentalnog zdravlja"
+      }
+    },
+    "section3": {
+      "title": "3. Prihvatljivost i registracija",
+      "patient": {
+        "title": "3.1 Prihvatljivost pacijenta",
+        "age": "Mora imati 18 godina ili više (ili roditeljsku saglasnost)",
+        "location": "Mora biti lociran u jurisdikciji gdje je telemedicina zakonski dozvoljena",
+        "information": "Mora pružiti tačne i potpune informacije o registraciji",
+        "internet": "Mora imati stabilnu internet vezu za video konsultacije"
+      },
+      "professional": {
+        "title": "3.2 Zahtjevi za zdravstvene stručnjake",
+        "license": "Mora posjedovati valjanu medicinsku licencu u državi članici EU",
+        "insurance": "Mora održavati profesionalno osiguranje od odgovornosti",
+        "standards": "Mora biti usklađen sa profesionalnim medicinskim standardima",
+        "training": "Mora završiti obuku i sertifikaciju platforme"
+      }
+    },
+    "section4": {
+      "title": "4. Medicinska izjava o odricanju odgovornosti i ograničenja",
+      "emergency": {
+        "title": "4.1 Nije hitna služba",
+        "description": "Ova platforma NIJE namijenjena za medicinske hitnosti. Za životno ugrožavajuće uslove, odmah kontaktirajte hitne službe (112 u EU)."
+      },
+      "diagnostic": {
+        "title": "4.2 Dijagnostička ograničenja",
+        "remote": "Udaljene konsultacije imaju inherentna ograničenja",
+        "physical": "Fizički pregledi se ne mogu izvršiti na daljinu",
+        "in_person": "Određena stanja zahtijevaju lični pregled",
+        "technology": "Tehnološka ograničenja mogu utjecati na kvalitet konsultacije"
+      },
+      "guarantee": {
+        "title": "4.3 Nema garancije ishoda",
+        "description": "Medicinski ishodi ne mogu biti garantovani. Svi medicinski savjeti se pružaju na osnovu informacija dostupnih tokom konsultacije."
+      }
+    },
+    "section5": {
+      "title": "5. Odgovornosti korisnika",
+      "accurate": {
+        "title": "5.1 Tačne informacije",
+        "agree": "Slažete se da:",
+        "history": "Pružite potpunu i tačnu medicinsku istoriju",
+        "symptoms": "Iskreno prijavite sve simptome",
+        "medications": "Otkrijete sve lijekove i alergije",
+        "updates": "Ažurirate informacije kako se promjene dešavaju"
+      },
+      "compliance": {
+        "title": "5.2 Usklađenost sa medicinskim savjetima",
+        "description": "Priznajete da je slijeđenje medicinskih savjeta vaša odgovornost. Neusklađenost može rezultirati štetnim zdravstvenim ishodima."
+      }
+    },
+    "section6": {
+      "title": "6. Uslovi plaćanja",
+      "fees": {
+        "title": "6.1 Troškovi konsultacija",
+        "standard": "Standardni trošak konsultacije: €35 po sesiji",
+        "specialist": "Konsultacije sa specijalistima mogu imati različite cijene",
+        "displayed": "Cijene se prikazuju prije rezervacije",
+        "vat": "Sve cijene uključuju primjenjivi PDV"
+      },
+      "processing": {
+        "title": "6.2 Obrada plaćanja",
+        "stripe": "Plaćanja se obrađuju sigurno putem Stripe",
+        "required": "Plaćanje je potrebno prije konsultacije",
+        "methods": "Prihvaćeni načini: Kreditne/Debitne kartice, SEPA",
+        "compliant": "PCI DSS usklađena obrada"
+      },
+      "refund": {
+        "title": "6.3 Politika povrata novca",
+        "full_24": "Puni povrat novca ako se otkaže 24+ sati prije termina",
+        "half_2": "50% povrata novca ako se otkaže 2-24 sata prije",
+        "no_refund": "Bez povrata novca za otkazivanja unutar 2 sata",
+        "technical": "Puni povrat novca za tehničke kvarove sa naše strane"
+      }
+    },
+    "section7": {
+      "title": "7. Intelektualna svojina",
+      "description": "Sav sadržaj, zaštitni znaci i intelektualna svojina na platformi ostaju vlasništvo Doktu ili njegovih licencara. Korisnici ne smiju:",
+      "copy": "Kopirati, mijenjati ili distribuirati sadržaj platforme",
+      "trademarks": "Koristiti zaštitne znake bez dozvole",
+      "reverse": "Vršiti obrnuto inženjerstvo tehnologije platforme",
+      "derivative": "Kreirati izvedena djela"
+    },
+    "section8": {
+      "title": "8. Privatnost i zaštita podataka",
+      "description": "Vaša privatnost je zaštićena prema našoj Politici privatnosti, koja je usklađena sa RGPD i propisima o zaštiti zdravstvenih podataka. Ključne tačke:",
+      "article9": "Zdravstveni podaci se obrađuju prema Članu 9(2)(h) RGPD",
+      "encrypted": "Podaci su enkriptovani u mirovanju i u prijenosu",
+      "access": "Pristup ograničen na ovlašćeno osoblje",
+      "rights": "Vaša prava prema RGPD su u potpunosti poštovana"
+    },
+    "section9": {
+      "title": "9. Odgovornost i obeštećenje",
+      "platform": {
+        "title": "9.1 Odgovornost platforme",
+        "description": "Odgovornost Doktu je ograničena na:",
+        "access": "Pružanje pristupa telemedicinskoj platformi",
+        "functionality": "Osiguravanje tehničke funkcionalnosti",
+        "security": "Zaštitu sigurnosti i privatnosti podataka",
+        "credentials": "Verifikaciju kvalifikacija zdravstvenih stručnjaka"
+      },
+      "medical": {
+        "title": "9.2 Medicinska odgovornost",
+        "description": "Zdravstveni stručnjaci su nezavisno odgovorni za medicinske savjete i tretman. Oni održavaju vlastito profesionalno osiguranje od odgovornosti."
+      },
+      "user": {
+        "title": "9.3 Korisničko obeštećenje",
+        "description": "Slažete se da obeštite Doktu protiv zahtjeva koji proizlaze iz vaše zloupotrebe platforme ili kršenja ovih uslova."
+      }
+    },
+    "section10": {
+      "title": "10. Raskid",
+      "user": {
+        "title": "10.1 Korisnički raskid",
+        "description": "Možete raskinuti svoj nalog u bilo kojem trenutku kontaktiranjem podrške."
+      },
+      "platform": {
+        "title": "10.2 Raskid platforme",
+        "description": "Možemo raskinuti ili suspendovati naloge za:",
+        "violation": "Kršenje uslova korištenja",
+        "fraud": "Prevarnu ili nezakonitu aktivnost",
+        "risk": "Rizik za druge korisnike ili platformu",
+        "payment": "Neplaćanje naknada"
+      }
+    },
+    "section11": {
+      "title": "11. Mjerodavno pravo i sporovi",
+      "law": {
+        "title": "11.1 Mjerodavno pravo",
+        "description": "Ovi uslovi su regulisani francuskim pravom i propisima EU."
+      },
+      "resolution": {
+        "title": "11.2 Rješavanje sporova",
+        "first": "Prvi pokušaj: Direktna pregovori",
+        "second": "Drugi pokušaj: Medijacija",
+        "final": "Posljednja opcija: Sudovi u Parizu, Francuska"
+      },
+      "odr": {
+        "title": "11.3 EU Online rješavanje sporova",
+        "description": "Rezidenti EU mogu koristiti ODR platformu:"
+      }
+    },
+    "section12": {
+      "title": "12. Izmjene uslova",
+      "description": "Možemo ažurirati ove uslove kako bi odražavali:",
+      "law": "Izmjene u zakonu ili propisima",
+      "features": "Nove funkcije ili usluge",
+      "security": "Sigurnosne ili operativne zahtjeve",
+      "notification": "Materijalne izmjene će biti najavljene 30 dana unaprijed putem emaila i obavještenja na platformi."
+    },
+    "section13": {
+      "title": "13. Kontakt informacije",
+      "general": "Opći upiti:",
+      "general_value": "support@doktu.co",
+      "legal": "Pravni odjel:",
+      "legal_value": "legal@doktu.co",
+      "dpo": "Službenik za zaštitu podataka:",
+      "dpo_value": "dpo@doktu.co",
+      "address": "Adresa:",
+      "address_value": "123 Rue de la Santé, 75014 Paris, Francuska",
+      "phone": "Telefon:",
+      "phone_value": "+33 1 23 45 67 89"
+    },
+    "section14": {
+      "title": "14. Odvojivost",
+      "description": "Ako se bilo koja odredba ovih uslova smatra nevažećom ili neizvršnom, preostale odredbe će nastaviti da važe u punom obimu."
+    },
+    "section15": {
+      "title": "15. Kompletan sporazum",
+      "description": "Ovi Uslovi korištenja, zajedno sa našom Politikom privatnosti i drugim pravnim dokumentima, čine kompletan sporazum između vas i Doktu u vezi sa korištenjem naše platforme."
+    },
+    "footer": {
+      "acknowledgment": "Korištenjem Doktu platforme, priznajete da ste pročitali, razumjeli i slažete se da budete vezani ovim Uslovima korištenja.",
+      "compliance": "Ovi uslovi su usklađeni sa zakonima EU o zaštiti potrošača, propisima o telemedicini i Direktivom 2011/24/EU o pravima pacijenata u prekograničnoj zdravstvenoj zaštiti."
+    }
+  }
+}
