@@ -461,12 +461,13 @@ adminDoctorManagementRouter.post('/applications/:doctorId/approve', async (req, 
     const adminId = req.user.id; // Set by requireAdmin middleware
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
 
-    // Get current doctor status
+    // Get current doctor status and profile completion
     const [doctor] = await db
       .select({
         id: doctors.id,
         userId: doctors.userId,
         status: doctors.status,
+        profileCompletionPercentage: doctors.profileCompletionPercentage,
         email: users.email,
         firstName: users.firstName,
         lastName: users.lastName
@@ -488,12 +489,17 @@ adminDoctorManagementRouter.post('/applications/:doctorId/approve', async (req, 
       });
     }
 
-    // Update doctor status to 'approved'
+    // Auto-activate if profile is 100% complete, otherwise set to approved
+    const newStatus = doctor.profileCompletionPercentage >= 100 ? 'active' : 'approved';
+    const now = new Date();
+
+    // Update doctor status
     await db
       .update(doctors)
       .set({
-        status: 'approved',
-        approvedAt: new Date(),
+        status: newStatus,
+        approvedAt: now,
+        activatedAt: newStatus === 'active' ? now : null,
         rejectionReason: null,
         rejectionType: null,
         rejectedAt: null
@@ -511,8 +517,10 @@ adminDoctorManagementRouter.post('/applications/:doctorId/approve', async (req, 
       doctorId: parseInt(doctorId),
       adminId: parseInt(adminId),
       oldStatus: 'pending_review',
-      newStatus: 'approved',
-      reason: 'Application approved by admin',
+      newStatus: newStatus,
+      reason: newStatus === 'active'
+        ? 'Application approved and auto-activated (profile 100% complete)'
+        : 'Application approved by admin',
       notes: notes || null,
       ipAddress: ip,
       userAgent: req.headers['user-agent'] || null
@@ -528,7 +536,9 @@ adminDoctorManagementRouter.post('/applications/:doctorId/approve', async (req, 
           first_name: doctor.firstName,
           last_name: doctor.lastName,
           dashboard_link: `${process.env.CLIENT_URL}/doctor/dashboard`,
-          next_steps: 'Complete your profile to activate your account'
+          next_steps: newStatus === 'active'
+            ? 'Your account is now active and ready to use!'
+            : 'Complete your profile to activate your account'
         }
       });
       console.log(`✅ Doctor approval email queued for user ${doctor.userId}`);
@@ -538,12 +548,16 @@ adminDoctorManagementRouter.post('/applications/:doctorId/approve', async (req, 
 
     return res.json({
       success: true,
-      message: 'Doctor application approved successfully',
+      message: newStatus === 'active'
+        ? 'Doctor application approved and activated successfully'
+        : 'Doctor application approved successfully',
       data: {
         doctorId: doctor.id,
         userId: doctor.userId,
-        newStatus: 'approved',
-        approvedAt: new Date()
+        newStatus: newStatus,
+        approvedAt: now,
+        activatedAt: newStatus === 'active' ? now : null,
+        autoActivated: newStatus === 'active'
       }
     });
 

@@ -1437,11 +1437,11 @@ export default function AdminDashboard() {
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
 
-    // Fetch all doctors
+    // Fetch all doctors (both active and approved)
     const { data: doctors, isLoading: doctorsLoading, refetch: refetchDoctors } = useQuery({
       queryKey: ['/api/admin/doctors'],
       queryFn: async () => {
-        const response = await apiRequest('GET', '/api/admin/doctors');
+        const response = await apiRequest('GET', '/api/admin/doctors?status=active,approved');
         const data = await response.json(); return data.doctors || [];
       },
       refetchInterval: 30000, // Refresh every 30 seconds
