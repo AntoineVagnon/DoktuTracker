@@ -104,8 +104,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       }
 
       toast({
-        title: "Login Successful",
-        description: "Welcome back!",
+        title: t('auth.messages.login_success_title'),
+        description: t('auth.messages.login_success_description'),
       });
       onClose();
 
@@ -124,12 +124,12 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       // Improve error message for common cases
       let errorMessage = error.message;
       if (errorMessage === "Invalid login credentials") {
-        errorMessage = "Incorrect email or password";
+        errorMessage = t('auth.messages.incorrect_credentials');
       }
-      
+
       setAuthError(errorMessage);
       toast({
-        title: "Login Failed",
+        title: t('auth.messages.login_failed_title'),
         description: errorMessage,
         variant: "destructive",
       });
@@ -153,9 +153,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         localStorage.setItem('doktu_auth', JSON.stringify(data));
       }
 
-      const successMessage = getMessageString(data) || "Your account has been created successfully!";
+      const successMessage = getMessageString(data) || t('auth.messages.account_created_description');
       toast({
-        title: "Account Created",
+        title: t('auth.messages.account_created_title'),
         description: successMessage,
       });
       onClose();
@@ -164,10 +164,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       window.location.href = '/dashboard';
     },
     onError: (error: Error) => {
-      const errorMessage = getErrorMessage(error) || "An error occurred during signup";
+      const errorMessage = getErrorMessage(error) || t('auth.messages.signup_error');
       setAuthError(errorMessage);
       toast({
-        title: "Signup Failed",
+        title: t('auth.messages.signup_failed_title'),
         description: errorMessage,
         variant: "destructive",
       });
@@ -186,15 +186,15 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     const email = loginForm.getValues("email");
     if (!email) {
       toast({
-        title: "Email Required",
-        description: "Please enter your email address first",
+        title: t('auth.messages.email_required_title'),
+        description: t('auth.messages.email_required_description'),
         variant: "destructive",
       });
       return;
     }
 
     setIsResettingPassword(true);
-    
+
     try {
       // Store context for password reset flow
       sessionStorage.setItem('password_reset_context', JSON.stringify({
@@ -205,7 +205,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           email,
           context: 'homepage_modal'
         })
@@ -215,17 +215,17 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
 
       if (response.ok) {
         toast({
-          title: "Reset Email Sent",
-          description: "Check your email for password reset instructions",
+          title: t('auth.messages.reset_email_sent_title'),
+          description: t('auth.messages.reset_email_sent_description'),
         });
         onClose();
       } else {
         throw new Error(data.error || 'Password reset failed');
       }
     } catch (error: any) {
-      const errorMessage = getErrorMessage(error) || "An error occurred while sending reset email";
+      const errorMessage = getErrorMessage(error) || t('auth.messages.reset_error');
       toast({
-        title: "Reset Failed",
+        title: t('auth.messages.reset_failed_title'),
         description: errorMessage,
         variant: "destructive",
       });
