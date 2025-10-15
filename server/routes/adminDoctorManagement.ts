@@ -10,36 +10,82 @@ export const adminDoctorManagementRouter = Router();
 /**
  * Middleware to check if user is admin
  * Checks database role (source of truth) instead of JWT role to handle role mismatches
+ * Supports both session cookies and Authorization Bearer tokens
  */
 async function requireAdmin(req: any, res: any, next: any) {
-  const session = req.session.supabaseSession;
-
-  if (!session || !session.user) {
-    return res.status(401).json({ error: 'Not authenticated' });
-  }
-
   try {
+    // Check for Authorization header first (for cross-domain requests and modern auth)
+    const authHeader = req.headers.authorization;
+    let userEmail = null;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      // Extract token from Authorization header
+      const token = authHeader.replace('Bearer ', '');
+
+      // Validate token with Supabase
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabase = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
+        }
+      );
+
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+
+      if (error || !user) {
+        console.log('Admin auth - Invalid token:', error?.message);
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      userEmail = user.email;
+      console.log('Admin auth - Token validated for:', userEmail);
+    } else {
+      // Fallback to session cookies
+      const session = req.session.supabaseSession;
+
+      if (!session || !session.user) {
+        console.log('Admin auth - No session or authorization header');
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      userEmail = session.user.email;
+      console.log('Admin auth - Session validated for:', userEmail);
+    }
+
+    if (!userEmail) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
     // Query database for user's role (source of truth)
     const [user] = await db
       .select({ id: users.id, role: users.role, email: users.email })
       .from(users)
-      .where(eq(users.email, session.user.email))
+      .where(eq(users.email, userEmail))
       .limit(1);
 
     if (!user) {
+      console.log('Admin auth - User not found in database:', userEmail);
       return res.status(401).json({ error: 'User not found in database' });
     }
 
     // Check if user has admin role in database
     if (user.role !== 'admin') {
+      console.log('Admin auth - Access denied. User role:', user.role);
       return res.status(403).json({
         error: 'Admin access required',
         debug: {
           dbRole: user.role,
-          jwtRole: session.user.user_metadata?.role || session.user.role
+          userEmail: user.email
         }
       });
     }
+
+    console.log('Admin auth - Success for admin:', user.email);
 
     // Store user info for downstream use
     req.user = user;
