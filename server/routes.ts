@@ -37,6 +37,7 @@ import { notificationService, TriggerCode } from "./services/notificationService
 import { emailService } from "./emailService";
 import { zoomService } from "./services/zoomService";
 import { registerMembershipRoutes } from "./routes/membershipRoutes";
+import { registerMembershipTestRoutes } from "./routes/membershipTestRoutes";
 import { membershipService } from "./services/membershipService";
 import { AuditLogger, auditAdminMiddleware, auditPatientDataMiddleware, auditErrorMiddleware } from "./middleware/auditMiddleware";
 import { registerAuditRoutes } from "./routes/auditRoutes";
@@ -5839,26 +5840,80 @@ export async function registerRoutes(app: Express): Promise<void> {
 
         case 'invoice.payment_succeeded':
           const invoice = event.data.object;
-          console.log('💰 Payment succeeded for invoice:', invoice.id);
-          // Activate subscription if it's the first payment
-          if (invoice.subscription && invoice.billing_reason === 'subscription_create') {
-            console.log('✅ Initial subscription payment successful');
+          console.log('💰 Payment succeeded for invoice:', invoice.id, 'Billing reason:', invoice.billing_reason);
 
-            // Grant initial allowance for the membership
+          if (invoice.subscription) {
             try {
               const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
               const userId = subscription.metadata?.userId;
 
-              if (userId) {
+              if (!userId) {
+                console.error('❌ No userId in subscription metadata');
+                break;
+              }
+
+              const { membershipService } = await import('./services/membershipService');
+              const { db } = await import('./db');
+              const { membershipSubscriptions } = await import('@shared/schema');
+              const { eq } = await import('drizzle-orm');
+
+              // Handle initial subscription payment
+              if (invoice.billing_reason === 'subscription_create') {
+                console.log('✅ Initial subscription payment successful for user', userId);
                 console.log(`🎁 Creating initial allowance cycle for user ${userId}`);
-                const { membershipService } = await import('./services/membershipService');
                 await membershipService.createInitialAllowance(parseInt(userId));
                 console.log(`✅ Initial allowance created for user ${userId}`);
-              } else {
-                console.error('❌ No userId in subscription metadata, cannot create allowance');
+              }
+
+              // Handle subscription renewal payments
+              else if (invoice.billing_reason === 'subscription_cycle') {
+                console.log(`🔄 Subscription renewal payment successful for user ${userId}`);
+                console.log(`📅 Period: ${new Date(subscription.current_period_start * 1000).toISOString()} to ${new Date(subscription.current_period_end * 1000).toISOString()}`);
+
+                // Find the membership subscription record
+                const [membershipSub] = await db
+                  .select()
+                  .from(membershipSubscriptions)
+                  .where(eq(membershipSubscriptions.stripeSubscriptionId, subscription.id))
+                  .limit(1);
+
+                if (!membershipSub) {
+                  console.error(`❌ No membership subscription found for Stripe subscription ${subscription.id}`);
+                  break;
+                }
+
+                // Renew the allowance cycle with new period dates
+                const newPeriodStart = new Date(subscription.current_period_start * 1000);
+                const newPeriodEnd = new Date(subscription.current_period_end * 1000);
+
+                console.log(`🔄 Renewing allowance cycle for subscription ${membershipSub.id}`);
+                const newCycle = await membershipService.renewAllowanceCycle(
+                  membershipSub.id,
+                  newPeriodStart,
+                  newPeriodEnd
+                );
+
+                console.log(`✅ Allowance cycle renewed:`, {
+                  cycleId: newCycle.id,
+                  allowanceGranted: newCycle.allowanceGranted,
+                  cycleStart: newCycle.cycleStart,
+                  cycleEnd: newCycle.cycleEnd
+                });
+
+                // Update subscription period dates in database
+                await db
+                  .update(membershipSubscriptions)
+                  .set({
+                    currentPeriodStart: newPeriodStart,
+                    currentPeriodEnd: newPeriodEnd,
+                    updatedAt: new Date()
+                  })
+                  .where(eq(membershipSubscriptions.id, membershipSub.id));
+
+                console.log(`✅ Subscription period dates updated in database`);
               }
             } catch (error) {
-              console.error('❌ Failed to create initial allowance:', error);
+              console.error('❌ Failed to handle invoice payment:', error);
             }
           }
           break;
@@ -6207,6 +6262,9 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // Register membership routes
   registerMembershipRoutes(app);
+
+  // Register membership test routes (for testing subscription renewals)
+  registerMembershipTestRoutes(app, stripe);
 
   // Register document library routes
   registerDocumentLibraryRoutes(app);

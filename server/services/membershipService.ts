@@ -416,7 +416,10 @@ export class MembershipService {
     newPeriodStart: Date,
     newPeriodEnd: Date
   ): Promise<MembershipCycle> {
+    console.log(`🔄 [MembershipService] Starting allowance cycle renewal for subscription ${subscriptionId}`);
+
     // Deactivate current cycle
+    console.log(`🔄 [MembershipService] Deactivating old active cycles for subscription ${subscriptionId}`);
     await db
       .update(membershipCycles)
       .set({ isActive: false, updatedAt: new Date() })
@@ -426,6 +429,7 @@ export class MembershipService {
           eq(membershipCycles.isActive, true)
         )
       );
+    console.log(`✅ [MembershipService] Old cycles deactivated for subscription ${subscriptionId}`);
 
     // Get subscription to determine plan
     const [subscription] = await db
@@ -435,16 +439,23 @@ export class MembershipService {
       .limit(1);
 
     if (!subscription) {
+      console.error(`❌ [MembershipService] Subscription ${subscriptionId} not found`);
       throw new Error('Subscription not found');
     }
 
+    console.log(`🎁 [MembershipService] Creating new cycle for plan ${subscription.planId}`);
+    console.log(`📅 [MembershipService] Period: ${newPeriodStart.toISOString()} to ${newPeriodEnd.toISOString()}`);
+
     // Create new cycle
-    return this.createInitialAllowanceCycle(
+    const newCycle = await this.createInitialAllowanceCycle(
       subscriptionId,
       subscription.planId,
       newPeriodStart,
       newPeriodEnd
     );
+
+    console.log(`✅ [MembershipService] Renewal complete: Cycle ${newCycle.id} created with ${newCycle.allowanceGranted} consultations`);
+    return newCycle;
   }
 
   /**
