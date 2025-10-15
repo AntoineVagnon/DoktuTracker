@@ -57,6 +57,111 @@
       "error_invalid_message": "Molimo provjerite URL i pokušajte ponovo.",
       "error_loading": "Greška pri učitavanju doktora",
       "error_not_found": "Doktor nije pronađen"
+    },
+    "signup": {
+      "back_to_home": "Nazad na početnu",
+      "hero_title": "Pridružite se Doktu platformi",
+      "hero_subtitle": "Proširite svoju praksu i pomozite pacijentima širom Evrope",
+      "benefits": {
+        "new_patients_title": "Novi pacijenti",
+        "new_patients_desc": "Pristup pacijentima širom Evrope",
+        "flexible_schedule_title": "Fleksibilan raspored",
+        "flexible_schedule_desc": "Radite kada vam odgovara",
+        "secure_platform_title": "Sigurna platforma",
+        "secure_platform_desc": "Telemedicina usklađena sa GDPR-om",
+        "modern_tech_title": "Moderna tehnologija",
+        "modern_tech_desc": "Video konsultacije visokog kvaliteta"
+      },
+      "progress": {
+        "title": "Registracija doktora - Korak {{step}} od 4",
+        "percentage": "{{percent}}% Dovršeno",
+        "step1_title": "Lične informacije",
+        "step2_title": "Medicinske kredencijale",
+        "step3_title": "Profesionalni detalji",
+        "step4_title": "Uslovi i odredbe"
+      },
+      "step1": {
+        "first_name_label": "Ime *",
+        "first_name_placeholder": "Marko",
+        "last_name_label": "Prezime *",
+        "last_name_placeholder": "Marković",
+        "email_label": "Email adresa *",
+        "email_placeholder": "doktor@primjer.com",
+        "phone_label": "Broj telefona *",
+        "phone_placeholder": "+387 33 123 456",
+        "password_label": "Lozinka *",
+        "password_placeholder": "Minimalno 8 karaktera",
+        "confirm_password_label": "Potvrdite lozinku *",
+        "confirm_password_placeholder": "Ponovo unesite lozinku",
+        "next_button": "Sljedeći korak"
+      },
+      "step2": {
+        "specialty_label": "Medicinska specijalnost *",
+        "specialty_placeholder": "Odaberite vašu specijalnost",
+        "license_number_label": "Broj medicinske licence *",
+        "license_number_placeholder": "Unesite broj vaše licence",
+        "license_expiration_label": "Datum isteka licence *",
+        "license_expiration_placeholder": "Odaberite datum isteka",
+        "primary_country_label": "Primarna zemlja prakse *",
+        "primary_country_placeholder": "Odaberite vašu primarnu zemlju",
+        "additional_countries_label": "Dodatne licencirane zemlje (Opcionalno)",
+        "additional_countries_help": "Odaberite zemlje gdje posjedujete važeće medicinske licence",
+        "rpps_label": "RPPS broj (Za Francusku) - Opcionalno",
+        "rpps_placeholder": "11-cifreni RPPS broj",
+        "back_button": "Nazad",
+        "next_button": "Sljedeći korak"
+      },
+      "step3": {
+        "optional_notice": "Ova polja su opcionalna ali pomažu da brže dovršite vaš profil. Možete ih dovršiti i kasnije sa vaše kontrolne table.",
+        "bio_label": "Profesionalna biografija (Opcionalno)",
+        "bio_placeholder": "Recite pacijentima o vašem iskustvu, specijalizacijama i pristupu njezi...",
+        "price_label": "Cijena konsultacije (EUR) - Opcionalno",
+        "price_placeholder": "50.00",
+        "price_help": "Postavite vašu naknadu za konsultaciju. Prosječan raspon: €30-100",
+        "after_approval_title": "Nakon odobrenja, trebat ćete dovršiti:",
+        "after_approval_photo": "Otpremanje profilne fotografije",
+        "after_approval_iban": "IBAN verifikaciju za plaćanja",
+        "after_approval_schedule": "Postavljanje rasporeda dostupnosti",
+        "back_button": "Nazad",
+        "next_button": "Sljedeći korak"
+      },
+      "step4": {
+        "almost_done": "Skoro gotovo! Molimo pregledajte i prihvatite naše uslove da dovršite vašu prijavu.",
+        "agree_terms": "Slažem se sa",
+        "terms_link": "Uslovima pružanja usluge",
+        "and": "i",
+        "medical_disclaimer_link": "Medicinskim odricanjem odgovornosti",
+        "agree_privacy": "Priznajem i prihvatam",
+        "privacy_link": "Politiku privatnosti",
+        "agree_gdpr": "Pročitao/la sam i razumijem",
+        "gdpr_link": "GDPR usklađenost",
+        "requirements": "zahtjeve",
+        "what_next_title": "Šta je sljedeće?",
+        "what_next_step1": "Vaša prijava će biti pregledana od strane našeg tima",
+        "what_next_step2": "Primit ćete email u roku od 2-3 radna dana",
+        "what_next_step3": "Nakon odobrenja, dovršite vaš profil da aktivirate vaš račun",
+        "what_next_step4": "Počnite prihvatati pacijentske konsultacije!",
+        "back_button": "Nazad",
+        "submit_button": "Pošaljite prijavu",
+        "submitting": "Slanje..."
+      },
+      "faq": {
+        "title": "Često postavljana pitanja",
+        "verification_question": "Koliko dugo traje proces verifikacije?",
+        "verification_answer": "Proces verifikacije obično traje 2-3 radna dana. Kontaktiraćemo vas čim pregledamo vašu prijavu.",
+        "fees_question": "Koje su naknade platforme?",
+        "fees_answer": "Platforma uzima proviziju od 15% od svake konsultacije. Vi postavljate vašu cijenu konsultacije.",
+        "countries_question": "Mogu li raditi sa pacijentima iz različitih zemalja?",
+        "countries_answer": "Da, naša platforma vam omogućava rad sa pacijentima širom Evrope, u skladu sa lokalnim propisima i vašim medicinskim licencama.",
+        "documents_question": "Koja dokumenta su mi potrebna?",
+        "documents_answer": "Trebat će vam važeća medicinska licenca, dokaz identiteta i vaše profesionalne kredencijale. Dodatna dokumenta mogu biti zatražena tokom procesa pregleda."
+      },
+      "toasts": {
+        "success_title": "Prijava uspješno poslana!",
+        "success_description": "Vaša prijava je sada na pregledu. Primit ćete email u roku od 2-3 radna dana.",
+        "error_title": "Registracija neuspjela",
+        "error_description": "Došlo je do greške tokom registracije. Molimo pokušajte ponovo."
+      }
     }
   }
 }

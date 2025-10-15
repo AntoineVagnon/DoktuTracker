@@ -57,6 +57,111 @@
       "error_invalid_message": "Please check the URL and try again.",
       "error_loading": "Error Loading Doctor",
       "error_not_found": "Doctor not found"
+    },
+    "signup": {
+      "back_to_home": "Back to Home",
+      "hero_title": "Join Doktu Platform",
+      "hero_subtitle": "Expand your practice and help patients across Europe",
+      "benefits": {
+        "new_patients_title": "New Patients",
+        "new_patients_desc": "Access patients across Europe",
+        "flexible_schedule_title": "Flexible Schedule",
+        "flexible_schedule_desc": "Work when it suits you",
+        "secure_platform_title": "Secure Platform",
+        "secure_platform_desc": "GDPR-compliant telemedicine",
+        "modern_tech_title": "Modern Technology",
+        "modern_tech_desc": "High-quality video consultations"
+      },
+      "progress": {
+        "title": "Doctor Registration - Step {{step}} of 4",
+        "percentage": "{{percent}}% Complete",
+        "step1_title": "Personal Information",
+        "step2_title": "Medical Credentials",
+        "step3_title": "Professional Details",
+        "step4_title": "Terms & Conditions"
+      },
+      "step1": {
+        "first_name_label": "First Name *",
+        "first_name_placeholder": "John",
+        "last_name_label": "Last Name *",
+        "last_name_placeholder": "Doe",
+        "email_label": "Email Address *",
+        "email_placeholder": "doctor@example.com",
+        "phone_label": "Phone Number *",
+        "phone_placeholder": "+33 1 23 45 67 89",
+        "password_label": "Password *",
+        "password_placeholder": "Min 8 characters",
+        "confirm_password_label": "Confirm Password *",
+        "confirm_password_placeholder": "Re-enter password",
+        "next_button": "Next Step"
+      },
+      "step2": {
+        "specialty_label": "Medical Specialty *",
+        "specialty_placeholder": "Select your specialty",
+        "license_number_label": "Medical License Number *",
+        "license_number_placeholder": "Enter your license number",
+        "license_expiration_label": "License Expiration Date *",
+        "license_expiration_placeholder": "Pick expiration date",
+        "primary_country_label": "Primary Country of Practice *",
+        "primary_country_placeholder": "Select your primary country",
+        "additional_countries_label": "Additional Licensed Countries (Optional)",
+        "additional_countries_help": "Select countries where you hold valid medical licenses",
+        "rpps_label": "RPPS Number (For France) - Optional",
+        "rpps_placeholder": "11-digit RPPS number",
+        "back_button": "Back",
+        "next_button": "Next Step"
+      },
+      "step3": {
+        "optional_notice": "These fields are optional but help complete your profile faster. You can also complete them later from your dashboard.",
+        "bio_label": "Professional Bio (Optional)",
+        "bio_placeholder": "Tell patients about your experience, specializations, and approach to care...",
+        "price_label": "Consultation Price (EUR) - Optional",
+        "price_placeholder": "50.00",
+        "price_help": "Set your consultation fee. Average range: €30-100",
+        "after_approval_title": "After approval, you'll need to complete:",
+        "after_approval_photo": "Profile photo upload",
+        "after_approval_iban": "IBAN verification for payments",
+        "after_approval_schedule": "Availability schedule setup",
+        "back_button": "Back",
+        "next_button": "Next Step"
+      },
+      "step4": {
+        "almost_done": "Almost done! Please review and accept our terms to complete your application.",
+        "agree_terms": "I agree to the",
+        "terms_link": "Terms of Service",
+        "and": "and",
+        "medical_disclaimer_link": "Medical Disclaimer",
+        "agree_privacy": "I acknowledge and accept the",
+        "privacy_link": "Privacy Policy",
+        "agree_gdpr": "I have read and understand the",
+        "gdpr_link": "GDPR Compliance",
+        "requirements": "requirements",
+        "what_next_title": "What happens next?",
+        "what_next_step1": "Your application will be reviewed by our team",
+        "what_next_step2": "You'll receive an email within 2-3 business days",
+        "what_next_step3": "Once approved, complete your profile to activate your account",
+        "what_next_step4": "Start accepting patient consultations!",
+        "back_button": "Back",
+        "submit_button": "Submit Application",
+        "submitting": "Submitting..."
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "verification_question": "How long does the verification process take?",
+        "verification_answer": "The verification process typically takes 2-3 business days. We'll contact you as soon as we review your application.",
+        "fees_question": "What are the platform fees?",
+        "fees_answer": "The platform takes a 15% commission from each consultation. You set your own consultation price.",
+        "countries_question": "Can I work with patients from different countries?",
+        "countries_answer": "Yes, our platform allows you to work with patients across Europe, in accordance with local regulations and your medical licenses.",
+        "documents_question": "What documents do I need?",
+        "documents_answer": "You'll need a valid medical license, proof of identity, and your professional credentials. Additional documents may be requested during the review process."
+      },
+      "toasts": {
+        "success_title": "Application Submitted Successfully!",
+        "success_description": "Your application is now under review. You will receive an email within 2-3 business days.",
+        "error_title": "Registration Failed",
+        "error_description": "An error occurred during registration. Please try again."
+      }
     }
   }
 }
