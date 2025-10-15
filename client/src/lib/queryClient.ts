@@ -108,7 +108,10 @@ export async function apiRequest(
   });
 
   // If we get a 401 and haven't retried yet, try to refresh the token
-  if (res.status === 401 && retryCount === 0) {
+  // But skip this for login/register endpoints - they should just return the error
+  const isAuthEndpoint = url.includes('/api/auth/login') || url.includes('/api/auth/register');
+
+  if (res.status === 401 && retryCount === 0 && !isAuthEndpoint) {
     console.log('Got 401, attempting token refresh...');
     const refreshed = await refreshToken();
 
