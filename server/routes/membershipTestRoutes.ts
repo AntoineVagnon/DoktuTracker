@@ -23,6 +23,13 @@ import { isAuthenticated } from "../supabaseAuth";
 import Stripe from "stripe";
 
 export function registerMembershipTestRoutes(app: Express, stripe: Stripe) {
+  // ONLY enable in development/staging - SECURITY FIX
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('⚠️ Membership test routes are DISABLED in production for security');
+    return;
+  }
+
+  console.log('✅ Membership test routes ENABLED (development/staging mode)');
 
   // Health check
   app.get("/api/test/membership/status", async (req, res) => {
