@@ -2,8 +2,11 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, AlertTriangle, Phone } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function MedicalDisclaimer() {
+  const { t } = useTranslation('medical_disclaimer');
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -17,7 +20,7 @@ export default function MedicalDisclaimer() {
             <Link href="/">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                {t('medical_disclaimer.header.back_to_home')}
               </Button>
             </Link>
           </div>
@@ -27,11 +30,11 @@ export default function MedicalDisclaimer() {
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold mb-8">Medical Disclaimer</h1>
-          
+          <h1 className="text-3xl font-bold mb-8">{t('medical_disclaimer.header.title')}</h1>
+
           <div className="text-sm text-gray-600 mb-6">
-            <p><strong>Last Updated:</strong> {new Date().toLocaleDateString()}</p>
-            <p><strong>Version:</strong> 1.0</p>
+            <p><strong>{t('medical_disclaimer.header.last_updated')}</strong> {new Date().toLocaleDateString()}</p>
+            <p><strong>{t('medical_disclaimer.header.version')}</strong> 1.0</p>
           </div>
 
           {/* Emergency Warning */}
@@ -40,27 +43,27 @@ export default function MedicalDisclaimer() {
               <AlertTriangle className="h-8 w-8 text-red-600 flex-shrink-0 mt-1" />
               <div>
                 <h2 className="text-2xl font-bold text-red-800 mb-3">
-                  MEDICAL EMERGENCY WARNING
+                  {t('medical_disclaimer.emergency_warning.title')}
                 </h2>
                 <p className="text-red-700 font-semibold mb-3">
-                  This platform is NOT for medical emergencies!
+                  {t('medical_disclaimer.emergency_warning.not_for_emergencies')}
                 </p>
                 <p className="text-red-700 mb-3">
-                  If you are experiencing a medical emergency, including but not limited to:
+                  {t('medical_disclaimer.emergency_warning.experiencing_emergency')}
                 </p>
                 <ul className="list-disc pl-6 space-y-1 text-red-700 mb-4">
-                  <li>Chest pain or pressure</li>
-                  <li>Difficulty breathing</li>
-                  <li>Severe bleeding</li>
-                  <li>Loss of consciousness</li>
-                  <li>Severe allergic reactions</li>
-                  <li>Thoughts of self-harm or suicide</li>
-                  <li>Any life-threatening condition</li>
+                  <li>{t('medical_disclaimer.emergency_warning.symptoms.chest_pain')}</li>
+                  <li>{t('medical_disclaimer.emergency_warning.symptoms.breathing')}</li>
+                  <li>{t('medical_disclaimer.emergency_warning.symptoms.bleeding')}</li>
+                  <li>{t('medical_disclaimer.emergency_warning.symptoms.consciousness')}</li>
+                  <li>{t('medical_disclaimer.emergency_warning.symptoms.allergic')}</li>
+                  <li>{t('medical_disclaimer.emergency_warning.symptoms.self_harm')}</li>
+                  <li>{t('medical_disclaimer.emergency_warning.symptoms.life_threatening')}</li>
                 </ul>
                 <div className="bg-red-100 rounded-lg p-4 flex items-center justify-center">
                   <Phone className="h-6 w-6 mr-2 text-red-800" />
                   <span className="text-2xl font-bold text-red-800">
-                    CALL EMERGENCY SERVICES: 112 (EU)
+                    {t('medical_disclaimer.emergency_warning.call_emergency')}
                   </span>
                 </div>
               </div>
@@ -69,264 +72,256 @@ export default function MedicalDisclaimer() {
 
           <div className="space-y-8 text-gray-700">
             <section>
-              <h2 className="text-2xl font-semibold mb-4">1. Nature of Telemedicine Services</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section1.title')}</h2>
               <p className="mb-4">
-                The Doktu platform provides telemedicine services that allow patients to consult with 
-                licensed healthcare professionals via video conferencing. These services are:
+                {t('medical_disclaimer.section1.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Supplementary to, not a replacement for, in-person medical care</li>
-                <li>Limited by the inherent constraints of remote consultation</li>
-                <li>Not suitable for all medical conditions or situations</li>
-                <li>Subject to technological limitations and connectivity issues</li>
+                <li>{t('medical_disclaimer.section1.items.supplementary')}</li>
+                <li>{t('medical_disclaimer.section1.items.limited')}</li>
+                <li>{t('medical_disclaimer.section1.items.not_suitable')}</li>
+                <li>{t('medical_disclaimer.section1.items.technology')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">2. Limitations of Remote Consultations</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section2.title')}</h2>
+
               <div className="bg-yellow-50 p-4 rounded-lg mb-4">
-                <p className="font-semibold mb-2">Important: Remote consultations cannot provide:</p>
+                <p className="font-semibold mb-2">{t('medical_disclaimer.section2.important_label')}</p>
                 <ul className="list-disc pl-6 space-y-1">
-                  <li>Physical examinations</li>
-                  <li>Immediate emergency treatment</li>
-                  <li>Certain diagnostic tests</li>
-                  <li>Surgical procedures</li>
-                  <li>Administration of medications</li>
+                  <li>{t('medical_disclaimer.section2.limitations.physical')}</li>
+                  <li>{t('medical_disclaimer.section2.limitations.emergency')}</li>
+                  <li>{t('medical_disclaimer.section2.limitations.diagnostic')}</li>
+                  <li>{t('medical_disclaimer.section2.limitations.surgical')}</li>
+                  <li>{t('medical_disclaimer.section2.limitations.medications')}</li>
                 </ul>
               </div>
-              
+
               <p>
-                Healthcare professionals may determine that your condition requires in-person evaluation 
-                and will advise you accordingly.
+                {t('medical_disclaimer.section2.may_require')}
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">3. Medical Advice Disclaimer</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section3.title')}</h2>
               <p className="mb-4">
-                All medical information, advice, and recommendations provided through the Doktu platform:
+                {t('medical_disclaimer.section3.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Are based solely on information provided during the consultation</li>
-                <li>May not account for all aspects of your medical condition</li>
-                <li>Should be considered in conjunction with your overall healthcare</li>
-                <li>Do not guarantee specific medical outcomes</li>
-                <li>May require verification through in-person examination</li>
+                <li>{t('medical_disclaimer.section3.items.based_on')}</li>
+                <li>{t('medical_disclaimer.section3.items.may_not_account')}</li>
+                <li>{t('medical_disclaimer.section3.items.consider')}</li>
+                <li>{t('medical_disclaimer.section3.items.no_guarantee')}</li>
+                <li>{t('medical_disclaimer.section3.items.verification')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">4. No Doctor-Patient Relationship Without Consultation</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section4.title')}</h2>
               <p className="mb-4">
-                Important clarifications:
+                {t('medical_disclaimer.section4.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Browsing the platform does not establish a doctor-patient relationship</li>
-                <li>A relationship is only established during paid consultations</li>
-                <li>General information on the platform is not personalized medical advice</li>
-                <li>Each consultation is independent unless continuity of care is arranged</li>
+                <li>{t('medical_disclaimer.section4.items.browsing')}</li>
+                <li>{t('medical_disclaimer.section4.items.paid')}</li>
+                <li>{t('medical_disclaimer.section4.items.general_info')}</li>
+                <li>{t('medical_disclaimer.section4.items.independent')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">5. Prescription Medications</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section5.title')}</h2>
+
               <div className="bg-blue-50 p-4 rounded-lg mb-4">
-                <p className="font-semibold mb-2">Prescription Policy:</p>
+                <p className="font-semibold mb-2">{t('medical_disclaimer.section5.policy_label')}</p>
                 <ul className="list-disc pl-6 space-y-1">
-                  <li>Prescriptions are issued at the sole discretion of the healthcare provider</li>
-                  <li>Controlled substances cannot be prescribed via telemedicine in many jurisdictions</li>
-                  <li>Prescriptions must be filled at licensed pharmacies</li>
-                  <li>Medication interactions and allergies must be disclosed</li>
-                  <li>Follow-up may be required for certain medications</li>
+                  <li>{t('medical_disclaimer.section5.items.discretion')}</li>
+                  <li>{t('medical_disclaimer.section5.items.controlled')}</li>
+                  <li>{t('medical_disclaimer.section5.items.licensed')}</li>
+                  <li>{t('medical_disclaimer.section5.items.interactions')}</li>
+                  <li>{t('medical_disclaimer.section5.items.followup')}</li>
                 </ul>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">6. User Responsibilities</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section6.title')}</h2>
               <p className="mb-4">
-                By using this platform, you acknowledge and agree to:
+                {t('medical_disclaimer.section6.description')}
               </p>
-              
+
               <div className="space-y-3">
                 <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="font-semibold mb-1">Provide Accurate Information</p>
+                  <p className="font-semibold mb-1">{t('medical_disclaimer.section6.accurate.title')}</p>
                   <p className="text-sm">
-                    You must provide complete, accurate, and truthful information about your medical history, 
-                    symptoms, medications, and allergies.
+                    {t('medical_disclaimer.section6.accurate.description')}
                   </p>
                 </div>
-                
+
                 <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="font-semibold mb-1">Follow Medical Advice</p>
+                  <p className="font-semibold mb-1">{t('medical_disclaimer.section6.follow.title')}</p>
                   <p className="text-sm">
-                    You are responsible for following the medical advice provided or seeking alternative care 
-                    if you choose not to follow recommendations.
+                    {t('medical_disclaimer.section6.follow.description')}
                   </p>
                 </div>
-                
+
                 <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="font-semibold mb-1">Seek Emergency Care When Needed</p>
+                  <p className="font-semibold mb-1">{t('medical_disclaimer.section6.emergency.title')}</p>
                   <p className="text-sm">
-                    You must seek immediate emergency care for any life-threatening or urgent medical conditions.
+                    {t('medical_disclaimer.section6.emergency.description')}
                   </p>
                 </div>
-                
+
                 <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="font-semibold mb-1">Maintain Primary Care</p>
+                  <p className="font-semibold mb-1">{t('medical_disclaimer.section6.primary.title')}</p>
                   <p className="text-sm">
-                    Telemedicine consultations do not replace the need for a primary care physician and regular 
-                    in-person medical care.
+                    {t('medical_disclaimer.section6.primary.description')}
                   </p>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">7. Technology Requirements and Risks</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section7.title')}</h2>
               <p className="mb-4">
-                Telemedicine services depend on technology that may have limitations:
+                {t('medical_disclaimer.section7.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Internet connectivity issues may affect consultation quality</li>
-                <li>Video/audio quality may impact diagnostic accuracy</li>
-                <li>Technical failures may interrupt or prevent consultations</li>
-                <li>Data security risks exist despite our security measures</li>
-                <li>Platform availability is not guaranteed 24/7</li>
+                <li>{t('medical_disclaimer.section7.items.connectivity')}</li>
+                <li>{t('medical_disclaimer.section7.items.quality')}</li>
+                <li>{t('medical_disclaimer.section7.items.failures')}</li>
+                <li>{t('medical_disclaimer.section7.items.security')}</li>
+                <li>{t('medical_disclaimer.section7.items.availability')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">8. Privacy and Confidentiality</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section8.title')}</h2>
               <p className="mb-4">
-                While we implement strong security measures:
+                {t('medical_disclaimer.section8.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Electronic communications carry inherent privacy risks</li>
-                <li>You should ensure privacy during video consultations</li>
-                <li>Family members or others present may hear confidential information</li>
-                <li>Recording consultations without consent is prohibited</li>
+                <li>{t('medical_disclaimer.section8.items.risks')}</li>
+                <li>{t('medical_disclaimer.section8.items.ensure')}</li>
+                <li>{t('medical_disclaimer.section8.items.family')}</li>
+                <li>{t('medical_disclaimer.section8.items.recording')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">9. Geographic Limitations</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section9.title')}</h2>
               <p className="mb-4">
-                Important jurisdictional considerations:
+                {t('medical_disclaimer.section9.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Services are only available where legally permitted</li>
-                <li>Doctors must be licensed in the appropriate jurisdiction</li>
-                <li>Cross-border consultations may have legal restrictions</li>
-                <li>Local laws and regulations apply to all services</li>
+                <li>{t('medical_disclaimer.section9.items.available')}</li>
+                <li>{t('medical_disclaimer.section9.items.licensed')}</li>
+                <li>{t('medical_disclaimer.section9.items.crossborder')}</li>
+                <li>{t('medical_disclaimer.section9.items.laws')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">10. No Guarantee of Results</h2>
-              
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section10.title')}</h2>
+
               <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
-                <p className="font-semibold mb-2">Medical Outcomes Disclaimer:</p>
+                <p className="font-semibold mb-2">{t('medical_disclaimer.section10.disclaimer_label')}</p>
                 <p>
-                  Medicine is not an exact science. No guarantee can be made regarding the accuracy of 
-                  diagnoses, the effectiveness of treatments, or medical outcomes. Individual results may 
-                  vary based on numerous factors including but not limited to:
+                  {t('medical_disclaimer.section10.description')}
                 </p>
                 <ul className="list-disc pl-6 mt-2 space-y-1">
-                  <li>Individual health conditions</li>
-                  <li>Compliance with medical advice</li>
-                  <li>Timeliness of treatment</li>
-                  <li>Accuracy of information provided</li>
-                  <li>Unknown or undisclosed medical factors</li>
+                  <li>{t('medical_disclaimer.section10.factors.conditions')}</li>
+                  <li>{t('medical_disclaimer.section10.factors.compliance')}</li>
+                  <li>{t('medical_disclaimer.section10.factors.timeliness')}</li>
+                  <li>{t('medical_disclaimer.section10.factors.accuracy')}</li>
+                  <li>{t('medical_disclaimer.section10.factors.unknown')}</li>
                 </ul>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">11. Limitation of Liability</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section11.title')}</h2>
               <p className="mb-4">
-                To the fullest extent permitted by law:
+                {t('medical_disclaimer.section11.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Doktu platform is not liable for medical malpractice of independent practitioners</li>
-                <li>We do not guarantee specific medical outcomes</li>
-                <li>We are not responsible for misuse of medical advice</li>
-                <li>Technical failures do not constitute grounds for medical liability</li>
-                <li>Users assume risks inherent in telemedicine services</li>
+                <li>{t('medical_disclaimer.section11.items.malpractice')}</li>
+                <li>{t('medical_disclaimer.section11.items.outcomes')}</li>
+                <li>{t('medical_disclaimer.section11.items.misuse')}</li>
+                <li>{t('medical_disclaimer.section11.items.technical')}</li>
+                <li>{t('medical_disclaimer.section11.items.risks')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">12. Consent to Telemedicine</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section12.title')}</h2>
               <p className="mb-4">
-                By using our telemedicine services, you consent to:
+                {t('medical_disclaimer.section12.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Receiving medical care via electronic communications</li>
-                <li>The limitations and risks of telemedicine</li>
-                <li>The use of electronic transmission of medical information</li>
-                <li>The possibility that consultations may be interrupted or unsuccessful</li>
-                <li>Seeking alternative care if telemedicine is inappropriate</li>
+                <li>{t('medical_disclaimer.section12.items.electronic')}</li>
+                <li>{t('medical_disclaimer.section12.items.limitations')}</li>
+                <li>{t('medical_disclaimer.section12.items.transmission')}</li>
+                <li>{t('medical_disclaimer.section12.items.interruption')}</li>
+                <li>{t('medical_disclaimer.section12.items.alternative')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">13. Second Opinions</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section13.title')}</h2>
               <p className="mb-4">
-                We strongly encourage patients to:
+                {t('medical_disclaimer.section13.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Seek second opinions for significant medical decisions</li>
-                <li>Consult with their primary care physician</li>
-                <li>Obtain in-person evaluation when recommended</li>
-                <li>Not rely solely on telemedicine for complex conditions</li>
+                <li>{t('medical_disclaimer.section13.items.seek')}</li>
+                <li>{t('medical_disclaimer.section13.items.consult')}</li>
+                <li>{t('medical_disclaimer.section13.items.evaluation')}</li>
+                <li>{t('medical_disclaimer.section13.items.not_rely')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">14. Children and Minors</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section14.title')}</h2>
               <p className="mb-4">
-                Special considerations for pediatric care:
+                {t('medical_disclaimer.section14.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Parental or guardian consent required for minors</li>
-                <li>Parent/guardian must be present during consultations</li>
-                <li>Some pediatric conditions require in-person evaluation</li>
-                <li>Age-appropriate limitations apply to certain services</li>
+                <li>{t('medical_disclaimer.section14.items.consent')}</li>
+                <li>{t('medical_disclaimer.section14.items.present')}</li>
+                <li>{t('medical_disclaimer.section14.items.conditions')}</li>
+                <li>{t('medical_disclaimer.section14.items.limitations')}</li>
               </ul>
             </section>
 
             <section className="bg-gray-100 p-6 rounded-lg">
-              <h2 className="text-2xl font-semibold mb-4">15. Acknowledgment and Acceptance</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.section15.title')}</h2>
               <p className="mb-4">
-                By using the Doktu telemedicine platform, you acknowledge that you have read, understood, 
-                and agree to this Medical Disclaimer. You understand that:
+                {t('medical_disclaimer.section15.description')}
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Telemedicine has inherent limitations</li>
-                <li>This service does not replace emergency medical care</li>
-                <li>You are responsible for seeking appropriate medical care</li>
-                <li>Medical outcomes cannot be guaranteed</li>
-                <li>You assume the risks associated with telemedicine</li>
+                <li>{t('medical_disclaimer.section15.items.limitations')}</li>
+                <li>{t('medical_disclaimer.section15.items.not_replace')}</li>
+                <li>{t('medical_disclaimer.section15.items.responsible')}</li>
+                <li>{t('medical_disclaimer.section15.items.no_guarantee')}</li>
+                <li>{t('medical_disclaimer.section15.items.assume')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('medical_disclaimer.contact.title')}</h2>
               <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="mb-2">For questions about this medical disclaimer:</p>
-                <p><strong>Email:</strong> medical@doktu.co</p>
-                <p><strong>Phone:</strong> +33 1 23 45 67 89</p>
-                <p><strong>Address:</strong> 123 Rue de la Santé, 75014 Paris, France</p>
+                <p className="mb-2">{t('medical_disclaimer.contact.description')}</p>
+                <p><strong>{t('medical_disclaimer.contact.email')}</strong> {t('medical_disclaimer.contact.email_value')}</p>
+                <p><strong>{t('medical_disclaimer.contact.phone')}</strong> {t('medical_disclaimer.contact.phone_value')}</p>
+                <p><strong>{t('medical_disclaimer.contact.address')}</strong> {t('medical_disclaimer.contact.address_value')}</p>
               </div>
             </section>
           </div>
 
           <div className="mt-12 p-4 bg-red-50 rounded-lg border border-red-200">
             <p className="text-center font-bold text-red-800 text-lg">
-              Remember: For any medical emergency, call 112 immediately!
+              {t('medical_disclaimer.final_reminder')}
             </p>
           </div>
         </div>

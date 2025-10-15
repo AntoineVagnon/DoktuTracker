@@ -1,0 +1,206 @@
+{
+  "medical_disclaimer": {
+    "header": {
+      "back_to_home": "Back to Home",
+      "title": "Medical Disclaimer",
+      "last_updated": "Last Updated:",
+      "version": "Version:"
+    },
+    "emergency_warning": {
+      "title": "MEDICAL EMERGENCY WARNING",
+      "not_for_emergencies": "This platform is NOT for medical emergencies!",
+      "experiencing_emergency": "If you are experiencing a medical emergency, including but not limited to:",
+      "symptoms": {
+        "chest_pain": "Chest pain or pressure",
+        "breathing": "Difficulty breathing",
+        "bleeding": "Severe bleeding",
+        "consciousness": "Loss of consciousness",
+        "allergic": "Severe allergic reactions",
+        "self_harm": "Thoughts of self-harm or suicide",
+        "life_threatening": "Any life-threatening condition"
+      },
+      "call_emergency": "CALL EMERGENCY SERVICES: 112 (EU)"
+    },
+    "section1": {
+      "title": "1. Nature of Telemedicine Services",
+      "description": "The Doktu platform provides telemedicine services that allow patients to consult with licensed healthcare professionals via video conferencing. These services are:",
+      "items": {
+        "supplementary": "Supplementary to, not a replacement for, in-person medical care",
+        "limited": "Limited by the inherent constraints of remote consultation",
+        "not_suitable": "Not suitable for all medical conditions or situations",
+        "technology": "Subject to technological limitations and connectivity issues"
+      }
+    },
+    "section2": {
+      "title": "2. Limitations of Remote Consultations",
+      "important_label": "Important: Remote consultations cannot provide:",
+      "limitations": {
+        "physical": "Physical examinations",
+        "emergency": "Immediate emergency treatment",
+        "diagnostic": "Certain diagnostic tests",
+        "surgical": "Surgical procedures",
+        "medications": "Administration of medications"
+      },
+      "may_require": "Healthcare professionals may determine that your condition requires in-person evaluation and will advise you accordingly."
+    },
+    "section3": {
+      "title": "3. Medical Advice Disclaimer",
+      "description": "All medical information, advice, and recommendations provided through the Doktu platform:",
+      "items": {
+        "based_on": "Are based solely on information provided during the consultation",
+        "may_not_account": "May not account for all aspects of your medical condition",
+        "consider": "Should be considered in conjunction with your overall healthcare",
+        "no_guarantee": "Do not guarantee specific medical outcomes",
+        "verification": "May require verification through in-person examination"
+      }
+    },
+    "section4": {
+      "title": "4. No Doctor-Patient Relationship Without Consultation",
+      "description": "Important clarifications:",
+      "items": {
+        "browsing": "Browsing the platform does not establish a doctor-patient relationship",
+        "paid": "A relationship is only established during paid consultations",
+        "general_info": "General information on the platform is not personalized medical advice",
+        "independent": "Each consultation is independent unless continuity of care is arranged"
+      }
+    },
+    "section5": {
+      "title": "5. Prescription Medications",
+      "policy_label": "Prescription Policy:",
+      "items": {
+        "discretion": "Prescriptions are issued at the sole discretion of the healthcare provider",
+        "controlled": "Controlled substances cannot be prescribed via telemedicine in many jurisdictions",
+        "licensed": "Prescriptions must be filled at licensed pharmacies",
+        "interactions": "Medication interactions and allergies must be disclosed",
+        "followup": "Follow-up may be required for certain medications"
+      }
+    },
+    "section6": {
+      "title": "6. User Responsibilities",
+      "description": "By using this platform, you acknowledge and agree to:",
+      "accurate": {
+        "title": "Provide Accurate Information",
+        "description": "You must provide complete, accurate, and truthful information about your medical history, symptoms, medications, and allergies."
+      },
+      "follow": {
+        "title": "Follow Medical Advice",
+        "description": "You are responsible for following the medical advice provided or seeking alternative care if you choose not to follow recommendations."
+      },
+      "emergency": {
+        "title": "Seek Emergency Care When Needed",
+        "description": "You must seek immediate emergency care for any life-threatening or urgent medical conditions."
+      },
+      "primary": {
+        "title": "Maintain Primary Care",
+        "description": "Telemedicine consultations do not replace the need for a primary care physician and regular in-person medical care."
+      }
+    },
+    "section7": {
+      "title": "7. Technology Requirements and Risks",
+      "description": "Telemedicine services depend on technology that may have limitations:",
+      "items": {
+        "connectivity": "Internet connectivity issues may affect consultation quality",
+        "quality": "Video/audio quality may impact diagnostic accuracy",
+        "failures": "Technical failures may interrupt or prevent consultations",
+        "security": "Data security risks exist despite our security measures",
+        "availability": "Platform availability is not guaranteed 24/7"
+      }
+    },
+    "section8": {
+      "title": "8. Privacy and Confidentiality",
+      "description": "While we implement strong security measures:",
+      "items": {
+        "risks": "Electronic communications carry inherent privacy risks",
+        "ensure": "You should ensure privacy during video consultations",
+        "family": "Family members or others present may hear confidential information",
+        "recording": "Recording consultations without consent is prohibited"
+      }
+    },
+    "section9": {
+      "title": "9. Geographic Limitations",
+      "description": "Important jurisdictional considerations:",
+      "items": {
+        "available": "Services are only available where legally permitted",
+        "licensed": "Doctors must be licensed in the appropriate jurisdiction",
+        "crossborder": "Cross-border consultations may have legal restrictions",
+        "laws": "Local laws and regulations apply to all services"
+      }
+    },
+    "section10": {
+      "title": "10. No Guarantee of Results",
+      "disclaimer_label": "Medical Outcomes Disclaimer:",
+      "description": "Medicine is not an exact science. No guarantee can be made regarding the accuracy of diagnoses, the effectiveness of treatments, or medical outcomes. Individual results may vary based on numerous factors including but not limited to:",
+      "factors": {
+        "conditions": "Individual health conditions",
+        "compliance": "Compliance with medical advice",
+        "timeliness": "Timeliness of treatment",
+        "accuracy": "Accuracy of information provided",
+        "unknown": "Unknown or undisclosed medical factors"
+      }
+    },
+    "section11": {
+      "title": "11. Limitation of Liability",
+      "description": "To the fullest extent permitted by law:",
+      "items": {
+        "malpractice": "Doktu platform is not liable for medical malpractice of independent practitioners",
+        "outcomes": "We do not guarantee specific medical outcomes",
+        "misuse": "We are not responsible for misuse of medical advice",
+        "technical": "Technical failures do not constitute grounds for medical liability",
+        "risks": "Users assume risks inherent in telemedicine services"
+      }
+    },
+    "section12": {
+      "title": "12. Consent to Telemedicine",
+      "description": "By using our telemedicine services, you consent to:",
+      "items": {
+        "electronic": "Receiving medical care via electronic communications",
+        "limitations": "The limitations and risks of telemedicine",
+        "transmission": "The use of electronic transmission of medical information",
+        "interruption": "The possibility that consultations may be interrupted or unsuccessful",
+        "alternative": "Seeking alternative care if telemedicine is inappropriate"
+      }
+    },
+    "section13": {
+      "title": "13. Second Opinions",
+      "description": "We strongly encourage patients to:",
+      "items": {
+        "seek": "Seek second opinions for significant medical decisions",
+        "consult": "Consult with their primary care physician",
+        "evaluation": "Obtain in-person evaluation when recommended",
+        "not_rely": "Not rely solely on telemedicine for complex conditions"
+      }
+    },
+    "section14": {
+      "title": "14. Children and Minors",
+      "description": "Special considerations for pediatric care:",
+      "items": {
+        "consent": "Parental or guardian consent required for minors",
+        "present": "Parent/guardian must be present during consultations",
+        "conditions": "Some pediatric conditions require in-person evaluation",
+        "limitations": "Age-appropriate limitations apply to certain services"
+      }
+    },
+    "section15": {
+      "title": "15. Acknowledgment and Acceptance",
+      "description": "By using the Doktu telemedicine platform, you acknowledge that you have read, understood, and agree to this Medical Disclaimer. You understand that:",
+      "items": {
+        "limitations": "Telemedicine has inherent limitations",
+        "not_replace": "This service does not replace emergency medical care",
+        "responsible": "You are responsible for seeking appropriate medical care",
+        "no_guarantee": "Medical outcomes cannot be guaranteed",
+        "assume": "You assume the risks associated with telemedicine"
+      }
+    },
+    "contact": {
+      "title": "Contact Information",
+      "description": "For questions about this medical disclaimer:",
+      "email": "Email:",
+      "email_value": "medical@doktu.co",
+      "phone": "Phone:",
+      "phone_value": "+33 1 23 45 67 89",
+      "address": "Address:",
+      "address_value": "123 Rue de la Santé, 75014 Paris, France"
+    },
+    "final_reminder": "Remember: For any medical emergency, call 112 immediately!"
+  }
+}
