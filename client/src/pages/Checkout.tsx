@@ -123,33 +123,50 @@ export default function Checkout() {
 
         // Only check for held slots if we don't have an existing appointment
         let heldSlotData: any = {};
-        
+
         if (!appointmentId) {
           // If we have a slotId from the URL, re-hold the slot
           if (slotId) {
             console.log('Re-holding slot with ID:', slotId);
-            const reholdResponse = await apiRequest('POST', '/api/slots/hold', { slotId });
+            try {
+              const reholdResponse = await apiRequest('POST', '/api/slots/hold', { slotId });
 
-            if (reholdResponse.ok) {
-              const reholdData = await reholdResponse.json();
-              console.log('Slot re-held successfully:', reholdData);
+              if (reholdResponse.ok) {
+                const reholdData = await reholdResponse.json();
+                console.log('Slot re-held successfully:', reholdData);
 
-              // Now get the held slot
-              const heldSlotResponse = await apiRequest('GET', '/api/slots/held');
-              heldSlotData = await heldSlotResponse.json();
-            } else {
-              console.error('Failed to re-hold slot');
-              setSlotExpired(true);
-              setIsLoading(false);
-              return;
+                // Now get the held slot
+                const heldSlotResponse = await apiRequest('GET', '/api/slots/held');
+                heldSlotData = await heldSlotResponse.json();
+              } else {
+                console.warn('Re-hold failed, trying to get existing held slot');
+                // Try to get existing held slot instead of failing immediately
+                const heldSlotResponse = await apiRequest('GET', '/api/slots/held');
+                heldSlotData = await heldSlotResponse.json();
+              }
+            } catch (error) {
+              console.error('Error during re-hold:', error);
+              // Try to get existing held slot as fallback
+              try {
+                const heldSlotResponse = await apiRequest('GET', '/api/slots/held');
+                heldSlotData = await heldSlotResponse.json();
+              } catch (fallbackError) {
+                console.error('Failed to get held slot as fallback:', fallbackError);
+              }
             }
           } else {
             // No slotId provided, check if there's already a held slot
-            const heldSlotResponse = await apiRequest('GET', '/api/slots/held');
-            heldSlotData = await heldSlotResponse.json();
+            try {
+              const heldSlotResponse = await apiRequest('GET', '/api/slots/held');
+              heldSlotData = await heldSlotResponse.json();
+            } catch (error) {
+              console.error('Failed to get held slot:', error);
+            }
           }
-          
+
+          // Only show expired error if we truly have no held slot
           if (!heldSlotData.heldSlot) {
+            console.error('No held slot found. User may need to select a time slot again.');
             setSlotExpired(true);
             setIsLoading(false);
             return;
@@ -223,11 +240,11 @@ export default function Checkout() {
           const originalExpiresAt = new Date(createdAt.getTime() + 15 * 60 * 1000); // 15 minutes from original creation
           const now = new Date();
           const remaining = Math.max(0, originalExpiresAt.getTime() - now.getTime());
-          
-          console.log('🔥 Checkout Timer Check (Existing):', { 
+
+          console.log('🔥 Checkout Timer Check (Existing):', {
             appointmentId: appointmentData.id,
-            createdAt: createdAt.toISOString(), 
-            expiresAt: originalExpiresAt.toISOString(), 
+            createdAt: createdAt.toISOString(),
+            expiresAt: originalExpiresAt.toISOString(),
             now: now.toISOString(),
             remainingMs: remaining,
             isExpired: remaining <= 0
@@ -321,7 +338,7 @@ export default function Checkout() {
           const now = new Date();
           const remaining = Math.max(0, expiresAt.getTime() - now.getTime());
           setTimeRemaining(remaining);
-          
+
           if (remaining <= 0) {
             console.log('⏰ New appointment timer expired');
             setSlotExpired(true);
