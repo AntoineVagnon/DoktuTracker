@@ -458,8 +458,7 @@ adminDoctorManagementRouter.post('/applications/:doctorId/approve', async (req, 
   try {
     const { doctorId } = req.params;
     const { notes } = req.body;
-    const session = req.session.supabaseSession;
-    const adminId = session.user.id;
+    const adminId = req.user.id; // Set by requireAdmin middleware
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
 
     // Get current doctor status
@@ -562,8 +561,7 @@ adminDoctorManagementRouter.post('/applications/:doctorId/reject', async (req, r
   try {
     const { doctorId } = req.params;
     const { reason, rejectionType, notes } = req.body; // rejectionType: 'soft' or 'hard'
-    const session = req.session.supabaseSession;
-    const adminId = session.user.id;
+    const adminId = req.user.id; // Set by requireAdmin middleware
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
 
     // Validate input
@@ -712,8 +710,7 @@ adminDoctorManagementRouter.post('/:doctorId/suspend', async (req, res) => {
   try {
     const { doctorId } = req.params;
     const { reason, notes } = req.body;
-    const session = req.session.supabaseSession;
-    const adminId = session.user.id;
+    const adminId = req.user.id; // Set by requireAdmin middleware
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
 
     if (!reason) {
@@ -813,8 +810,7 @@ adminDoctorManagementRouter.post('/:doctorId/reactivate', async (req, res) => {
   try {
     const { doctorId } = req.params;
     const { notes } = req.body;
-    const session = req.session.supabaseSession;
-    const adminId = session.user.id;
+    const adminId = req.user.id; // Set by requireAdmin middleware
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
 
     // Get current doctor status
