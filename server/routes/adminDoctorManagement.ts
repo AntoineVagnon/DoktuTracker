@@ -54,6 +54,110 @@ async function requireAdmin(req: any, res: any, next: any) {
 adminDoctorManagementRouter.use(requireAdmin);
 
 /**
+ * GET /api/admin/doctors
+ * List all doctors (for the "Active Doctors" tab)
+ */
+adminDoctorManagementRouter.get('/', async (req, res) => {
+  try {
+    const {
+      status,
+      search,
+      page = '1',
+      limit = '100',
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query;
+
+    const pageNum = parseInt(page as string);
+    const limitNum = parseInt(limit as string);
+    const offset = (pageNum - 1) * limitNum;
+
+    // Build WHERE conditions
+    const conditions: any[] = [];
+
+    // Filter by status (default to active doctors only)
+    if (status && status !== 'all') {
+      const statusArray = (status as string).split(',');
+      conditions.push(inArray(doctors.status, statusArray));
+    } else if (!status) {
+      // Default: show only active doctors
+      conditions.push(eq(doctors.status, 'active'));
+    }
+
+    // Search by name, email, or specialty
+    if (search && typeof search === 'string') {
+      const searchTerm = `%${search}%`;
+      conditions.push(
+        or(
+          ilike(users.firstName, searchTerm),
+          ilike(users.lastName, searchTerm),
+          ilike(users.email, searchTerm),
+          ilike(doctors.specialty, searchTerm)
+        )
+      );
+    }
+
+    // Build query
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    // Get total count
+    const [countResult] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(doctors)
+      .innerJoin(users, eq(doctors.userId, users.id))
+      .where(whereClause);
+
+    const totalCount = countResult?.count || 0;
+
+    // Get paginated doctors
+    const doctorsList = await db
+      .select({
+        id: doctors.id,
+        userId: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        phone: users.phone,
+        specialty: doctors.specialty,
+        licenseNumber: doctors.licenseNumber,
+        licenseExpirationDate: doctors.licenseExpirationDate,
+        countries: doctors.countries,
+        status: doctors.status,
+        bio: doctors.bio,
+        consultationPrice: doctors.consultationPrice,
+        rating: doctors.rating,
+        reviewCount: doctors.reviewCount,
+        profileCompletionPercentage: doctors.profileCompletionPercentage,
+        profilePhoto: doctors.profilePhoto,
+        createdAt: users.createdAt,
+        approvedAt: doctors.approvedAt,
+        activatedAt: doctors.activatedAt,
+        lastLoginAt: doctors.lastLoginAt
+      })
+      .from(doctors)
+      .innerJoin(users, eq(doctors.userId, users.id))
+      .where(whereClause)
+      .orderBy(sortOrder === 'desc' ? desc(users.createdAt) : users.createdAt)
+      .limit(limitNum)
+      .offset(offset);
+
+    return res.json({
+      doctors: doctorsList,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limitNum)
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error fetching doctors:', error);
+    return res.status(500).json({ error: 'Failed to fetch doctors' });
+  }
+});
+
+/**
  * GET /api/admin/doctors/applications
  * List all doctor applications with filtering and pagination
  */
