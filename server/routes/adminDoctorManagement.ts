@@ -1073,9 +1073,9 @@ adminDoctorManagementRouter.put('/:doctorId', async (req, res) => {
     } = req.body;
     const adminId = req.user.id;
 
-    // Get doctor and user IDs
+    // Get doctor and user IDs (including status for audit log)
     const [doctor] = await db
-      .select({ id: doctors.id, userId: doctors.userId })
+      .select({ id: doctors.id, userId: doctors.userId, status: doctors.status })
       .from(doctors)
       .where(eq(doctors.id, parseInt(doctorId)))
       .limit(1);
@@ -1139,8 +1139,8 @@ adminDoctorManagementRouter.put('/:doctorId', async (req, res) => {
       await db.insert(doctorApplicationAudit).values({
         doctorId: parseInt(doctorId),
         adminId: parseInt(adminId),
-        oldStatus: null,
-        newStatus: null,
+        oldStatus: doctor.status,
+        newStatus: doctor.status,
         reason: 'Profile updated by admin',
         notes: `Updated fields: ${changedFields}. Profile completion: ${profileResult.previousPercentage}% → ${profileResult.percentage}%`,
         ipAddress: req.ip || req.socket.remoteAddress || 'unknown',
