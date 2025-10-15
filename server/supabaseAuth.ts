@@ -770,6 +770,78 @@ export async function setupSupabaseAuth(app: Express) {
     }
   });
 
+  // Token refresh endpoint
+  app.post('/api/auth/refresh', async (req, res) => {
+    try {
+      const { refresh_token } = req.body;
+
+      if (!refresh_token) {
+        return res.status(400).json({ error: 'Refresh token required' });
+      }
+
+      console.log('Token refresh request');
+
+      // Use Supabase to refresh the session
+      const { data, error } = await supabase.auth.refreshSession({
+        refresh_token
+      });
+
+      if (error || !data.session) {
+        console.error('Token refresh error:', error?.message);
+        return res.status(401).json({ error: 'Invalid or expired refresh token' });
+      }
+
+      console.log('Token refreshed successfully for user:', data.user?.email);
+
+      // Get user profile from database
+      let user;
+      try {
+        user = await storage.getUserByEmail(data.user?.email || '');
+        if (!user) {
+          user = await storage.upsertUser({
+            email: data.user?.email || '',
+            role: 'patient',
+            firstName: data.user?.user_metadata?.first_name || null,
+            lastName: data.user?.user_metadata?.last_name || null
+          });
+        }
+      } catch (dbError: any) {
+        console.error('Database error during token refresh:', dbError.message);
+        // Return session even if database lookup fails
+        return res.json({
+          session: {
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token,
+            expires_in: data.session.expires_in,
+            expires_at: data.session.expires_at
+          },
+          user: {
+            id: -1,
+            email: data.user?.email,
+            role: 'patient',
+            firstName: data.user?.user_metadata?.first_name || null,
+            lastName: data.user?.user_metadata?.last_name || null
+          }
+        });
+      }
+
+      res.json({
+        session: {
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_in: data.session.expires_in,
+          expires_at: data.session.expires_at
+        },
+        user,
+        message: 'Token refreshed successfully'
+      });
+
+    } catch (error: any) {
+      console.error('Token refresh error:', error);
+      res.status(500).json({ error: 'Token refresh failed' });
+    }
+  });
+
   // Password reset endpoint
   app.post('/api/auth/forgot-password', async (req, res) => {
     try {
