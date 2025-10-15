@@ -15,8 +15,10 @@ import {
   Globe
 } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function Contact() {
+  const { t } = useTranslation('contact');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -40,14 +42,14 @@ export default function Contact() {
           <Link href="/">
             <Button variant="ghost" className="text-white hover:bg-white/10 mb-8">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Nazad na početnu
+              {t('contact.hero.back_to_home')}
             </Button>
           </Link>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Kontaktirajte nas
+            {t('contact.hero.title')}
           </h1>
           <p className="text-xl text-blue-100">
-            Rado ćemo odgovoriti na vaša pitanja
+            {t('contact.hero.subtitle')}
           </p>
         </div>
       </div>
@@ -58,16 +60,16 @@ export default function Contact() {
           <div className="md:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Pošaljite nam poruku</CardTitle>
+                <CardTitle>{t('contact.form.title')}</CardTitle>
                 <CardDescription>
-                  Popunite obrazac ispod i odgovorit ćemo vam u najkraćem roku
+                  {t('contact.form.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Ime i prezime *</Label>
+                      <Label htmlFor="name">{t('contact.form.name_label')}</Label>
                       <Input
                         id="name"
                         required
@@ -77,7 +79,7 @@ export default function Contact() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
+                      <Label htmlFor="email">{t('contact.form.email_label')}</Label>
                       <Input
                         id="email"
                         type="email"
@@ -89,22 +91,22 @@ export default function Contact() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="subject">Predmet *</Label>
+                    <Label htmlFor="subject">{t('contact.form.subject_label')}</Label>
                     <Input
                       id="subject"
                       required
-                      placeholder="O čemu želite razgovarati?"
+                      placeholder={t('contact.form.subject_placeholder')}
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="message">Poruka *</Label>
+                    <Label htmlFor="message">{t('contact.form.message_label')}</Label>
                     <Textarea
                       id="message"
                       required
-                      placeholder="Vaša poruka..."
+                      placeholder={t('contact.form.message_placeholder')}
                       rows={8}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -113,17 +115,15 @@ export default function Contact() {
 
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <p className="text-sm text-gray-700">
-                      <strong>Napomena o privatnosti:</strong> Vaše osobne informacije su zaštićene u skladu sa RGPD
-                      propisima. Koristit ćemo vaše podatke isključivo za odgovor na vaš upit.
-                      Više informacija u našoj{' '}
+                      {t('contact.form.privacy_notice')}{' '}
                       <Link href="/privacy">
-                        <a className="text-blue-600 hover:underline">politici privatnosti</a>
+                        <a className="text-blue-600 hover:underline">{t('contact.form.privacy_link')}</a>
                       </Link>.
                     </p>
                   </div>
 
                   <Button type="submit" className="w-full" size="lg">
-                    Pošalji poruku
+                    {t('contact.form.submit_button')}
                   </Button>
                 </form>
               </CardContent>
@@ -132,27 +132,19 @@ export default function Contact() {
             {/* GDPR Notice */}
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle className="text-lg">Zaštita podataka (RGPD)</CardTitle>
+                <CardTitle className="text-lg">{t('contact.gdpr.title')}</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-gray-600 space-y-2">
+                <p>{t('contact.gdpr.controller')}</p>
+                <p>{t('contact.gdpr.purpose')}</p>
+                <p>{t('contact.gdpr.legal_basis')}</p>
+                <p>{t('contact.gdpr.retention')}</p>
+                <p>{t('contact.gdpr.rights')}</p>
                 <p>
-                  <strong>Odgovorni za obradu:</strong> Doktu Platform, registriran u Evropskoj Uniji
-                </p>
-                <p>
-                  <strong>Svrha obrade:</strong> Odgovor na vaš upit i pružanje podrške
-                </p>
-                <p>
-                  <strong>Pravna osnova:</strong> Vaša saglasnost (RGPD Član 6(1)(a))
-                </p>
-                <p>
-                  <strong>Zadržavanje podataka:</strong> 12 mjeseci nakon posljednje komunikacije
-                </p>
-                <p>
-                  <strong>Vaša prava:</strong> Pristup, ispravka, brisanje, ograničenje obrade, prenosivost podataka
-                </p>
-                <p>
-                  Za više informacija ili za ostvarivanje vaših prava, kontaktirajte našeg DPO (Data Protection Officer) na{' '}
-                  <a href="mailto:dpo@doktu.co" className="text-blue-600 hover:underline">dpo@doktu.co</a>
+                  {t('contact.gdpr.dpo_notice')}{' '}
+                  <a href={`mailto:${t('contact.gdpr.dpo_email')}`} className="text-blue-600 hover:underline">
+                    {t('contact.gdpr.dpo_email')}
+                  </a>
                 </p>
               </CardContent>
             </Card>
@@ -162,13 +154,13 @@ export default function Contact() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Kontakt informacije</CardTitle>
+                <CardTitle>{t('contact.info.title')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <Mail className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Email</p>
+                    <p className="font-medium text-sm">{t('contact.info.email_label')}</p>
                     <a href="mailto:contact@doktu.co" className="text-sm text-blue-600 hover:underline">
                       contact@doktu.co
                     </a>
@@ -178,7 +170,7 @@ export default function Contact() {
                 <div className="flex items-start space-x-3">
                   <Phone className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Telefon</p>
+                    <p className="font-medium text-sm">{t('contact.info.phone_label')}</p>
                     <a href="tel:+33123456789" className="text-sm text-blue-600 hover:underline">
                       +33 1 23 45 67 89
                     </a>
@@ -188,10 +180,10 @@ export default function Contact() {
                 <div className="flex items-start space-x-3">
                   <MapPin className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Adresa</p>
+                    <p className="font-medium text-sm">{t('contact.info.address_label')}</p>
                     <p className="text-sm text-gray-600">
-                      123 Avenue de la Santé<br />
-                      75001 Paris, Francuska
+                      {t('contact.info.address_line1')}<br />
+                      {t('contact.info.address_line2')}
                     </p>
                   </div>
                 </div>
@@ -199,11 +191,11 @@ export default function Contact() {
                 <div className="flex items-start space-x-3">
                   <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Radno vrijeme</p>
+                    <p className="font-medium text-sm">{t('contact.info.hours_label')}</p>
                     <p className="text-sm text-gray-600">
-                      Pon-Pet: 9:00 - 18:00<br />
-                      Sub: 10:00 - 16:00<br />
-                      Ned: Zatvoreno
+                      {t('contact.info.hours_weekday')}<br />
+                      {t('contact.info.hours_saturday')}<br />
+                      {t('contact.info.hours_sunday')}
                     </p>
                   </div>
                 </div>
@@ -211,11 +203,11 @@ export default function Contact() {
                 <div className="flex items-start space-x-3">
                   <Building2 className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Registracija</p>
+                    <p className="font-medium text-sm">{t('contact.info.registration_label')}</p>
                     <p className="text-sm text-gray-600">
-                      Društvo: Doktu SAS<br />
-                      SIRET: 123 456 789 00010<br />
-                      TVA: FR12345678900
+                      {t('contact.info.company_name')}<br />
+                      {t('contact.info.siret')}<br />
+                      {t('contact.info.vat')}
                     </p>
                   </div>
                 </div>
@@ -223,11 +215,11 @@ export default function Contact() {
                 <div className="flex items-start space-x-3">
                   <Globe className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Lokacije</p>
+                    <p className="font-medium text-sm">{t('contact.info.locations_label')}</p>
                     <p className="text-sm text-gray-600">
-                      Dostupno u cijeloj EU<br />
-                      Regionalne kancelarije u<br />
-                      Parizu, Berlinu i Madridu
+                      {t('contact.info.locations_desc_line1')}<br />
+                      {t('contact.info.locations_desc_line2')}<br />
+                      {t('contact.info.locations_desc_line3')}
                     </p>
                   </div>
                 </div>
@@ -236,20 +228,20 @@ export default function Contact() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Potrebna hitna pomoć?</CardTitle>
+                <CardTitle className="text-lg">{t('contact.emergency.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600 mb-4">
-                  Ako imate medicinsku hitnost, molimo vas da ne koristite ovaj obrazac.
+                  {t('contact.emergency.description')}
                 </p>
                 <div className="space-y-2 text-sm">
-                  <p className="font-semibold text-red-600">Hitne službe:</p>
+                  <p className="font-semibold text-red-600">{t('contact.emergency.services_title')}</p>
                   <div className="space-y-1 text-gray-700">
-                    <p>🇫🇷 Francuska: 15 (SAMU)</p>
-                    <p>🇩🇪 Njemačka: 112</p>
-                    <p>🇪🇸 Španija: 112</p>
-                    <p>🇮🇹 Italija: 118</p>
-                    <p>🇧🇪 Belgija: 112</p>
+                    <p>🇫🇷 {t('contact.emergency.france')}</p>
+                    <p>🇩🇪 {t('contact.emergency.germany')}</p>
+                    <p>🇪🇸 {t('contact.emergency.spain')}</p>
+                    <p>🇮🇹 {t('contact.emergency.italy')}</p>
+                    <p>🇧🇪 {t('contact.emergency.belgium')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -259,7 +251,7 @@ export default function Contact() {
 
         {/* Additional Help */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6 text-center">Drugi načini da stupite u kontakt</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center">{t('contact.additional.title')}</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <Link href="/support">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
@@ -267,9 +259,9 @@ export default function Contact() {
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Mail className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h3 className="font-semibold mb-2">Centar za podršku</h3>
+                  <h3 className="font-semibold mb-2">{t('contact.additional.support_title')}</h3>
                   <p className="text-sm text-gray-600">
-                    Tehnička podrška i česta pitanja
+                    {t('contact.additional.support_description')}
                   </p>
                 </CardContent>
               </Card>
@@ -281,9 +273,9 @@ export default function Contact() {
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Building2 className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h3 className="font-semibold mb-2">Za doktore</h3>
+                  <h3 className="font-semibold mb-2">{t('contact.additional.doctors_title')}</h3>
                   <p className="text-sm text-gray-600">
-                    Pridružite se našoj platformi kao doktor
+                    {t('contact.additional.doctors_description')}
                   </p>
                 </CardContent>
               </Card>
@@ -295,9 +287,9 @@ export default function Contact() {
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Globe className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h3 className="font-semibold mb-2">RGPD zahtjevi</h3>
+                  <h3 className="font-semibold mb-2">{t('contact.additional.gdpr_title')}</h3>
                   <p className="text-sm text-gray-600">
-                    Pristup i upravljanje vašim podacima
+                    {t('contact.additional.gdpr_description')}
                   </p>
                 </CardContent>
               </Card>
