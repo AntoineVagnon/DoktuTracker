@@ -1232,7 +1232,7 @@ adminDoctorManagementRouter.get('/:doctorId', async (req, res) => {
         profileCompletionPercentage: doctors.profileCompletionPercentage,
         iban: doctors.iban,
         ibanVerificationStatus: doctors.ibanVerificationStatus,
-        title: doctors.title,
+        title: users.title,  // Fixed: title is in users table, not doctors table
         createdAt: users.createdAt,
         approvedAt: doctors.approvedAt,
         activatedAt: doctors.activatedAt,
