@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "@/hooks/useTranslation";
 import { ConsentManager } from "@/components/ConsentManager";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -7,6 +8,7 @@ import { useLocation } from "wouter";
 
 export default function ConsentManagement() {
   const { user } = useAuth();
+  const { t } = useTranslation('common');
   const [, setLocation] = useLocation();
   const [userId, setUserId] = useState<number | null>(null);
 
@@ -36,12 +38,12 @@ export default function ConsentManagement() {
             className="mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to {user?.role === 'doctor' ? 'Settings' : 'Dashboard'}
+            {t('common.button.back_to_dashboard')}
           </Button>
-          
-          <h1 className="text-3xl font-bold mb-2">Privacy & Consent Management</h1>
+
+          <h1 className="text-3xl font-bold mb-2">{t('consent.title')}</h1>
           <p className="text-muted-foreground">
-            Control how your data is used and processed in compliance with GDPR regulations
+            {t('consent.subtitle')}
           </p>
         </div>
 

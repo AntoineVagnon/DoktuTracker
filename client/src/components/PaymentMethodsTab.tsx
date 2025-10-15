@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 import { apiRequest } from "@/lib/queryClient";
 import {
   CreditCard,
@@ -43,6 +44,7 @@ interface PaymentMethod {
 
 export function PaymentMethodsTab() {
   const { toast } = useToast();
+  const { t } = useTranslation('dashboard');
   const queryClient = useQueryClient();
   const [methodToDelete, setMethodToDelete] = useState<PaymentMethod | null>(null);
   const [showAddPaymentDialog, setShowAddPaymentDialog] = useState(false);
@@ -125,9 +127,9 @@ export function PaymentMethodsTab() {
     <div className="space-y-6">
       {/* Header Section */}
       <div>
-        <h3 className="text-lg font-medium">Payment Methods</h3>
+        <h3 className="text-lg font-medium">{t('patient.payment.title')}</h3>
         <p className="text-sm text-gray-500 mt-1">
-          Manage your payment methods for appointments and subscriptions
+          {t('patient.payment.description')}
         </p>
       </div>
 
@@ -139,7 +141,7 @@ export function PaymentMethodsTab() {
             className="w-full sm:w-auto"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Payment Method
+            {t('patient.payment.add_button')}
           </Button>
         </CardContent>
       </Card>
@@ -203,7 +205,7 @@ export function PaymentMethodsTab() {
                         onClick={() => setDefaultMutation.mutate(method.id)}
                         disabled={setDefaultMutation.isPending}
                       >
-                        Set as Default
+                        {t('patient.payment.set_default')}
                       </Button>
                     )}
                     <Button
@@ -228,13 +230,12 @@ export function PaymentMethodsTab() {
           <CardHeader>
             <CardTitle className="text-sm flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-600" />
-              Secure Payments
+              {t('patient.payment.secure_payments_title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600">
-              All payment information is encrypted and processed securely through Stripe.
-              We never store your full card details.
+              {t('patient.payment.secure_payments_description')}
             </p>
           </CardContent>
         </Card>
@@ -243,13 +244,12 @@ export function PaymentMethodsTab() {
           <CardHeader>
             <CardTitle className="text-sm flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-blue-600" />
-              Default Payment Method
+              {t('patient.payment.default_method_title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600">
-              Your default payment method will be used for all future appointments and
-              subscription renewals.
+              {t('patient.payment.default_method_description')}
             </p>
           </CardContent>
         </Card>

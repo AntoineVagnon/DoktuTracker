@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -64,6 +65,7 @@ interface DataSubjectRequest {
 export default function DataProcessingRecords() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation('common');
   const [activeTab, setActiveTab] = useState('records');
   const [selectedRecord, setSelectedRecord] = useState<ProcessingRecord | null>(null);
 
@@ -271,26 +273,25 @@ export default function DataProcessingRecords() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
           <Shield className="h-8 w-8 text-primary" />
-          Data Processing Records
+          {t('data_processing.title')}
         </h1>
         <p className="text-muted-foreground">
-          View how your data is processed and exercise your GDPR rights
+          {t('data_processing.subtitle')}
         </p>
       </div>
 
       <Alert className="mb-6">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          Under GDPR, you have the right to know how your personal data is processed,
-          request access to your data, and request corrections or deletion.
+          {t('data_processing.gdpr_notice')}
         </AlertDescription>
       </Alert>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="records">Processing Records</TabsTrigger>
-          <TabsTrigger value="requests">My Requests</TabsTrigger>
-          <TabsTrigger value="rights">My Rights</TabsTrigger>
+          <TabsTrigger value="records">{t('data_processing.tabs.processing_records')}</TabsTrigger>
+          <TabsTrigger value="requests">{t('data_processing.tabs.my_requests')}</TabsTrigger>
+          <TabsTrigger value="rights">{t('data_processing.tabs.my_rights')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="records" className="space-y-4 mt-6">
@@ -414,22 +415,21 @@ export default function DataProcessingRecords() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Eye className="h-5 w-5" />
-                  Right to Access
+                  {t('data_processing.rights.access.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  You have the right to obtain confirmation of whether we process your personal data
-                  and access to that data along with certain information about the processing.
+                  {t('data_processing.rights.access.description')}
                 </p>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => createRequestMutation.mutate({
                     requestType: 'access',
                     description: 'I request access to all my personal data you are processing.'
                   })}
                 >
-                  Request Access
+                  {t('data_processing.rights.access.button')}
                 </Button>
               </CardContent>
             </Card>
@@ -438,22 +438,21 @@ export default function DataProcessingRecords() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5" />
-                  Right to Rectification
+                  {t('data_processing.rights.rectification.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  You have the right to obtain rectification of inaccurate personal data
-                  and to have incomplete personal data completed.
+                  {t('data_processing.rights.rectification.description')}
                 </p>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => createRequestMutation.mutate({
                     requestType: 'rectification',
                     description: 'I request rectification of my personal data.'
                   })}
                 >
-                  Request Rectification
+                  {t('data_processing.rights.rectification.button')}
                 </Button>
               </CardContent>
             </Card>
@@ -462,22 +461,21 @@ export default function DataProcessingRecords() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <XCircle className="h-5 w-5" />
-                  Right to Erasure
+                  {t('data_processing.rights.erasure.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  You have the right to obtain erasure of your personal data when it is no longer
-                  necessary for the purposes for which it was collected.
+                  {t('data_processing.rights.erasure.description')}
                 </p>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => createRequestMutation.mutate({
                     requestType: 'erasure',
                     description: 'I request complete erasure of my personal data.'
                   })}
                 >
-                  Request Erasure
+                  {t('data_processing.rights.erasure.button')}
                 </Button>
               </CardContent>
             </Card>

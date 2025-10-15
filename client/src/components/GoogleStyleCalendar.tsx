@@ -19,6 +19,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useAvailabilitySync } from "@/hooks/useAvailabilitySync";
+import { useTranslation } from "@/hooks/useTranslation";
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from "date-fns";
 
 interface TimeSlot {
@@ -113,6 +114,7 @@ export default function GoogleStyleCalendar({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { syncAvailability } = useAvailabilitySync();
+  const { t } = useTranslation('dashboard');
   
   const [internalCurrentDate, setInternalCurrentDate] = useState(new Date());
   const currentDate = externalCurrentDate || internalCurrentDate;
@@ -729,7 +731,7 @@ export default function GoogleStyleCalendar({
             }}
             title="Click to view appointment details"
           >
-            <div className="font-medium">Booked</div>
+            <div className="font-medium">{t('patient.calendar.booked')}</div>
             {!isPatientView && (
               <div className="truncate text-xs">
                 {bookedAppointment.patient?.firstName || bookedAppointment.patient?.email || 'Patient'}
@@ -996,11 +998,11 @@ export default function GoogleStyleCalendar({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-            {isPatientView ? 'My Appointments' : 'Calendar & Availability'}
+            {isPatientView ? t('patient.calendar.title') : 'Calendar & Availability'}
           </h2>
           <p className="text-sm sm:text-base text-gray-600">
             {isPatientView ? (
-              <>View and manage your appointments</>
+              <>{t('patient.calendar.description')}</>
             ) : (
               <>
                 <span className="hidden sm:inline">Click and drag to create availability slots</span>
@@ -1014,9 +1016,9 @@ export default function GoogleStyleCalendar({
           {/* View Tabs */}
           <Tabs value={view} onValueChange={(v) => setView(v as CalendarView)}>
             <TabsList className="grid w-full grid-cols-3 sm:w-auto">
-              <TabsTrigger value="day" className="text-xs sm:text-sm">Day</TabsTrigger>
-              <TabsTrigger value="week" className="text-xs sm:text-sm">Week</TabsTrigger>
-              <TabsTrigger value="month" className="text-xs sm:text-sm">Month</TabsTrigger>
+              <TabsTrigger value="day" className="text-xs sm:text-sm">{t('patient.calendar.view_day')}</TabsTrigger>
+              <TabsTrigger value="week" className="text-xs sm:text-sm">{t('patient.calendar.view_week')}</TabsTrigger>
+              <TabsTrigger value="month" className="text-xs sm:text-sm">{t('patient.calendar.view_month')}</TabsTrigger>
             </TabsList>
           </Tabs>
           
@@ -1055,13 +1057,13 @@ export default function GoogleStyleCalendar({
             </Button>
           </div>
           
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setCurrentDate(new Date())}
             className="h-9"
           >
-            Today
+            {t('patient.calendar.today')}
           </Button>
         </div>
       </div>
@@ -1184,7 +1186,15 @@ export default function GoogleStyleCalendar({
         <Card className="overflow-hidden">
           <CardContent className="p-0">
             <div className="grid grid-cols-7 border-b bg-gray-50 sticky top-0 z-10">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+              {[
+                t('patient.calendar.days.sunday'),
+                t('patient.calendar.days.monday'),
+                t('patient.calendar.days.tuesday'),
+                t('patient.calendar.days.wednesday'),
+                t('patient.calendar.days.thursday'),
+                t('patient.calendar.days.friday'),
+                t('patient.calendar.days.saturday')
+              ].map((day, index) => (
                 <div key={index} className="p-2 text-center text-xs font-medium text-gray-600 border-r last:border-r-0">
                   {day}
                 </div>
