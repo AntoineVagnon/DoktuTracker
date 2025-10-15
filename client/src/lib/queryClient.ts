@@ -65,10 +65,21 @@ async function throwIfResNotOk(res: Response) {
         // Try to parse as JSON first
         try {
           const errorJson = JSON.parse(errorBody);
-          errorMessage = errorJson.error || errorJson.message || errorBody;
+          // Extract string error message, never pass raw JSON
+          if (typeof errorJson.error === 'string' && errorJson.error) {
+            errorMessage = errorJson.error;
+          } else if (typeof errorJson.message === 'string' && errorJson.message) {
+            errorMessage = errorJson.message;
+          } else if (typeof errorBody === 'string' && errorBody.length < 200) {
+            // Only use raw body if it's short (likely a simple error message)
+            errorMessage = errorBody;
+          } else {
+            // Fallback to generic message if response is complex JSON
+            errorMessage = `Request failed with status ${res.status}`;
+          }
         } catch {
-          // If not JSON, use the text directly
-          errorMessage = errorBody;
+          // If not JSON, use the text directly (but limit length)
+          errorMessage = errorBody.length < 200 ? errorBody : `Request failed with status ${res.status}`;
         }
       }
     } catch {

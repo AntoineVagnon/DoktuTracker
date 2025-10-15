@@ -13,6 +13,26 @@ import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import { apiRequest } from "@/lib/queryClient";
 
+// Helper function to safely extract string from error messages
+const getErrorMessage = (error: unknown): string => {
+  if (typeof error === 'string') return error;
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === 'object' && 'message' in error) {
+    const msg = (error as any).message;
+    return typeof msg === 'string' ? msg : 'An error occurred';
+  }
+  return 'An error occurred';
+};
+
+// Helper function to safely extract string from response data
+const getMessageString = (data: any): string => {
+  if (!data) return '';
+  if (typeof data === 'string') return data;
+  if (typeof data.message === 'string') return data.message;
+  if (typeof data.error === 'string') return data.error;
+  return '';
+};
+
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -133,9 +153,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         localStorage.setItem('doktu_auth', JSON.stringify(data));
       }
 
+      const successMessage = getMessageString(data) || "Your account has been created successfully!";
       toast({
         title: "Account Created",
-        description: data.message || "Your account has been created successfully!",
+        description: successMessage,
       });
       onClose();
       // For new patients, redirect to dashboard
@@ -143,10 +164,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       window.location.href = '/dashboard';
     },
     onError: (error: Error) => {
-      setAuthError(error.message || "An error occurred during signup");
+      const errorMessage = getErrorMessage(error) || "An error occurred during signup";
+      setAuthError(errorMessage);
       toast({
         title: "Signup Failed",
-        description: error.message || "An error occurred during signup",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -201,9 +223,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         throw new Error(data.error || 'Password reset failed');
       }
     } catch (error: any) {
+      const errorMessage = getErrorMessage(error) || "An error occurred while sending reset email";
       toast({
         title: "Reset Failed",
-        description: error.message || "An error occurred while sending reset email",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
