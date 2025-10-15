@@ -2254,11 +2254,106 @@ export default function AdminDashboard() {
                     </Button>
                   </div>
 
-                  {/* Bio Section */}
+                  {/* Professional Information */}
                   {doctorDetails.bio && (
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">About</h4>
-                      <p className="text-gray-700 text-sm leading-relaxed">{doctorDetails.bio}</p>
+                      <h4 className="font-semibold text-gray-900 mb-2">Professional Presentation</h4>
+                      <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{doctorDetails.bio}</p>
+                    </div>
+                  )}
+
+                  {doctorDetails.education && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">Degrees and Qualifications</h4>
+                      <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{doctorDetails.education}</p>
+                    </div>
+                  )}
+
+                  {doctorDetails.experience && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">Experience and Awards</h4>
+                      <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{doctorDetails.experience}</p>
+                    </div>
+                  )}
+
+                  {/* License Information */}
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">License & Credentials</h4>
+                    <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                      {doctorDetails.licenseNumber && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">License Number</p>
+                          <p className="text-sm font-medium text-gray-900">{doctorDetails.licenseNumber}</p>
+                        </div>
+                      )}
+                      {doctorDetails.licenseExpirationDate && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">License Expiration</p>
+                          <p className="text-sm font-medium text-gray-900">
+                            {new Date(doctorDetails.licenseExpirationDate).toLocaleDateString()}
+                          </p>
+                        </div>
+                      )}
+                      {doctorDetails.countries && doctorDetails.countries.length > 0 && (
+                        <div className="col-span-2">
+                          <p className="text-xs text-gray-500 mb-2">Licensed Countries</p>
+                          <div className="flex flex-wrap gap-2">
+                            {doctorDetails.countries.map((country: string, idx: number) => (
+                              <Badge key={idx} variant="outline">{country}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Financial Information */}
+                  {(doctorDetails.iban || doctorDetails.ibanVerificationStatus) && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Banking Information</h4>
+                      <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                        {doctorDetails.iban && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">IBAN</p>
+                            <p className="text-sm font-mono text-gray-900">{doctorDetails.iban}</p>
+                          </div>
+                        )}
+                        {doctorDetails.ibanVerificationStatus && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Verification Status</p>
+                            <Badge variant={doctorDetails.ibanVerificationStatus === 'verified' ? 'default' : 'secondary'}>
+                              {doctorDetails.ibanVerificationStatus === 'verified' ? '✓ Verified' : 'Pending Verification'}
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Profile Completion */}
+                  {doctorDetails.profileCompletionPercentage !== undefined && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Profile Completion</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-700">Profile Progress</span>
+                          <span className="text-sm font-medium text-gray-900">{doctorDetails.profileCompletionPercentage}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full transition-all ${
+                              doctorDetails.profileCompletionPercentage === 100
+                                ? 'bg-green-600'
+                                : doctorDetails.profileCompletionPercentage >= 80
+                                ? 'bg-blue-600'
+                                : doctorDetails.profileCompletionPercentage >= 50
+                                ? 'bg-yellow-600'
+                                : 'bg-red-600'
+                            }`}
+                            style={{ width: `${doctorDetails.profileCompletionPercentage}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -2427,12 +2522,12 @@ export default function AdminDashboard() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Biography
+                  Professional Presentation
                 </label>
                 <textarea
                   value={editFormData.bio}
                   onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
-                  placeholder="Professional biography and experience..."
+                  placeholder="Introduce yourself to future patients: your experience, approach, specialties..."
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -2549,12 +2644,12 @@ export default function AdminDashboard() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Education
+                  Degrees and Qualifications
                 </label>
                 <textarea
                   value={editFormData.education}
                   onChange={(e) => setEditFormData({ ...editFormData, education: e.target.value })}
-                  placeholder="Educational background..."
+                  placeholder="List your degrees and certifications..."
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -2562,25 +2657,12 @@ export default function AdminDashboard() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Experience
+                  Experience and Awards
                 </label>
                 <textarea
                   value={editFormData.experience}
                   onChange={(e) => setEditFormData({ ...editFormData, experience: e.target.value })}
-                  placeholder="Professional experience..."
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Medical Approach
-                </label>
-                <textarea
-                  value={editFormData.medicalApproach}
-                  onChange={(e) => setEditFormData({ ...editFormData, medicalApproach: e.target.value })}
-                  placeholder="Medical philosophy and approach to patient care..."
+                  placeholder="Awards, distinctions, publications, work experience..."
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
