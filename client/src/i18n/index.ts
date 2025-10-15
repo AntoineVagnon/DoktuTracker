@@ -46,7 +46,7 @@ i18n
       },
     },
     // Default language
-    fallbackLng: 'en',
+    fallbackLng: 'bs',
     // Default namespace
     defaultNS: 'common',
     // Namespaces to load

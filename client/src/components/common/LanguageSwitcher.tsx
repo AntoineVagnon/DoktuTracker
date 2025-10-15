@@ -25,12 +25,12 @@ export function LanguageSwitcher() {
   };
 
   const languages = [
-    { code: 'en', name: 'English', flag: '🇬🇧' },
     { code: 'bs', name: 'Bosanski', flag: '🇧🇦' },
+    { code: 'en', name: 'English', flag: '🇬🇧' },
   ];
 
-  const currentLangName = languages.find(lang => lang.code === currentLanguage)?.name || 'English';
-  const currentLangFlag = languages.find(lang => lang.code === currentLanguage)?.flag || '🇬🇧';
+  const currentLangName = languages.find(lang => lang.code === currentLanguage)?.name || 'Bosanski';
+  const currentLangFlag = languages.find(lang => lang.code === currentLanguage)?.flag || '🇧🇦';
 
   return (
     <DropdownMenu>
