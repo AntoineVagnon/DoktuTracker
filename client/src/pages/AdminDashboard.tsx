@@ -1442,7 +1442,7 @@ export default function AdminDashboard() {
       queryKey: ['/api/admin/doctors'],
       queryFn: async () => {
         const response = await apiRequest('GET', '/api/admin/doctors');
-        return await response.json();
+        const data = await response.json(); return data.doctors || [];
       },
       refetchInterval: 30000, // Refresh every 30 seconds
     });
@@ -1490,8 +1490,8 @@ export default function AdminDashboard() {
     // Filter doctors by search query
     const filteredDoctors = doctors?.filter((doc: any) => {
       const query = searchQuery.toLowerCase();
-      const fullName = `${doc.user?.firstName || ''} ${doc.user?.lastName || ''}`.toLowerCase();
-      const email = doc.user?.email?.toLowerCase() || '';
+      const fullName = `${doc.firstName || ''} ${doc.lastName || ''}`.toLowerCase();
+      const email = doc.email?.toLowerCase() || '';
       const specialty = doc.specialty?.toLowerCase() || '';
       return fullName.includes(query) || email.includes(query) || specialty.includes(query);
     }) || [];
@@ -1571,10 +1571,10 @@ export default function AdminDashboard() {
         rppsNumber: doctor.rppsNumber || '',
         consultationPrice: doctor.consultationPrice || '',
         languages: doctor.languages || ['English'],
-        title: doctor.user?.title || '',
-        firstName: doctor.user?.firstName || '',
-        lastName: doctor.user?.lastName || '',
-        phone: doctor.user?.phone || '',
+        title: doctor.title || '',
+        firstName: doctor.firstName || '',
+        lastName: doctor.lastName || '',
+        phone: doctor.phone || '',
       });
       setShowEditForm(true);
     };
@@ -2082,10 +2082,10 @@ export default function AdminDashboard() {
                       <tr key={doctor.id} className="border-b hover:bg-gray-50 transition-colors">
                         <td className="py-4">
                           <div className="flex items-center gap-3">
-                            {doctor.user?.profileImageUrl ? (
+                            {doctor.profilePhoto ? (
                               <img
-                                src={doctor.user.profileImageUrl}
-                                alt={`Dr. ${doctor.user?.firstName} ${doctor.user?.lastName}`}
+                                src={doctor.profilePhoto}
+                                alt={`Dr. ${doctor.firstName} ${doctor.lastName}`}
                                 className="w-10 h-10 rounded-full object-cover"
                               />
                             ) : (
@@ -2095,9 +2095,9 @@ export default function AdminDashboard() {
                             )}
                             <div>
                               <div className="font-medium text-gray-900">
-                                Dr. {doctor.user?.firstName} {doctor.user?.lastName}
+                                Dr. {doctor.firstName} {doctor.lastName}
                               </div>
-                              <div className="text-sm text-gray-500">{doctor.user?.email}</div>
+                              <div className="text-sm text-gray-500">{doctor.email}</div>
                             </div>
                           </div>
                         </td>
