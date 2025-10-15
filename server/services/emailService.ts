@@ -24,15 +24,17 @@ class SendGridManager {
     // Boot-time assertions for SendGrid configuration
     const apiKey = process.env.SENDGRID_API_KEY;
     const fromEmail = process.env.SENDGRID_FROM_EMAIL;
-    
+
     if (!apiKey) {
-      console.error('❌ CRITICAL: SENDGRID_API_KEY environment variable is not set');
-      throw new Error('SendGrid API key is required for email functionality');
+      console.warn('⚠️ WARNING: SENDGRID_API_KEY environment variable is not set');
+      console.warn('⚠️ Email functionality will be disabled until SendGrid is configured');
+      return; // Don't crash - just disable email functionality
     }
-    
+
     if (!fromEmail) {
-      console.error('❌ CRITICAL: SENDGRID_FROM_EMAIL environment variable is not set');
-      throw new Error('SendGrid from email is required for email functionality');
+      console.warn('⚠️ WARNING: SENDGRID_FROM_EMAIL environment variable is not set');
+      console.warn('⚠️ Email functionality will be disabled until SendGrid is configured');
+      return; // Don't crash - just disable email functionality
     }
     
     // Validate API key format (should be at least 50 chars and start with SG.)
@@ -41,18 +43,21 @@ class SendGridManager {
     const isProduction = process.env.NODE_ENV === 'production';
 
     if (!apiKey.startsWith('SG.')) {
-      console.error('❌ CRITICAL: Invalid SendGrid API key format - must start with SG.');
-      throw new Error('Invalid SendGrid API key format');
+      console.warn('⚠️ WARNING: Invalid SendGrid API key format - must start with SG.');
+      console.warn('⚠️ Email functionality will be disabled');
+      return; // Don't crash - just disable email functionality
     }
 
     if (!isDevelopmentKey && apiKey.length < 50) {
-      console.error('❌ CRITICAL: Invalid SendGrid API key format - key too short');
-      throw new Error('Invalid SendGrid API key format');
+      console.warn('⚠️ WARNING: Invalid SendGrid API key format - key too short');
+      console.warn('⚠️ Email functionality will be disabled');
+      return; // Don't crash - just disable email functionality
     }
 
     if (isDevelopmentKey && isProduction) {
-      console.error('❌ CRITICAL: Development SendGrid key cannot be used in production');
-      throw new Error('Development SendGrid key not allowed in production');
+      console.warn('⚠️ WARNING: Development SendGrid key cannot be used in production');
+      console.warn('⚠️ Email functionality will be disabled');
+      return; // Don't crash - just disable email functionality
     }
 
     if (isDevelopmentKey) {
@@ -72,8 +77,10 @@ class SendGridManager {
       console.log(`✅ SendGrid initialized successfully with API key: ${this.getMaskedKey()}`);
       console.log(`📧 From email configured: ${fromEmail}`);
     } catch (error) {
-      console.error('❌ CRITICAL: Failed to initialize SendGrid:', error);
-      throw new Error('Failed to initialize SendGrid service');
+      console.warn('⚠️ WARNING: Failed to initialize SendGrid:', error);
+      console.warn('⚠️ Email functionality will be disabled');
+      this.config.isInitialized = false; // Mark as not initialized
+      return; // Don't crash - just disable email functionality
     }
   }
   
