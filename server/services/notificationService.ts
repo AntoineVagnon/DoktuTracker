@@ -1621,12 +1621,30 @@ export class UniversalNotificationService {
         });
       }
 
+      // Disable link tracking for security-sensitive emails to prevent antivirus blocking
+      // (e.g., password resets, email verification, account security notifications)
+      const securitySensitiveTriggers = [
+        TriggerCode.ACCOUNT_PASSWORD_RESET,    // A3 - Password reset links
+        TriggerCode.ACCOUNT_PASSWORD_CHANGED,  // A4 - Security confirmation
+        TriggerCode.ACCOUNT_EMAIL_VERIFICATION, // A2 - Email verification
+        TriggerCode.ACCOUNT_EMAIL_CHANGE,      // A5 - Email change confirmation
+        TriggerCode.ACCOUNT_DELETION_CONFIRM,  // A6 - Account deletion
+        TriggerCode.ACCOUNT_SUSPENSION_NOTICE  // A7 - Account suspension
+      ];
+
+      const shouldDisableTracking = securitySensitiveTriggers.includes(notification.triggerCode as any);
+
+      if (shouldDisableTracking) {
+        console.log(`🔒 Disabling link tracking for security-sensitive email: ${notification.triggerCode}`);
+      }
+
       // Send email
       await sendEmail({
         to: user.email,
         subject: template.subject,
         html: template.html,
-        attachments
+        attachments,
+        disableTracking: shouldDisableTracking
       });
 
       // Update notification status

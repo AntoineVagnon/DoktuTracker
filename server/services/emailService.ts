@@ -175,6 +175,7 @@ export interface EmailOptions {
     groupId: number;
     groupsToDisplay?: number[];
   };
+  disableTracking?: boolean; // Disable link tracking for security-sensitive emails
 }
 
 export async function sendEmail(options: EmailOptions): Promise<void> {
@@ -208,10 +209,12 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
       subject: options.subject,
       html: options.html,
       text: options.text,
-      // Enable click tracking and open tracking
-      'o:tracking': 'yes',
-      'o:tracking-clicks': 'yes',
-      'o:tracking-opens': 'yes'
+      // SECURITY: Disable click tracking for security-sensitive emails
+      // Link tracking wraps URLs in redirects that look suspicious to antivirus software
+      // causing Bitdefender and other security tools to block legitimate links
+      'o:tracking': options.disableTracking ? 'no' : 'yes',
+      'o:tracking-clicks': options.disableTracking ? 'no' : 'yes',
+      'o:tracking-opens': options.disableTracking ? 'no' : 'yes'
     };
 
     // Add attachments if provided
