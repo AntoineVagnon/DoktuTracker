@@ -32,6 +32,7 @@ import DocumentLibrary from "@/pages/DocumentLibrary";
 import { PatientCalendar } from "@/pages/PatientCalendar";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminNotifications from "@/pages/AdminNotifications";
+import AdminAnalytics from "@/pages/AdminAnalytics";
 import Payment from "@/pages/Payment";
 import Checkout from "@/pages/Checkout";
 import DoctorList from "@/pages/DoctorList";
@@ -103,6 +104,7 @@ function Router() {
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/notifications" component={AdminNotifications} />
+      <Route path="/admin/analytics" component={AdminAnalytics} />
       <Route path="/video-consultation/:id" component={VideoConsultation} />
       
       {/* Legal and Compliance Pages */}
