@@ -647,23 +647,51 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <p>Dear ${data.first_name || 'Patient'},</p>
-        
+
         <p>We noticed your health profile is ${data.completion_percentage || '0'}% complete. Taking a few minutes to complete it will help your doctors provide better care.</p>
-        
+
         <p><strong>What's missing:</strong></p>
         <ul>
           ${data.missing_fields ? data.missing_fields.map(field => `<li>${field}</li>`).join('') : '<li>Basic health information</li>'}
         </ul>
-        
+
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.VITE_APP_URL}/dashboard" 
+          <a href="${process.env.VITE_APP_URL}/dashboard"
              style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
             Complete Profile Now
           </a>
         </div>
-        
+
         <p>A complete profile helps doctors understand your health better and provide more personalized care.</p>
-        
+
+        <p>Best regards,<br>Doktu Team</p>
+      </div>
+    `
+  }),
+
+  account_password_reset: (data) => ({
+    subject: "Reset Your Doktu Password",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <p>Dear ${data.first_name || 'User'},</p>
+
+        <p>We received a request to reset your password for your Doktu account.</p>
+
+        <p>Click the button below to reset your password:</p>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${data.reset_link}"
+             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            Reset Password
+          </a>
+        </div>
+
+        <p>This link will expire in ${data.expiry_time || '1 hour'} for security reasons.</p>
+
+        <p>If you didn't request this password reset, please ignore this email. Your password will not be changed.</p>
+
+        <p>For security reasons, never share your password with anyone.</p>
+
         <p>Best regards,<br>Doktu Team</p>
       </div>
     `
@@ -705,8 +733,9 @@ function getRequiredFields(templateKey: string): string[] {
     // Universal Notification System templates
     account_registration_success: ["first_name"],
     account_email_verification: ["first_name", "verification_link"],
-    health_profile_incomplete: ["first_name"]
+    health_profile_incomplete: ["first_name"],
+    account_password_reset: ["first_name", "reset_link"]
   };
-  
+
   return fieldMap[templateKey] || [];
 }
