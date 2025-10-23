@@ -3382,6 +3382,433 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
         </p>
       </div>
     `
+  }),
+
+  // ========================================
+  // PHASE 4-5: Final Templates to 100% (Priority 70-50)
+  // ========================================
+
+  // C4: Calendar Availability Updated - Priority 70
+  calendar_availability_updated: (data) => ({
+    subject: "Your calendar availability has been updated",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ Availability updated
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            Your new schedule is now live for patients to book
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi Dr. ${data.doctor_last_name || data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Your calendar availability has been successfully updated. Patients can now see and book your new time slots.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Availability Summary:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            ${data.available_slots || 'N/A'} new time slots added<br>
+            ${data.total_weekly_hours || 'N/A'} hours/week available<br>
+            Next available: ${data.next_slot || 'N/A'}
+          </p>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            💡 Booking Tip
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Doctors with more available slots get ${data.booking_increase || '40%'} more bookings on average.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctor/calendar"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            View Calendar
+          </a>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Calendar System</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // C5: Calendar Blocked - Priority 65
+  calendar_blocked: (data) => ({
+    subject: "Time blocked on your calendar",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #92400e;">
+            Time blocked
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            ${data.date_range || 'Selected time'} is now unavailable for bookings
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi Dr. ${data.doctor_last_name || data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          You've successfully blocked time on your calendar. These time slots are no longer available for patient bookings.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Blocked Time:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            ${data.date_range || 'N/A'}<br>
+            Reason: ${data.reason || 'Personal time off'}<br>
+            ${data.affected_appointments ? `${data.affected_appointments} existing appointments will be notified` : 'No existing appointments affected'}
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctor/calendar"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Manage Calendar
+          </a>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Calendar System</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // B12: Patient No-Show Warning - Priority 70
+  booking_patient_no_show: (data) => ({
+    subject: "Missed appointment notice",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #92400e;">
+            Missed appointment
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            You didn't join your consultation with Dr. ${data.doctor_name}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.patient_first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          We noticed you didn't join your scheduled consultation with <strong>Dr. ${data.doctor_name}</strong> on <strong>${data.appointment_datetime_local || 'N/A'}</strong>.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            What happened to my credit?
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            ${data.credit_forfeited ?
+              `Unfortunately, because you didn't cancel in advance, your ${data.credit_type === 'membership' ? 'membership consultation credit' : `€${data.amount || 'N/A'}`} has been forfeited per our <a href="${process.env.VITE_APP_URL}/no-show-policy" style="color: #0066cc;">no-show policy</a>.` :
+              `Your ${data.credit_type === 'membership' ? 'membership consultation credit' : `€${data.amount || 'N/A'}`} has been restored as a one-time courtesy.`
+            }
+          </p>
+        </div>
+
+        ${!data.credit_forfeited ? `
+          <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #15803d;">
+              ✓ One-time courtesy
+            </h3>
+            <p style="margin: 0; font-size: 14px; color: #15803d;">
+              We've restored your credit this time. Future no-shows will result in forfeiture.
+            </p>
+          </div>
+        ` : ''}
+
+        <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #991b1b;">
+            ⚠️ Avoid future no-shows
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #991b1b;">
+            • Cancel at least ${data.min_cancel_hours || '24'} hours in advance for full credit<br>
+            • Add appointments to your calendar with reminders<br>
+            • ${data.no_show_count >= 2 ? 'Multiple no-shows may result in account restrictions' : 'We send reminders 24h and 1h before your appointment'}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          If you experienced technical difficulties joining, please contact support immediately.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctors"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Book Another Consultation
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Technical issues? <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Support Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // M8: Membership Allowance 1 Left - Priority 70
+  membership_allowance_1_left: (data) => ({
+    subject: "1 consultation left this month",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #92400e;">
+            1 consultation left
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            Your monthly allowance resets ${data.reset_date || 'soon'}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Just a friendly reminder: you have <strong>1 consultation remaining</strong> in your ${data.plan_name || 'membership'} plan this month.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Your Membership:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Plan:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.plan_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Remaining:</td>
+              <td style="padding: 8px 0; color: #f59e0b; font-size: 18px; font-weight: 700; text-align: right;">1 consultation</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Used This Month:</td>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px; text-align: right;">${data.used_this_month || 'N/A'} of ${data.total_per_month || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Resets:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.reset_date || 'N/A'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #991b1b;">
+            ⚠️ Use it or lose it
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #991b1b;">
+            Unused consultations don't roll over. Book your final consultation before ${data.reset_date || 'the end of the month'} or it will be lost.
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Don't let your membership go to waste! Book your final consultation now.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctors"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Book Final Consultation
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about your membership?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>The Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // M9: Membership Allowance Exhausted - Priority 75
+  membership_allowance_exhausted: (data) => ({
+    subject: "Monthly consultations exhausted",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #991b1b;">
+            Monthly allowance used
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #991b1b;">
+            0 consultations remaining until ${data.reset_date || 'next month'}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          You've used all <strong>${data.total_per_month || 'N/A'} consultations</strong> included in your ${data.plan_name || 'membership'} plan for this month.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Your Membership:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Plan:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.plan_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Used This Month:</td>
+              <td style="padding: 8px 0; color: #ef4444; font-size: 18px; font-weight: 700; text-align: right;">${data.total_per_month || 'N/A'} of ${data.total_per_month || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Resets:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.reset_date || 'N/A'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            💡 Your Options
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            <strong>Wait for reset:</strong> Your ${data.total_per_month || 'N/A'} consultations renew on ${data.reset_date || 'N/A'}<br>
+            <strong>Book as pay-per-visit:</strong> €${data.pay_per_visit_price || '45'}/consultation (member rate)<br>
+            <strong>Upgrade plan:</strong> Get ${data.upgrade_consultations || 'more'} consultations/month
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Need to see a doctor before ${data.reset_date}? You can book additional consultations at your discounted member rate.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctors"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 10px;">
+            Book Pay-Per-Visit
+          </a>
+          <a href="${process.env.VITE_APP_URL}/membership/upgrade"
+             style="display: inline-block; background-color: #64748b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Upgrade Plan
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>The Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // H1: Health Profile Created - Priority 65
+  health_profile_created: (data) => ({
+    subject: "Health profile created - keep it updated for better care",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ Health profile created
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            Your medical information is securely stored
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Your Doktu health profile has been created! This secure medical record will help doctors provide you with better, more personalized care.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            What's in your health profile:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            ✓ Personal information (age, gender, height, weight)<br>
+            ✓ Medical history and chronic conditions<br>
+            ✓ Current medications and allergies<br>
+            ✓ Past consultations and prescriptions<br>
+            ✓ Uploaded health documents
+          </p>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            🔒 Your privacy is protected
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Your health data is encrypted, HIPAA-compliant, and only shared with doctors you consult. You control who sees what.
+          </p>
+        </div>
+
+        ${data.profile_complete_percentage < 100 ? `
+          <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+              💡 Profile ${data.profile_complete_percentage || '60'}% complete
+            </h3>
+            <p style="margin: 0; font-size: 14px; color: #92400e;">
+              Complete your profile to get ${data.benefit || 'faster diagnoses and more accurate treatment recommendations'}.
+            </p>
+          </div>
+        ` : ''}
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          ${data.profile_complete_percentage < 100 ? 'Complete your profile now to help doctors provide the best possible care.' : 'Your profile is complete! Update it anytime to keep your information current.'}
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/health-profile"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            ${data.profile_complete_percentage < 100 ? 'Complete Profile' : 'View Health Profile'}
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about your health profile?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          To your health,<br>
+          <strong>The Doktu Team</strong>
+        </p>
+      </div>
+    `
   })
 };
 
@@ -3458,7 +3885,14 @@ function getRequiredFields(templateKey: string): string[] {
     calendar_appointment_updated: ["last_name", "patient_name"],
     calendar_appointment_cancelled: ["last_name", "patient_name"],
     account_2fa_enabled: ["first_name"],
-    account_2fa_disabled: ["first_name"]
+    account_2fa_disabled: ["first_name"],
+    // Phase 4-5: Final Growth Templates (Priority 70-50)
+    calendar_availability_updated: ["last_name"],
+    calendar_blocked: ["last_name", "blocked_dates"],
+    booking_patient_no_show: ["patient_first_name", "doctor_name", "appointment_datetime_local"],
+    membership_allowance_1_left: ["first_name", "plan_name", "reset_date"],
+    membership_allowance_exhausted: ["first_name", "reset_date"],
+    health_profile_created: ["first_name"]
   };
 
   return fieldMap[templateKey] || [];
