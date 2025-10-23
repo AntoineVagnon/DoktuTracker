@@ -695,6 +695,166 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
         <p>Best regards,<br>Doktu Team</p>
       </div>
     `
+  }),
+
+  account_password_changed: (data) => ({
+    subject: "Your Doktu Password Has Been Changed",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <p>Dear ${data.first_name || 'User'},</p>
+
+        <p>This email confirms that your Doktu account password was successfully changed on ${data.changed_at || 'recently'}.</p>
+
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #15803d;">
+            Security Details:
+          </h3>
+          <p style="margin: 0; color: #15803d;">
+            <strong>Date & Time:</strong> ${data.changed_at || 'Just now'}<br>
+            <strong>Device:</strong> ${data.device || 'Your device'}<br>
+            <strong>Location:</strong> ${data.location || 'Your location'}
+          </p>
+        </div>
+
+        <p><strong>If you made this change:</strong></p>
+        <p>No further action is needed. Your account is secure.</p>
+
+        <p><strong>If you did NOT make this change:</strong></p>
+        <p style="color: #dc2626; font-weight: 600;">Your account may be compromised. Take these steps immediately:</p>
+        <ol style="color: #dc2626;">
+          <li>Reset your password again using a secure device</li>
+          <li>Review your recent account activity</li>
+          <li>Enable two-factor authentication</li>
+          <li>Contact our support team at support@doktu.com</li>
+        </ol>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.VITE_APP_URL}/security"
+             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            Review Security Settings
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin-top: 24px;">
+          For your security, never share your password with anyone, including Doktu staff.
+        </p>
+
+        <p>Best regards,<br>Doktu Security Team</p>
+      </div>
+    `
+  }),
+
+  booking_payment_pending: (data) => ({
+    subject: "Complete Your Payment – Your Appointment Slot is Reserved",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <p>Dear ${data.patient_first_name || 'Patient'},</p>
+
+        <p>You've successfully reserved an appointment slot with Dr. ${data.doctor_name}!</p>
+
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #92400e;">
+            ⏰ Action Required – Complete Payment Within 15 Minutes
+          </h3>
+          <p style="margin: 0; color: #92400e;">
+            Your appointment slot is held for <strong>15 minutes</strong>. If payment is not completed by ${data.hold_expires_at || '15 minutes'}, this slot will be released and become available to other patients.
+          </p>
+        </div>
+
+        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+          <p style="margin: 5px 0;"><strong>Doctor:</strong> Dr. ${data.doctor_name}</p>
+          <p style="margin: 5px 0;"><strong>Specialization:</strong> ${data.doctor_specialization || 'General Practice'}</p>
+          <p style="margin: 5px 0;"><strong>Date & Time:</strong> ${data.appointment_datetime_local}</p>
+          <p style="margin: 5px 0;"><strong>Price:</strong> ${data.currency || '€'}${data.price || '35'}</p>
+          <p style="margin: 5px 0;"><strong>Hold Expires:</strong> ${data.hold_expires_at || 'In 15 minutes'}</p>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${data.payment_link || process.env.VITE_APP_URL + '/patient/checkout/' + data.booking_id}"
+             style="background-color: #dc2626; color: white; padding: 14px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: 600; font-size: 16px;">
+            Complete Payment Now
+          </a>
+        </div>
+
+        <p><strong>What happens after payment?</strong></p>
+        <ul>
+          <li>You'll receive instant confirmation</li>
+          <li>Your appointment will be confirmed and locked in</li>
+          <li>You'll get calendar reminders before your consultation</li>
+          <li>You'll receive the video call link to join</li>
+        </ul>
+
+        <p style="font-size: 14px; color: #64748b; margin-top: 24px;">
+          <strong>Need help?</strong> Contact our support team at support@doktu.co or call us at ${data.support_phone || '+33 (0)1 XX XX XX XX'}.
+        </p>
+
+        <p>Best regards,<br>Doktu Team</p>
+      </div>
+    `
+  }),
+
+  membership_payment_failed: (data) => ({
+    subject: "Urgent: Your Doktu Membership Payment Failed",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <p>Dear ${data.first_name || 'Member'},</p>
+
+        <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #991b1b;">
+            ⚠️ Payment Failed – Action Required
+          </h3>
+          <p style="margin: 0; color: #991b1b;">
+            We were unable to process your ${data.plan_name || 'membership'} payment. Your membership benefits may be interrupted if this is not resolved within ${data.grace_period_days || '3'} days.
+          </p>
+        </div>
+
+        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+          <p style="margin: 5px 0;"><strong>Membership Plan:</strong> ${data.plan_name || 'Premium'}</p>
+          <p style="margin: 5px 0;"><strong>Amount Due:</strong> ${data.currency || '€'}${data.amount || '29.99'}</p>
+          <p style="margin: 5px 0;"><strong>Billing Period:</strong> ${data.billing_period || 'Monthly'}</p>
+          <p style="margin: 5px 0;"><strong>Payment Method:</strong> ${data.payment_method || 'Card ending in ****'}</p>
+          <p style="margin: 5px 0;"><strong>Failure Reason:</strong> ${data.failure_reason || 'Payment declined'}</p>
+        </div>
+
+        <p><strong>Why did this happen?</strong></p>
+        <ul>
+          <li>Insufficient funds in your account</li>
+          <li>Expired or invalid payment method</li>
+          <li>Card issuer declined the transaction</li>
+          <li>Billing address mismatch</li>
+        </ul>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${data.update_payment_link || process.env.VITE_APP_URL + '/settings/billing'}"
+             style="background-color: #dc2626; color: white; padding: 14px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: 600; font-size: 16px;">
+            Update Payment Method
+          </a>
+        </div>
+
+        <p><strong>What happens next?</strong></p>
+        <ul>
+          <li>We'll automatically retry payment in ${data.retry_days || '2'} days</li>
+          <li>If payment fails ${data.max_retry_attempts || '3'} times, your membership will be suspended</li>
+          <li>You can update your payment method now to avoid interruption</li>
+          <li>Your membership benefits remain active during the ${data.grace_period_days || '3'}-day grace period</li>
+        </ul>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #1e40af;">
+            Need Help?
+          </h3>
+          <p style="margin: 0; color: #1e40af;">
+            Contact your bank to authorize the payment, or update your payment method in your account settings. Our support team is available 24/7 at support@doktu.co.
+          </p>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin-top: 24px;">
+          If you believe this is an error or need assistance, please contact us immediately at support@doktu.co or call ${data.support_phone || '+33 (0)1 XX XX XX XX'}.
+        </p>
+
+        <p>Best regards,<br>Doktu Billing Team</p>
+      </div>
+    `
   })
 };
 
