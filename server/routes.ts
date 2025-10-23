@@ -4272,77 +4272,310 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  // Stripe webhook for payment events
+  // Stripe webhook for all payment and subscription events (unified handler)
   app.post("/api/webhooks/stripe", async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
 
     try {
-      // Note: In production, you should use a webhook secret
+      if (!sig) {
+        return res.status(400).send('Missing stripe-signature header');
+      }
       event = stripe.webhooks.constructEvent(req.body, sig as string, process.env.STRIPE_WEBHOOK_SECRET || '');
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
-      return res.status(400).send(`Webhook Error: ${err}`);
+      return res.status(400).send(`Webhook Error: ${(err as Error).message}`);
     }
 
-    // Handle the event
-    switch (event.type) {
-      case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object;
-        const appointmentId = paymentIntent.metadata.appointmentId;
-        
-        if (appointmentId) {
-          await storage.updateAppointmentStatus(appointmentId, "paid");
-          
-          // Get appointment details
-          const appointment = await storage.getAppointment(appointmentId);
-          if (appointment) {
-            // Create Zoom meeting for the paid appointment
+    console.log(`🔔 Stripe webhook received: ${event.type}`);
+
+    try {
+      // Handle the event
+      switch (event.type) {
+        // Appointment payment events
+        case 'payment_intent.succeeded':
+          const paymentIntent = event.data.object;
+          const appointmentId = paymentIntent.metadata.appointmentId;
+
+          if (appointmentId) {
+            await storage.updateAppointmentStatus(appointmentId, "paid");
+
+            // Get appointment details
+            const appointment = await storage.getAppointment(appointmentId);
+            if (appointment) {
+              // Create Zoom meeting for the paid appointment
+              try {
+                if (!appointment.zoomJoinUrl) {
+                  await zoomService.createMeeting(appointmentId);
+                  console.log(`✅ Webhook: Zoom meeting created for appointment ${appointmentId}`);
+                }
+              } catch (error) {
+                console.error(`❌ Webhook: Failed to create Zoom meeting for appointment ${appointmentId}:`, error);
+              }
+
+              // Mark corresponding slot as unavailable using the appointment's slotId
+              if (appointment.slotId) {
+                await storage.updateTimeSlot(appointment.slotId, { isAvailable: false });
+                console.log(`🔒 Webhook: Marked slot ${appointment.slotId} as unavailable`);
+              } else {
+                console.warn(`⚠️ Webhook: Appointment ${appointmentId} has no slotId - cannot mark slot unavailable`);
+              }
+
+              // Trigger appointment confirmation notification
+              await notificationService.scheduleNotification({
+                userId: appointment.patientId,
+                appointmentId: appointment.id,
+                triggerCode: TriggerCode.BOOK_CONF,
+                scheduledFor: new Date()
+              });
+            }
+
+            console.log(`✅ Payment succeeded for appointment ${appointmentId}`);
+          }
+          break;
+
+        case 'payment_intent.payment_failed':
+          const failedPayment = event.data.object;
+          const failedAppointmentId = failedPayment.metadata.appointmentId;
+
+          if (failedAppointmentId) {
+            await storage.updateAppointmentStatus(failedAppointmentId, "payment_failed");
+            console.log(`❌ Payment failed for appointment ${failedAppointmentId}`);
+          }
+          break;
+
+        // Subscription lifecycle events
+        case 'customer.subscription.created':
+          const createdSub = event.data.object;
+          console.log('📝 Subscription created:', createdSub.id);
+          // Update user with subscription ID
+          if (createdSub.metadata?.userId) {
             try {
-              if (!appointment.zoomJoinUrl) {
-                await zoomService.createMeeting(appointmentId);
-                console.log(`✅ Webhook: Zoom meeting created for appointment ${appointmentId}`);
+              await storage.updateUser(createdSub.metadata.userId, {
+                stripeSubscriptionId: createdSub.id,
+                stripeCustomerId: createdSub.customer
+              } as any);
+              console.log('✅ Updated user with subscription ID');
+            } catch (error) {
+              console.error('Failed to update user with subscription:', error);
+            }
+          }
+          break;
+
+        case 'customer.subscription.updated':
+          const updatedSub = event.data.object;
+          console.log('📝 Subscription updated:', updatedSub.id, 'Status:', updatedSub.status);
+          // Update subscription status in database
+          if (updatedSub.metadata?.userId && updatedSub.status === 'active') {
+            try {
+              await storage.updateUser(updatedSub.metadata.userId, {
+                stripeSubscriptionId: updatedSub.id,
+                pendingSubscriptionPlan: null // Clear pending status
+              } as any);
+              console.log('✅ Subscription activated for user');
+            } catch (error) {
+              console.error('Failed to update subscription status:', error);
+            }
+          }
+          break;
+
+        case 'customer.subscription.deleted':
+          const deletedSub = event.data.object;
+          console.log('📝 Subscription cancelled:', deletedSub.id);
+          // Clear subscription from user
+          if (deletedSub.metadata?.userId) {
+            try {
+              await storage.updateUser(deletedSub.metadata.userId, {
+                stripeSubscriptionId: null,
+                pendingSubscriptionPlan: null
+              } as any);
+              console.log('✅ Subscription removed from user');
+            } catch (error) {
+              console.error('Failed to remove subscription:', error);
+            }
+          }
+          break;
+
+        // Invoice payment events (subscriptions)
+        case 'invoice.payment_succeeded':
+          const invoice = event.data.object;
+          console.log('💰 Payment succeeded for invoice:', invoice.id, 'Billing reason:', invoice.billing_reason);
+
+          if (invoice.subscription) {
+            try {
+              const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+              const userId = subscription.metadata?.userId;
+
+              if (!userId) {
+                console.error('❌ No userId in subscription metadata');
+                break;
+              }
+
+              const { membershipService } = await import('./services/membershipService');
+              const { db } = await import('./db');
+              const { membershipSubscriptions } = await import('@shared/schema');
+              const { eq } = await import('drizzle-orm');
+
+              // Handle initial subscription payment
+              if (invoice.billing_reason === 'subscription_create') {
+                console.log('✅ Initial subscription payment successful for user', userId);
+                console.log(`🎁 Creating initial allowance cycle for user ${userId}`);
+                await membershipService.createInitialAllowance(parseInt(userId));
+                console.log(`✅ Initial allowance created for user ${userId}`);
+              }
+
+              // Handle subscription renewal payments
+              else if (invoice.billing_reason === 'subscription_cycle') {
+                console.log(`🔄 Subscription renewal payment successful for user ${userId}`);
+                console.log(`📅 Period: ${new Date(subscription.current_period_start * 1000).toISOString()} to ${new Date(subscription.current_period_end * 1000).toISOString()}`);
+
+                // Find the membership subscription record
+                const [membershipSub] = await db
+                  .select()
+                  .from(membershipSubscriptions)
+                  .where(eq(membershipSubscriptions.stripeSubscriptionId, subscription.id))
+                  .limit(1);
+
+                if (!membershipSub) {
+                  console.error(`❌ No membership subscription found for Stripe subscription ${subscription.id}`);
+                  break;
+                }
+
+                // Renew the allowance cycle with new period dates
+                const newPeriodStart = new Date(subscription.current_period_start * 1000);
+                const newPeriodEnd = new Date(subscription.current_period_end * 1000);
+
+                console.log(`🔄 Renewing allowance cycle for subscription ${membershipSub.id}`);
+                const newCycle = await membershipService.renewAllowanceCycle(
+                  membershipSub.id,
+                  newPeriodStart,
+                  newPeriodEnd
+                );
+
+                console.log(`✅ Allowance cycle renewed:`, {
+                  cycleId: newCycle.id,
+                  allowanceGranted: newCycle.allowanceGranted,
+                  cycleStart: newCycle.cycleStart,
+                  cycleEnd: newCycle.cycleEnd
+                });
+
+                // Update subscription period dates in database
+                await db
+                  .update(membershipSubscriptions)
+                  .set({
+                    currentPeriodStart: newPeriodStart,
+                    currentPeriodEnd: newPeriodEnd,
+                    updatedAt: new Date()
+                  })
+                  .where(eq(membershipSubscriptions.id, membershipSub.id));
+
+                console.log(`✅ Subscription period dates updated in database`);
               }
             } catch (error) {
-              console.error(`❌ Webhook: Failed to create Zoom meeting for appointment ${appointmentId}:`, error);
+              console.error('❌ Failed to handle invoice payment:', error);
             }
-
-            // Mark corresponding slot as unavailable using the appointment's slotId
-            if (appointment.slotId) {
-              await storage.updateTimeSlot(appointment.slotId, { isAvailable: false });
-              console.log(`🔒 Webhook: Marked slot ${appointment.slotId} as unavailable`);
-            } else {
-              console.warn(`⚠️ Webhook: Appointment ${appointmentId} has no slotId - cannot mark slot unavailable`);
-            }
-            
-            // Trigger appointment confirmation notification
-            await notificationService.scheduleNotification({
-              userId: appointment.patientId,
-              appointmentId: appointment.id,
-              triggerCode: TriggerCode.BOOK_CONF,
-              scheduledFor: new Date()
-            });
           }
-          
-          console.log(`✅ Payment succeeded for appointment ${appointmentId}`);
-        }
-        break;
-        
-      case 'payment_intent.payment_failed':
-        const failedPayment = event.data.object;
-        const failedAppointmentId = failedPayment.metadata.appointmentId;
-        
-        if (failedAppointmentId) {
-          await storage.updateAppointmentStatus(failedAppointmentId, "payment_failed");
-          console.log(`❌ Payment failed for appointment ${failedAppointmentId}`);
-        }
-        break;
-        
-      default:
-        console.log(`Unhandled event type ${event.type}`);
-    }
+          break;
 
-    res.json({ received: true });
+        case 'invoice.payment_failed':
+          const failedInvoice = event.data.object;
+          console.log('❌ Payment failed for invoice:', failedInvoice.id);
+          // Suspend subscription if payment fails
+          if (failedInvoice.subscription) {
+            console.log('⚠️ Subscription payment failed, may need suspension');
+          }
+          break;
+
+        // Setup intent events
+        case 'setup_intent.succeeded':
+          const setupIntent = event.data.object;
+          console.log('💳 Setup intent succeeded:', setupIntent.id);
+          console.log('🔍 Setup intent metadata:', setupIntent.metadata);
+          console.log('👤 Setup intent customer:', setupIntent.customer);
+
+          let subscriptionToActivate = null;
+
+          // Method 1: Try to find subscription by metadata
+          if (setupIntent.metadata?.subscriptionId) {
+            try {
+              console.log('🔄 Finding subscription by metadata:', setupIntent.metadata.subscriptionId);
+              const subscription = await stripe.subscriptions.retrieve(setupIntent.metadata.subscriptionId);
+              if (subscription.status === 'incomplete') {
+                subscriptionToActivate = subscription;
+                console.log('✅ Found subscription via metadata:', subscription.id);
+              }
+            } catch (error) {
+              console.error('❌ Failed to retrieve subscription from metadata:', error);
+            }
+          }
+
+          // Method 2: If no subscription found via metadata, find incomplete subscriptions for this customer
+          if (!subscriptionToActivate && setupIntent.customer) {
+            try {
+              console.log('🔍 Searching for incomplete subscriptions for customer:', setupIntent.customer);
+              const subscriptions = await stripe.subscriptions.list({
+                customer: setupIntent.customer,
+                status: 'incomplete',
+                limit: 10
+              });
+
+              console.log(`📋 Found ${subscriptions.data.length} incomplete subscriptions for customer`);
+
+              // Find the most recent incomplete subscription
+              if (subscriptions.data.length > 0) {
+                subscriptionToActivate = subscriptions.data[0]; // Most recent
+                console.log('✅ Found subscription via customer search:', subscriptionToActivate.id);
+              }
+            } catch (error) {
+              console.error('❌ Failed to search subscriptions by customer:', error);
+            }
+          }
+
+          // Activate the subscription if found
+          if (subscriptionToActivate && setupIntent.payment_method) {
+            try {
+              console.log(`🚀 Activating subscription ${subscriptionToActivate.id} with payment method ${setupIntent.payment_method}`);
+
+              // Update the subscription with the payment method
+              const updatedSubscription = await stripe.subscriptions.update(subscriptionToActivate.id, {
+                default_payment_method: setupIntent.payment_method as string
+              });
+
+              console.log(`🎉 Subscription updated to status: ${updatedSubscription.status}`);
+
+              // If still incomplete, try to pay the latest invoice
+              if (updatedSubscription.status === 'incomplete' && updatedSubscription.latest_invoice) {
+                console.log('💳 Attempting to pay outstanding invoice...');
+                try {
+                  const invoice = await stripe.invoices.pay(updatedSubscription.latest_invoice as string);
+                  console.log(`📄 Invoice payment result: ${invoice.status}`);
+                } catch (invoiceError) {
+                  console.error('❌ Failed to pay invoice:', invoiceError);
+                }
+              }
+
+              // Get final status
+              const finalSubscription = await stripe.subscriptions.retrieve(subscriptionToActivate.id);
+              console.log(`✅ Final subscription status: ${finalSubscription.status}`);
+
+            } catch (error) {
+              console.error('❌ Failed to activate subscription:', error);
+            }
+          } else {
+            console.log('ℹ️ No subscription to activate or no payment method found');
+            console.log(`Subscription found: ${!!subscriptionToActivate}, Payment method: ${!!setupIntent.payment_method}`);
+          }
+          break;
+
+        default:
+          console.log(`Unhandled event type: ${event.type}`);
+      }
+
+      res.json({ received: true });
+    } catch (error) {
+      console.error('Error processing webhook:', error);
+      res.status(500).json({ error: 'Webhook processing failed' });
+    }
   });
 
   // Health Profile Routes
@@ -4717,12 +4950,45 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const notifications = await storage.getNotifications({
-        status: req.query.status as string,
-        limit: parseInt(req.query.limit as string) || 50
-      });
-      
-      res.json(notifications);
+      const status = req.query.status as string;
+      const triggerCode = req.query.trigger_code as string;
+      const priority = req.query.priority as string;
+      const limit = parseInt(req.query.limit as string) || 100;
+
+      // Build query
+      let query = supabase
+        .from('email_notifications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      // Apply filters
+      if (status) {
+        query = query.eq('status', status);
+      }
+
+      if (triggerCode && triggerCode !== 'all') {
+        query = query.like('trigger_code', `${triggerCode}%`);
+      }
+
+      if (priority && priority !== 'all') {
+        const priorityRanges: Record<string, [number, number]> = {
+          p0: [90, 100],
+          p1: [70, 89],
+          p2: [40, 69],
+          p3: [10, 39],
+        };
+        const range = priorityRanges[priority];
+        if (range) {
+          query = query.gte('priority', range[0]).lte('priority', range[1]);
+        }
+      }
+
+      const { data: notifications, error } = await query;
+
+      if (error) throw error;
+
+      res.json({ notifications: notifications || [] });
     } catch (error) {
       console.error("Error fetching notifications:", error);
       res.status(500).json({ message: "Failed to fetch notifications" });
@@ -4738,11 +5004,100 @@ export async function registerRoutes(app: Express): Promise<void> {
 
       const { notificationId } = req.body;
       await storage.retryNotification(notificationId);
-      
+
       res.json({ success: true });
     } catch (error) {
       console.error("Error retrying notification:", error);
       res.status(500).json({ message: "Failed to retry notification" });
+    }
+  });
+
+  // Enhanced notification monitoring endpoints
+  app.get("/api/admin/notifications/stats", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { data: allNotifications, error } = await supabase
+        .from('email_notifications')
+        .select('trigger_code, status, created_at')
+        .order('created_at', { ascending: false })
+        .limit(1000);
+
+      if (error) throw error;
+
+      const stats = {
+        total: allNotifications?.length || 0,
+        pending: allNotifications?.filter(n => n.status === 'pending').length || 0,
+        sent: allNotifications?.filter(n => n.status === 'sent').length || 0,
+        failed: allNotifications?.filter(n => n.status === 'failed').length || 0,
+        byTrigger: {} as Record<string, number>,
+        recentActivity: [] as { date: string; count: number }[],
+      };
+
+      // Count by trigger code
+      allNotifications?.forEach(n => {
+        stats.byTrigger[n.trigger_code] = (stats.byTrigger[n.trigger_code] || 0) + 1;
+      });
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching notification stats:", error);
+      res.status(500).json({ message: "Failed to fetch notification stats" });
+    }
+  });
+
+  app.post("/api/admin/notifications/:id/resend", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+
+      // Reset notification to pending status
+      const { error } = await supabase
+        .from('email_notifications')
+        .update({
+          status: 'pending',
+          scheduled_for: new Date().toISOString(),
+          sent_at: null,
+          error_message: null,
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      res.json({ success: true, message: "Notification queued for resending" });
+    } catch (error) {
+      console.error("Error resending notification:", error);
+      res.status(500).json({ message: "Failed to resend notification" });
+    }
+  });
+
+  app.delete("/api/admin/notifications/:id", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+
+      const { error } = await supabase
+        .from('email_notifications')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      res.json({ success: true, message: "Notification deleted" });
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      res.status(500).json({ message: "Failed to delete notification" });
     }
   });
 
@@ -5768,255 +6123,6 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  // Stripe webhook handler for subscription events
-  app.post("/api/webhooks/stripe", async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    let event;
-
-    try {
-      if (!sig) {
-        return res.status(400).send('Missing stripe-signature header');
-      }
-      event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET || '');
-    } catch (err) {
-      console.error('Webhook signature verification failed:', err);
-      return res.status(400).send(`Webhook Error: ${(err as Error).message}`);
-    }
-
-    console.log(`🔔 Stripe webhook received: ${event.type}`);
-
-    try {
-      switch (event.type) {
-        case 'customer.subscription.created':
-          const createdSub = event.data.object;
-          console.log('📝 Subscription created:', createdSub.id);
-          // Update user with subscription ID
-          if (createdSub.metadata?.userId) {
-            try {
-              await storage.updateUser(createdSub.metadata.userId, {
-                stripeSubscriptionId: createdSub.id,
-                stripeCustomerId: createdSub.customer
-              } as any);
-              console.log('✅ Updated user with subscription ID');
-            } catch (error) {
-              console.error('Failed to update user with subscription:', error);
-            }
-          }
-          break;
-
-        case 'customer.subscription.updated':
-          const updatedSub = event.data.object;
-          console.log('📝 Subscription updated:', updatedSub.id, 'Status:', updatedSub.status);
-          // Update subscription status in database
-          if (updatedSub.metadata?.userId && updatedSub.status === 'active') {
-            try {
-              await storage.updateUser(updatedSub.metadata.userId, {
-                stripeSubscriptionId: updatedSub.id,
-                pendingSubscriptionPlan: null // Clear pending status
-              } as any);
-              console.log('✅ Subscription activated for user');
-            } catch (error) {
-              console.error('Failed to update subscription status:', error);
-            }
-          }
-          break;
-
-        case 'customer.subscription.deleted':
-          const deletedSub = event.data.object;
-          console.log('📝 Subscription cancelled:', deletedSub.id);
-          // Clear subscription from user
-          if (deletedSub.metadata?.userId) {
-            try {
-              await storage.updateUser(deletedSub.metadata.userId, {
-                stripeSubscriptionId: null,
-                pendingSubscriptionPlan: null
-              } as any);
-              console.log('✅ Subscription removed from user');
-            } catch (error) {
-              console.error('Failed to remove subscription:', error);
-            }
-          }
-          break;
-
-        case 'invoice.payment_succeeded':
-          const invoice = event.data.object;
-          console.log('💰 Payment succeeded for invoice:', invoice.id, 'Billing reason:', invoice.billing_reason);
-
-          if (invoice.subscription) {
-            try {
-              const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
-              const userId = subscription.metadata?.userId;
-
-              if (!userId) {
-                console.error('❌ No userId in subscription metadata');
-                break;
-              }
-
-              const { membershipService } = await import('./services/membershipService');
-              const { db } = await import('./db');
-              const { membershipSubscriptions } = await import('@shared/schema');
-              const { eq } = await import('drizzle-orm');
-
-              // Handle initial subscription payment
-              if (invoice.billing_reason === 'subscription_create') {
-                console.log('✅ Initial subscription payment successful for user', userId);
-                console.log(`🎁 Creating initial allowance cycle for user ${userId}`);
-                await membershipService.createInitialAllowance(parseInt(userId));
-                console.log(`✅ Initial allowance created for user ${userId}`);
-              }
-
-              // Handle subscription renewal payments
-              else if (invoice.billing_reason === 'subscription_cycle') {
-                console.log(`🔄 Subscription renewal payment successful for user ${userId}`);
-                console.log(`📅 Period: ${new Date(subscription.current_period_start * 1000).toISOString()} to ${new Date(subscription.current_period_end * 1000).toISOString()}`);
-
-                // Find the membership subscription record
-                const [membershipSub] = await db
-                  .select()
-                  .from(membershipSubscriptions)
-                  .where(eq(membershipSubscriptions.stripeSubscriptionId, subscription.id))
-                  .limit(1);
-
-                if (!membershipSub) {
-                  console.error(`❌ No membership subscription found for Stripe subscription ${subscription.id}`);
-                  break;
-                }
-
-                // Renew the allowance cycle with new period dates
-                const newPeriodStart = new Date(subscription.current_period_start * 1000);
-                const newPeriodEnd = new Date(subscription.current_period_end * 1000);
-
-                console.log(`🔄 Renewing allowance cycle for subscription ${membershipSub.id}`);
-                const newCycle = await membershipService.renewAllowanceCycle(
-                  membershipSub.id,
-                  newPeriodStart,
-                  newPeriodEnd
-                );
-
-                console.log(`✅ Allowance cycle renewed:`, {
-                  cycleId: newCycle.id,
-                  allowanceGranted: newCycle.allowanceGranted,
-                  cycleStart: newCycle.cycleStart,
-                  cycleEnd: newCycle.cycleEnd
-                });
-
-                // Update subscription period dates in database
-                await db
-                  .update(membershipSubscriptions)
-                  .set({
-                    currentPeriodStart: newPeriodStart,
-                    currentPeriodEnd: newPeriodEnd,
-                    updatedAt: new Date()
-                  })
-                  .where(eq(membershipSubscriptions.id, membershipSub.id));
-
-                console.log(`✅ Subscription period dates updated in database`);
-              }
-            } catch (error) {
-              console.error('❌ Failed to handle invoice payment:', error);
-            }
-          }
-          break;
-
-        case 'setup_intent.succeeded':
-          const setupIntent = event.data.object;
-          console.log('💳 Setup intent succeeded:', setupIntent.id);
-          console.log('🔍 Setup intent metadata:', setupIntent.metadata);
-          console.log('👤 Setup intent customer:', setupIntent.customer);
-          
-          let subscriptionToActivate = null;
-          
-          // Method 1: Try to find subscription by metadata
-          if (setupIntent.metadata?.subscriptionId) {
-            try {
-              console.log('🔄 Finding subscription by metadata:', setupIntent.metadata.subscriptionId);
-              const subscription = await stripe.subscriptions.retrieve(setupIntent.metadata.subscriptionId);
-              if (subscription.status === 'incomplete') {
-                subscriptionToActivate = subscription;
-                console.log('✅ Found subscription via metadata:', subscription.id);
-              }
-            } catch (error) {
-              console.error('❌ Failed to retrieve subscription from metadata:', error);
-            }
-          }
-          
-          // Method 2: If no subscription found via metadata, find incomplete subscriptions for this customer
-          if (!subscriptionToActivate && setupIntent.customer) {
-            try {
-              console.log('🔍 Searching for incomplete subscriptions for customer:', setupIntent.customer);
-              const subscriptions = await stripe.subscriptions.list({
-                customer: setupIntent.customer,
-                status: 'incomplete',
-                limit: 10
-              });
-              
-              console.log(`📋 Found ${subscriptions.data.length} incomplete subscriptions for customer`);
-              
-              // Find the most recent incomplete subscription
-              if (subscriptions.data.length > 0) {
-                subscriptionToActivate = subscriptions.data[0]; // Most recent
-                console.log('✅ Found subscription via customer search:', subscriptionToActivate.id);
-              }
-            } catch (error) {
-              console.error('❌ Failed to search subscriptions by customer:', error);
-            }
-          }
-          
-          // Activate the subscription if found
-          if (subscriptionToActivate && setupIntent.payment_method) {
-            try {
-              console.log(`🚀 Activating subscription ${subscriptionToActivate.id} with payment method ${setupIntent.payment_method}`);
-              
-              // Update the subscription with the payment method
-              const updatedSubscription = await stripe.subscriptions.update(subscriptionToActivate.id, {
-                default_payment_method: setupIntent.payment_method as string
-              });
-              
-              console.log(`🎉 Subscription updated to status: ${updatedSubscription.status}`);
-              
-              // If still incomplete, try to pay the latest invoice
-              if (updatedSubscription.status === 'incomplete' && updatedSubscription.latest_invoice) {
-                console.log('💳 Attempting to pay outstanding invoice...');
-                try {
-                  const invoice = await stripe.invoices.pay(updatedSubscription.latest_invoice as string);
-                  console.log(`📄 Invoice payment result: ${invoice.status}`);
-                } catch (invoiceError) {
-                  console.error('❌ Failed to pay invoice:', invoiceError);
-                }
-              }
-              
-              // Get final status
-              const finalSubscription = await stripe.subscriptions.retrieve(subscriptionToActivate.id);
-              console.log(`✅ Final subscription status: ${finalSubscription.status}`);
-              
-            } catch (error) {
-              console.error('❌ Failed to activate subscription:', error);
-            }
-          } else {
-            console.log('ℹ️ No subscription to activate or no payment method found');
-            console.log(`Subscription found: ${!!subscriptionToActivate}, Payment method: ${!!setupIntent.payment_method}`);
-          }
-          break;
-
-        case 'invoice.payment_failed':
-          const failedInvoice = event.data.object;
-          console.log('❌ Payment failed for invoice:', failedInvoice.id);
-          // Suspend subscription if payment fails
-          if (failedInvoice.subscription) {
-            console.log('⚠️ Subscription payment failed, may need suspension');
-          }
-          break;
-
-        default:
-          console.log(`Unhandled event type: ${event.type}`);
-      }
-
-      res.json({ received: true });
-    } catch (error) {
-      console.error('Error processing webhook:', error);
-      res.status(500).json({ error: 'Webhook processing failed' });
-    }
-  });
 
   // Check if appointment should be covered by membership
   app.post("/api/membership/check-coverage", isAuthenticated, async (req, res) => {
