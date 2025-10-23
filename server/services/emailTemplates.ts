@@ -879,24 +879,642 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <p>Dear ${data.first_name || 'Patient'},</p>
-        
+
         <p>We noticed your health profile is ${data.completion_percentage || '0'}% complete. Taking a few minutes to complete it will help your doctors provide better care.</p>
-        
+
         <p><strong>What's missing:</strong></p>
         <ul>
           ${data.missing_fields ? data.missing_fields.map(field => `<li>${field}</li>`).join('') : '<li>Basic health information</li>'}
         </ul>
-        
+
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.VITE_APP_URL}/dashboard" 
+          <a href="${process.env.VITE_APP_URL}/dashboard"
              style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
             Complete Profile Now
           </a>
         </div>
-        
+
         <p>A complete profile helps doctors understand your health better and provide more personalized care.</p>
-        
+
         <p>Best regards,<br>Doktu Team</p>
+      </div>
+    `
+  }),
+
+  // ========================================
+  // PHASE 1: CRITICAL TEMPLATES (Priority 100-95)
+  // ========================================
+
+  // B1 - Payment Pending (15-min Hold) - PRIORITY 100
+  booking_payment_pending: (data) => ({
+    subject: `Complete payment to secure your booking with Dr. ${data.doctor_name}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 16px 0; font-size: 24px; color: #991b1b;">
+            ⏰ Complete your payment - slot expires soon
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #991b1b;">
+            Your booking with <strong>Dr. ${data.doctor_name}</strong> is on hold for <strong>15 minutes</strong>.
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Hi ${data.patient_first_name || 'there'},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          You selected a consultation time with Dr. ${data.doctor_name}, but payment hasn't been completed yet. Your slot is being held, but will be released to other patients if payment isn't completed within 15 minutes.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Your Booking Details:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            <strong>Doctor:</strong> Dr. ${data.doctor_name}<br>
+            <strong>When:</strong> ${data.appointment_datetime_local || 'N/A'}<br>
+            <strong>Duration:</strong> ${data.duration || '30'} minutes<br>
+            <strong>Price:</strong> ${data.currency || '€'}${data.price || '45'}
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.payment_link || `${process.env.VITE_APP_URL}/checkout/${data.appointment_id}`}"
+             style="display: inline-block; background-color: #ef4444; color: white; padding: 16px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 18px;">
+            Complete Payment Now
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          If you don't complete payment within 15 minutes, your slot will be automatically released. Don't worry though - you can always book another time!
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Need help?<br>
+          <strong>Doktu Support Team</strong><br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+      </div>
+    `
+  }),
+
+  // B6 - Live/Imminent (≤5 min) - PRIORITY 100
+  booking_live_imminent: (data) => ({
+    subject: `🚨 LIVE NOW - Join Dr. ${data.doctor_name}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px; text-align: center;">
+          <h1 style="margin: 0 0 8px 0; font-size: 32px; color: #166534;">
+            🚨 JOIN NOW
+          </h1>
+          <p style="margin: 0; font-size: 20px; color: #15803d; font-weight: 600;">
+            Dr. ${data.doctor_name} is ready for you!
+          </p>
+        </div>
+
+        <p style="font-size: 18px; color: #475569; margin: 0 0 24px 0; text-align: center;">
+          Hi ${data.patient_first_name || 'there'}, your consultation ${data.time_to_start === 'live' ? 'is live now' : `starts in ${data.time_to_start || '5 minutes'}`}!
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b; text-align: center;">
+            Your Consultation:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 16px; text-align: center;">
+            <strong>Dr. ${data.doctor_name}</strong><br>
+            ${data.doctor_specialization || 'General Practice'}<br>
+            ${data.appointment_datetime_local || 'Now'}
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+          <a href="${data.join_link}"
+             style="display: inline-block; background-color: #16a34a; color: white; padding: 20px 60px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 22px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            🎥 JOIN VIDEO CALL
+          </a>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            Quick Tech Check:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            ✓ Camera working?<br>
+            ✓ Microphone clear?<br>
+            ✓ Quiet space ready?
+          </p>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0; text-align: center;">
+          Having technical issues? Contact support immediately:<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc; font-weight: 600;">support@doktu.co</a>
+        </p>
+      </div>
+    `
+  }),
+
+  // M4 - Membership Payment Failed (1st Attempt) - PRIORITY 100
+  membership_payment_failed: (data) => ({
+    subject: "Payment issue - update to keep your membership active",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 16px 0; font-size: 24px; color: #92400e;">
+            ⚠️ Payment couldn't be processed
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            Quick fix needed to avoid service interruption
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Hi ${data.first_name || 'there'},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          We couldn't process your membership renewal payment. This is usually a quick fix!
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Payment Details:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            <strong>Failed amount:</strong> ${data.currency || '€'}${data.amount || '29.99'}<br>
+            <strong>Attempt date:</strong> ${data.attempt_date || new Date().toLocaleDateString()}<br>
+            <strong>Payment method:</strong> ${data.payment_method || 'Card ending in ****'}<br>
+            <strong>Reason:</strong> ${data.failure_reason || 'Payment declined by bank'}
+          </p>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            Most Common Fixes:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            ✓ <strong>Expired card</strong> → Update expiry date<br>
+            ✓ <strong>Insufficient funds</strong> → Try different card<br>
+            ✓ <strong>Bank decline</strong> → Contact your bank<br>
+            ✓ <strong>Card details changed</strong> → Update information
+          </p>
+        </div>
+
+        <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <p style="margin: 0; font-size: 14px; color: #991b1b; font-weight: 600;">
+            ⏰ What happens next:
+          </p>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #991b1b;">
+            • <strong>Update payment now</strong> → Keeps membership active<br>
+            • <strong>Don't update</strong> → Membership suspends in 48 hours
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.update_payment_url || `${process.env.VITE_APP_URL}/membership/payment`}"
+             style="display: inline-block; background-color: #f59e0b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Update Payment Method
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Need help? Our support team is here for you:<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Membership Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // M5 - Membership Suspended (2nd Failure) - PRIORITY 100
+  membership_suspended: (data) => ({
+    subject: "Membership suspended - restore access anytime",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 16px 0; font-size: 24px; color: #991b1b;">
+            🔒 Membership Temporarily Suspended
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #991b1b;">
+            Update payment to reactivate immediately
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Hi ${data.first_name || 'there'},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Your Doktu membership has been suspended because payment couldn't be processed after multiple attempts.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Suspension Details:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            <strong>Suspended on:</strong> ${data.suspension_date || new Date().toLocaleDateString()}<br>
+            <strong>Reason:</strong> ${data.failure_reason || 'Payment failure after multiple attempts'}<br>
+            <strong>Outstanding amount:</strong> ${data.currency || '€'}${data.amount || '29.99'}<br>
+            <strong>Coverage status:</strong> Paused until payment updated
+          </p>
+        </div>
+
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+            What This Means:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #92400e;">
+            ❌ Can't book member consultations<br>
+            ❌ Lost access to priority booking slots<br>
+            ❌ Member benefits paused<br>
+            ✅ Your consultation history remains safe<br>
+            ✅ Your health profile is secure
+          </p>
+        </div>
+
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #15803d;">
+            To Reactivate:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #15803d;">
+            1. Update your payment method<br>
+            2. Membership reactivates <strong>instantly</strong><br>
+            3. Continue using all your benefits
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.reactivate_url || `${process.env.VITE_APP_URL}/membership/reactivate`}"
+             style="display: inline-block; background-color: #dc2626; color: white; padding: 16px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 18px;">
+            Reactivate My Membership
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Having trouble updating your payment? We're here to help:<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc; font-weight: 600;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          We're ready to welcome you back,<br>
+          <strong>Doktu Membership Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // M1 - Membership Activated - PRIORITY 95
+  membership_activated: (data) => ({
+    subject: "🎉 Your Doktu membership is live!",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-radius: 8px; padding: 32px; margin-bottom: 24px; text-align: center;">
+          <h1 style="margin: 0 0 16px 0; font-size: 32px; color: #92400e;">
+            🎉 Welcome to Unlimited Healthcare!
+          </h1>
+          <p style="margin: 0; font-size: 18px; color: #92400e; font-weight: 600;">
+            Your ${data.plan_name || 'Doktu'} membership is now active
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name || 'there'},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Congratulations! Your membership is active and ready to use. Here's what you get every month:
+        </p>
+
+        <div style="background-color: #dcfce7; border-radius: 8px; padding: 24px; margin: 24px 0;">
+          <h3 style="margin: 0 0 16px 0; font-size: 18px; color: #166534;">
+            ✓ Your Member Benefits:
+          </h3>
+          <p style="margin: 0; color: #15803d; font-size: 16px; line-height: 1.8;">
+            <strong>✓ ${data.allowance || '2'} × ${data.consultation_duration || '30'}-minute consultations</strong> every month<br>
+            ✓ Priority booking slots (book sooner than non-members)<br>
+            ✓ No booking fees<br>
+            ✓ Access to member-only doctors<br>
+            ✓ 24/7 access to your consultation history<br>
+            ✓ Secure health records storage
+          </p>
+        </div>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Membership Details:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            <strong>Plan:</strong> ${data.plan_name || 'Monthly Membership'}<br>
+            <strong>Monthly price:</strong> ${data.currency || '€'}${data.amount || '29.99'}<br>
+            <strong>Activated:</strong> ${data.activation_date || new Date().toLocaleDateString()}<br>
+            <strong>Your cycle resets:</strong> ${data.reset_date || 'on the same day each month'}<br>
+            <strong>Next charge:</strong> ${data.next_charge_date || 'Next month'} for ${data.currency || '€'}${data.amount || '29.99'}
+          </p>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            💡 Pro Member Tip:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            <strong>Book early in your cycle</strong> to get your preferred doctors and times! Your ${data.allowance || '2'} consultations reset ${data.reset_date || 'monthly'}.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.dashboard_url || `${process.env.VITE_APP_URL}/dashboard`}"
+             style="display: inline-block; background-color: #f59e0b; color: white; padding: 16px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 18px;">
+            Book My First Member Consultation
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Manage your membership anytime:<br>
+          <a href="${data.manage_url || `${process.env.VITE_APP_URL}/membership`}" style="color: #0066cc;">Membership Settings</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Welcome to the family!<br>
+          <strong>Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // M3 - Membership Renewed (Success) - PRIORITY 95
+  membership_renewed: (data) => ({
+    subject: "✓ Membership renewed - 2 fresh visits ready!",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-radius: 8px; padding: 24px; margin-bottom: 24px; text-align: center;">
+          <h2 style="margin: 0 0 8px 0; font-size: 28px; color: #166534;">
+            ✓ Fresh Month, Fresh Consultations!
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            Your membership renewed successfully
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Hi ${data.first_name || 'there'},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Great news! Your Doktu membership has renewed successfully and your consultation allowance has been reset.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Renewal Details:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            <strong>Renewed:</strong> ${data.renew_date || new Date().toLocaleDateString()}<br>
+            <strong>Amount charged:</strong> ${data.currency || '€'}${data.amount || '29.99'}<br>
+            <strong>Payment method:</strong> ${data.payment_method || 'Card ending in ****'}<br>
+            <strong>New cycle:</strong> ${data.cycle_start || 'Today'} - ${data.cycle_end || 'Next month'}<br>
+            <strong>Transaction ID:</strong> ${data.transaction_id || 'N/A'}
+          </p>
+        </div>
+
+        <div style="background-color: #dcfce7; border-radius: 8px; padding: 20px; margin: 24px 0; text-align: center;">
+          <h3 style="margin: 0 0 12px 0; font-size: 18px; color: #166534;">
+            Fresh Allowance Available:
+          </h3>
+          <p style="margin: 0; font-size: 24px; color: #15803d; font-weight: 700;">
+            ${data.allowance || '2'} × ${data.consultation_duration || '30'}-minute consultations
+          </p>
+          <p style="margin: 12px 0 0 0; font-size: 14px; color: #15803d;">
+            Ready to book anytime!
+          </p>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            📄 Your Receipt:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Your invoice for ${data.currency || '€'}${data.amount || '29.99'} is attached to this email. You can also download it anytime from your membership portal.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.booking_url || `${process.env.VITE_APP_URL}/doctors`}"
+             style="display: inline-block; background-color: #16a34a; color: white; padding: 16px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 18px; margin-right: 10px;">
+            Book My First Consultation
+          </a>
+          <a href="${data.invoice_url || `${process.env.VITE_APP_URL}/membership/invoices`}"
+             style="display: inline-block; background-color: #64748b; color: white; padding: 16px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 18px;">
+            View Invoice
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about your membership?<br>
+          <a href="${data.manage_url || `${process.env.VITE_APP_URL}/membership`}" style="color: #0066cc;">Manage Membership</a> |
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">Contact Support</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Thank you for being a valued member!<br>
+          <strong>Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // M7 - Membership Reactivated - PRIORITY 95
+  membership_reactivated: (data) => ({
+    subject: "Welcome back! Your membership is active again",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-radius: 8px; padding: 32px; margin-bottom: 24px; text-align: center;">
+          <h1 style="margin: 0 0 16px 0; font-size: 32px; color: #166534;">
+            🎉 You're Back!
+          </h1>
+          <p style="margin: 0; font-size: 18px; color: #15803d; font-weight: 600;">
+            Membership reactivated - all benefits restored
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Hi ${data.first_name || 'there'},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Great to have you back! Your Doktu membership has been successfully reactivated and all your member benefits are now available again.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Reactivation Details:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            <strong>Reactivated:</strong> ${data.reactivation_date || new Date().toLocaleDateString()}<br>
+            <strong>Current cycle:</strong> ${data.cycle_start || 'Now'} - ${data.cycle_end || 'End of month'}<br>
+            <strong>Available visits:</strong> ${data.available_visits || '2'} consultations this cycle<br>
+            <strong>Next renewal:</strong> ${data.next_renewal || 'Next month'}<br>
+            <strong>Monthly price:</strong> ${data.currency || '€'}${data.amount || '29.99'}
+          </p>
+        </div>
+
+        <div style="background-color: #dcfce7; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 16px 0; font-size: 18px; color: #166534; text-align: center;">
+            ✓ All Benefits Restored:
+          </h3>
+          <p style="margin: 0; color: #15803d; font-size: 16px; line-height: 1.8;">
+            ✓ Priority booking slots<br>
+            ✓ Member-only doctors<br>
+            ✓ No booking fees<br>
+            ✓ 24/7 record access<br>
+            ✓ ${data.available_visits || '2'} consultations per month
+          </p>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            💡 Welcome Back Tip:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            You have <strong>${data.available_visits || '2'} consultations available</strong> in your current cycle until ${data.cycle_end || 'next month'}. Book now to get your preferred times!
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.booking_url || `${process.env.VITE_APP_URL}/doctors`}"
+             style="display: inline-block; background-color: #16a34a; color: white; padding: 16px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 18px;">
+            Book My Consultation
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0; text-align: center;">
+          Thanks for choosing Doktu again!<br>
+          <a href="${data.manage_url || `${process.env.VITE_APP_URL}/membership`}" style="color: #0066cc;">Manage Membership</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Welcome back to the family!<br>
+          <strong>Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // P1 - Pay-Per-Visit Receipt - PRIORITY 95
+  payment_receipt: (data) => ({
+    subject: `Receipt: ${data.currency || '€'}${data.amount || '45'} - Dr. ${data.doctor_name} consultation`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #166534;">
+            ✓ Payment Confirmation
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            Payment successful - receipt attached
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Hi ${data.first_name || data.patient_first_name || 'there'},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Thank you for your payment. Your consultation with Dr. ${data.doctor_name} has been confirmed and paid for.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 24px; margin: 24px 0; border: 2px solid #e2e8f0;">
+          <h3 style="margin: 0 0 20px 0; font-size: 18px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;">
+            Receipt Details
+          </h3>
+
+          <div style="margin-bottom: 16px;">
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Consultation</p>
+            <p style="margin: 0; font-size: 16px; color: #1e293b; font-weight: 600;">
+              Dr. ${data.doctor_first_name || ''} ${data.doctor_name}
+            </p>
+            <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">
+              ${data.doctor_specialization || 'General Practice'}
+            </p>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Date & Time</p>
+            <p style="margin: 0; font-size: 14px; color: #1e293b;">
+              ${data.consultation_date || data.appointment_datetime_local || 'N/A'}
+            </p>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Payment Method</p>
+            <p style="margin: 0; font-size: 14px; color: #1e293b;">
+              ${data.payment_method || 'Card ending in ****'}
+            </p>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Transaction ID</p>
+            <p style="margin: 0; font-size: 14px; color: #1e293b; font-family: monospace;">
+              ${data.transaction_id || 'N/A'}
+            </p>
+          </div>
+
+          <div style="border-top: 2px solid #e2e8f0; padding-top: 16px; margin-top: 20px;">
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Total Amount</p>
+            <p style="margin: 0; font-size: 28px; color: #166534; font-weight: 700;">
+              ${data.currency || '€'}${data.amount || '45.00'}
+            </p>
+          </div>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            📄 Invoice Attached
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            A detailed invoice is attached to this email for your records. You can also download it anytime from your dashboard.
+          </p>
+        </div>
+
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+            ⭐ Rate Your Experience
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #92400e;">
+            After your consultation, please take a moment to rate Dr. ${data.doctor_name}. Your feedback helps other patients make informed choices.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.consultation_url || `${process.env.VITE_APP_URL}/consultations/${data.appointment_id || data.consultation_id}`}"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 10px;">
+            View Consultation Details
+          </a>
+          <a href="${data.invoice_url || `${process.env.VITE_APP_URL}/invoices/${data.transaction_id}`}"
+             style="display: inline-block; background-color: #64748b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Download Invoice
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about this payment?<br>
+          <a href="mailto:billing@doktu.co" style="color: #0066cc;">billing@doktu.co</a> |
+          <a href="${process.env.VITE_APP_URL}/billing" style="color: #0066cc;">View Billing History</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Thank you for choosing Doktu,<br>
+          <strong>Doktu Billing Team</strong>
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;" />
+
+        <p style="font-size: 12px; color: #94a3b8; margin: 0; text-align: center;">
+          This is an official receipt for your records. Please keep for tax and reimbursement purposes.
+        </p>
       </div>
     `
   })
@@ -940,8 +1558,17 @@ function getRequiredFields(templateKey: string): string[] {
     account_email_verification: ["first_name", "verification_link"],
     account_password_reset: ["first_name", "reset_link"],
     account_password_changed: ["first_name"],
-    health_profile_incomplete: ["first_name"]
+    health_profile_incomplete: ["first_name"],
+    // Phase 1: Critical Templates (Priority 100-95)
+    booking_payment_pending: ["patient_first_name", "doctor_name", "appointment_datetime_local", "price", "appointment_id"],
+    booking_live_imminent: ["patient_first_name", "doctor_name", "join_link"],
+    membership_payment_failed: ["first_name", "amount"],
+    membership_suspended: ["first_name", "amount"],
+    membership_activated: ["first_name"],
+    membership_renewed: ["first_name", "amount"],
+    membership_reactivated: ["first_name"],
+    payment_receipt: ["doctor_name", "amount"]
   };
-  
+
   return fieldMap[templateKey] || [];
 }
