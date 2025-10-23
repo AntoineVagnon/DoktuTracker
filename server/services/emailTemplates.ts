@@ -2420,6 +2420,968 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
         </p>
       </div>
     `
+  }),
+
+  // ========================================
+  // PHASE 3: Security & Doctor Operations (Priority 75-60)
+  // ========================================
+
+  // A2: Account Email Verified - Priority 75
+  account_email_verified: (data) => ({
+    subject: "Email verified - your Doktu account is ready!",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ Email verified!
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            Your account is now fully activated
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Great news! Your email address <strong>${data.email || 'N/A'}</strong> has been successfully verified. Your Doktu account is now fully active.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            What you can do now:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            ✓ Browse our network of verified doctors<br>
+            ✓ Book video consultations 24/7<br>
+            ✓ Access your health profile and documents<br>
+            ✓ Manage appointments and prescriptions
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Ready to book your first consultation?
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctors"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Browse Doctors
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions? We're here to help:<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Welcome to Doktu,<br>
+          <strong>The Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // A5: Account Login Suspicious - Priority 75 (Security - NO TRACKING)
+  account_login_suspicious: (data) => ({
+    subject: "⚠️ Unusual login detected on your Doktu account",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #92400e;">
+            ⚠️ Unusual login detected
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            We noticed a login from an unfamiliar device or location
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          We detected a login to your Doktu account from a device or location we don't usually see.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Login Details:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Device:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.device || 'Unknown device'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Location:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.location || 'Unknown location'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">IP Address:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.ip_address || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Time:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.timestamp || 'Just now'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #15803d;">
+            ✓ Was this you?
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #15803d;">
+            If you recognize this activity, you can ignore this email. Your account is secure.
+          </p>
+        </div>
+
+        <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #991b1b;">
+            ⚠️ This wasn't you?
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #991b1b;">
+            Secure your account immediately by changing your password and reviewing recent activity.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.reset_password_link || `${process.env.VITE_APP_URL}/password-reset`}"
+             style="display: inline-block; background-color: #ef4444; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 10px;">
+            Change Password Now
+          </a>
+          <a href="${data.activity_log_link || `${process.env.VITE_APP_URL}/account/activity`}"
+             style="display: inline-block; background-color: #64748b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Review Activity
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Need help securing your account?<br>
+          <a href="mailto:security@doktu.co" style="color: #0066cc;">security@doktu.co</a> • We respond immediately
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Stay secure,<br>
+          <strong>Doktu Security Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // D1: Doctor Application Received - Priority 70
+  doctor_application_received: (data) => ({
+    subject: "Application received - Welcome to Doktu!",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e40af;">
+            Application received!
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #1e40af;">
+            We're reviewing your credentials
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Dear Dr. ${data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Thank you for applying to join the Doktu network! We've received your application and our team is now reviewing your credentials.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            What happens next:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            1. <strong>Credential Verification</strong> (1-2 business days)<br>
+            &nbsp;&nbsp;&nbsp;We'll verify your medical license, certifications, and professional experience<br><br>
+            2. <strong>Background Check</strong> (2-3 business days)<br>
+            &nbsp;&nbsp;&nbsp;Standard screening for all healthcare providers<br><br>
+            3. <strong>Platform Onboarding</strong><br>
+            &nbsp;&nbsp;&nbsp;Once approved, we'll help you set up your profile and start accepting patients
+          </p>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            ℹ️ Review Timeline
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Most applications are reviewed within <strong>3-5 business days</strong>. We'll email you as soon as we have an update.
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Have questions? Our provider relations team is here to help.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="mailto:doctors@doktu.co"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Contact Provider Relations
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Application ID: ${data.application_id || 'N/A'}<br>
+          Questions? <a href="mailto:doctors@doktu.co" style="color: #0066cc;">doctors@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Looking forward to having you on board,<br>
+          <strong>Doktu Provider Relations Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // D2: Doctor Application Approved - Priority 70
+  doctor_application_approved: (data) => ({
+    subject: "🎉 Congratulations! Your Doktu application is approved",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            🎉 Application approved!
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            Welcome to the Doktu medical network
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Dear Dr. ${data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Congratulations! After reviewing your credentials and background, we're excited to welcome you to the Doktu network.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Next Steps to Start Earning:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            1. <strong>Complete Your Profile</strong><br>
+            &nbsp;&nbsp;&nbsp;Add your photo, bio, specializations, and consultation pricing<br><br>
+            2. <strong>Set Your Availability</strong><br>
+            &nbsp;&nbsp;&nbsp;Configure your calendar and preferred consultation hours<br><br>
+            3. <strong>Go Live</strong><br>
+            &nbsp;&nbsp;&nbsp;Activate your profile and start accepting patient bookings
+          </p>
+        </div>
+
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #15803d;">
+            💰 Earning Potential
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #15803d;">
+            Our doctors earn <strong>€2,000-€8,000/month</strong> working flexible hours. Set your own rates and availability.
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Ready to complete your profile and start seeing patients?
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctor/onboarding"
+             style="display: inline-block; background-color: #16a34a; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Complete Profile Setup
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Need onboarding help?<br>
+          <a href="mailto:doctors@doktu.co" style="color: #0066cc;">doctors@doktu.co</a> • <a href="${process.env.VITE_APP_URL}/doctor/help" style="color: #0066cc;">Provider Help Center</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Welcome aboard,<br>
+          <strong>Doktu Provider Relations Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // D3: Doctor Application Rejected - Priority 70
+  doctor_application_rejected: (data) => ({
+    subject: "Update on your Doktu application",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #92400e;">
+            Application Update
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            Thank you for your interest in Doktu
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Dear Dr. ${data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Thank you for applying to join the Doktu medical network. After careful review of your application, we're unable to approve it at this time.
+        </p>
+
+        ${data.rejection_reason ? `
+          <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+            <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+              Reason:
+            </h3>
+            <p style="margin: 0; color: #64748b; font-size: 14px;">
+              ${data.rejection_reason}
+            </p>
+          </div>
+        ` : ''}
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            ℹ️ Can I reapply?
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            ${data.can_reapply ? `Yes! You can submit a new application ${data.reapply_after || 'in 6 months'}. Make sure to address the feedback above.` : 'We are not accepting new applications from this account at this time.'}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          If you have questions about this decision or would like clarification, our provider relations team is happy to provide feedback.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="mailto:doctors@doktu.co?subject=Application Feedback Request"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Request Feedback
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Application ID: ${data.application_id || 'N/A'}<br>
+          Questions? <a href="mailto:doctors@doktu.co" style="color: #0066cc;">doctors@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Provider Relations Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // D4: Doctor Profile Incomplete - Priority 70
+  doctor_profile_incomplete: (data) => ({
+    subject: "Complete your profile to start accepting patients",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #92400e;">
+            Profile incomplete
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            ${data.missing_fields_count || 'A few'} required fields need your attention
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi Dr. ${data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          You're almost ready to start seeing patients! Just complete these required fields to activate your profile:
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Missing Required Fields:
+          </h3>
+          <p style="margin: 0; color: #ef4444; font-size: 14px;">
+            ${data.missing_fields ? data.missing_fields.split(',').map(field => `• ${field.trim()}`).join('<br>') : '• Profile information incomplete'}
+          </p>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            💡 Profile Tip
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Complete profiles get <strong>3x more bookings</strong>. Add a professional photo, detailed bio, and specialty certifications.
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          This should only take 5-10 minutes. Once complete, you'll immediately start appearing in patient searches.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctor/profile/edit"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Complete Profile Now
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Need help?<br>
+          <a href="mailto:doctors@doktu.co" style="color: #0066cc;">doctors@doktu.co</a> • <a href="${process.env.VITE_APP_URL}/doctor/help/profile-setup" style="color: #0066cc;">Profile Setup Guide</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Looking forward to your first consultation,<br>
+          <strong>Doktu Provider Relations Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // D5: Doctor Payout Processed - Priority 70
+  doctor_payout_processed: (data) => ({
+    subject: `Payout confirmed: €${data.amount} on the way`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ Payout processed
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            €${data.amount} will arrive in ${data.arrival_days || '2-3'} business days
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi Dr. ${data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Your payout for <strong>${data.period || 'this period'}</strong> has been processed and is on its way to your bank account.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Payout Summary:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Period:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.period || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Consultations:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.consultation_count || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Gross Revenue:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">€${data.gross_amount || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Platform Fee (${data.platform_fee_percentage || '15'}%):</td>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px; text-align: right;">-€${data.platform_fee || 'N/A'}</td>
+            </tr>
+            <tr style="border-top: 2px solid #e2e8f0;">
+              <td style="padding: 8px 0; color: #1e293b; font-size: 16px; font-weight: 700; padding-top: 12px;">Net Payout:</td>
+              <td style="padding: 8px 0; color: #16a34a; font-size: 18px; font-weight: 700; text-align: right; padding-top: 12px;">€${data.amount}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Bank Account:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.bank_last4 ? `•••• ${data.bank_last4}` : 'Default account'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Expected Arrival:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.expected_arrival || `${data.arrival_days || '2-3'} business days`}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            📊 View Detailed Breakdown
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Download your payout report for tax purposes and see a consultation-by-consultation breakdown.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.payout_report_url || `${process.env.VITE_APP_URL}/doctor/payouts/${data.payout_id}`}"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            View Payout Details
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Payout ID: ${data.payout_id || 'N/A'}<br>
+          Questions? <a href="mailto:finance@doktu.co" style="color: #0066cc;">finance@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Thank you for providing excellent care,<br>
+          <strong>Doktu Finance Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // D6: Doctor Consultation Completed - Priority 70
+  doctor_consultation_completed: (data) => ({
+    subject: `Consultation completed with ${data.patient_first_name}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ Consultation completed
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            €${data.earnings || 'N/A'} added to your next payout
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi Dr. ${data.doctor_last_name || data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Your consultation with <strong>${data.patient_first_name} ${data.patient_last_name || ''}</strong> has been completed.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Consultation Summary:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Patient:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.patient_first_name} ${data.patient_last_name || ''}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Date:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.consultation_date || 'Today'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Duration:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.duration || '30 minutes'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Consultation Fee:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">€${data.consultation_fee || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Your Earnings:</td>
+              <td style="padding: 8px 0; color: #16a34a; font-size: 16px; font-weight: 700; text-align: right;">€${data.earnings || 'N/A'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            📝 Next Steps
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            • Add consultation notes to patient record (if needed)<br>
+            • Upload prescriptions or medical documents<br>
+            • Schedule follow-up if necessary
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.patient_record_url || `${process.env.VITE_APP_URL}/doctor/patients/${data.patient_id}`}"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            View Patient Record
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Consultation ID: ${data.consultation_id || 'N/A'}<br>
+          Questions? <a href="mailto:doctors@doktu.co" style="color: #0066cc;">doctors@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Thank you for providing excellent care,<br>
+          <strong>The Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // C1: Calendar Appointment Added - Priority 65
+  calendar_appointment_added: (data) => ({
+    subject: `New appointment: ${data.patient_name} on ${data.appointment_date}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ New appointment booked
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            ${data.appointment_date || 'N/A'} at ${data.appointment_time || 'N/A'}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi Dr. ${data.doctor_last_name || data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          A new appointment has been added to your calendar.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Appointment Details:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Patient:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.patient_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Date & Time:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.appointment_date || 'N/A'} at ${data.appointment_time || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Type:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.consultation_type || 'Video consultation'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Reason:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.reason || 'General consultation'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.calendar_url || `${process.env.VITE_APP_URL}/doctor/calendar`}"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            View Calendar
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Appointment ID: ${data.appointment_id || 'N/A'}
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Calendar System</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // C2: Calendar Appointment Updated - Priority 65
+  calendar_appointment_updated: (data) => ({
+    subject: `Appointment updated: ${data.patient_name}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e40af;">
+            Appointment updated
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #1e40af;">
+            Changes made to your appointment with ${data.patient_name}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi Dr. ${data.doctor_last_name || data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          An appointment on your calendar has been updated.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Updated Appointment:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Patient:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.patient_name || 'N/A'}</td>
+            </tr>
+            ${data.old_date && data.new_date ? `
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Previous Date:</td>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px; text-decoration: line-through; text-align: right;">${data.old_date} at ${data.old_time}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">New Date:</td>
+              <td style="padding: 8px 0; color: #16a34a; font-size: 14px; font-weight: 600; text-align: right;">${data.new_date} at ${data.new_time}</td>
+            </tr>
+            ` : `
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Date & Time:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.appointment_date} at ${data.appointment_time}</td>
+            </tr>
+            `}
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Changes:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.changes || 'Time/date updated'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.calendar_url || `${process.env.VITE_APP_URL}/doctor/calendar`}"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            View Calendar
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Appointment ID: ${data.appointment_id || 'N/A'}
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Calendar System</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // C3: Calendar Appointment Cancelled - Priority 65
+  calendar_appointment_cancelled: (data) => ({
+    subject: `Appointment cancelled: ${data.patient_name}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #92400e;">
+            Appointment cancelled
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            ${data.appointment_date || 'N/A'} at ${data.appointment_time || 'N/A'}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi Dr. ${data.doctor_last_name || data.last_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          An appointment has been cancelled and removed from your calendar.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Cancelled Appointment:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Patient:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.patient_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Date & Time:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.appointment_date || 'N/A'} at ${data.appointment_time || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Cancelled By:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.cancelled_by || 'Patient'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Reason:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.cancellation_reason || 'Not specified'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            ℹ️ Time Slot Available
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            This time slot is now available for other patients to book.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.calendar_url || `${process.env.VITE_APP_URL}/doctor/calendar`}"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            View Calendar
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Appointment ID: ${data.appointment_id || 'N/A'}
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Calendar System</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // A6: Account 2FA Enabled - Priority 60 (Security - NO TRACKING)
+  account_2fa_enabled: (data) => ({
+    subject: "Two-factor authentication enabled",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ 2FA enabled
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            Your account is now more secure
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Two-factor authentication (2FA) has been successfully enabled on your Doktu account.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            What changed:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            • From now on, you'll need both your password AND a verification code to sign in<br>
+            • This adds an extra layer of security to protect your health data<br>
+            • Codes will be sent via ${data.method || 'authenticator app'}<br>
+            • Keep your backup codes in a safe place
+          </p>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            🔐 Security Tip
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Save your backup codes now. You'll need them if you lose access to your ${data.method || 'authenticator app'}.
+          </p>
+        </div>
+
+        ${data.backup_codes ? `
+          <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+              ⚠️ Backup Codes
+            </h3>
+            <p style="margin: 0 0 8px 0; font-size: 14px; color: #92400e;">
+              Save these codes in a secure location:
+            </p>
+            <p style="margin: 0; font-size: 12px; color: #92400e; font-family: monospace;">
+              ${data.backup_codes}
+            </p>
+          </div>
+        ` : ''}
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          If you didn't enable 2FA, secure your account immediately by changing your password.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/account/security"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Manage Security Settings
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about 2FA?<br>
+          <a href="mailto:security@doktu.co" style="color: #0066cc;">security@doktu.co</a> • <a href="${process.env.VITE_APP_URL}/help/2fa" style="color: #0066cc;">2FA Help Guide</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Stay secure,<br>
+          <strong>Doktu Security Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // A7: Account 2FA Disabled - Priority 60 (Security - NO TRACKING)
+  account_2fa_disabled: (data) => ({
+    subject: "⚠️ Two-factor authentication disabled",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #92400e;">
+            ⚠️ 2FA disabled
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            Your account security has been reduced
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Two-factor authentication (2FA) has been disabled on your Doktu account.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Security Change:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Disabled:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.timestamp || 'Just now'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Device:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.device || 'Unknown'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Location:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.location || 'Unknown'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #991b1b;">
+            ⚠️ This wasn't you?
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #991b1b;">
+            If you didn't disable 2FA, your account may be compromised. Change your password and re-enable 2FA immediately.
+          </p>
+        </div>
+
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+            🔓 Your account is less secure
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #92400e;">
+            Without 2FA, your account is protected only by your password. We strongly recommend re-enabling 2FA.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/account/security/2fa/enable"
+             style="display: inline-block; background-color: #16a34a; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 10px;">
+            Re-Enable 2FA
+          </a>
+          <a href="${process.env.VITE_APP_URL}/password-reset"
+             style="display: inline-block; background-color: #ef4444; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Change Password
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Need help?<br>
+          <a href="mailto:security@doktu.co" style="color: #0066cc;">security@doktu.co</a> • We respond immediately
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Stay secure,<br>
+          <strong>Doktu Security Team</strong>
+        </p>
+      </div>
+    `
   })
 };
 
@@ -2482,7 +3444,21 @@ function getRequiredFields(templateKey: string): string[] {
     health_doc_patient_uploaded: ["first_name"],
     health_doc_doctor_shared: ["first_name", "doctor_name"],
     health_doc_upload_failed: ["first_name"],
-    membership_monthly_reset: ["first_name", "consultations_per_month"]
+    membership_monthly_reset: ["first_name", "consultations_per_month"],
+    // Phase 3: Security & Doctor Operations (Priority 75-60)
+    account_email_verified: ["first_name"],
+    account_login_suspicious: ["first_name"],
+    doctor_application_received: ["last_name"],
+    doctor_application_approved: ["last_name"],
+    doctor_application_rejected: ["last_name"],
+    doctor_profile_incomplete: ["last_name"],
+    doctor_payout_processed: ["last_name", "amount", "period"],
+    doctor_consultation_completed: ["last_name", "patient_first_name"],
+    calendar_appointment_added: ["last_name", "patient_name", "appointment_date"],
+    calendar_appointment_updated: ["last_name", "patient_name"],
+    calendar_appointment_cancelled: ["last_name", "patient_name"],
+    account_2fa_enabled: ["first_name"],
+    account_2fa_disabled: ["first_name"]
   };
 
   return fieldMap[templateKey] || [];
