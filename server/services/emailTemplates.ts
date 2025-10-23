@@ -1517,6 +1517,909 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
         </p>
       </div>
     `
+  }),
+
+  // ========================================
+  // PHASE 2: OPERATIONAL TEMPLATES (Priority 90-80)
+  // ========================================
+
+  // B2 - Hold Expired - PRIORITY 90
+  booking_hold_expired: (data) => ({
+    subject: "Your booking slot was released",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e40af;">
+            Booking expired (but no problem!)
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #1e40af;">
+            Dr. ${data.doctor_name} has ${data.available_slots || 'more'} times available
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Hi ${data.patient_first_name || 'there'},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Your slot with Dr. ${data.doctor_name} was held for 15 minutes but payment wasn't completed, so we released it for other patients.
+        </p>
+
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #15803d;">
+            ✓ Good news:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #15803d;">
+            Dr. ${data.doctor_name} has <strong>${data.available_slots || 'several'} more slots</strong> available this week. You can book another time right now!
+          </p>
+        </div>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 16px; margin: 24px 0;">
+          <p style="margin: 0; font-size: 14px; color: #64748b;">
+            <strong>Your payment method wasn't charged.</strong> When you book again, you'll have 15 minutes to complete payment.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.doctor_profile_url || `${process.env.VITE_APP_URL}/doctors/${data.doctor_id}`}"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            See Available Times
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Need help booking? Contact support:<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Looking forward to seeing you,<br>
+          <strong>Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // B10 - Cancelled by Doctor - PRIORITY 90
+  booking_cancelled_doctor: (data) => ({
+    subject: `Dr. ${data.doctor_name} had to cancel - credit restored`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #92400e;">
+            We sincerely apologize
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #92400e;">
+            Dr. ${data.doctor_name} had to cancel your consultation
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Hi ${data.patient_first_name || 'there'},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Dr. ${data.doctor_name} had to cancel your consultation on ${data.appointment_datetime_local || 'N/A'} due to ${data.cancellation_reason || 'unforeseen circumstances'}.
+        </p>
+
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #15803d;">
+            ✓ Your account:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #15803d;">
+            ${data.credit_restored || 'Full refund processed / Membership credit restored'}
+          </p>
+        </div>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Next Steps:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            • Book with Dr. ${data.doctor_name} again (if available)<br>
+            • Or choose from our ${data.available_doctors || '50+'} other trusted doctors<br>
+            • Your credit/refund will be applied automatically
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          We're sorry for the inconvenience and appreciate your understanding.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctors"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 10px;">
+            Find Available Doctors
+          </a>
+          <a href="${data.doctor_profile_url || `${process.env.VITE_APP_URL}/doctors/${data.doctor_id}`}"
+             style="display: inline-block; background-color: #64748b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Rebook Dr. ${data.doctor_name}
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about your credit/refund?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Thank you for your patience,<br>
+          <strong>Doktu Support Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // M6: Membership Cancelled - Priority 90
+  membership_cancelled: (data) => ({
+    subject: "Membership cancelled - we're here if you need us",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e40af;">
+            Membership cancelled
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #1e40af;">
+            You'll still have access until ${data.access_end_date || 'the end of your billing period'}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          We've processed your cancellation request. Your membership benefits will remain active until <strong>${data.access_end_date || 'N/A'}</strong>.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            What happens next:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            • Your ${data.remaining_consultations || '0'} remaining consultation(s) can still be used<br>
+            • No further charges will be made<br>
+            • You can reactivate anytime at the same price<br>
+            • Your health profile and history remain secure
+          </p>
+        </div>
+
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+            We'd love your feedback
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #92400e;">
+            Help us improve: Why did you cancel? <a href="${data.feedback_url || `${process.env.VITE_APP_URL}/feedback`}" style="color: #b45309; text-decoration: underline;">Share feedback</a>
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Changed your mind? You can reactivate your membership before ${data.access_end_date} to keep your current plan and pricing.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/membership/reactivate"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Reactivate Membership
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about your cancellation?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Thank you for being part of Doktu,<br>
+          <strong>The Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // P2: Payment Refund Issued - Priority 90
+  payment_refund_issued: (data) => ({
+    subject: `Refund confirmed: €${data.amount} returned to your account`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ Refund processed
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            €${data.amount} is on its way back to you
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.patient_first_name || data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Your refund of <strong>€${data.amount}</strong> has been processed and will appear in your account within ${data.processing_days || '3-5'} business days.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Refund Details:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Transaction ID:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.transaction_id || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Refund Amount:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">€${data.amount}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Reason:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.refund_reason || 'Booking cancellation'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Processing Time:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.processing_days || '3-5'} business days</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Payment Method:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.payment_method || 'Original payment method'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            ℹ️ When will I see the refund?
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Refunds typically appear in ${data.processing_days || '3-5'} business days, but can take up to 10 days depending on your bank.
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          We're here if you need anything else or if you'd like to book another consultation.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctors"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Browse Doctors
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about your refund?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a> • Include Transaction ID: ${data.transaction_id || 'N/A'}
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Finance Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // B8: Booking Cancelled Patient Early - Priority 85
+  booking_cancelled_patient_early: (data) => ({
+    subject: `Booking cancelled - full credit restored`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ Cancellation confirmed
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            Full credit restored to your account
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.patient_first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Your consultation with <strong>Dr. ${data.doctor_name}</strong> scheduled for <strong>${data.appointment_datetime_local || 'N/A'}</strong> has been cancelled.
+        </p>
+
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #15803d;">
+            ✓ No cancellation fee
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #15803d;">
+            You cancelled more than ${data.min_hours || '24'} hours in advance. ${data.credit_type === 'membership' ? 'Your membership consultation has been restored.' : `€${data.amount || 'N/A'} has been refunded to your original payment method.`}
+          </p>
+        </div>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Cancellation Details:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Doctor:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">Dr. ${data.doctor_name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Original Time:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.appointment_datetime_local || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Cancelled:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.cancelled_at || 'Now'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Credit/Refund:</td>
+              <td style="padding: 8px 0; color: #16a34a; font-size: 14px; font-weight: 600; text-align: right;">${data.credit_type === 'membership' ? '1 consultation credit' : `€${data.amount || 'N/A'}`}</td>
+            </tr>
+          </table>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Ready to book again? Dr. ${data.doctor_name} has ${data.available_slots || 'multiple'} times available, or explore our network of trusted doctors.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.doctor_profile_url || `${process.env.VITE_APP_URL}/doctors/${data.doctor_id}`}"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 10px;">
+            Rebook Dr. ${data.doctor_name}
+          </a>
+          <a href="${process.env.VITE_APP_URL}/doctors"
+             style="display: inline-block; background-color: #64748b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Browse All Doctors
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Support Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // B9: Booking Cancelled Patient Late - Priority 85
+  booking_cancelled_patient_late: (data) => ({
+    subject: `Late cancellation - ${data.penalty_type === 'full' ? 'credit forfeited' : 'partial credit restored'}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: ${data.penalty_type === 'full' ? '#fee2e2' : '#fef3c7'}; border-left: 4px solid ${data.penalty_type === 'full' ? '#ef4444' : '#f59e0b'}; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: ${data.penalty_type === 'full' ? '#991b1b' : '#92400e'};">
+            Late cancellation confirmed
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: ${data.penalty_type === 'full' ? '#991b1b' : '#92400e'};">
+            ${data.penalty_type === 'full' ? 'Cancelled within 24h - consultation credit forfeited' : `${data.credit_percentage || '50'}% credit restored`}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.patient_first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Your consultation with <strong>Dr. ${data.doctor_name}</strong> scheduled for <strong>${data.appointment_datetime_local || 'N/A'}</strong> has been cancelled.
+        </p>
+
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+            ⚠️ Late Cancellation Policy Applied
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #92400e;">
+            ${data.penalty_type === 'full'
+              ? `Cancellations within ${data.min_hours || '24'} hours forfeit the full consultation credit per our <a href="${process.env.VITE_APP_URL}/cancellation-policy" style="color: #b45309;">cancellation policy</a>.`
+              : `You cancelled ${data.hours_before || 'N/A'} hours before. ${data.credit_percentage || '50'}% of your credit has been restored.`
+            }
+          </p>
+        </div>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Cancellation Summary:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Doctor:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">Dr. ${data.doctor_name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Scheduled:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.appointment_datetime_local || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Cancelled:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.cancelled_at || 'Now'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Time Before:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.hours_before || 'N/A'} hours</td>
+            </tr>
+            <tr style="border-top: 1px solid #e2e8f0;">
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px; padding-top: 16px;">Credit Status:</td>
+              <td style="padding: 8px 0; color: ${data.penalty_type === 'full' ? '#ef4444' : '#f59e0b'}; font-size: 14px; font-weight: 600; text-align: right; padding-top: 16px;">
+                ${data.penalty_type === 'full' ? 'Forfeited' : `${data.credit_percentage || '50'}% Restored`}
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        ${data.penalty_type !== 'full' ? `
+          <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #15803d;">
+              ✓ Partial Credit Restored
+            </h3>
+            <p style="margin: 0; font-size: 14px; color: #15803d;">
+              ${data.credit_type === 'membership' ? `${data.credit_percentage || '50'}% of your consultation has been restored to your membership.` : `€${data.refund_amount || 'N/A'} has been refunded to your account.`}
+            </p>
+          </div>
+        ` : ''}
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          To avoid cancellation fees in the future, please cancel at least ${data.min_hours || '24'} hours in advance.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctors"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Book Another Consultation
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about this cancellation?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Support Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // M2: Membership Renewal Upcoming - Priority 85
+  membership_renewal_upcoming: (data) => ({
+    subject: `Your membership renews in ${data.days_until_renewal || '3'} days`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e40af;">
+            Membership renewing soon
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #1e40af;">
+            Your ${data.plan_name || 'membership'} renews on ${data.renewal_date || 'N/A'}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Just a friendly reminder that your <strong>${data.plan_name || 'membership'}</strong> will automatically renew in <strong>${data.days_until_renewal || '3'} days</strong>.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Renewal Details:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Plan:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.plan_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Renewal Date:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.renewal_date || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Amount:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">€${data.amount || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Payment Method:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.payment_method || 'Saved card'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Consultations/month:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.consultations_per_month || 'N/A'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #15803d;">
+            ✓ No action needed
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #15803d;">
+            We'll automatically charge €${data.amount || 'N/A'} on ${data.renewal_date || 'N/A'}. Your consultations will reset and you'll have full access.
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Want to make changes? You can update your plan, payment method, or cancel anytime before ${data.renewal_date}.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/membership/manage"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 10px;">
+            Manage Membership
+          </a>
+          <a href="${process.env.VITE_APP_URL}/membership/cancel"
+             style="display: inline-block; background-color: #64748b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Cancel Renewal
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about your membership?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Thank you for being a valued member,<br>
+          <strong>The Doktu Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // H3: Health Doc Patient Uploaded - Priority 85
+  health_doc_patient_uploaded: (data) => ({
+    subject: "Document uploaded successfully",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ Document uploaded
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            Your ${data.document_type || 'health document'} is securely stored
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.patient_first_name || data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          We've successfully received and stored your <strong>${data.document_type || 'document'}</strong>.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Document Details:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Document Type:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.document_type || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">File Name:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.file_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Uploaded:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.upload_date || 'Just now'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Security:</td>
+              <td style="padding: 8px 0; color: #16a34a; font-size: 14px; font-weight: 600; text-align: right;">🔒 Encrypted & HIPAA-compliant</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            ℹ️ Your privacy matters
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Your documents are encrypted and only accessible to you and doctors you explicitly share them with during consultations.
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          You can view, share, or delete this document anytime from your health profile.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/health-profile/documents"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            View My Documents
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about your health documents?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Health Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // H4: Health Doc Doctor Shared - Priority 85
+  health_doc_doctor_shared: (data) => ({
+    subject: `Dr. ${data.doctor_name} shared a document with you`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e40af;">
+            New document from your doctor
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #1e40af;">
+            Dr. ${data.doctor_name} shared ${data.document_type || 'a document'} with you
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.patient_first_name || data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          <strong>Dr. ${data.doctor_name}</strong> has shared <strong>${data.document_type || 'a document'}</strong> with you from your recent consultation.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Document Details:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">From:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">Dr. ${data.doctor_name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Document Type:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.document_type || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">File Name:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.file_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Shared:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.shared_date || 'Just now'}</td>
+            </tr>
+            ${data.consultation_date ? `
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Related to:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">Consultation on ${data.consultation_date}</td>
+            </tr>
+            ` : ''}
+          </table>
+        </div>
+
+        ${data.doctor_note ? `
+          <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+              📝 Note from Dr. ${data.doctor_name}:
+            </h3>
+            <p style="margin: 0; font-size: 14px; color: #92400e;">
+              "${data.doctor_note}"
+            </p>
+          </div>
+        ` : ''}
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          This document has been securely added to your health profile. You can view, download, or share it with other healthcare providers.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.document_url || `${process.env.VITE_APP_URL}/health-profile/documents`}"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            View Document
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about this document?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Health Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // H5: Health Doc Upload Failed - Priority 80
+  health_doc_upload_failed: (data) => ({
+    subject: "Document upload failed - please try again",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #991b1b;">
+            Upload failed
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #991b1b;">
+            We couldn't save your ${data.document_type || 'document'}
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.patient_first_name || data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          We encountered an issue while trying to upload your <strong>${data.document_type || 'document'}</strong>.
+        </p>
+
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+            ⚠️ What went wrong:
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #92400e;">
+            ${data.error_reason || 'File size too large or unsupported format'}
+          </p>
+        </div>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Upload Requirements:
+          </h3>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">
+            • Supported formats: PDF, JPG, PNG, HEIC<br>
+            • Maximum file size: ${data.max_file_size || '10MB'}<br>
+            • Files must be readable and not corrupted<br>
+            • Documents should not be password-protected
+          </p>
+        </div>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Failed Upload Details:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">File Name:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.file_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">File Size:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.file_size || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Error:</td>
+              <td style="padding: 8px 0; color: #ef4444; font-size: 14px; font-weight: 600; text-align: right;">${data.error_reason || 'Upload failed'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Please try uploading again. If the problem persists, contact support and we'll help you manually add the document.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/health-profile/documents/upload"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 10px;">
+            Try Upload Again
+          </a>
+          <a href="mailto:support@doktu.co?subject=Document Upload Failed&body=File: ${data.file_name || 'N/A'}"
+             style="display: inline-block; background-color: #64748b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Contact Support
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Need help?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a> • We respond within 1 hour
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Support Team</strong>
+        </p>
+      </div>
+    `
+  }),
+
+  // M10: Membership Monthly Reset - Priority 80
+  membership_monthly_reset: (data) => ({
+    subject: `Your ${data.consultations_per_month || 'monthly'} consultations have been renewed`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #15803d;">
+            ✓ Consultations renewed!
+          </h2>
+          <p style="margin: 0; font-size: 16px; color: #15803d;">
+            You now have ${data.consultations_per_month || 'N/A'} consultations available
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Hi ${data.first_name},
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Good news! Your monthly consultation allowance has been reset. You now have <strong>${data.consultations_per_month || 'N/A'} fresh consultations</strong> available.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
+            Your Monthly Allowance:
+          </h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Plan:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.plan_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Consultations Available:</td>
+              <td style="padding: 8px 0; color: #16a34a; font-size: 18px; font-weight: 700; text-align: right;">${data.consultations_per_month || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Reset Date:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.reset_date || 'Today'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Next Reset:</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${data.next_reset_date || 'N/A'}</td>
+            </tr>
+            ${data.last_month_used ? `
+            <tr style="border-top: 1px solid #e2e8f0;">
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px; padding-top: 12px;">Last Month Used:</td>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px; text-align: right; padding-top: 12px;">${data.last_month_used} of ${data.consultations_per_month}</td>
+            </tr>
+            ` : ''}
+          </table>
+        </div>
+
+        ${data.last_month_unused > 0 ? `
+          <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #92400e;">
+              ⚠️ Reminder: Use it or lose it
+            </h3>
+            <p style="margin: 0; font-size: 14px; color: #92400e;">
+              You had ${data.last_month_unused} unused consultation(s) last month. Consultations don't roll over - make the most of your membership!
+            </p>
+          </div>
+        ` : ''}
+
+        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e40af;">
+            💡 Pro tip
+          </h3>
+          <p style="margin: 0; font-size: 14px; color: #1e40af;">
+            Book early! Our most popular doctors get booked quickly at the start of the month.
+          </p>
+        </div>
+
+        <p style="font-size: 16px; color: #475569; margin: 24px 0;">
+          Ready to book your first consultation of the month?
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${process.env.VITE_APP_URL}/doctors"
+             style="display: inline-block; background-color: #3b82f6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Book a Consultation
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          Questions about your membership?<br>
+          <a href="mailto:support@doktu.co" style="color: #0066cc;">support@doktu.co</a> • <a href="${process.env.VITE_APP_URL}/membership/manage" style="color: #0066cc;">Manage Membership</a>
+        </p>
+
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Stay healthy,<br>
+          <strong>The Doktu Team</strong>
+        </p>
+      </div>
+    `
   })
 };
 
@@ -1567,7 +2470,19 @@ function getRequiredFields(templateKey: string): string[] {
     membership_activated: ["first_name"],
     membership_renewed: ["first_name", "amount"],
     membership_reactivated: ["first_name"],
-    payment_receipt: ["doctor_name", "amount"]
+    payment_receipt: ["doctor_name", "amount"],
+    // Phase 2: Operational Templates (Priority 90-80)
+    booking_hold_expired: ["patient_first_name", "doctor_name"],
+    booking_cancelled_doctor: ["patient_first_name", "doctor_name", "appointment_datetime_local"],
+    membership_cancelled: ["first_name"],
+    payment_refund_issued: ["amount"],
+    booking_cancelled_patient_early: ["patient_first_name", "doctor_name", "appointment_datetime_local"],
+    booking_cancelled_patient_late: ["patient_first_name", "doctor_name", "appointment_datetime_local"],
+    membership_renewal_upcoming: ["first_name", "plan_name", "renewal_date", "amount"],
+    health_doc_patient_uploaded: ["first_name"],
+    health_doc_doctor_shared: ["first_name", "doctor_name"],
+    health_doc_upload_failed: ["first_name"],
+    membership_monthly_reset: ["first_name", "consultations_per_month"]
   };
 
   return fieldMap[templateKey] || [];
