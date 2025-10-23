@@ -1572,22 +1572,21 @@ export class UniversalNotificationService {
         throw new Error("User email not found");
       }
 
-      // FOR NOW: Use minimal merge data to get emails working
-      // TODO: Restore full enhanceMergeData once schema issues are resolved
-      console.log('📧 Creating minimal merge data for notification:', notification.id);
+      // Create baseline merge data with user context
+      console.log('📧 Creating merge data for notification:', notification.id);
       const minimalMergeData = {
         // Universal template fields
         first_name: user.firstName || "there",
         patient_first_name: user.firstName || "there",
         patient_full_name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
-        
+
         // Legacy fields for backward compatibility
         FirstName: user.firstName || "there",
         PlatformName: "Doktu",
         SupportEmail: "support@doktu.com",
         AppointmentDate: "Your upcoming appointment",
         DoctorName: "Your doctor",
-        
+
         // Additional common fields
         verification_link: `${process.env.VITE_APP_URL}/verify-email`,
         appointment_datetime_local: "Your upcoming appointment",
@@ -1595,8 +1594,17 @@ export class UniversalNotificationService {
         join_link: `${process.env.VITE_APP_URL}/consultation`
       };
 
-      // Get email template with minimal data
-      const template = await getEmailTemplate(notification.templateKey, minimalMergeData);
+      // CRITICAL FIX: Merge database merge_data with minimal data
+      // This ensures template-specific fields (like reset_link) are preserved
+      const mergedData = {
+        ...minimalMergeData,
+        ...(notification.mergeData || {})  // Database merge_data overrides defaults
+      };
+
+      console.log('📊 Merged data fields:', Object.keys(mergedData));
+
+      // Get email template with merged data
+      const template = await getEmailTemplate(notification.templateKey, mergedData);
       
       // Add .ics attachment if needed
       let attachments = [];
