@@ -1,9 +1,11 @@
 import { MailService } from '@sendgrid/mail';
 import { format, parseISO } from 'date-fns';
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error("SENDGRID_API_KEY environment variable must be set");
-}
+// NOTE: This file is deprecated - use server/services/emailService.ts instead (Mailgun)
+// Keeping for backward compatibility but skipping SendGrid validation
+// if (!process.env.SENDGRID_API_KEY) {
+//   throw new Error("SENDGRID_API_KEY environment variable must be set");
+// }
 
 // Helper function to convert UTC time to local display format
 function convertSlotTimeToLocal(date: string, time: string): string {
@@ -57,7 +59,10 @@ function generateICSContent({
 }
 
 const mailService = new MailService();
-mailService.setApiKey(process.env.SENDGRID_API_KEY);
+// Only initialize if SendGrid key is present (for backward compatibility)
+if (process.env.SENDGRID_API_KEY) {
+  mailService.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 // Email templates configuration  
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@doktu.co';

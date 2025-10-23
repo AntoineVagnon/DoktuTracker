@@ -37,7 +37,7 @@ if (!connectionString) {
     database: u.pathname.slice(1),
     user: decodeURIComponent(u.username),
     password: decodeURIComponent(u.password || ''),
-    ssl: 'require', // Required for Supabase
+    ssl: { rejectUnauthorized: false }, // Accept self-signed certificates for Supabase
     prepare: false, // Required for pgbouncer/pooler
     max: 10,
     idle_timeout: 20,
