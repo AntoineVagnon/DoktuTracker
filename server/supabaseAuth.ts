@@ -450,13 +450,12 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(400).json({ error: 'Email required' });
       }
 
-      const siteUrl = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:5000' 
-        : 'https://doktu-tracker.replit.app';
-      
+      // Use environment variable for frontend URL with proper fallback
+      const frontendUrl = process.env.VITE_APP_URL || process.env.APP_URL || 'https://doktu.co';
+
       // Always redirect to password-reset page, not /auth/callback
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/password-reset`
+        redirectTo: `${frontendUrl}/password-reset`
       });
 
       if (error) {
@@ -851,8 +850,11 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(400).json({ error: 'Email required' });
       }
 
+      // Use environment variable for frontend URL with proper fallback
+      const frontendUrl = process.env.VITE_APP_URL || process.env.APP_URL || 'https://doktu.co';
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${req.protocol}://${req.get('host')}/password-reset`
+        redirectTo: `${frontendUrl}/password-reset`
       });
 
       if (error) {

@@ -90,7 +90,7 @@ async function comprehensiveTest() {
       JSON.stringify({
         first_name: 'QA',
         email: TEST_EMAIL,
-        reset_link: `https://doktu-tracker.vercel.app/reset-password?token=${resetToken}`,
+        reset_link: `https://doktu-tracker.vercel.app/password-reset?token=${resetToken}`,
         expiry_time: '1 hour'
       }),
       JSON.stringify({ test: true, test_id: 'COMP-002', bitdefender_fix: true })

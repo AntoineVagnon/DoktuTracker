@@ -59,7 +59,7 @@ async function testPasswordResetNotification() {
       JSON.stringify({
         first_name: 'QA',
         email: TEST_EMAIL,
-        reset_link: `https://app.doktu.co/reset-password?token=${resetToken}`,
+        reset_link: `https://app.doktu.co/password-reset?token=${resetToken}`,
         expiry_time: '1 hour'
       }),
       JSON.stringify({ test: true, test_id: 'NT-002' })
