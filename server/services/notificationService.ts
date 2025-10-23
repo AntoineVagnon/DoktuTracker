@@ -1572,7 +1572,7 @@ export class UniversalNotificationService {
         throw new Error("User email not found");
       }
 
-      // Create baseline merge data with user context
+      // Merge notification's merge_data with minimal user context
       console.log('📧 Creating merge data for notification:', notification.id);
       const minimalMergeData = {
         // Universal template fields
@@ -1594,17 +1594,21 @@ export class UniversalNotificationService {
         join_link: `${process.env.VITE_APP_URL}/consultation`
       };
 
-      // CRITICAL FIX: Merge database merge_data with minimal data
-      // This ensures template-specific fields (like reset_link) are preserved
-      const mergedData = {
+      // Parse notification merge data and merge with minimal data
+      // Notification-specific data takes precedence over defaults
+      const notificationMergeData = typeof notification.mergeData === 'string'
+        ? JSON.parse(notification.mergeData)
+        : (notification.mergeData || {});
+
+      const finalMergeData = {
         ...minimalMergeData,
-        ...(notification.mergeData || {})  // Database merge_data overrides defaults
+        ...notificationMergeData
       };
 
-      console.log('📊 Merged data fields:', Object.keys(mergedData));
+      console.log('📧 Final merge data keys:', Object.keys(finalMergeData));
 
       // Get email template with merged data
-      const template = await getEmailTemplate(notification.templateKey, mergedData);
+      const template = await getEmailTemplate(notification.templateKey, finalMergeData);
       
       // Add .ics attachment if needed
       let attachments = [];

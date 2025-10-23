@@ -305,6 +305,105 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
     };
   },
 
+  booking_reminder_1h: (data) => {
+    const baseUrl = process.env.VITE_APP_URL || 'https://app.doktu.co';
+
+    const appointmentData = {
+      appointmentId: data.appointment_id,
+      patientName: data.patient_first_name || 'Patient',
+      doctorName: data.doctor_name,
+      doctorSpecialization: data.doctor_specialization,
+      appointmentDatetimeUtc: data.appointment_datetime_utc,
+      timezone: data.patient_timezone || 'Europe/Paris',
+      joinLink: data.join_link,
+      price: data.price,
+      currency: data.currency || '€'
+    };
+
+    const buttons = [
+      {
+        text: 'Join Video Call Now',
+        url: data.join_link,
+        style: 'primary' as const
+      },
+      {
+        text: 'View Details',
+        url: `${baseUrl}/patient/appointments/${data.appointment_id}`,
+        style: 'secondary' as const
+      }
+    ];
+
+    const html =
+      generateEmailHeader({
+        preheaderText: `Your consultation starts in 1 hour! Join Dr. ${data.doctor_name}`
+      }) +
+      `
+        <h1 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 600; color: #dc2626;">
+          ⏰ Consultation starting in 1 hour!
+        </h1>
+
+        <p style="margin: 0 0 16px 0; font-size: 16px; color: #475569;">
+          Hi ${data.patient_first_name || 'there'},
+        </p>
+
+        <p style="margin: 0 0 24px 0; font-size: 16px; color: #475569;">
+          Your telemedicine consultation with Dr. ${data.doctor_name} starts in approximately <strong>1 hour</strong>.
+        </p>
+
+        ${generateAppointmentCard(appointmentData)}
+
+        <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #991b1b;">
+            🚨 Final checks before joining:
+          </h3>
+          <ul style="margin: 0; padding-left: 20px; color: #991b1b;">
+            <li>✅ <strong>Test your camera and microphone</strong> – Make sure they're working properly</li>
+            <li>✅ <strong>Check your internet connection</strong> – Close unnecessary apps and tabs</li>
+            <li>✅ <strong>Find a quiet, private space</strong> – Minimize background noise</li>
+            <li>✅ <strong>Have your questions ready</strong> – Bring any medical documents or notes</li>
+            <li>✅ <strong>Join 5 minutes early</strong> – Give yourself time to settle in</li>
+          </ul>
+        </div>
+
+        <div style="background-color: #dbeafe; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600; color: #1e40af;">
+            💡 Pro Tips:
+          </h3>
+          <ul style="margin: 0; padding-left: 20px; color: #1e40af; font-size: 14px;">
+            <li>Position yourself in good lighting (face a window if possible)</li>
+            <li>Use headphones for better audio quality</li>
+            <li>Have a glass of water nearby</li>
+            <li>Silence your phone to avoid distractions</li>
+          </ul>
+        </div>
+
+        ${generateButtonGroup(buttons)}
+
+        <p style="margin: 24px 0 0 0; font-size: 14px; color: #64748b;">
+          Need technical help? Contact us at
+          <a href="mailto:support@doktu.co" style="color: #0369a1; text-decoration: underline;">support@doktu.co</a>
+        </p>
+
+        <p style="margin: 16px 0 0 0; font-size: 14px; color: #64748b;">
+          Looking forward to your consultation!
+        </p>
+      ` +
+      generateEmailFooter();
+
+    const plainText = generatePlainTextContent({
+      subject: "Consultation Starting in 1 Hour! – Doktu",
+      mainContent: `Hi ${data.patient_first_name || 'there'},\n\nYour telemedicine consultation with Dr. ${data.doctor_name} starts in approximately 1 hour.\n\nFINAL CHECKS BEFORE JOINING:\n✅ Test your camera and microphone – Make sure they're working properly\n✅ Check your internet connection – Close unnecessary apps and tabs\n✅ Find a quiet, private space – Minimize background noise\n✅ Have your questions ready – Bring any medical documents or notes\n✅ Join 5 minutes early – Give yourself time to settle in\n\nPRO TIPS:\n• Position yourself in good lighting (face a window if possible)\n• Use headphones for better audio quality\n• Have a glass of water nearby\n• Silence your phone to avoid distractions\n\nNeed technical help? Contact us at support@doktu.co\n\nLooking forward to your consultation!`,
+      buttons,
+      appointmentData
+    });
+
+    return {
+      subject: "Consultation Starting in 1 Hour! – Doktu",
+      html,
+      text: plainText
+    };
+  },
+
   cancellation_confirmation: (data) => {
     const baseUrl = process.env.VITE_APP_URL || 'https://app.doktu.co';
     
@@ -625,44 +724,17 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <p>Dear ${data.first_name || 'Patient'},</p>
-        
+
         <p>Please click the link below to verify your email address and complete your Doktu account setup:</p>
-        
+
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${data.verification_link}" 
+          <a href="${data.verification_link}"
              style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
             Verify Email Address
           </a>
         </div>
-        
+
         <p>If you didn't create a Doktu account, please ignore this email.</p>
-        
-        <p>Best regards,<br>Doktu Team</p>
-      </div>
-    `
-  }),
-
-  health_profile_incomplete: (data) => ({
-    subject: "Complete your health profile – it takes just 5 minutes",
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Dear ${data.first_name || 'Patient'},</p>
-
-        <p>We noticed your health profile is ${data.completion_percentage || '0'}% complete. Taking a few minutes to complete it will help your doctors provide better care.</p>
-
-        <p><strong>What's missing:</strong></p>
-        <ul>
-          ${data.missing_fields ? data.missing_fields.map(field => `<li>${field}</li>`).join('') : '<li>Basic health information</li>'}
-        </ul>
-
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.VITE_APP_URL}/dashboard"
-             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
-            Complete Profile Now
-          </a>
-        </div>
-
-        <p>A complete profile helps doctors understand your health better and provide more personalized care.</p>
 
         <p>Best regards,<br>Doktu Team</p>
       </div>
@@ -672,187 +744,159 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
   account_password_reset: (data) => ({
     subject: "Reset Your Doktu Password",
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Dear ${data.first_name || 'User'},</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #f8f9fa; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 16px 0; font-size: 24px; color: #1e293b;">
+            Password Reset Request
+          </h2>
+        </div>
 
-        <p>We received a request to reset your password for your Doktu account.</p>
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Dear ${data.first_name || 'User'},
+        </p>
 
-        <p>Click the button below to reset your password:</p>
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          We received a request to reset your password for your Doktu account.
+        </p>
 
-        <div style="text-align: center; margin: 30px 0;">
+        <p style="font-size: 16px; color: #475569; margin: 0 0 24px 0;">
+          Click the button below to reset your password:
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
           <a href="${data.reset_link}"
-             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+             style="display: inline-block; background-color: #0066cc; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
             Reset Password
           </a>
         </div>
 
-        <p>This link will expire in ${data.expiry_time || '1 hour'} for security reasons.</p>
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
+          <p style="margin: 0; font-size: 14px; color: #92400e;">
+            ⏰ <strong>This link will expire in ${data.expiry_time || '1 hour'}</strong> for security reasons.
+          </p>
+        </div>
 
-        <p>If you didn't request this password reset, please ignore this email. Your password will not be changed.</p>
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          If you didn't request this password reset, please ignore this email. Your password will not be changed.
+        </p>
 
-        <p>For security reasons, never share your password with anyone.</p>
+        <p style="font-size: 14px; color: #64748b; margin: 16px 0 0 0;">
+          For security reasons, never share your password with anyone, including Doktu support staff.
+        </p>
 
-        <p>Best regards,<br>Doktu Team</p>
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Best regards,<br>
+          <strong>Doktu Security Team</strong>
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;" />
+
+        <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+          If you're having trouble with the button above, copy and paste this link into your browser:
+        </p>
+        <p style="font-size: 12px; color: #0066cc; margin: 8px 0 0 0; word-break: break-all;">
+          ${data.reset_link}
+        </p>
       </div>
     `
   }),
 
   account_password_changed: (data) => ({
-    subject: "Your Doktu Password Has Been Changed",
+    subject: "Your Doktu Password Was Changed",
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Dear ${data.first_name || 'User'},</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #166534;">
+            ✓ Password Successfully Changed
+          </h2>
+          <p style="margin: 0; font-size: 14px; color: #15803d;">
+            ${new Date().toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}
+          </p>
+        </div>
 
-        <p>This email confirms that your Doktu account password was successfully changed on ${data.changed_at || 'recently'}.</p>
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          Dear ${data.first_name || 'User'},
+        </p>
 
-        <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 24px 0; border-radius: 6px;">
-          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #15803d;">
+        <p style="font-size: 16px; color: #475569; margin: 0 0 16px 0;">
+          This is a confirmation that your Doktu account password was successfully changed.
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1e293b;">
             Security Details:
           </h3>
-          <p style="margin: 0; color: #15803d;">
-            <strong>Date & Time:</strong> ${data.changed_at || 'Just now'}<br>
-            <strong>Device:</strong> ${data.device || 'Your device'}<br>
-            <strong>Location:</strong> ${data.location || 'Your location'}
-          </p>
+          <ul style="margin: 0; padding-left: 20px; color: #64748b; font-size: 14px;">
+            <li>Device: ${data.device || 'Unknown device'}</li>
+            <li>Location: ${data.location || 'Unknown location'}</li>
+            <li>IP Address: ${data.ip_address || 'Not available'}</li>
+            <li>Time: ${data.timestamp || new Date().toLocaleString()}</li>
+          </ul>
         </div>
-
-        <p><strong>If you made this change:</strong></p>
-        <p>No further action is needed. Your account is secure.</p>
-
-        <p><strong>If you did NOT make this change:</strong></p>
-        <p style="color: #dc2626; font-weight: 600;">Your account may be compromised. Take these steps immediately:</p>
-        <ol style="color: #dc2626;">
-          <li>Reset your password again using a secure device</li>
-          <li>Review your recent account activity</li>
-          <li>Enable two-factor authentication</li>
-          <li>Contact our support team at support@doktu.com</li>
-        </ol>
-
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.VITE_APP_URL}/security"
-             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-            Review Security Settings
-          </a>
-        </div>
-
-        <p style="font-size: 14px; color: #64748b; margin-top: 24px;">
-          For your security, never share your password with anyone, including Doktu staff.
-        </p>
-
-        <p>Best regards,<br>Doktu Security Team</p>
-      </div>
-    `
-  }),
-
-  booking_payment_pending: (data) => ({
-    subject: "Complete Your Payment – Your Appointment Slot is Reserved",
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Dear ${data.patient_first_name || 'Patient'},</p>
-
-        <p>You've successfully reserved an appointment slot with Dr. ${data.doctor_name}!</p>
-
-        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 6px;">
-          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #92400e;">
-            ⏰ Action Required – Complete Payment Within 15 Minutes
-          </h3>
-          <p style="margin: 0; color: #92400e;">
-            Your appointment slot is held for <strong>15 minutes</strong>. If payment is not completed by ${data.hold_expires_at || '15 minutes'}, this slot will be released and become available to other patients.
-          </p>
-        </div>
-
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p style="margin: 5px 0;"><strong>Doctor:</strong> Dr. ${data.doctor_name}</p>
-          <p style="margin: 5px 0;"><strong>Specialization:</strong> ${data.doctor_specialization || 'General Practice'}</p>
-          <p style="margin: 5px 0;"><strong>Date & Time:</strong> ${data.appointment_datetime_local}</p>
-          <p style="margin: 5px 0;"><strong>Price:</strong> ${data.currency || '€'}${data.price || '35'}</p>
-          <p style="margin: 5px 0;"><strong>Hold Expires:</strong> ${data.hold_expires_at || 'In 15 minutes'}</p>
-        </div>
-
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${data.payment_link || process.env.VITE_APP_URL + '/patient/checkout/' + data.booking_id}"
-             style="background-color: #dc2626; color: white; padding: 14px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: 600; font-size: 16px;">
-            Complete Payment Now
-          </a>
-        </div>
-
-        <p><strong>What happens after payment?</strong></p>
-        <ul>
-          <li>You'll receive instant confirmation</li>
-          <li>Your appointment will be confirmed and locked in</li>
-          <li>You'll get calendar reminders before your consultation</li>
-          <li>You'll receive the video call link to join</li>
-        </ul>
-
-        <p style="font-size: 14px; color: #64748b; margin-top: 24px;">
-          <strong>Need help?</strong> Contact our support team at support@doktu.co or call us at ${data.support_phone || '+33 (0)1 XX XX XX XX'}.
-        </p>
-
-        <p>Best regards,<br>Doktu Team</p>
-      </div>
-    `
-  }),
-
-  membership_payment_failed: (data) => ({
-    subject: "Urgent: Your Doktu Membership Payment Failed",
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Dear ${data.first_name || 'Member'},</p>
 
         <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 16px; margin: 24px 0; border-radius: 6px;">
-          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #991b1b;">
-            ⚠️ Payment Failed – Action Required
-          </h3>
-          <p style="margin: 0; color: #991b1b;">
-            We were unable to process your ${data.plan_name || 'membership'} payment. Your membership benefits may be interrupted if this is not resolved within ${data.grace_period_days || '3'} days.
+          <p style="margin: 0 0 12px 0; font-size: 14px; color: #991b1b; font-weight: 600;">
+            ⚠️ Didn't change your password?
+          </p>
+          <p style="margin: 0; font-size: 14px; color: #991b1b;">
+            If you did not make this change, your account may be compromised. Please contact our security team immediately.
           </p>
         </div>
 
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p style="margin: 5px 0;"><strong>Membership Plan:</strong> ${data.plan_name || 'Premium'}</p>
-          <p style="margin: 5px 0;"><strong>Amount Due:</strong> ${data.currency || '€'}${data.amount || '29.99'}</p>
-          <p style="margin: 5px 0;"><strong>Billing Period:</strong> ${data.billing_period || 'Monthly'}</p>
-          <p style="margin: 5px 0;"><strong>Payment Method:</strong> ${data.payment_method || 'Card ending in ****'}</p>
-          <p style="margin: 5px 0;"><strong>Failure Reason:</strong> ${data.failure_reason || 'Payment declined'}</p>
-        </div>
-
-        <p><strong>Why did this happen?</strong></p>
-        <ul>
-          <li>Insufficient funds in your account</li>
-          <li>Expired or invalid payment method</li>
-          <li>Card issuer declined the transaction</li>
-          <li>Billing address mismatch</li>
-        </ul>
-
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${data.update_payment_link || process.env.VITE_APP_URL + '/settings/billing'}"
-             style="background-color: #dc2626; color: white; padding: 14px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: 600; font-size: 16px;">
-            Update Payment Method
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.security_url || `${process.env.VITE_APP_URL}/security`}"
+             style="display: inline-block; background-color: #dc2626; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+            Secure My Account
           </a>
         </div>
 
-        <p><strong>What happens next?</strong></p>
-        <ul>
-          <li>We'll automatically retry payment in ${data.retry_days || '2'} days</li>
-          <li>If payment fails ${data.max_retry_attempts || '3'} times, your membership will be suspended</li>
-          <li>You can update your payment method now to avoid interruption</li>
-          <li>Your membership benefits remain active during the ${data.grace_period_days || '3'}-day grace period</li>
+        <p style="font-size: 14px; color: #64748b; margin: 24px 0 0 0;">
+          <strong>Security Tips:</strong>
+        </p>
+        <ul style="margin: 8px 0 0 0; padding-left: 20px; color: #64748b; font-size: 14px;">
+          <li>Use a strong, unique password for your Doktu account</li>
+          <li>Enable two-factor authentication for extra security</li>
+          <li>Never share your password with anyone</li>
+          <li>Be cautious of phishing emails pretending to be from Doktu</li>
         </ul>
 
-        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0; border-radius: 6px;">
-          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #1e40af;">
-            Need Help?
-          </h3>
-          <p style="margin: 0; color: #1e40af;">
-            Contact your bank to authorize the payment, or update your payment method in your account settings. Our support team is available 24/7 at support@doktu.co.
-          </p>
-        </div>
-
-        <p style="font-size: 14px; color: #64748b; margin-top: 24px;">
-          If you believe this is an error or need assistance, please contact us immediately at support@doktu.co or call ${data.support_phone || '+33 (0)1 XX XX XX XX'}.
+        <p style="font-size: 16px; color: #475569; margin: 32px 0 0 0;">
+          Stay secure,<br>
+          <strong>Doktu Security Team</strong>
         </p>
 
-        <p>Best regards,<br>Doktu Billing Team</p>
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;" />
+
+        <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+          Need help? Contact us at <a href="mailto:security@doktu.co" style="color: #0066cc;">security@doktu.co</a>
+        </p>
+      </div>
+    `
+  }),
+
+  health_profile_incomplete: (data) => ({
+    subject: "Complete your health profile – it takes just 5 minutes",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <p>Dear ${data.first_name || 'Patient'},</p>
+        
+        <p>We noticed your health profile is ${data.completion_percentage || '0'}% complete. Taking a few minutes to complete it will help your doctors provide better care.</p>
+        
+        <p><strong>What's missing:</strong></p>
+        <ul>
+          ${data.missing_fields ? data.missing_fields.map(field => `<li>${field}</li>`).join('') : '<li>Basic health information</li>'}
+        </ul>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.VITE_APP_URL}/dashboard" 
+             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
+            Complete Profile Now
+          </a>
+        </div>
+        
+        <p>A complete profile helps doctors understand your health better and provide more personalized care.</p>
+        
+        <p>Best regards,<br>Doktu Team</p>
       </div>
     `
   })
@@ -883,6 +927,7 @@ function getRequiredFields(templateKey: string): string[] {
     profile_reminder: ["first_name"],
     booking_confirmation: ["patient_first_name", "appointment_datetime_local", "doctor_name", "join_link"],
     booking_reminder_24h: ["patient_first_name", "appointment_datetime_local", "doctor_name", "join_link"],
+    booking_reminder_1h: ["patient_first_name", "appointment_datetime_local", "doctor_name", "join_link"],
     cancellation_confirmation: ["patient_first_name", "doctor_name", "appointment_datetime_local"],
     reschedule_confirmation: ["patient_first_name", "new_appointment_datetime_local", "doctor_name", "join_link"],
     post_call_survey: ["patient_first_name", "doctor_name", "appointment_id"],
@@ -893,9 +938,10 @@ function getRequiredFields(templateKey: string): string[] {
     // Universal Notification System templates
     account_registration_success: ["first_name"],
     account_email_verification: ["first_name", "verification_link"],
-    health_profile_incomplete: ["first_name"],
-    account_password_reset: ["first_name", "reset_link"]
+    account_password_reset: ["first_name", "reset_link"],
+    account_password_changed: ["first_name"],
+    health_profile_incomplete: ["first_name"]
   };
-
+  
   return fieldMap[templateKey] || [];
 }
