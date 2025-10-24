@@ -1693,17 +1693,27 @@ export class UniversalNotificationService {
       console.log('🌍 Using locale for email template:', userLocale);
 
       // Get email template with merged data and user's locale
+      console.log('📧 Step 1: About to call getEmailTemplate');
       const template = await getEmailTemplate(notification.templateKey, finalMergeData, userLocale);
-      
+      console.log('✅ Step 1 complete: getEmailTemplate succeeded');
+
       // Add .ics attachment if needed
       let attachments = [];
       if (notification.triggerCode === TriggerCode.BOOK_CONF && notification.appointmentId) {
-        const icsContent = await createICSAttachment(notification.appointmentId, "ADD");
-        attachments.push({
-          filename: "appointment.ics",
-          content: icsContent,
-          contentType: "text/calendar"
-        });
+        console.log('📧 Step 2: About to call createICSAttachment');
+        try {
+          const icsContent = await createICSAttachment(notification.appointmentId, "ADD");
+          console.log('✅ Step 2 complete: createICSAttachment succeeded');
+          attachments.push({
+            filename: "appointment.ics",
+            content: icsContent,
+            contentType: "text/calendar"
+          });
+        } catch (icsError: any) {
+          console.error('❌ Step 2 FAILED: createICSAttachment error:', icsError.message);
+          console.error('❌ ICS Error stack:', icsError.stack);
+          // Continue without attachment rather than failing the entire email
+        }
       }
 
       // Disable link tracking for security-sensitive emails to prevent antivirus blocking
