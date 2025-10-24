@@ -26,7 +26,7 @@ export async function createICSAttachment(
     throw new Error("Appointment not found");
   }
 
-  // Get patient details
+  // Get patient details with null check
   const [patient] = await db
     .select({
       email: users.email,
@@ -36,7 +36,11 @@ export async function createICSAttachment(
     .from(users)
     .where(eq(users.id, appointment.patientId));
 
-  // Get doctor details
+  if (!patient) {
+    throw new Error(`Patient not found for appointment ${appointmentId}`);
+  }
+
+  // Get doctor details with null check
   const [doctor] = await db
     .select({
       firstName: users.firstName,
@@ -47,6 +51,10 @@ export async function createICSAttachment(
     .from(doctors)
     .innerJoin(users, eq(doctors.userId, users.id))
     .where(eq(doctors.id, appointment.doctorId));
+
+  if (!doctor) {
+    throw new Error(`Doctor not found for appointment ${appointmentId}`);
+  }
 
   const startDate = new Date(appointment.appointmentDate);
   const endDate = new Date(startDate.getTime() + 30 * 60000); // 30 minutes consultation
