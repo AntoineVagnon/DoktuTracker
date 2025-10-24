@@ -38,11 +38,9 @@ export async function createICSAttachment(
   // Get doctor details
   const [doctor] = await db
     .select({
-      user: {
-        firstName: users.firstName,
-        lastName: users.lastName,
-        email: users.email
-      },
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: users.email,
       specialty: doctors.specialty
     })
     .from(doctors)
@@ -72,12 +70,12 @@ export async function createICSAttachment(
     `DTSTAMP:${formatICalDate(now)}`,
     `DTSTART:${formatICalDate(startDate)}`,
     `DTEND:${formatICalDate(endDate)}`,
-    `SUMMARY:Medical Consultation with Dr. ${doctor.user.lastName}`,
+    `SUMMARY:Medical Consultation with Dr. ${doctor.lastName}`,
     `DESCRIPTION:Online medical consultation via DokTu platform.\\n\\nJoin link: ${appointment.zoomLink || 'Will be provided'}\\n\\nPlease join 2-5 minutes before the scheduled time.`,
     `LOCATION:${appointment.zoomLink || 'Online'}`,
     `ORGANIZER;CN=DokTu:mailto:appointments@doktu.com`,
     `ATTENDEE;CN="${patient.firstName} ${patient.lastName}";RSVP=TRUE:mailto:${patient.email}`,
-    `ATTENDEE;CN="Dr. ${doctor.user.firstName} ${doctor.user.lastName}";RSVP=TRUE:mailto:${doctor.user.email}`,
+    `ATTENDEE;CN="Dr. ${doctor.firstName} ${doctor.lastName}";RSVP=TRUE:mailto:${doctor.email}`,
     'SEQUENCE:0',
     `STATUS:${method === 'CANCEL' ? 'CANCELLED' : 'CONFIRMED'}`,
     'BEGIN:VALARM',
