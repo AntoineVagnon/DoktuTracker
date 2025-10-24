@@ -6436,30 +6436,48 @@ export async function registerRoutes(app: Express): Promise<void> {
       const { desc } = await import('drizzle-orm');
 
       // Get recent appointments with patient and doctor details
-      const recentAppointments = await db
+      const flatResults = await db
         .select({
           id: appointments.id,
           appointmentDate: appointments.appointmentDate,
           status: appointments.status,
           price: appointments.price,
-          patient: {
-            id: users.id,
-            firstName: users.firstName,
-            lastName: users.lastName,
-            email: users.email
-          },
-          doctor: {
-            id: doctors.id,
-            firstName: doctors.firstName,
-            lastName: doctors.lastName,
-            specialty: doctors.specialty
-          }
+          // Patient fields (flat structure - Drizzle ORM doesn't support nested objects)
+          patientId: users.id,
+          patientFirstName: users.firstName,
+          patientLastName: users.lastName,
+          patientEmail: users.email,
+          // Doctor fields (flat structure)
+          doctorId: doctors.id,
+          doctorFirstName: doctors.firstName,
+          doctorLastName: doctors.lastName,
+          doctorSpecialty: doctors.specialty
         })
         .from(appointments)
         .innerJoin(users, eq(appointments.patientId, users.id))
         .innerJoin(doctors, eq(appointments.doctorId, doctors.id))
         .orderBy(desc(appointments.appointmentDate))
         .limit(100);
+
+      // Reconstruct nested structure for backward compatibility
+      const recentAppointments = flatResults.map(flat => ({
+        id: flat.id,
+        appointmentDate: flat.appointmentDate,
+        status: flat.status,
+        price: flat.price,
+        patient: {
+          id: flat.patientId,
+          firstName: flat.patientFirstName,
+          lastName: flat.patientLastName,
+          email: flat.patientEmail
+        },
+        doctor: {
+          id: flat.doctorId,
+          firstName: flat.doctorFirstName,
+          lastName: flat.doctorLastName,
+          specialty: flat.doctorSpecialty
+        }
+      }));
 
       res.json(recentAppointments);
     } catch (error: any) {
