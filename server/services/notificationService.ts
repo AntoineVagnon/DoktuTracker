@@ -1530,6 +1530,24 @@ export class UniversalNotificationService {
    * Schedule email notification
    */
   private async scheduleEmail(params: any) {
+    // Check if notification already exists to prevent duplicates
+    if (params.appointmentId) {
+      const [existing] = await db
+        .select({ id: emailNotifications.id })
+        .from(emailNotifications)
+        .where(and(
+          eq(emailNotifications.appointmentId, params.appointmentId),
+          eq(emailNotifications.triggerCode, params.triggerCode),
+          eq(emailNotifications.userId, params.userId)
+        ))
+        .limit(1);
+
+      if (existing) {
+        console.log(`⚠️ Email notification already exists for appointment ${params.appointmentId}, trigger ${params.triggerCode}, user ${params.userId} - skipping duplicate`);
+        return;
+      }
+    }
+
     await db.insert(emailNotifications).values(params);
   }
 

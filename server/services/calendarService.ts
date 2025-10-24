@@ -1,11 +1,12 @@
 // Calendar service for generating .ics files
+// FIXED: All Drizzle ORM selects are now FLAT (no nested objects) - commit aab8705
 import { db } from "../db";
 import { appointments, users, doctors } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { format } from "date-fns";
 
 export async function createICSAttachment(
-  appointmentId: number, 
+  appointmentId: number,
   method: "ADD" | "CANCEL" | "REQUEST" = "ADD"
 ): Promise<string> {
   // Get appointment details
