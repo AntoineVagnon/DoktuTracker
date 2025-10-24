@@ -119,23 +119,21 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
     const doctorUsers = alias(users, 'doctorUsers');
     
     // Fetch appointments for tomorrow that are paid/confirmed
-    const tomorrowAppointments = await db
+    const flatResults = await db
       .select({
         id: appointments.id,
         appointmentDate: appointments.appointmentDate,
-        patient: {
-          id: users.id,
-          email: users.email,
-          firstName: users.firstName,
-          lastName: users.lastName
-        },
-        doctor: {
-          id: doctors.id,
-          title: doctorUsers.title,
-          firstName: doctorUsers.firstName,
-          lastName: doctorUsers.lastName,
-          specialty: doctors.specialty
-        }
+        // Patient fields (flat structure - Drizzle ORM doesn't support nested objects)
+        patientId: users.id,
+        patientEmail: users.email,
+        patientFirstName: users.firstName,
+        patientLastName: users.lastName,
+        // Doctor fields (flat structure)
+        doctorId: doctors.id,
+        doctorTitle: doctorUsers.title,
+        doctorFirstName: doctorUsers.firstName,
+        doctorLastName: doctorUsers.lastName,
+        doctorSpecialty: doctors.specialty
       })
       .from(appointments)
       .innerJoin(users, eq(appointments.patientId, users.id))
@@ -148,6 +146,25 @@ router.post('/send-reminders', isAuthenticated, requireAdmin, async (req, res) =
           or(eq(appointments.status, 'paid'), eq(appointments.status, 'confirmed'))
         )
       );
+
+    // Reconstruct nested structure for backward compatibility
+    const tomorrowAppointments = flatResults.map(flat => ({
+      id: flat.id,
+      appointmentDate: flat.appointmentDate,
+      patient: {
+        id: flat.patientId,
+        email: flat.patientEmail,
+        firstName: flat.patientFirstName,
+        lastName: flat.patientLastName
+      },
+      doctor: {
+        id: flat.doctorId,
+        title: flat.doctorTitle,
+        firstName: flat.doctorFirstName,
+        lastName: flat.doctorLastName,
+        specialty: flat.doctorSpecialty
+      }
+    }));
     
     let sentCount = 0;
     const errors: string[] = [];
