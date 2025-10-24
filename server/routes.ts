@@ -1555,15 +1555,63 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.post("/api/doctors/:doctorId/slots", isAuthenticated, async (req, res) => {
     try {
+      const user = req.user as any;
+      const doctorId = parseInt(req.params.doctorId);
+
+      if (isNaN(doctorId)) {
+        return res.status(400).json({ message: "Invalid doctor ID" });
+      }
+
+      // Authorization: Only admins or the doctor themselves can create slots
+      const doctor = await storage.getDoctorById(doctorId.toString());
+
+      if (!doctor) {
+        return res.status(404).json({ message: "Doctor not found" });
+      }
+
+      // Check if user is admin OR the doctor themselves
+      const isAdmin = user.role === 'admin';
+      const isOwnDoctor = doctor.userId === user.id;
+
+      if (!isAdmin && !isOwnDoctor) {
+        console.log(`❌ Unauthorized slot creation attempt: User ${user.id} (role: ${user.role}) tried to create slot for doctor ${doctorId} (userId: ${doctor.userId})`);
+        return res.status(403).json({
+          message: "Unauthorized: You can only create slots for your own doctor profile"
+        });
+      }
+
+      console.log(`✅ Authorized slot creation: User ${user.id} (${isAdmin ? 'admin' : 'doctor'}) creating slot for doctor ${doctorId}`);
+
+      // Parse and validate slot data
       const slotData = insertTimeSlotSchema.parse({
         ...req.body,
-        doctorId: req.params.doctorId,
+        doctorId: doctorId,
       });
+
+      console.log(`📝 Creating slot:`, slotData);
+
       const slot = await storage.createTimeSlot(slotData);
+
+      console.log(`✅ Slot created successfully:`, slot.id);
+
       res.json(slot);
-    } catch (error) {
-      console.error("Error creating slot:", error);
-      res.status(500).json({ message: "Failed to create slot" });
+    } catch (error: any) {
+      console.error("❌ Error creating slot:", error);
+
+      // Return detailed error for debugging
+      if (error.name === 'ZodError') {
+        return res.status(400).json({
+          message: "Validation error",
+          errors: error.errors,
+          details: "Check that date, startTime, and endTime are provided in correct format"
+        });
+      }
+
+      res.status(500).json({
+        message: "Failed to create slot",
+        error: error.message,
+        details: "Check server logs for more information"
+      });
     }
   });
 
