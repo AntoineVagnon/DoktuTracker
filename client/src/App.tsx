@@ -30,6 +30,7 @@ import DoctorSettings from "@/pages/DoctorSettings";
 import PatientRecords from "@/pages/PatientRecords";
 import DocumentLibrary from "@/pages/DocumentLibrary";
 import { PatientCalendar } from "@/pages/PatientCalendar";
+import PatientSettings from "@/pages/PatientSettings";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminNotifications from "@/pages/AdminNotifications";
 import AdminAnalytics from "@/pages/AdminAnalytics";
@@ -101,6 +102,7 @@ function Router() {
       <Route path="/doctor-records" component={PatientRecords} />
       <Route path="/documents" component={DocumentLibrary} />
       <Route path="/patient-calendar" component={PatientCalendar} />
+      <Route path="/patient/settings" component={PatientSettings} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/notifications" component={AdminNotifications} />

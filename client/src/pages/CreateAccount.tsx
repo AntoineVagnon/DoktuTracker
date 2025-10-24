@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import { detectBrowserLanguage } from "@/utils/languageDetection";
 
 export default function CreateAccount() {
   const { toast } = useToast();
@@ -121,6 +122,10 @@ export default function CreateAccount() {
     }
 
     try {
+      // Detect user's browser language for personalization
+      const detectedLanguage = detectBrowserLanguage();
+      console.log('🌍 Detected browser language for registration:', detectedLanguage);
+
       // Create account with Supabase Auth API
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -133,7 +138,8 @@ export default function CreateAccount() {
           password: formData.password,
           firstName: formData.firstName,
           lastName: formData.lastName,
-          role: 'patient'
+          role: 'patient',
+          preferredLanguage: detectedLanguage
         }),
       });
 

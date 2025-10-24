@@ -7,11 +7,19 @@ export const authRouter = Router();
 
 // POST /api/auth/register
 authRouter.post('/register', async (req, res) => {
-  const { email, password, firstName, lastName } = req.body;
-  
+  const { email, password, firstName, lastName, preferredLanguage } = req.body;
+
   if (!email || !password || !firstName || !lastName) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
+
+  // Validate and normalize locale (default to 'en' if not provided or invalid)
+  const supportedLocales = ['en', 'bs'];
+  const userLocale = preferredLanguage && supportedLocales.includes(preferredLanguage)
+    ? preferredLanguage
+    : 'en';
+
+  console.log('🌍 Registration with detected language:', userLocale);
 
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -48,6 +56,40 @@ authRouter.post('/register', async (req, res) => {
 
     if (dbError) {
       console.error('Database insert error:', dbError);
+    }
+
+    // Create notification preferences with user's detected language
+    try {
+      // Get the numeric user ID from the database
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (userData) {
+        const { error: prefsError } = await supabase
+          .from('notification_preferences')
+          .insert({
+            user_id: userData.id,
+            email_enabled: true,
+            sms_enabled: false,
+            push_enabled: false,
+            marketing_emails_enabled: true,
+            reminder_timing: { hours: [24, 2], minutes: [0, 0] },
+            locale: userLocale, // Use detected language
+            timezone: 'Europe/Paris'
+          });
+
+        if (prefsError) {
+          console.error('Error creating notification preferences:', prefsError);
+        } else {
+          console.log(`✅ Created notification preferences with locale: ${userLocale}`);
+        }
+      }
+    } catch (prefsError) {
+      console.error('Error setting up notification preferences:', prefsError);
+      // Don't fail registration if preferences creation fails
     }
 
     // Send welcome and verification emails via notification system
