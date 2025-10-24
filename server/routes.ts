@@ -488,50 +488,34 @@ export async function registerRoutes(app: Express): Promise<void> {
         };
       });
       
-      // 📧 SEND EMAIL NOTIFICATIONS ONLY FOR IMMEDIATELY PAID APPOINTMENTS (MEMBERSHIP COVERAGE)
-      // For unpaid appointments, emails will be sent during payment confirmation instead
-      if (!result.paymentRequired) {
-        try {
-          const patient = await storage.getUser(appointmentData.patientId.toString());
-          const doctor = await storage.getDoctor(appointmentData.doctorId);
-          
-          if (patient && doctor && doctor.user) {
-            const appointmentDate = appointmentData.appointmentDate.toISOString().split('T')[0];
-            const appointmentTime = appointmentData.appointmentDate.toISOString().split('T')[1].substring(0, 5);
-            
-            // Send confirmation email to patient
-            await emailService.sendAppointmentConfirmation({
-              patientEmail: patient.email!,
-              patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
-              doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
-              specialty: doctor.specialty,
-              appointmentDate,
-              appointmentTime,
-              consultationPrice: typeof doctor.consultationPrice === 'string' 
-                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
-                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
-              appointmentId: result.appointment.id.toString()
-            });
-            
-            // Send notification email to doctor
-            await emailService.sendDoctorNewAppointmentNotification({
-              doctorEmail: doctor.user.email!,
-              doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
-              patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
-              appointmentDate,
-              appointmentTime,
-              consultationPrice: typeof doctor.consultationPrice === 'string' 
-                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
-                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
-              appointmentId: result.appointment.id.toString()
-            });
-            
-            console.log(`📧 Email notifications sent for immediately paid appointment ${result.appointment.id}`);
+      // 📧 SCHEDULE EMAIL NOTIFICATIONS FOR ALL APPOINTMENTS
+      // Use the unified notification system with i18n support
+      // Notifications will be processed by the email queue and respect user's language preference
+      try {
+        console.log(`📧 Scheduling booking confirmation notification for appointment ${result.appointment.id}`);
+
+        // Schedule notification for patient
+        await notificationService.scheduleNotification({
+          userId: appointmentData.patientId,
+          appointmentId: result.appointment.id,
+          triggerCode: TriggerCode.BOOK_CONF,
+          scheduledFor: new Date(), // Send immediately
+          mergeData: {
+            appointment_id: result.appointment.id.toString(),
+            doctor_id: appointmentData.doctorId.toString(),
+            patient_id: appointmentData.patientId.toString()
           }
-        } catch (emailError) {
-          console.error('📧 Failed to send email notifications for paid appointment:', emailError);
-          // Don't fail the appointment creation if email fails
-        }
+        });
+
+        console.log(`✅ Booking confirmation notification scheduled for patient ${appointmentData.patientId}`);
+
+        // Note: Doctor notification will be handled by a separate trigger code when implemented
+        // For now, the patient notification is the priority
+
+      } catch (notificationError) {
+        console.error('📧 Failed to schedule booking notification:', notificationError);
+        // Don't fail the appointment creation if notification scheduling fails
+        // The webhook will still trigger a backup notification
       }
       
       // 🔄 RETURN STRUCTURED RESPONSE FOR FRONTEND ROUTING
@@ -923,50 +907,34 @@ export async function registerRoutes(app: Express): Promise<void> {
         };
       });
       
-      // 📧 SEND EMAIL NOTIFICATIONS ONLY FOR IMMEDIATELY PAID APPOINTMENTS (MEMBERSHIP COVERAGE)
-      // For unpaid appointments, emails will be sent during payment confirmation instead
-      if (!result.paymentRequired) {
-        try {
-          const patient = await storage.getUser(appointmentData.patientId.toString());
-          const doctor = await storage.getDoctor(appointmentData.doctorId);
-          
-          if (patient && doctor && doctor.user) {
-            const appointmentDate = appointmentData.appointmentDate.toISOString().split('T')[0];
-            const appointmentTime = appointmentData.appointmentDate.toISOString().split('T')[1].substring(0, 5);
-            
-            // Send confirmation email to patient
-            await emailService.sendAppointmentConfirmation({
-              patientEmail: patient.email!,
-              patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
-              doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
-              specialty: doctor.specialty,
-              appointmentDate,
-              appointmentTime,
-              consultationPrice: typeof doctor.consultationPrice === 'string' 
-                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
-                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
-              appointmentId: result.appointment.id.toString()
-            });
-            
-            // Send notification email to doctor
-            await emailService.sendDoctorNewAppointmentNotification({
-              doctorEmail: doctor.user.email!,
-              doctorName: `${doctor.user.firstName || ''} ${doctor.user.lastName || ''}`.trim() || 'Doctor',
-              patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Patient',
-              appointmentDate,
-              appointmentTime,
-              consultationPrice: typeof doctor.consultationPrice === 'string' 
-                  ? parseFloat(doctor.consultationPrice).toFixed(2) 
-                  : (doctor.consultationPrice?.toFixed(2) || '0.00'),
-              appointmentId: result.appointment.id.toString()
-            });
-            
-            console.log(`📧 Email notifications sent for immediately paid appointment ${result.appointment.id}`);
+      // 📧 SCHEDULE EMAIL NOTIFICATIONS FOR ALL APPOINTMENTS
+      // Use the unified notification system with i18n support
+      // Notifications will be processed by the email queue and respect user's language preference
+      try {
+        console.log(`📧 Scheduling booking confirmation notification for appointment ${result.appointment.id}`);
+
+        // Schedule notification for patient
+        await notificationService.scheduleNotification({
+          userId: appointmentData.patientId,
+          appointmentId: result.appointment.id,
+          triggerCode: TriggerCode.BOOK_CONF,
+          scheduledFor: new Date(), // Send immediately
+          mergeData: {
+            appointment_id: result.appointment.id.toString(),
+            doctor_id: appointmentData.doctorId.toString(),
+            patient_id: appointmentData.patientId.toString()
           }
-        } catch (emailError) {
-          console.error('📧 Failed to send email notifications for paid appointment:', emailError);
-          // Don't fail the appointment creation if email fails
-        }
+        });
+
+        console.log(`✅ Booking confirmation notification scheduled for patient ${appointmentData.patientId}`);
+
+        // Note: Doctor notification will be handled by a separate trigger code when implemented
+        // For now, the patient notification is the priority
+
+      } catch (notificationError) {
+        console.error('📧 Failed to schedule booking notification:', notificationError);
+        // Don't fail the appointment creation if notification scheduling fails
+        // The webhook will still trigger a backup notification
       }
       
       // 🔄 RETURN STRUCTURED RESPONSE FOR FRONTEND ROUTING
