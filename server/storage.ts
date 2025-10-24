@@ -486,7 +486,7 @@ export class PostgresStorage implements IStorage {
   }
 
   async getDoctors(statusFilter: string = 'active'): Promise<(Doctor & { user: User, availableSlots?: number })[]> {
-    const result = await db
+    const flatResults = await db
       .select({
         // Doctor fields
         id: doctors.id,
@@ -504,25 +504,56 @@ export class PostgresStorage implements IStorage {
         createdAt: doctors.createdAt,
         updatedAt: doctors.updatedAt,
         status: doctors.status, // Added status field
-        // User fields with structured names only
-        user: {
-          id: users.id,
-          email: users.email,
-          title: users.title,
-          firstName: users.firstName,
-          lastName: users.lastName,
-          profileImageUrl: users.profileImageUrl,
-          role: users.role,
-          approved: users.approved,
-          stripeCustomerId: users.stripeCustomerId,
-          stripeSubscriptionId: users.stripeSubscriptionId,
-          createdAt: users.createdAt,
-          updatedAt: users.updatedAt
-        }
+        // User fields with flat structure (Drizzle ORM doesn't support nested objects)
+        userUserId: users.id,
+        userEmail: users.email,
+        userTitle: users.title,
+        userFirstName: users.firstName,
+        userLastName: users.lastName,
+        userProfileImageUrl: users.profileImageUrl,
+        userRole: users.role,
+        userApproved: users.approved,
+        userStripeCustomerId: users.stripeCustomerId,
+        userStripeSubscriptionId: users.stripeSubscriptionId,
+        userCreatedAt: users.createdAt,
+        userUpdatedAt: users.updatedAt
       })
       .from(doctors)
       .innerJoin(users, eq(doctors.userId, users.id))
       .where(eq(doctors.status, statusFilter));
+
+    // Reconstruct nested structure for backward compatibility
+    const result = flatResults.map(flat => ({
+      id: flat.id,
+      userId: flat.userId,
+      specialty: flat.specialty,
+      bio: flat.bio,
+      education: flat.education,
+      experience: flat.experience,
+      medicalApproach: flat.medicalApproach,
+      languages: flat.languages,
+      rppsNumber: flat.rppsNumber,
+      consultationPrice: flat.consultationPrice,
+      rating: flat.rating,
+      reviewCount: flat.reviewCount,
+      createdAt: flat.createdAt,
+      updatedAt: flat.updatedAt,
+      status: flat.status,
+      user: {
+        id: flat.userUserId,
+        email: flat.userEmail,
+        title: flat.userTitle,
+        firstName: flat.userFirstName,
+        lastName: flat.userLastName,
+        profileImageUrl: flat.userProfileImageUrl,
+        role: flat.userRole,
+        approved: flat.userApproved,
+        stripeCustomerId: flat.userStripeCustomerId,
+        stripeSubscriptionId: flat.userStripeSubscriptionId,
+        createdAt: flat.userCreatedAt,
+        updatedAt: flat.userUpdatedAt
+      }
+    }));
 
     // Get availability count for each doctor
     const doctorsWithAvailability = await Promise.all(
@@ -604,7 +635,7 @@ export class PostgresStorage implements IStorage {
       
       console.log(`🔍 Fetching doctor with ID: ${doctorId}`);
       
-      const [result] = await db
+      const [flatResult] = await db
         .select({
           // Doctor fields
           id: doctors.id,
@@ -621,25 +652,57 @@ export class PostgresStorage implements IStorage {
           reviewCount: doctors.reviewCount,
           createdAt: doctors.createdAt,
           updatedAt: doctors.updatedAt,
-          user: {
-            id: users.id,
-            email: users.email,
-            title: users.title,
-            firstName: users.firstName,
-            lastName: users.lastName,
-            phone: users.phone,
-            profileImageUrl: users.profileImageUrl,
-            role: users.role,
-            approved: users.approved,
-            stripeCustomerId: users.stripeCustomerId,
-            stripeSubscriptionId: users.stripeSubscriptionId,
-            createdAt: users.createdAt,
-            updatedAt: users.updatedAt
-          }
+          // User fields with flat structure (Drizzle ORM doesn't support nested objects)
+          userUserId: users.id,
+          userEmail: users.email,
+          userTitle: users.title,
+          userFirstName: users.firstName,
+          userLastName: users.lastName,
+          userPhone: users.phone,
+          userProfileImageUrl: users.profileImageUrl,
+          userRole: users.role,
+          userApproved: users.approved,
+          userStripeCustomerId: users.stripeCustomerId,
+          userStripeSubscriptionId: users.stripeSubscriptionId,
+          userCreatedAt: users.createdAt,
+          userUpdatedAt: users.updatedAt
         })
         .from(doctors)
         .innerJoin(users, eq(doctors.userId, users.id))
         .where(eq(doctors.id, doctorId));
+
+      // Reconstruct nested structure for backward compatibility
+      const result = flatResult ? {
+        id: flatResult.id,
+        userId: flatResult.userId,
+        specialty: flatResult.specialty,
+        bio: flatResult.bio,
+        education: flatResult.education,
+        experience: flatResult.experience,
+        medicalApproach: flatResult.medicalApproach,
+        languages: flatResult.languages,
+        rppsNumber: flatResult.rppsNumber,
+        consultationPrice: flatResult.consultationPrice,
+        rating: flatResult.rating,
+        reviewCount: flatResult.reviewCount,
+        createdAt: flatResult.createdAt,
+        updatedAt: flatResult.updatedAt,
+        user: {
+          id: flatResult.userUserId,
+          email: flatResult.userEmail,
+          title: flatResult.userTitle,
+          firstName: flatResult.userFirstName,
+          lastName: flatResult.userLastName,
+          phone: flatResult.userPhone,
+          profileImageUrl: flatResult.userProfileImageUrl,
+          role: flatResult.userRole,
+          approved: flatResult.userApproved,
+          stripeCustomerId: flatResult.userStripeCustomerId,
+          stripeSubscriptionId: flatResult.userStripeSubscriptionId,
+          createdAt: flatResult.userCreatedAt,
+          updatedAt: flatResult.userUpdatedAt
+        }
+      } : undefined;
 
       if (result) {
         console.log(`✅ Found doctor: ${result.user.firstName} ${result.user.lastName}`);
@@ -3419,11 +3482,10 @@ export class PostgresStorage implements IStorage {
         retryCount: emailNotifications.retryCount,
         errorMessage: emailNotifications.errorMessage,
         createdAt: emailNotifications.createdAt,
-        user: {
-          email: users.email,
-          firstName: users.firstName,
-          lastName: users.lastName
-        }
+        // User fields with flat structure (Drizzle ORM doesn't support nested objects)
+        userEmail: users.email,
+        userFirstName: users.firstName,
+        userLastName: users.lastName
       })
       .from(emailNotifications)
       .leftJoin(users, eq(emailNotifications.userId, users.id))
@@ -3437,7 +3499,27 @@ export class PostgresStorage implements IStorage {
         query = query.limit(filters.limit) as any;
       }
 
-      return await query;
+      const flatResults = await query;
+
+      // Reconstruct nested structure for backward compatibility
+      return flatResults.map(flat => ({
+        id: flat.id,
+        userId: flat.userId,
+        appointmentId: flat.appointmentId,
+        triggerCode: flat.triggerCode,
+        templateKey: flat.templateKey,
+        status: flat.status,
+        scheduledFor: flat.scheduledFor,
+        sentAt: flat.sentAt,
+        retryCount: flat.retryCount,
+        errorMessage: flat.errorMessage,
+        createdAt: flat.createdAt,
+        user: {
+          email: flat.userEmail,
+          firstName: flat.userFirstName,
+          lastName: flat.userLastName
+        }
+      }));
     } catch (error) {
       console.error('Error fetching notifications:', error);
       return [];
