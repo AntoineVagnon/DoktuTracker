@@ -1607,7 +1607,8 @@ export class PostgresStorage implements IStorage {
   }
 
   async getDoctorReviews(doctorId: string): Promise<(Review & { patient: User })[]> {
-    const result = await db
+    // Fetch with flat structure (Drizzle ORM doesn't support nested objects in select)
+    const flatResults = await db
       .select({
         // Review fields
         id: reviews.id,
@@ -1617,27 +1618,51 @@ export class PostgresStorage implements IStorage {
         rating: reviews.rating,
         comment: reviews.comment,
         createdAt: reviews.createdAt,
-        // Patient info
-        patient: {
-          id: users.id,
-          email: users.email,
-          title: users.title,
-          firstName: users.firstName,
-          lastName: users.lastName,
-          phone: users.phone,
-          profileImageUrl: users.profileImageUrl,
-          role: users.role,
-          approved: users.approved,
-          stripeCustomerId: users.stripeCustomerId,
-          stripeSubscriptionId: users.stripeSubscriptionId,
-          createdAt: users.createdAt,
-          updatedAt: users.updatedAt
-        }
+        // Patient info (flat structure with prefixes)
+        patientUserId: users.id,
+        patientEmail: users.email,
+        patientTitle: users.title,
+        patientFirstName: users.firstName,
+        patientLastName: users.lastName,
+        patientPhone: users.phone,
+        patientProfileImageUrl: users.profileImageUrl,
+        patientRole: users.role,
+        patientApproved: users.approved,
+        patientStripeCustomerId: users.stripeCustomerId,
+        patientStripeSubscriptionId: users.stripeSubscriptionId,
+        patientCreatedAt: users.createdAt,
+        patientUpdatedAt: users.updatedAt
       })
       .from(reviews)
       .innerJoin(users, eq(sql`CAST(${reviews.patientId} AS INTEGER)`, users.id))
       .where(eq(reviews.doctorId, doctorId))
       .orderBy(desc(reviews.createdAt));
+
+    // Reconstruct nested structure for backward compatibility
+    const result = flatResults.map(flat => ({
+      id: flat.id,
+      doctorId: flat.doctorId,
+      patientId: flat.patientId,
+      appointmentId: flat.appointmentId,
+      rating: flat.rating,
+      comment: flat.comment,
+      createdAt: flat.createdAt,
+      patient: {
+        id: flat.patientUserId,
+        email: flat.patientEmail,
+        title: flat.patientTitle,
+        firstName: flat.patientFirstName,
+        lastName: flat.patientLastName,
+        phone: flat.patientPhone,
+        profileImageUrl: flat.patientProfileImageUrl,
+        role: flat.patientRole,
+        approved: flat.patientApproved,
+        stripeCustomerId: flat.patientStripeCustomerId,
+        stripeSubscriptionId: flat.patientStripeSubscriptionId,
+        createdAt: flat.patientCreatedAt,
+        updatedAt: flat.patientUpdatedAt
+      }
+    }));
 
     return result;
   }
