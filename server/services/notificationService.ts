@@ -1734,21 +1734,29 @@ export class UniversalNotificationService {
         }
       }
 
-      // Disable link tracking for security-sensitive emails to prevent antivirus blocking
-      // (e.g., password resets, email verification, account security notifications)
+      // Disable link tracking for security-sensitive and appointment emails to prevent antivirus blocking
+      // Link tracking wraps URLs in Mailgun redirects that trigger Bitdefender and other AV software
       const securitySensitiveTriggers = [
+        // Security-sensitive account emails
         TriggerCode.ACCOUNT_PASSWORD_RESET,    // A3 - Password reset links
         TriggerCode.ACCOUNT_PASSWORD_CHANGED,  // A4 - Security confirmation
         TriggerCode.ACCOUNT_EMAIL_VERIFICATION, // A2 - Email verification
         TriggerCode.ACCOUNT_EMAIL_CHANGE,      // A5 - Email change confirmation
         TriggerCode.ACCOUNT_DELETION_CONFIRM,  // A6 - Account deletion
-        TriggerCode.ACCOUNT_SUSPENSION_NOTICE  // A7 - Account suspension
+        TriggerCode.ACCOUNT_SUSPENSION_NOTICE,  // A7 - Account suspension
+
+        // Booking/appointment emails (contain Zoom links that trigger AV when wrapped)
+        TriggerCode.BOOKING_CONFIRMED,         // B3 - Booking confirmation with Zoom link
+        TriggerCode.BOOKING_REMINDER_24H,      // B4 - 24h reminder with Zoom link
+        TriggerCode.BOOKING_REMINDER_1H,       // B5 - 1h reminder with Zoom link
+        TriggerCode.BOOKING_LIVE_IMMINENT,     // B6 - Imminent consultation with Zoom link
+        TriggerCode.BOOKING_RESCHEDULED        // B7 - Rescheduled with new Zoom link
       ];
 
       const shouldDisableTracking = securitySensitiveTriggers.includes(notification.triggerCode as any);
 
       if (shouldDisableTracking) {
-        console.log(`🔒 Disabling link tracking for security-sensitive email: ${notification.triggerCode}`);
+        console.log(`🔒 Disabling link tracking to prevent Bitdefender/AV blocking: ${notification.triggerCode}`);
       }
 
       // Send email
