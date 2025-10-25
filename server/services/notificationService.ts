@@ -758,7 +758,10 @@ export class UniversalNotificationService {
       TriggerCode.ACCOUNT_REG_SUCCESS,
       TriggerCode.ACCOUNT_EMAIL_VERIFY,
       TriggerCode.ACCOUNT_PASSWORD_RESET,
-      TriggerCode.ACCOUNT_PASSWORD_CHANGED
+      TriggerCode.ACCOUNT_PASSWORD_CHANGED,
+      TriggerCode.DOCTOR_APP_APPROVED, // Doctor approval is a critical account status change
+      TriggerCode.DOCTOR_APP_REJECTED_SOFT,
+      TriggerCode.DOCTOR_APP_REJECTED_HARD
     ];
     if (immediateNotifications.includes(triggerCode)) {
       return scheduledFor;
