@@ -7,6 +7,19 @@ import { registerRoutes } from "./routes";
 // Import email processor to start it automatically
 import "./services/emailProcessor";
 
+// Import and initialize cron jobs for scheduled notifications
+import { initializeAppointmentReminders } from "./cron/appointmentReminders";
+import { initializeMembershipReminders } from "./cron/membershipReminders";
+import { notificationService } from "./services/notificationService";
+
+// Initialize cron jobs after a short delay to ensure all services are ready
+setTimeout(() => {
+  console.log('[CRON] Initializing notification cron jobs...');
+  initializeAppointmentReminders(notificationService);
+  initializeMembershipReminders(notificationService);
+  console.log('[CRON] All cron jobs initialized successfully');
+}, 2000);
+
 const app = express();
 app.set("trust proxy", 1); // Trust first proxy (required for rate limiting behind proxy/load balancer)
 
@@ -53,6 +66,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// ============================================================================
+// BODY PARSING - Special handling for Stripe webhooks
+// ============================================================================
+// Stripe webhooks need RAW body for signature verification
+app.use('/api/webhooks/stripe', express.raw({ type: 'application/json' }));
+
+// All other routes use JSON parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

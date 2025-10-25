@@ -1760,15 +1760,50 @@ export async function registerRoutes(app: Express): Promise<void> {
       
       // Reschedule appointment
       await storage.rescheduleAppointment(
-        appointmentId, 
-        newSlotId, 
+        appointmentId,
+        newSlotId,
         reason,
         parseInt(user.id),
         user.role
       );
-      
-      res.json({ 
-        success: true, 
+
+      // Get updated appointment details for notification
+      const [newSlot] = await db.select().from(doctorTimeSlots).where(eq(doctorTimeSlots.id, newSlotId));
+      const [patientUser] = await db.select().from(users).where(eq(users.id, appointment.patientId));
+      const [doctorUser] = await db.select({
+        firstName: users.firstName,
+        lastName: users.lastName
+      }).from(users).where(eq(users.id, appointment.doctor.userId));
+
+      // Schedule B7 reschedule notification
+      if (patientUser && doctorUser && newSlot) {
+        const newAppointmentDate = new Date(`${newSlot.date}T${newSlot.startTime}`);
+        const oldAppointmentDate = new Date(appointment.appointmentDate);
+
+        await notificationService.scheduleNotification({
+          userId: appointment.patientId,
+          appointmentId: parseInt(appointmentId),
+          triggerCode: TriggerCode.BOOKING_RESCHEDULED,
+          scheduledFor: new Date(),
+          mergeData: {
+            patient_first_name: patientUser.firstName,
+            new_appointment_datetime_local: newAppointmentDate.toLocaleString('en-US', {
+              dateStyle: 'full',
+              timeStyle: 'short'
+            }),
+            old_appointment_datetime_local: oldAppointmentDate.toLocaleString('en-US', {
+              dateStyle: 'full',
+              timeStyle: 'short'
+            }),
+            doctor_name: `Dr. ${doctorUser.lastName}`,
+            join_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/appointments/${appointmentId}/join`,
+            reason: reason
+          }
+        });
+      }
+
+      res.json({
+        success: true,
         message: "Appointment rescheduled successfully",
         isAdminOverride: isAdmin && timeDiffMinutes < 60
       });
@@ -4345,6 +4380,41 @@ export async function registerRoutes(app: Express): Promise<void> {
                 triggerCode: TriggerCode.BOOK_CONF,
                 scheduledFor: new Date()
               });
+
+              // Get patient and doctor details for P1 payment receipt notification
+              const [patientUser] = await db.select().from(users).where(eq(users.id, appointment.patientId));
+              const [doctorUser] = await db.select({
+                firstName: users.firstName,
+                lastName: users.lastName
+              }).from(users).where(eq(users.id, appointment.doctor.userId));
+
+              if (patientUser && doctorUser) {
+                // Schedule P1 payment receipt notification
+                await notificationService.scheduleNotification({
+                  userId: appointment.patientId,
+                  appointmentId: appointment.id,
+                  triggerCode: TriggerCode.PAYMENT_RECEIPT,
+                  scheduledFor: new Date(),
+                  mergeData: {
+                    patient_first_name: patientUser.firstName,
+                    doctor_name: `Dr. ${doctorUser.lastName}`,
+                    amount: (paymentIntent.amount / 100).toFixed(2),
+                    currency: paymentIntent.currency.toUpperCase(),
+                    payment_date: new Date().toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    }),
+                    payment_method: paymentIntent.payment_method ? 'Card' : 'Unknown',
+                    receipt_url: paymentIntent.charges?.data[0]?.receipt_url || `${process.env.CLIENT_URL || 'https://doktu.co'}/account/payments`,
+                    appointment_date: appointment.appointmentDate.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
+                  }
+                });
+              }
             }
 
             console.log(`✅ Payment succeeded for appointment ${appointmentId}`);
@@ -4487,6 +4557,43 @@ export async function registerRoutes(app: Express): Promise<void> {
                   .where(eq(membershipSubscriptions.id, membershipSub.id));
 
                 console.log(`✅ Subscription period dates updated in database`);
+
+                // Get user and plan details for M3 notification
+                const { users, membershipPlans } = await import('@shared/schema');
+                const [user] = await db
+                  .select()
+                  .from(users)
+                  .where(eq(users.id, membershipSub.patientId))
+                  .limit(1);
+
+                const [plan] = await db
+                  .select()
+                  .from(membershipPlans)
+                  .where(eq(membershipPlans.id, membershipSub.planId))
+                  .limit(1);
+
+                if (user && plan) {
+                  // Schedule M3 membership renewed notification
+                  await notificationService.scheduleNotification({
+                    userId: membershipSub.patientId,
+                    triggerCode: TriggerCode.MEMBERSHIP_RENEWED,
+                    scheduledFor: new Date(),
+                    mergeData: {
+                      first_name: user.firstName,
+                      amount: (invoice.amount_paid / 100).toFixed(2),
+                      currency: invoice.currency.toUpperCase(),
+                      plan_name: plan.name,
+                      consultations_per_month: plan.allowancePerCycle.toString(),
+                      renewal_date: newPeriodEnd.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      }),
+                      manage_subscription_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/account/membership`
+                    }
+                  });
+                  console.log(`✅ M3 membership renewed notification scheduled for user ${userId}`);
+                }
               }
             } catch (error) {
               console.error('❌ Failed to handle invoice payment:', error);
@@ -4689,6 +4796,22 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
       
       const healthProfile = await storage.createHealthProfile(validatedProfileData);
+
+      // Schedule H2 health profile complete notification
+      const [user] = await db.select().from(users).where(eq(users.id, healthProfile.patientId));
+      if (user) {
+        await notificationService.scheduleNotification({
+          userId: healthProfile.patientId,
+          triggerCode: TriggerCode.HEALTH_PROFILE_COMPLETED,
+          scheduledFor: new Date(),
+          mergeData: {
+            first_name: user.firstName,
+            profile_url: `${process.env.CLIENT_URL || 'https://doktu.co'}/health-profile`
+          }
+        });
+        console.log(`✅ H2 health profile complete notification scheduled for user ${healthProfile.patientId}`);
+      }
+
       res.json(healthProfile);
     } catch (error) {
       console.error("Error creating health profile:", error);
