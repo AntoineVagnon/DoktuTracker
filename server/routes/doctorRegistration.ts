@@ -256,24 +256,10 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
       userAgent: req.headers['user-agent'] || null
     });
 
-    // 12. Send application received email notification
-    try {
-      await notificationService.scheduleNotification({
-        userId: newUser.id,
-        triggerCode: TriggerCode.ACCOUNT_REG_SUCCESS,
-        scheduledFor: new Date(),
-        mergeData: {
-          first_name: firstName,
-          last_name: lastName,
-          application_status: 'pending_review',
-          review_time: '2-3 business days'
-        }
-      });
-      console.log(`✅ Doctor application received email queued for user ${newUser.id}`);
-    } catch (emailError) {
-      console.error('❌ Error queueing application email:', emailError);
-      // Don't fail registration if email fails
-    }
+    // 12. No email sent at registration - doctors receive DOCTOR_APP_APPROVED (D1) email when approved
+    // The ACCOUNT_REG_SUCCESS template is for patients only (contains patient-specific onboarding)
+    // Doctors see confirmation UI message and will receive proper welcome email upon admin approval
+    console.log(`✅ Doctor application submitted - no email sent (waiting for admin approval)`);
 
     // 13. Return success response
     return res.status(201).json({
