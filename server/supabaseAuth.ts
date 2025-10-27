@@ -3,6 +3,10 @@ import type { Express, RequestHandler } from 'express';
 import { storage } from './storage';
 import './types'; // Import session types
 import { emailService } from './emailService';
+import { notificationService, TriggerCode } from './services/notificationService';
+import { db } from './db';
+import { users } from '@shared/schema';
+import { eq } from 'drizzle-orm';
 
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
   throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
@@ -450,20 +454,50 @@ export async function setupSupabaseAuth(app: Express) {
         return res.status(400).json({ error: 'Email required' });
       }
 
+      // Find user by email
+      const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+
+      if (!user) {
+        // For security, always return success even if email doesn't exist
+        // This prevents email enumeration attacks
+        return res.json({ message: 'If that email exists, a password reset link has been sent' });
+      }
+
       // Use environment variable for frontend URL with proper fallback
       const frontendUrl = process.env.VITE_APP_URL || process.env.APP_URL || 'https://doktu.co';
 
-      // Always redirect to password-reset page, not /auth/callback
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${frontendUrl}/password-reset`
+      // Generate Supabase password reset link (but don't let Supabase send the email)
+      // We'll extract the token and send it through our notification system
+      const { data, error } = await supabase.auth.admin.generateLink({
+        type: 'recovery',
+        email: email,
+        options: {
+          redirectTo: `${frontendUrl}/password-reset`
+        }
       });
 
-      if (error) {
-        console.error('Password reset error:', error);
-        return res.status(400).json({ error: error.message });
+      if (error || !data) {
+        console.error('Password reset link generation error:', error);
+        return res.status(500).json({ error: 'Failed to generate reset link' });
       }
 
-      res.json({ message: 'Password reset email sent' });
+      // Extract the token from the link (format: http://...#access_token=TOKEN&...)
+      const resetLink = data.properties.action_link;
+
+      // Send email through our notification system (A3 - ACCOUNT_PASSWORD_RESET)
+      await notificationService.scheduleNotification({
+        userId: user.id,
+        triggerCode: TriggerCode.ACCOUNT_PASSWORD_RESET,
+        scheduledFor: new Date(),
+        mergeData: {
+          first_name: user.firstName || 'User',
+          reset_link: resetLink,
+          expiry_hours: '1'
+        }
+      });
+
+      console.log(`✅ Password reset email queued for ${email} (User ID: ${user.id})`);
+      res.json({ message: 'If that email exists, a password reset link has been sent' });
     } catch (error: any) {
       console.error('Password reset error:', error);
       res.status(500).json({ error: 'Password reset failed' });
