@@ -2,10 +2,11 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Build timestamp to force new bundle hash: 2025-10-11T13:15:00Z
-console.log('[DOKTU] App version: 2025-10-11T13:15:00Z');
-console.log('[DOKTU] Build number: 20251011-1315');
+// Build timestamp to force new bundle hash: 2025-10-27T23:00:00Z
+console.log('[DOKTU] App version: 2025-10-27T23:00:00Z');
+console.log('[DOKTU] Build number: 20251027-2300');
 console.log('[DOKTU] Expected component version: V5');
+console.log('[DOKTU] Cache fix deployed - commit 197f883');
 
 // Advanced error suppression for runtime overlay
 (function suppressRuntimeErrors() {
