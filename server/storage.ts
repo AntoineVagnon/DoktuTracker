@@ -948,18 +948,23 @@ export class PostgresStorage implements IStorage {
       console.log(`📅 First 5 slots:`, debugSlots.map(s => `${s.date} ${s.startTime} (available: ${s.isAvailable})`));
 
       // Filter out past time slots - only return available slots that haven't passed yet
+      // Slots are stored in local European time (CEST/CET)
+      // Currently October = CEST (UTC+2), will be CET (UTC+1) from late October
       const now = new Date();
+      const isDST = now.getMonth() >= 2 && now.getMonth() <= 9; // March-October is DST in Europe
+      const timezoneOffset = isDST ? '+02:00' : '+01:00';
+
       const futureAvailableSlots = uniqueSlots.filter(slot => {
         if (!slot.isAvailable) {
           return false; // Skip unavailable slots
         }
 
-        // Combine date and time to check if slot is in the future
-        const slotDateTime = new Date(`${slot.date}T${slot.startTime}`);
+        // Parse slot time as European local time by adding timezone offset
+        const slotDateTime = new Date(`${slot.date}T${slot.startTime}${timezoneOffset}`);
         const isFuture = slotDateTime > now;
 
         if (!isFuture) {
-          console.log(`⏰ Filtering out past slot: ${slot.date} ${slot.startTime} (now: ${now.toISOString()})`);
+          console.log(`⏰ Filtering out past slot: ${slot.date} ${slot.startTime} ${timezoneOffset} (slot UTC: ${slotDateTime.toISOString()}, now UTC: ${now.toISOString()})`);
         }
 
         return isFuture;
