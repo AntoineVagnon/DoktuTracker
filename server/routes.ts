@@ -4798,14 +4798,14 @@ export async function registerRoutes(app: Express): Promise<void> {
       const healthProfile = await storage.createHealthProfile(validatedProfileData);
 
       // Schedule H2 health profile complete notification
-      const [user] = await db.select().from(users).where(eq(users.id, healthProfile.patientId));
-      if (user) {
+      const [patientUser] = await db.select().from(users).where(eq(users.id, healthProfile.patientId));
+      if (patientUser) {
         await notificationService.scheduleNotification({
           userId: healthProfile.patientId,
           triggerCode: TriggerCode.HEALTH_PROFILE_COMPLETED,
           scheduledFor: new Date(),
           mergeData: {
-            first_name: user.firstName,
+            first_name: patientUser.firstName,
             profile_url: `${process.env.CLIENT_URL || 'https://doktu.co'}/health-profile`
           }
         });
