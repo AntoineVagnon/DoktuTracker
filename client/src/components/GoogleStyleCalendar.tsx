@@ -18,7 +18,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useAvailabilitySync } from "@/hooks/useAvailabilitySync";
 import { useTranslation } from "@/hooks/useTranslation";
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from "date-fns";
 
@@ -113,7 +112,6 @@ export default function GoogleStyleCalendar({
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { syncAvailability } = useAvailabilitySync();
   const { t } = useTranslation('dashboard');
   
   const [internalCurrentDate, setInternalCurrentDate] = useState(new Date());
@@ -320,11 +318,8 @@ export default function GoogleStyleCalendar({
       return createdSlots;
     },
     onSuccess: (response) => {
-      // More targeted cache invalidation - only invalidate time slots
+      // Invalidate all time-slots queries to refresh the calendar
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
-      
-      // Sync availability across all booking surfaces
-      syncAvailability(user?.id);
       
       // Handle the response properly - it might be slots array or an object with slots
       const slotCount = Array.isArray(response) ? response.length : 
@@ -357,8 +352,7 @@ export default function GoogleStyleCalendar({
       return response.json();
     },
     onSuccess: () => {
-      // Sync availability across all surfaces when updated
-      syncAvailability(user?.id);
+      // Invalidate all time-slots queries to refresh the calendar
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
       toast({ title: "Availability updated successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
@@ -375,8 +369,7 @@ export default function GoogleStyleCalendar({
       return response.json();
     },
     onSuccess: () => {
-      // Sync availability across all surfaces when deleted
-      syncAvailability(user?.id);
+      // Invalidate all time-slots queries to refresh the calendar
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
       toast({ title: "Availability deleted successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
@@ -392,8 +385,7 @@ export default function GoogleStyleCalendar({
       return response.json();
     },
     onSuccess: () => {
-      // Sync availability across all surfaces when deleted
-      syncAvailability(user?.id);
+      // Invalidate all time-slots queries to refresh the calendar
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
       toast({ title: "Time slots deleted successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
@@ -515,8 +507,7 @@ export default function GoogleStyleCalendar({
       return results;
     },
     onSuccess: (results) => {
-      // Sync availability across all surfaces when template applied
-      syncAvailability(user?.id);
+      // Invalidate all time-slots queries to refresh the calendar
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
       
       // Count the actual number of created slots
