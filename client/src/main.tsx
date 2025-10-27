@@ -2,9 +2,9 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Build timestamp to force new bundle hash: 2025-10-28T00:15:00Z
-console.log('[DOKTU] App version: 2025-10-28T00:15:00Z');
-console.log('[DOKTU] Build number: 20251028-0015');
+// Build timestamp to force new bundle hash: 2025-10-28T00:30:00Z
+console.log('[DOKTU] App version: 2025-10-28T00:30:00Z');
+console.log('[DOKTU] Build number: 20251028-0030');
 console.log('[DOKTU] Expected component version: V5');
 console.log('[DOKTU] Cache fix deployed - commit 3d0e8f1 - DEBUG');
 

@@ -113,6 +113,7 @@ export default function GoogleStyleCalendar({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { t } = useTranslation('dashboard');
+  console.log("[GOOGLE_CAL] Component mounted with doctorId:", doctorId, "isPatientView:", isPatientView);
   
   const [internalCurrentDate, setInternalCurrentDate] = useState(new Date());
   const currentDate = externalCurrentDate || internalCurrentDate;
