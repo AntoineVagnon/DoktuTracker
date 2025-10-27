@@ -11,22 +11,24 @@ export function useAvailabilitySync() {
   // Invalidate all availability-related queries to trigger refetch
   const syncAvailability = (doctorId?: string) => {
     console.log("🔄 Syncing availability across all surfaces", { doctorId });
-    
-    // Invalidate time slots queries
-    queryClient.invalidateQueries({ queryKey: ["/api/time-slots"] });
-    
+
+    // Invalidate time slots queries using predicate to match all variants
+    queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
+
     // Invalidate doctor-specific queries
     if (doctorId) {
-      queryClient.invalidateQueries({ queryKey: ["/api/doctors", doctorId] });
+      queryClient.invalidateQueries({ predicate: (query) =>
+        query.queryKey[0] === '/api/doctors' && query.queryKey[1] === doctorId
+      });
       queryClient.invalidateQueries({ queryKey: [`/api/doctors/${doctorId}/time-slots`] });
     }
-    
+
     // Invalidate all doctors list (for next slot badges)
-    queryClient.invalidateQueries({ queryKey: ["/api/doctors"] });
-    
+    queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/doctors' });
+
     // Invalidate appointments that might affect availability
-    queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
-    
+    queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/appointments' });
+
     console.log("✅ Availability sync completed");
   };
 
