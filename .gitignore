@@ -6,4 +6,6 @@ vite.config.ts.*
 *.tar.gz
 .env
 .env.local
-.env.*.local
+.env.*.local.env
+MAILGUN_DELIVERABILITY_GUIDE.md
+MAILGUN_SETUP_STATUS.md

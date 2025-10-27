@@ -8,6 +8,7 @@ import { registerRoutes } from "./routes";
 import "./services/emailProcessor";
 
 // Import and initialize cron jobs for scheduled notifications
+// node-cron is required for scheduled tasks (installed in dependencies)
 import { initializeAppointmentReminders } from "./cron/appointmentReminders";
 import { initializeMembershipReminders } from "./cron/membershipReminders";
 import { notificationService } from "./services/notificationService";
