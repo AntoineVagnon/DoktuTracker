@@ -593,18 +593,19 @@ export default function GoogleStyleCalendar({
   const handleCellMouseDown30Min = (date: string, time: string) => {
     if (!time || typeof time !== 'string') return;
     const [hour, minute] = time.split(':').map(Number);
+
+    // Block 23:30 slot creation - it would span into next day
+    if (hour === 23 && minute === 30) {
+      console.log('⚠️ Cannot create 23:30 slot - would span into next day');
+      return;
+    }
+
     const slotIndex = timeSlots30Min.findIndex(slot => slot.hour === hour && slot.minute === minute);
 
-    // Calculate end time properly - handle minute overflow and day overflow
+    // Calculate end time properly - handle minute overflow
     const totalMinutes = minute + 30;
-    let endHour = totalMinutes >= 60 ? hour + 1 : hour;
+    const endHour = totalMinutes >= 60 ? hour + 1 : hour;
     const endMinute = totalMinutes >= 60 ? totalMinutes - 60 : totalMinutes;
-
-    // Handle day overflow (23:30 + 30min = 00:00 next day)
-    // For calendar UI purposes, cap at 23:59
-    if (endHour >= 24) {
-      endHour = 23;
-    }
 
     setCurrentSelection({ date, startHour: hour, endHour: endHour, startMinute: minute, endMinute: endMinute });
     setIsSelecting(true);
@@ -614,16 +615,15 @@ export default function GoogleStyleCalendar({
     if (isSelecting && currentSelection && currentSelection.date === date && time && typeof time === 'string') {
       const [hour, minute] = time.split(':').map(Number);
 
-      // Calculate end time properly - handle minute overflow and day overflow
-      const totalMinutes = minute + 30;
-      let endTime = totalMinutes >= 60 ? hour + 1 : hour;
-      const endMinute = totalMinutes >= 60 ? totalMinutes - 60 : totalMinutes;
-
-      // Handle day overflow (23:30 + 30min = 00:00 next day)
-      // For calendar UI purposes, cap at 23:59
-      if (endTime >= 24) {
-        endTime = 23;
+      // Block extending to 23:30 - it would create invalid end time
+      if (hour === 23 && minute === 30) {
+        return;
       }
+
+      // Calculate end time properly - handle minute overflow
+      const totalMinutes = minute + 30;
+      const endTime = totalMinutes >= 60 ? hour + 1 : hour;
+      const endMinute = totalMinutes >= 60 ? totalMinutes - 60 : totalMinutes;
 
       setCurrentSelection(prev => ({
         ...prev!,
