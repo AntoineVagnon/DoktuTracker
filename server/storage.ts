@@ -942,16 +942,32 @@ export class PostgresStorage implements IStorage {
       
       console.log(`📅 After deduplication and appointment filtering: ${uniqueSlots.length} unique slots for doctor ${doctorIntId}`);
       console.log(`📅 Available: ${availableCount}, Unavailable: ${unavailableCount}`);
-      
+
       // Debug: Show first few slots with their availability
       const debugSlots = uniqueSlots.slice(0, 5);
       console.log(`📅 First 5 slots:`, debugSlots.map(s => `${s.date} ${s.startTime} (available: ${s.isAvailable})`));
-      
-      // Return only available slots
-      const availableSlotsOnly = uniqueSlots.filter(slot => slot.isAvailable);
-      console.log(`📅 Returning ${availableSlotsOnly.length} available slots (filtered out ${uniqueSlots.length - availableSlotsOnly.length} unavailable)`);
-      
-      return availableSlotsOnly;
+
+      // Filter out past time slots - only return available slots that haven't passed yet
+      const now = new Date();
+      const futureAvailableSlots = uniqueSlots.filter(slot => {
+        if (!slot.isAvailable) {
+          return false; // Skip unavailable slots
+        }
+
+        // Combine date and time to check if slot is in the future
+        const slotDateTime = new Date(`${slot.date}T${slot.startTime}`);
+        const isFuture = slotDateTime > now;
+
+        if (!isFuture) {
+          console.log(`⏰ Filtering out past slot: ${slot.date} ${slot.startTime} (now: ${now.toISOString()})`);
+        }
+
+        return isFuture;
+      });
+
+      console.log(`📅 After filtering past slots: ${futureAvailableSlots.length} future available slots (filtered out ${uniqueSlots.length - futureAvailableSlots.length} past/unavailable)`);
+
+      return futureAvailableSlots;
     } catch (error) {
       console.error(`Error fetching time slots for doctor ${doctorIntId}:`, error);
       return [];
