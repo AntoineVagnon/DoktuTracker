@@ -593,19 +593,19 @@ export default function GoogleStyleCalendar({
   const handleCellMouseDown30Min = (date: string, time: string) => {
     if (!time || typeof time !== 'string') return;
     const [hour, minute] = time.split(':').map(Number);
-
-    // Block 23:30 slot creation - it would span into next day
-    if (hour === 23 && minute === 30) {
-      console.log('⚠️ Cannot create 23:30 slot - would span into next day');
-      return;
-    }
-
     const slotIndex = timeSlots30Min.findIndex(slot => slot.hour === hour && slot.minute === minute);
 
-    // Calculate end time properly - handle minute overflow
+    // Calculate end time properly - handle minute overflow and day overflow
     const totalMinutes = minute + 30;
-    const endHour = totalMinutes >= 60 ? hour + 1 : hour;
+    let endHour = totalMinutes >= 60 ? hour + 1 : hour;
     const endMinute = totalMinutes >= 60 ? totalMinutes - 60 : totalMinutes;
+
+    // For 23:30 slot, end time would be 24:00 which doesn't exist
+    // We'll handle this specially when creating the actual slot
+    // For now, just store it as-is and we'll fix it during slot creation
+    if (endHour >= 24) {
+      endHour = 0; // Represents midnight (00:00) of next day
+    }
 
     setCurrentSelection({ date, startHour: hour, endHour: endHour, startMinute: minute, endMinute: endMinute });
     setIsSelecting(true);
@@ -615,15 +615,15 @@ export default function GoogleStyleCalendar({
     if (isSelecting && currentSelection && currentSelection.date === date && time && typeof time === 'string') {
       const [hour, minute] = time.split(':').map(Number);
 
-      // Block extending to 23:30 - it would create invalid end time
-      if (hour === 23 && minute === 30) {
-        return;
-      }
-
-      // Calculate end time properly - handle minute overflow
+      // Calculate end time properly - handle minute overflow and day overflow
       const totalMinutes = minute + 30;
-      const endTime = totalMinutes >= 60 ? hour + 1 : hour;
+      let endTime = totalMinutes >= 60 ? hour + 1 : hour;
       const endMinute = totalMinutes >= 60 ? totalMinutes - 60 : totalMinutes;
+
+      // For 23:30 slot, end time would be 24:00 which doesn't exist
+      if (endTime >= 24) {
+        endTime = 0; // Represents midnight (00:00) of next day
+      }
 
       setCurrentSelection(prev => ({
         ...prev!,
@@ -837,8 +837,13 @@ export default function GoogleStyleCalendar({
         if (blocksToCreate.length === 1) {
           const block = blocksToCreate[0];
           const startDateTime = new Date(`${block.date}T${block.startTime}:00`);
-          const endDateTime = new Date(`${block.date}T${block.endTime}:00`);
-          
+          let endDateTime = new Date(`${block.date}T${block.endTime}:00`);
+
+          // Handle midnight crossing: if end time is 00:00, it's the next day
+          if (block.endTime === '00:00') {
+            endDateTime = new Date(endDateTime.getTime() + 24 * 60 * 60 * 1000); // Add 1 day
+          }
+
           await createSlotMutation.mutateAsync({
             startTime: startDateTime.toISOString(),
             endTime: endDateTime.toISOString(),
@@ -849,8 +854,13 @@ export default function GoogleStyleCalendar({
           // For multiple blocks, create them all as individual calls but the mutation handles batching internally
           const promises = blocksToCreate.map(block => {
             const startDateTime = new Date(`${block.date}T${block.startTime}:00`);
-            const endDateTime = new Date(`${block.date}T${block.endTime}:00`);
-            
+            let endDateTime = new Date(`${block.date}T${block.endTime}:00`);
+
+            // Handle midnight crossing: if end time is 00:00, it's the next day
+            if (block.endTime === '00:00') {
+              endDateTime = new Date(endDateTime.getTime() + 24 * 60 * 60 * 1000); // Add 1 day
+            }
+
             return createSlotMutation.mutateAsync({
               startTime: startDateTime.toISOString(),
               endTime: endDateTime.toISOString(),
