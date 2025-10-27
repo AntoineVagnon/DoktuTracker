@@ -12,6 +12,7 @@ export interface User {
   role?: string;
   approved?: boolean;
   stripeSubscriptionId?: string;
+  doctorId?: number;
 }
 
 export function useAuth() {

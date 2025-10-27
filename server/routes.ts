@@ -2979,7 +2979,17 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(401).json(null);
       }
 
-      // Return user with role
+      // For doctor users, also fetch their doctor_id
+      let doctorId: number | undefined;
+      if (dbUser.role === 'doctor') {
+        const doctorResult = await db.query(
+          'SELECT id FROM doctors WHERE user_id = $1',
+          [dbUser.id]
+        );
+        doctorId = doctorResult.rows[0]?.id;
+      }
+
+      // Return user with role and doctorId (if applicable)
       res.json({
         id: dbUser.id,
         email: dbUser.email,
@@ -2989,7 +2999,8 @@ export async function registerRoutes(app: Express): Promise<void> {
         profileImageUrl: dbUser.profileImageUrl,
         avatar_url: dbUser.avatar_url,
         approved: dbUser.approved,
-        stripeSubscriptionId: dbUser.stripeSubscriptionId
+        stripeSubscriptionId: dbUser.stripeSubscriptionId,
+        doctorId: doctorId
       });
     } catch (error: any) {
       console.error("Get user error:", error);

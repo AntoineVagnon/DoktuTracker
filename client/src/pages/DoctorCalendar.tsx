@@ -48,10 +48,21 @@ export default function DoctorCalendar() {
   if (user?.role !== 'doctor') {
     return null; // Will redirect via useEffect
   }
-  
+
+  // Ensure doctor has a doctorId
+  if (!user.doctorId) {
+    return (
+      <DoctorLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-red-600">Error: Doctor ID not found. Please contact support.</div>
+        </div>
+      </DoctorLayout>
+    );
+  }
+
   return (
     <DoctorLayout>
-      <GoogleStyleCalendar doctorId="10" />
+      <GoogleStyleCalendar doctorId={user.doctorId.toString()} />
     </DoctorLayout>
   );
 }
