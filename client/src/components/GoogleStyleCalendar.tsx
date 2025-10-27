@@ -636,16 +636,20 @@ export default function GoogleStyleCalendar({
   const handleCellMouseUp30Min = () => {
     if (isSelecting && currentSelection) {
       // Create 30-minute block
+      // Use ?? instead of || to properly handle 0 values
+      const startMinute = currentSelection.startMinute ?? 0;
+      const endMinute = currentSelection.endMinute ?? 30;
+
       const newBlocks = [{
         date: currentSelection.date,
-        startTime: `${currentSelection.startHour.toString().padStart(2, '0')}:${(currentSelection.startMinute || 0).toString().padStart(2, '0')}`,
-        endTime: `${currentSelection.endHour.toString().padStart(2, '0')}:${(currentSelection.endMinute || 30).toString().padStart(2, '0')}`
+        startTime: `${currentSelection.startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`,
+        endTime: `${currentSelection.endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`
       }];
-      
+
       setSelectedBlocks(newBlocks);
-      
+
       const firstBlock = newBlocks[0];
-      
+
       setSlotModal({
         isOpen: true,
         mode: 'create',
@@ -655,7 +659,7 @@ export default function GoogleStyleCalendar({
         isRecurring: false
       });
     }
-    
+
     setIsSelecting(false);
     setCurrentSelection(null);
   };
