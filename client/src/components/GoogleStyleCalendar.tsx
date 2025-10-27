@@ -374,8 +374,7 @@ export default function GoogleStyleCalendar({
     },
     onSuccess: () => {
       console.log('[DELETE] Delete successful, invalidating queries...');
-      // Invalidate all time-slots queries to refresh the calendar
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots', refetchType: 'active' });
       console.log('[DELETE] Queries invalidated, should refetch now');
       toast({ title: "Availability deleted successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
@@ -394,7 +393,7 @@ export default function GoogleStyleCalendar({
     onSuccess: () => {
       // Invalidate all time-slots queries to refresh the calendar
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
-      toast({ title: "Time slots deleted successfully" });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots', refetchType: 'active' });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
     },
     onError: () => {
