@@ -365,16 +365,22 @@ export default function GoogleStyleCalendar({
   // Delete time slot mutation
   const deleteSlotMutation = useMutation({
     mutationFn: async (data: { slotId: string; scope?: string }) => {
+      console.log('[DELETE] Starting delete for slot:', data.slotId);
       const response = await apiRequest('DELETE', `/api/time-slots/${data.slotId}`, { scope: data.scope });
-      return response.json();
+      const result = await response.json();
+      console.log('[DELETE] Delete response:', result);
+      return result;
     },
     onSuccess: () => {
+      console.log('[DELETE] Delete successful, invalidating queries...');
       // Invalidate all time-slots queries to refresh the calendar
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
+      console.log('[DELETE] Queries invalidated, should refetch now');
       toast({ title: "Availability deleted successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('[DELETE] Delete failed:', error);
       toast({ title: "Failed to delete availability", variant: "destructive" });
     }
   });
