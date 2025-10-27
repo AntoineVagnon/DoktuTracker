@@ -594,15 +594,25 @@ export default function GoogleStyleCalendar({
     if (!time || typeof time !== 'string') return;
     const [hour, minute] = time.split(':').map(Number);
     const slotIndex = timeSlots30Min.findIndex(slot => slot.hour === hour && slot.minute === minute);
-    setCurrentSelection({ date, startHour: hour, endHour: hour, startMinute: minute, endMinute: minute + 30 });
+
+    // Calculate end time properly - handle minute overflow
+    const totalMinutes = minute + 30;
+    const endHour = totalMinutes >= 60 ? hour + 1 : hour;
+    const endMinute = totalMinutes >= 60 ? totalMinutes - 60 : totalMinutes;
+
+    setCurrentSelection({ date, startHour: hour, endHour: endHour, startMinute: minute, endMinute: endMinute });
     setIsSelecting(true);
   };
 
   const handleCellMouseEnter30Min = (date: string, time: string) => {
     if (isSelecting && currentSelection && currentSelection.date === date && time && typeof time === 'string') {
       const [hour, minute] = time.split(':').map(Number);
-      const endTime = minute + 30 > 30 ? hour + 1 : hour;
-      const endMinute = minute + 30 > 30 ? 0 : minute + 30;
+
+      // Calculate end time properly - handle minute overflow
+      const totalMinutes = minute + 30;
+      const endTime = totalMinutes >= 60 ? hour + 1 : hour;
+      const endMinute = totalMinutes >= 60 ? totalMinutes - 60 : totalMinutes;
+
       setCurrentSelection(prev => ({
         ...prev!,
         endHour: Math.max(prev!.endHour, endTime),
