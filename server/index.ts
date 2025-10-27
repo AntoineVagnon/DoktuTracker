@@ -8,18 +8,21 @@ import { registerRoutes } from "./routes";
 import "./services/emailProcessor";
 
 // Import and initialize cron jobs for scheduled notifications
-// node-cron is required for scheduled tasks (installed in dependencies)
-import { initializeAppointmentReminders } from "./cron/appointmentReminders";
-import { initializeMembershipReminders } from "./cron/membershipReminders";
-import { notificationService } from "./services/notificationService";
+// TEMPORARILY DISABLED: Cron jobs causing deployment issues with node-cron package
+// TODO: Re-enable after fixing Railway node-cron installation issue
+// import { initializeAppointmentReminders } from "./cron/appointmentReminders";
+// import { initializeMembershipReminders } from "./cron/membershipReminders";
+// import { notificationService } from "./services/notificationService";
 
 // Initialize cron jobs after a short delay to ensure all services are ready
-setTimeout(() => {
-  console.log('[CRON] Initializing notification cron jobs...');
-  initializeAppointmentReminders(notificationService);
-  initializeMembershipReminders(notificationService);
-  console.log('[CRON] All cron jobs initialized successfully');
-}, 2000);
+// TEMPORARILY DISABLED
+// setTimeout(() => {
+//   console.log('[CRON] Initializing notification cron jobs...');
+//   initializeAppointmentReminders(notificationService);
+//   initializeMembershipReminders(notificationService);
+//   console.log('[CRON] All cron jobs initialized successfully');
+// }, 2000);
+console.log('[CRON] Cron jobs temporarily disabled - will be re-enabled after fixing node-cron installation');
 
 const app = express();
 app.set("trust proxy", 1); // Trust first proxy (required for rate limiting behind proxy/load balancer)
