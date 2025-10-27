@@ -321,7 +321,7 @@ export default function GoogleStyleCalendar({
     },
     onSuccess: (response) => {
       // More targeted cache invalidation - only invalidate time slots
-      queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
       
       // Sync availability across all booking surfaces
       syncAvailability(user?.id);
@@ -359,7 +359,7 @@ export default function GoogleStyleCalendar({
     onSuccess: () => {
       // Sync availability across all surfaces when updated
       syncAvailability(user?.id);
-      queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
       toast({ title: "Availability updated successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
     },
@@ -377,7 +377,7 @@ export default function GoogleStyleCalendar({
     onSuccess: () => {
       // Sync availability across all surfaces when deleted
       syncAvailability(user?.id);
-      queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
       toast({ title: "Availability deleted successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
     },
@@ -394,7 +394,7 @@ export default function GoogleStyleCalendar({
     onSuccess: () => {
       // Sync availability across all surfaces when deleted
       syncAvailability(user?.id);
-      queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
       toast({ title: "Time slots deleted successfully" });
       setSlotModal(prev => ({ ...prev, isOpen: false }));
     },
@@ -517,7 +517,7 @@ export default function GoogleStyleCalendar({
     onSuccess: (results) => {
       // Sync availability across all surfaces when template applied
       syncAvailability(user?.id);
-      queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
       
       // Count the actual number of created slots
       const slotCount = Array.isArray(results) ? results.length : 'multiple';
@@ -1722,7 +1722,7 @@ export default function GoogleStyleCalendar({
                     setTimeout(() => {
                       queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
                       queryClient.invalidateQueries({ queryKey: ['/api/appointments', 'doctor'] });
-                      queryClient.invalidateQueries({ queryKey: ['/api/time-slots'] });
+                      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
                       
                       // Force immediate refetch
                       queryClient.refetchQueries({ queryKey: ['/api/appointments'] });
