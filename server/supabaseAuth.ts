@@ -448,7 +448,7 @@ export async function setupSupabaseAuth(app: Express) {
   // Password reset endpoint
   app.post('/api/auth/reset-password', async (req, res) => {
     try {
-      const { email, context } = req.body;
+      const { email, context, locale } = req.body;
 
       if (!email) {
         return res.status(400).json({ error: 'Email required' });
@@ -489,6 +489,7 @@ export async function setupSupabaseAuth(app: Express) {
         userId: user.id,
         triggerCode: TriggerCode.ACCOUNT_PASSWORD_RESET,
         scheduledFor: new Date(),
+        locale: locale || 'en', // Use locale from request or default to 'en'
         mergeData: {
           first_name: user.firstName || 'User',
           reset_link: resetLink,

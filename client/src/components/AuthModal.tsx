@@ -59,7 +59,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const { toast } = useToast();
-  const { t } = useTranslation('auth');
+  const { t, i18n } = useTranslation('auth');
 
   // Sync activeTab with defaultTab when modal opens
   useEffect(() => {
@@ -207,7 +207,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
-          context: 'homepage_modal'
+          context: 'homepage_modal',
+          locale: i18n.language || 'en'
         })
       });
 
