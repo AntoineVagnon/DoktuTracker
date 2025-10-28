@@ -5,7 +5,7 @@ import './types'; // Import session types
 import { emailService } from './emailService';
 import { notificationService, TriggerCode } from './services/notificationService';
 import { db } from './db';
-import { users } from '@shared/schema';
+import { users, doctors } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -640,12 +640,9 @@ export async function setupSupabaseAuth(app: Express) {
         let doctorId: number | undefined;
         if (freshUser.role === 'doctor') {
           console.log('🔍 [/api/auth/user] Fetching doctor_id for user:', { userId: freshUser.id, email: freshUser.email });
-          const doctorResult = await db.query(
-            'SELECT id FROM doctors WHERE user_id = $1',
-            [freshUser.id]
-          );
-          console.log('🔍 [/api/auth/user] Doctor query result:', { rowCount: doctorResult.rowCount, rows: doctorResult.rows });
-          doctorId = doctorResult.rows[0]?.id;
+          const doctorResult = await db.select().from(doctors).where(eq(doctors.userId, freshUser.id));
+          console.log('🔍 [/api/auth/user] Doctor query result:', { count: doctorResult.length, doctors: doctorResult });
+          doctorId = doctorResult[0]?.id;
           console.log('🔍 [/api/auth/user] Final doctorId:', doctorId);
         }
 
