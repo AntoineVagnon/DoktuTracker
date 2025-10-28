@@ -22,42 +22,49 @@ export default function PasswordReset() {
 
   useEffect(() => {
     console.log('PasswordReset page loaded');
-    
-    // Check if user is already authenticated
-    if (isAuthenticated) {
-      toast({
-        title: "Already Logged In",
-        description: "You are already logged in.",
-        variant: "destructive"
-      });
+
+    // FIRST check if this is a password reset flow (has recovery token)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const allParams = Array.from(hashParams.entries());
+    console.log('Hash params:', allParams);
+
+    const accessToken = hashParams.get('access_token');
+    const type = hashParams.get('type');
+    const hasValidTokens = !!(accessToken && type === 'recovery');
+
+    console.log('Has tokens:', hasValidTokens);
+    setHasTokens(hasValidTokens);
+
+    // If this is NOT a password reset flow, check authentication
+    if (!hasValidTokens) {
+      console.log('No valid password reset tokens found');
+
+      // Only redirect if already authenticated
+      if (isAuthenticated) {
+        toast({
+          title: "Already Logged In",
+          description: "You are already logged in.",
+          variant: "destructive"
+        });
+        setTimeout(() => {
+          setLocation('/');
+        }, 2000);
+        return;
+      }
+
+      // No tokens and not authenticated - invalid reset link
+      console.log('No valid tokens found, redirecting to homepage');
       setTimeout(() => {
         setLocation('/');
       }, 2000);
       return;
     }
 
+    // If we reach here, it's a valid password reset flow
     // Get password reset context
     const context = sessionStorage.getItem('password_reset_context');
     if (context) {
       setRedirectContext(JSON.parse(context));
-    }
-    
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const allParams = Array.from(hashParams.entries());
-    console.log('Hash params:', allParams);
-    
-    const accessToken = hashParams.get('access_token');
-    const type = hashParams.get('type');
-    const hasValidTokens = !!(accessToken && type === 'recovery');
-    
-    console.log('Has tokens:', hasValidTokens);
-    setHasTokens(hasValidTokens);
-    
-    if (!hasValidTokens) {
-      console.log('No valid tokens found, redirecting to homepage');
-      setTimeout(() => {
-        setLocation('/');
-      }, 2000);
     }
   }, [setLocation, isAuthenticated, toast]);
 
