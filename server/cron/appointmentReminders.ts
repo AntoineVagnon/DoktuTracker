@@ -76,9 +76,9 @@ export function start24HourReminders() {
               dateStyle: 'full',
               timeStyle: 'short'
             }),
-            doctor_name: `Dr. ${doctorDetails.lastName}`,
+            doctor_name: `${doctorDetails.firstName} ${doctorDetails.lastName}`,
             doctor_specialty: doctorDetails.specialty || 'Medical Specialist',
-            join_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/appointments/${appointment.id}/join`,
+            join_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/video-consultation/${appointment.id}`,
             reschedule_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/appointments/${appointment.id}/reschedule`
           }
         });
@@ -157,9 +157,9 @@ export function start1HourReminders() {
               dateStyle: 'full',
               timeStyle: 'short'
             }),
-            doctor_name: `Dr. ${doctorDetails.lastName}`,
+            doctor_name: `${doctorDetails.firstName} ${doctorDetails.lastName}`,
             doctor_specialty: doctorDetails.specialty || 'Medical Specialist',
-            join_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/appointments/${appointment.id}/join`,
+            join_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/video-consultation/${appointment.id}`,
             preparation_checklist: 'Make sure you have a stable internet connection, test your camera and microphone, and have your health documents ready.'
           }
         });
@@ -234,8 +234,8 @@ export function startImminentNotifications() {
           scheduledFor: new Date(),
           mergeData: {
             patient_first_name: appointment.patientFirstName,
-            doctor_name: `Dr. ${doctorDetails.lastName}`,
-            join_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/appointments/${appointment.id}/join`
+            doctor_name: `${doctorDetails.firstName} ${doctorDetails.lastName}`,
+            join_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/video-consultation/${appointment.id}`
           }
         });
 
