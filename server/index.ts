@@ -8,17 +8,27 @@ import { registerRoutes } from "./routes";
 // Import email processor to start it automatically
 import "./services/emailProcessor";
 
-// Import and initialize cron jobs for scheduled notifications
-import { initializeAppointmentReminders } from "./cron/appointmentReminders";
-import { initializeMembershipReminders } from "./cron/membershipReminders";
+// Import notification service for cron jobs
 import { notificationService } from "./services/notificationService";
 
-// Initialize cron jobs after a short delay to ensure all services are ready
-setTimeout(() => {
-  console.log('[CRON] Initializing notification cron jobs...');
-  initializeAppointmentReminders(notificationService);
-  initializeMembershipReminders(notificationService);
-  console.log('[CRON] All cron jobs initialized successfully');
+// Initialize cron jobs with error handling for deployment issues
+setTimeout(async () => {
+  try {
+    console.log('[CRON] Attempting to initialize notification cron jobs...');
+
+    // Dynamic import to handle potential module resolution issues
+    const { initializeAppointmentReminders } = await import("./cron/appointmentReminders");
+    const { initializeMembershipReminders } = await import("./cron/membershipReminders");
+
+    initializeAppointmentReminders(notificationService);
+    initializeMembershipReminders(notificationService);
+
+    console.log('[CRON] All cron jobs initialized successfully');
+  } catch (error) {
+    console.error('[CRON] Failed to initialize cron jobs:', error);
+    console.error('[CRON] node-cron may not be installed. Appointment reminders will not run.');
+    console.error('[CRON] Please ensure node-cron is in dependencies and node_modules is properly installed.');
+  }
 }, 2000);
 
 const app = express();
