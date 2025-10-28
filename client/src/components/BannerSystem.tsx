@@ -47,10 +47,10 @@ function Banner({
     const updateCountdown = () => {
       const now = new Date();
       if (isAfter(now, countdown)) {
-        setTimeLeft("Expired");
+        setTimeLeft("In Progress");
         return;
       }
-      
+
       const distance = formatDistanceToNow(countdown, { addSuffix: true });
       setTimeLeft(distance.replace("in ", ""));
     };
