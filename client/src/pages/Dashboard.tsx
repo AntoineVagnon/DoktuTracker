@@ -506,39 +506,7 @@ export default function Dashboard() {
           </Alert>
         )}
 
-        {/* Live Appointments Banner - Navigation to full page */}
-        {live.length > 0 && (
-          <div className="mb-4 space-y-4">
-            {live.map((appointment: any) => (
-              <div key={appointment.id} className="border border-blue-200 bg-blue-50/50 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Video className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <h3 className="font-medium">{t('dashboard.patient.video_consultation.title')}</h3>
-                      <p className="text-sm text-gray-600">
-                        Dr. {appointment.doctor?.user?.firstName} {appointment.doctor?.user?.lastName} • {appointment.doctor?.specialty}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {format(new Date(appointment.appointmentDate), 'PPP p')}
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-700"
-                    onClick={() => setLocation(`/video-consultation/${appointment.id}`)}
-                    data-testid="button-join-video-call"
-                  >
-                    <Video className="h-4 w-4 mr-2" />
-                    {t('dashboard.patient.video_consultation.join_button')}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Removed duplicate blue banner - BannerSystem now handles live appointments with green banner */}
 
         {/* Unified Banner System - Handles payment, live appointments, and health profile banners with proper priority */}
         {user && (

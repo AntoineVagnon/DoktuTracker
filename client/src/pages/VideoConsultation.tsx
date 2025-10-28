@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +44,7 @@ interface ZoomMeetingDetails {
 export default function VideoConsultation() {
   const { id } = useParams<{ id: string }>();
   const appointmentId = id ? parseInt(id) : null;
+  const { user } = useAuth();
 
   const [timeUntilMeeting, setTimeUntilMeeting] = useState<number>(0);
   const [meetingStarted, setMeetingStarted] = useState(false);
@@ -289,12 +291,21 @@ export default function VideoConsultation() {
               </div>
               <div className="space-y-2">
                 <h4 className="font-medium">Preparation</h4>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Have your medical history ready</li>
-                  <li>• List current medications</li>
-                  <li>• Prepare your questions</li>
-                  <li>• Test your audio/video beforehand</li>
-                </ul>
+                {user?.role === 'doctor' ? (
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Review patient's health profile</li>
+                    <li>• Have diagnostic tools ready if needed</li>
+                    <li>• Prepare treatment recommendations</li>
+                    <li>• Test your audio/video beforehand</li>
+                  </ul>
+                ) : (
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Have your medical history ready</li>
+                    <li>• List current medications</li>
+                    <li>• Prepare your questions</li>
+                    <li>• Test your audio/video beforehand</li>
+                  </ul>
+                )}
               </div>
             </div>
             
