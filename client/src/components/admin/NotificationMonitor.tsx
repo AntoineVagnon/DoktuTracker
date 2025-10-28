@@ -412,10 +412,10 @@ export default function NotificationMonitor() {
               {/* Status and Actions */}
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <Badge className={STATUS_COLORS[selectedNotification.status]} className="text-base px-3 py-1">
+                  <Badge className={`${STATUS_COLORS[selectedNotification.status]} text-base px-3 py-1`}>
                     {selectedNotification.status.toUpperCase()}
                   </Badge>
-                  <Badge className={getPriorityBadge(selectedNotification.priority).class} className="text-base px-3 py-1">
+                  <Badge className={`${getPriorityBadge(selectedNotification.priority).class} text-base px-3 py-1`}>
                     {getPriorityBadge(selectedNotification.priority).label}
                   </Badge>
                 </div>
