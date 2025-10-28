@@ -250,6 +250,88 @@ export function startImminentNotifications() {
 }
 
 /**
+ * G6: Post-Consultation Review Request
+ * Runs every 5 minutes to find appointments that ended 30 minutes ago
+ */
+export function startPostConsultationReviews() {
+  cron.schedule('*/5 * * * *', async () => {
+    console.log('[CRON] Running post-consultation review job...');
+
+    const now = new Date();
+    // Find appointments that ended 30-35 minutes ago (30 min consultation + 30 min delay)
+    const reviewTimeStart = new Date(now.getTime() - 65 * 60 * 1000); // 65 minutes ago
+    const reviewTimeEnd = new Date(now.getTime() - 60 * 60 * 1000); // 60 minutes ago
+
+    try {
+      const completedAppointments = await db
+        .select({
+          id: appointments.id,
+          patientId: appointments.patientId,
+          doctorId: appointments.doctorId,
+          appointmentDate: appointments.appointmentDate,
+          patientFirstName: users.firstName,
+          patientLastName: users.lastName,
+          patientEmail: users.email,
+        })
+        .from(appointments)
+        .innerJoin(users, eq(appointments.patientId, users.id))
+        .where(
+          and(
+            gte(appointments.appointmentDate, reviewTimeStart),
+            lt(appointments.appointmentDate, reviewTimeEnd),
+            or(eq(appointments.status, 'paid'), eq(appointments.status, 'confirmed'))
+          )
+        );
+
+      console.log(`[CRON] Found ${completedAppointments.length} appointments for post-consultation review`);
+
+      for (const appointment of completedAppointments) {
+        // Get doctor details
+        const [doctorDetails] = await db
+          .select({
+            firstName: users.firstName,
+            lastName: users.lastName,
+            specialty: doctors.specialty,
+          })
+          .from(doctors)
+          .innerJoin(users, eq(doctors.userId, users.id))
+          .where(eq(doctors.id, appointment.doctorId));
+
+        if (!doctorDetails) {
+          console.error(`[CRON] Doctor not found for appointment ${appointment.id}`);
+          continue;
+        }
+
+        // Schedule G6 notification (post-consultation survey)
+        await notificationService.scheduleNotification({
+          userId: appointment.patientId,
+          appointmentId: appointment.id,
+          triggerCode: TriggerCode.GROWTH_SURVEY_POST_CONSULTATION,
+          scheduledFor: new Date(),
+          mergeData: {
+            patient_first_name: appointment.patientFirstName,
+            appointment_datetime_local: appointment.appointmentDate.toLocaleString('en-US', {
+              dateStyle: 'full',
+              timeStyle: 'short'
+            }),
+            doctor_name: `Dr. ${doctorDetails.firstName} ${doctorDetails.lastName}`,
+            doctor_specialty: doctorDetails.specialty || 'Medical Specialist',
+            review_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/appointments/${appointment.id}/review`,
+            dashboard_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/dashboard`
+          }
+        });
+
+        console.log(`[CRON] Scheduled post-consultation review for appointment ${appointment.id}`);
+      }
+    } catch (error) {
+      console.error('[CRON] Post-consultation review job error:', error);
+    }
+  });
+
+  console.log('[CRON] Post-consultation review job initialized (runs every 5 minutes)');
+}
+
+/**
  * Initialize all appointment reminder cron jobs
  */
 export function initializeAppointmentReminders(service: any) {
@@ -258,6 +340,7 @@ export function initializeAppointmentReminders(service: any) {
   start24HourReminders();
   start1HourReminders();
   startImminentNotifications();
+  startPostConsultationReviews();
 
   console.log('[CRON] All appointment reminder jobs initialized successfully');
 }
