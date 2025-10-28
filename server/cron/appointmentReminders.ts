@@ -24,13 +24,13 @@ export function start24HourReminders() {
     const in25Hours = new Date(now.getTime() + 25 * 60 * 60 * 1000);
 
     try {
-      // Find appointments between 24-25 hours from now with status 'confirmed'
+      // Find appointments between 24-25 hours from now with status 'paid' or 'confirmed'
       const upcomingAppointments = await db
         .select({
           id: appointments.id,
           patientId: appointments.patientId,
           doctorId: appointments.doctorId,
-          scheduledAt: appointments.scheduledAt,
+          appointmentDate: appointments.appointmentDate,
           patientFirstName: users.firstName,
           patientLastName: users.lastName,
           patientEmail: users.email,
@@ -39,9 +39,9 @@ export function start24HourReminders() {
         .innerJoin(users, eq(appointments.patientId, users.id))
         .where(
           and(
-            gte(appointments.scheduledAt, in24Hours),
-            lt(appointments.scheduledAt, in25Hours),
-            eq(appointments.status, 'confirmed')
+            gte(appointments.appointmentDate, in24Hours),
+            lt(appointments.appointmentDate, in25Hours),
+            or(eq(appointments.status, 'paid'), eq(appointments.status, 'confirmed'))
           )
         );
 
@@ -72,7 +72,7 @@ export function start24HourReminders() {
           scheduledFor: new Date(),
           mergeData: {
             patient_first_name: appointment.patientFirstName,
-            appointment_datetime_local: appointment.scheduledAt.toLocaleString('en-US', {
+            appointment_datetime_local: appointment.appointmentDate.toLocaleString('en-US', {
               dateStyle: 'full',
               timeStyle: 'short'
             }),
@@ -111,7 +111,7 @@ export function start1HourReminders() {
           id: appointments.id,
           patientId: appointments.patientId,
           doctorId: appointments.doctorId,
-          scheduledAt: appointments.scheduledAt,
+          appointmentDate: appointments.appointmentDate,
           patientFirstName: users.firstName,
           patientLastName: users.lastName,
           patientEmail: users.email,
@@ -120,9 +120,9 @@ export function start1HourReminders() {
         .innerJoin(users, eq(appointments.patientId, users.id))
         .where(
           and(
-            gte(appointments.scheduledAt, in1Hour),
-            lt(appointments.scheduledAt, in65Minutes),
-            eq(appointments.status, 'confirmed')
+            gte(appointments.appointmentDate, in1Hour),
+            lt(appointments.appointmentDate, in65Minutes),
+            or(eq(appointments.status, 'paid'), eq(appointments.status, 'confirmed'))
           )
         );
 
@@ -153,7 +153,7 @@ export function start1HourReminders() {
           scheduledFor: new Date(),
           mergeData: {
             patient_first_name: appointment.patientFirstName,
-            appointment_datetime_local: appointment.scheduledAt.toLocaleString('en-US', {
+            appointment_datetime_local: appointment.appointmentDate.toLocaleString('en-US', {
               dateStyle: 'full',
               timeStyle: 'short'
             }),
@@ -192,7 +192,7 @@ export function startImminentNotifications() {
           id: appointments.id,
           patientId: appointments.patientId,
           doctorId: appointments.doctorId,
-          scheduledAt: appointments.scheduledAt,
+          appointmentDate: appointments.appointmentDate,
           patientFirstName: users.firstName,
           patientLastName: users.lastName,
           patientEmail: users.email,
@@ -201,9 +201,9 @@ export function startImminentNotifications() {
         .innerJoin(users, eq(appointments.patientId, users.id))
         .where(
           and(
-            gte(appointments.scheduledAt, in5Minutes),
-            lt(appointments.scheduledAt, in6Minutes),
-            eq(appointments.status, 'confirmed')
+            gte(appointments.appointmentDate, in5Minutes),
+            lt(appointments.appointmentDate, in6Minutes),
+            or(eq(appointments.status, 'paid'), eq(appointments.status, 'confirmed'))
           )
         );
 
