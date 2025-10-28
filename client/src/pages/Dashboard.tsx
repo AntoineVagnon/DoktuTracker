@@ -218,12 +218,12 @@ export default function Dashboard() {
 
     const now = new Date();
 
-    // Find appointments that ended in the last 5 minutes (after 60-minute consultation window)
+    // Find appointments that ended in the last 5 minutes (after 30-minute consultation window)
     const recentlyCompletedAppointments = allAppointments.filter((apt: any) => {
       if (apt.status !== 'paid') return false;
 
       const appointmentTime = new Date(apt.appointmentDate);
-      const consultationEndTime = new Date(appointmentTime.getTime() + 60 * 60 * 1000); // 60 minutes after start
+      const consultationEndTime = new Date(appointmentTime.getTime() + 30 * 60 * 1000); // 30 minutes after start
       const timeSinceEnd = now.getTime() - consultationEndTime.getTime();
 
       // Show survey if consultation ended within last 5 minutes
