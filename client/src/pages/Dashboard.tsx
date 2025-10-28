@@ -212,6 +212,40 @@ export default function Dashboard() {
     },
   });
 
+  // Auto-trigger post-consultation survey for recently completed appointments
+  useEffect(() => {
+    if (!isAuthenticated || !user || user.role !== 'patient' || allAppointments.length === 0) return;
+
+    const now = new Date();
+
+    // Find appointments that ended in the last 5 minutes (after 60-minute consultation window)
+    const recentlyCompletedAppointments = allAppointments.filter((apt: any) => {
+      if (apt.status !== 'paid') return false;
+
+      const appointmentTime = new Date(apt.appointmentDate);
+      const consultationEndTime = new Date(appointmentTime.getTime() + 60 * 60 * 1000); // 60 minutes after start
+      const timeSinceEnd = now.getTime() - consultationEndTime.getTime();
+
+      // Show survey if consultation ended within last 5 minutes
+      return timeSinceEnd >= 0 && timeSinceEnd <= 5 * 60 * 1000;
+    });
+
+    if (recentlyCompletedAppointments.length > 0 && !showPostCallSurvey) {
+      // Get the most recent completed appointment
+      const mostRecent = recentlyCompletedAppointments.sort((a, b) =>
+        new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime()
+      )[0];
+
+      // Check if we've already shown survey for this appointment (using localStorage)
+      const surveyShown = localStorage.getItem(`survey_shown_${mostRecent.id}`);
+      if (!surveyShown) {
+        setSurveyAppointment(mostRecent);
+        setShowPostCallSurvey(true);
+        localStorage.setItem(`survey_shown_${mostRecent.id}`, 'true');
+      }
+    }
+  }, [allAppointments, isAuthenticated, user, showPostCallSurvey]);
+
   // Get unique doctors from appointments
   const uniqueDoctors = allAppointments.reduce((doctors: any[], appointment: any) => {
     const doctor = appointment.doctor;
