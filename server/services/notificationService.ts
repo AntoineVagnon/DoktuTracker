@@ -850,7 +850,6 @@ export class UniversalNotificationService {
     // Email channel (most notifications)
     if (prefs.emailEnabled) {
       channels.email = ![
-        TriggerCode.BOOKING_LIVE_IMMINENT,
         TriggerCode.HEALTH_PROFILE_COMPLETED // In-app only
       ].includes(triggerCode);
     }
