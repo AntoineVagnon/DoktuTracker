@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import { db } from '../db';
 import { appointments, users, doctors } from '../../shared/schema';
-import { eq, and, gte, lt, sql } from 'drizzle-orm';
+import { eq, and, or, gte, lt, sql } from 'drizzle-orm';
 import { TriggerCode } from '../services/notificationService';
 
 // Import notification service - will be initialized in index.ts
