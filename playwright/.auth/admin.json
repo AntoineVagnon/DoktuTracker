@@ -2,34 +2,74 @@
   "cookies": [
     {
       "name": "connect.sid",
-      "value": "s%3AtVRfa1i8nmgOh_On2_gA8dNO6IrPExjq.5VY11n9Y9Ufc7B6Jy9orhuf%2BqkStiPoMreezkczjAK4",
+      "value": "s%3A2SW1dly0cXYHKCCufZ014S-tGjvVeoNn.jTPpLibBqBeAUR8%2BPQjQpQ8kpxySxMrHQU7l492tsoM",
       "domain": "web-production-b2ce.up.railway.app",
       "path": "/",
-      "expires": 1760364027,
+      "expires": 1760550037,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "__cf_bm",
-      "value": "JViCq.GOurp8w0zItk.CgxE4s8CS2ejJ1tbUXBKwR_U-1760277628-1.0.1.1-NWKAVfQQchMcTagkSIuovpoyZOCdTVwx3GFvwaOY4TEPyrrgJfAYzUEF0B_oCuvmcWa5boOiWURueSrK.pG90iI5GsaXZzGE.aN0IuUy_C0",
+      "value": "8Z3hzaDXEFcQIWdg7bTa7kV_OZgPRanpb2juE.hJQ5w-1760463640-1.0.1.1-NQwyi_2Mq76N5gq9sbdz8Fmmp2AP8o8S1EvKrqAhfnuvTFd4wemUGboFYz73_4rcsOGRgxOSwqAfU1wYFC5A9WSvME6itABPGRVaiLIvZAY",
       "domain": ".replit.com",
       "path": "/",
-      "expires": 1760279428.793638,
+      "expires": 1760465440.591742,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "_cfuvid",
-      "value": "Nm4CLFggUkYmlQFd8vXQqArYbvACcRan2zPj1Wj9zE0-1760277628344-0.0.1.1-604800000",
+      "value": "jj4lAT_iLabSAWa59dChSz25d4fizF1Qsb8VDiCaalU-1760463640176-0.0.1.1-604800000",
       "domain": ".replit.com",
       "path": "/",
       "expires": -1,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
+    },
+    {
+      "name": "m",
+      "value": "5b04145a-304e-497c-b088-f4839aee1b06c1ba7e",
+      "domain": "m.stripe.com",
+      "path": "/",
+      "expires": 1795023646.600408,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__stripe_mid",
+      "value": "14bba995-ed1f-419a-8448-431e7dcab12d9b491b",
+      "domain": ".doktu-tracker.vercel.app",
+      "path": "/",
+      "expires": 1791999646,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "__stripe_sid",
+      "value": "0bd7c751-c501-41e4-ac49-b2fe96568546f351b4",
+      "domain": ".doktu-tracker.vercel.app",
+      "path": "/",
+      "expires": 1760465446,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
     }
   ],
-  "origins": []
+  "origins": [
+    {
+      "origin": "https://doktu-tracker.vercel.app",
+      "localStorage": [
+        {
+          "name": "doktu-language",
+          "value": "en-US"
+        }
+      ]
+    }
+  ]
 }

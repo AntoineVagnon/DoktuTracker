@@ -1,0 +1,11 @@
+{
+  "email": "test-local-debug@example.com",
+  "password": "TestDoctor2025!",
+  "firstName": "Local",
+  "lastName": "Test",
+  "phone": "+33612345678",
+  "specialty": "General Medicine",
+  "licenseNumber": "12345678901",
+  "licenseCountry": "FR",
+  "bio": "Local test for debugging"
+}

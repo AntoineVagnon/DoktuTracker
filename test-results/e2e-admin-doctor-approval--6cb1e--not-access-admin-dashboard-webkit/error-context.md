@@ -1,0 +1,179 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link "D Doktu" [ref=e6]:
+        - /url: /
+        - generic [ref=e8]: D
+        - generic [ref=e9]: Doktu
+      - button "AV" [ref=e11] [cursor=pointer]:
+        - generic [ref=e13] [cursor=pointer]: AV
+  - generic [ref=e14]:
+    - generic [ref=e16]:
+      - combobox [ref=e18] [cursor=pointer]:
+        - generic: Last 7 days
+        - img [ref=e19] [cursor=pointer]
+      - navigation [ref=e21]:
+        - button "Overview" [ref=e22] [cursor=pointer]:
+          - img [ref=e23] [cursor=pointer]
+          - generic [ref=e25] [cursor=pointer]: Overview
+        - button "User Engagement" [ref=e26] [cursor=pointer]:
+          - img [ref=e27] [cursor=pointer]
+          - generic [ref=e29] [cursor=pointer]: User Engagement
+        - button "Growth" [ref=e30] [cursor=pointer]:
+          - img [ref=e31] [cursor=pointer]
+          - generic [ref=e34] [cursor=pointer]: Growth
+        - button "Feedback" [ref=e35] [cursor=pointer]:
+          - img [ref=e36] [cursor=pointer]
+          - generic [ref=e38] [cursor=pointer]: Feedback
+        - button "Operational" [ref=e39] [cursor=pointer]:
+          - img [ref=e40] [cursor=pointer]
+          - generic [ref=e43] [cursor=pointer]: Operational
+        - button "Predictive Analytics" [ref=e44] [cursor=pointer]:
+          - img [ref=e45] [cursor=pointer]
+          - generic [ref=e55] [cursor=pointer]: Predictive Analytics
+        - button "Live & Planned Meetings" [ref=e56] [cursor=pointer]:
+          - img [ref=e57] [cursor=pointer]
+          - generic [ref=e60] [cursor=pointer]: Live & Planned Meetings
+        - button "Notifications" [ref=e61] [cursor=pointer]:
+          - img [ref=e62] [cursor=pointer]
+          - generic [ref=e65] [cursor=pointer]: Notifications
+        - button "Email Management" [ref=e66] [cursor=pointer]:
+          - img [ref=e67] [cursor=pointer]
+          - generic [ref=e70] [cursor=pointer]: Email Management
+        - button "Doctors" [ref=e71] [cursor=pointer]:
+          - img [ref=e72] [cursor=pointer]
+          - generic [ref=e75] [cursor=pointer]: Doctors
+    - generic [ref=e77]:
+      - generic [ref=e79]:
+        - heading "Overview" [level=1] [ref=e80]
+        - paragraph [ref=e81]: Real-time metrics and insights for your telemedicine platform
+      - alert [ref=e82]:
+        - img [ref=e83]
+        - generic [ref=e85]:
+          - strong [ref=e86]: "Data Sources:"
+          - text: All metrics are now fetched directly from the PostgreSQL database.
+          - text: ✓
+          - strong [ref=e87]: "Real data:"
+          - text: Appointments, revenue, active users, retention rate, cohort analysis, user journey, conversion funnel
+          - text: ✅
+          - strong [ref=e88]: "Analytics Tracking Implemented:"
+          - text: Homepage visits, discovery actions, and booking funnel events are now being tracked in real-time
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - generic [ref=e94]: "North Star: Appointments Booked"
+              - img [ref=e95]
+            - generic [ref=e97]: Last 7 days
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - generic [ref=e100]: "3"
+              - generic [ref=e101]:
+                - img [ref=e102]
+                - generic [ref=e105]: Infinity%
+            - img [ref=e108]
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - generic [ref=e116]:
+              - generic [ref=e117]:
+                - generic [ref=e118]: Time to Value
+                - img [ref=e119]
+              - img [ref=e121]
+            - generic [ref=e124]:
+              - generic [ref=e125]: 7.9 days
+              - generic [ref=e126]:
+                - img [ref=e127]
+                - generic [ref=e130]: 182.1%
+              - paragraph [ref=e131]: Avg time to first appointment
+          - generic [ref=e132]:
+            - generic [ref=e134]:
+              - generic [ref=e135]:
+                - generic [ref=e136]: Activation Rate
+                - img [ref=e137]
+              - img [ref=e139]
+            - generic [ref=e141]:
+              - generic [ref=e142]: 0.0%
+              - generic [ref=e143]:
+                - img [ref=e144]
+                - generic [ref=e147]: 100.0%
+              - generic [ref=e148]:
+                - generic [ref=e149]:
+                  - generic [ref=e150]: Target
+                  - generic [ref=e151]: 70.0%
+                - progressbar [ref=e152]
+              - paragraph [ref=e154]: Users who book within 7 days
+          - generic [ref=e155]:
+            - generic [ref=e157]:
+              - generic [ref=e158]:
+                - generic [ref=e159]: Product Qualified Leads
+                - img [ref=e160]
+              - img [ref=e162]
+            - generic [ref=e166]:
+              - generic [ref=e167]: "1"
+              - generic [ref=e168]:
+                - img [ref=e169]
+                - generic [ref=e172]: Infinity%
+              - paragraph [ref=e173]: High-intent users this period
+          - generic [ref=e174]:
+            - generic [ref=e176]:
+              - generic [ref=e177]:
+                - generic [ref=e178]: Net Revenue
+                - img [ref=e179]
+              - img [ref=e181]
+            - generic [ref=e183]:
+              - generic [ref=e184]: €0.1k
+              - generic [ref=e185]:
+                - img [ref=e186]
+                - generic [ref=e189]: Infinity%
+        - generic [ref=e190]:
+          - generic [ref=e192]:
+            - generic [ref=e193]: Conversion Funnel
+            - img [ref=e194]
+          - generic [ref=e196]:
+            - generic [ref=e197]:
+              - generic [ref=e198]:
+                - generic [ref=e199]:
+                  - generic [ref=e200]: Homepage Visits
+                  - generic [ref=e201]:
+                    - generic [ref=e202]: 100%
+                    - generic [ref=e203]: (38 users)
+                - progressbar [ref=e204]
+              - generic [ref=e206]:
+                - generic [ref=e207]:
+                  - generic [ref=e208]: Registration Started
+                  - generic [ref=e209]:
+                    - generic [ref=e210]: 35%
+                    - generic [ref=e211]: (13 users)
+                - progressbar [ref=e212]
+              - generic [ref=e214]:
+                - generic [ref=e215]:
+                  - generic [ref=e216]: Account Created
+                  - generic [ref=e217]:
+                    - generic [ref=e218]: 21%
+                    - generic [ref=e219]: (8 users)
+                - progressbar [ref=e220]
+              - generic [ref=e222]:
+                - generic [ref=e223]:
+                  - generic [ref=e224]: First Booking
+                  - generic [ref=e225]:
+                    - generic [ref=e226]: 8%
+                    - generic [ref=e227]: (3 users)
+                - progressbar [ref=e228]
+              - generic [ref=e230]:
+                - generic [ref=e231]:
+                  - generic [ref=e232]: Completed Appointment
+                  - generic [ref=e233]:
+                    - generic [ref=e234]: 0%
+                    - generic [ref=e235]: (0 users)
+                - progressbar [ref=e236]
+            - alert [ref=e238]:
+              - img [ref=e239]
+              - generic [ref=e241]:
+                - strong [ref=e242]: "Note:"
+                - text: Homepage visits are estimated. Install analytics for accurate visitor tracking.
+```

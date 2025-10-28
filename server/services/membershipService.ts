@@ -637,8 +637,29 @@ export class MembershipService {
       throw new Error(`Subscription is not active: ${stripeSubscription.status}`);
     }
 
-    const planIdString = stripeSubscription.metadata?.planId || user.pendingSubscriptionPlan || 'monthly_plan';
-    console.log(`📋 Plan ID from metadata/user: ${planIdString}`);
+    // FIX BLOCKER-001: Correctly identify plan based on Stripe interval_count
+    const stripePlan = stripeSubscription.items.data[0].plan;
+    console.log(`📋 Stripe plan details:`, {
+      id: stripePlan.id,
+      amount: stripePlan.amount,
+      interval: stripePlan.interval,
+      interval_count: stripePlan.interval_count
+    });
+
+    // Determine plan ID based on interval_count (not just metadata)
+    let planIdString: string;
+    if (stripePlan.interval === 'month' && stripePlan.interval_count === 6) {
+      planIdString = 'biannual_plan';  // 6-month plan
+      console.log(`✅ Identified as 6-month plan based on interval_count=6`);
+    } else if (stripePlan.interval === 'month' && stripePlan.interval_count === 1) {
+      planIdString = 'monthly_plan';  // Monthly plan
+      console.log(`✅ Identified as monthly plan based on interval_count=1`);
+    } else {
+      // Fallback to metadata if interval doesn't match known patterns
+      planIdString = stripeSubscription.metadata?.planId || user.pendingSubscriptionPlan || 'monthly_plan';
+      console.warn(`⚠️ Using fallback plan identification: ${planIdString} (interval: ${stripePlan.interval}, count: ${stripePlan.interval_count})`);
+    }
+    console.log(`📋 Final plan ID: ${planIdString}`);
 
     // Get the plan configuration
     const planConfig = this.getPlanConfigurations()[planIdString];

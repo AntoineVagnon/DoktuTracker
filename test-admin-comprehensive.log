@@ -1,0 +1,654 @@
+
+Running 120 tests using 1 worker
+
+[1A[2K[1/120] [setup] › tests\auth-doctor.setup.ts:15:1 › authenticate as test doctor
+[1A[2K[setup] › tests\auth-doctor.setup.ts:15:1 › authenticate as test doctor
+
+🔐 Authenticating test doctor via API...
+
+[1A[2KEmail: test.doctor.1760200122865@doktu.co
+
+[1A[2K✅ Authenticated as test doctor
+
+[1A[2KSession ID: T8bJ0KKWSvvPJlYV7RinQsJylaCcTaLK
+
+[1A[2K✅ Doctor authentication state saved
+
+[1A[2K[2/120] [setup] › tests\auth-patient.setup.ts:15:1 › authenticate as test patient
+[1A[2K[setup] › tests\auth-patient.setup.ts:15:1 › authenticate as test patient
+
+🔐 Authenticating test patient via API...
+
+[1A[2KEmail: kalyos.officiel@gmail.com
+
+[1A[2K✅ Authenticated as test patient
+
+[1A[2KSession ID: -g5_R6ietx4bmclcrt7YsRm3VACbYEHb
+
+[1A[2K✅ Patient authentication state saved to ./playwright/.auth/patient.json
+
+[1A[2K[3/120] [setup] › tests\auth.setup.ts:14:1 › authenticate as admin
+[1A[2K[setup] › tests\auth.setup.ts:14:1 › authenticate as admin
+✓ Authenticated as antoine.vagnon@gmail.com (admin)
+
+[1A[2K✓ Admin dashboard accessible
+
+[1A[2K✓ Admin authentication state saved
+
+[1A[2K[4/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+🔐 Test: Admin Dashboard Access
+
+[1A[2KCurrent URL: https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K  1) [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeTruthy[2m()[22m
+
+    Received: [31mfalse[39m
+
+      75 |                           await page.locator('text=/dashboard/i').count() > 0;
+      76 |
+    > 77 |     expect(hasAdminTitle).toBeTruthy();
+         |                           ^
+      78 |     console.log('✅ Admin dashboard accessible');
+      79 |
+      80 |     // Take screenshot
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:77:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--3f192-dmin-dashboard-successfully-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--3f192-dmin-dashboard-successfully-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-admin-doctor-approval--3f192-dmin-dashboard-successfully-firefox\error-context.md
+
+
+[1A[2K[5/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+🔒 Test: Non-admin access denied
+
+[1A[2KNon-admin redirected to: https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K  2) [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeTruthy[2m()[22m
+
+    Received: [31mfalse[39m
+
+      101 |                                  currentUrl.includes('/') && !currentUrl.includes('/admin');
+      102 |
+    > 103 |     expect(redirectedCorrectly).toBeTruthy();
+          |                                 ^
+      104 |     console.log('✅ Non-admin access blocked');
+      105 |
+      106 |     await context.close();
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:103:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--6cb1e--not-access-admin-dashboard-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--6cb1e--not-access-admin-dashboard-firefox\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--6cb1e--not-access-admin-dashboard-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-admin-doctor-approval--6cb1e--not-access-admin-dashboard-firefox\error-context.md
+
+
+[1A[2K[6/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+📋 Test: Doctor Management Interface
+
+[1A[2K⚠️  Need to navigate to doctors section
+
+[1A[2K✅ Navigated to Doctors section
+
+[1A[2KSearch/Filter elements found: false
+
+[1A[2K✅ Doctor management interface present
+
+[1A[2K[7/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+🔍 Test: Filter by status
+
+[1A[2K⚠️  No status filter found - interface may be different
+
+[1A[2K[8/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+🔍 Test: Search functionality
+
+[1A[2K⚠️  No search input found
+
+[1A[2K[9/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+👁️  Test: View doctor details
+
+[1A[2K⚠️  No doctors found to view
+
+[1A[2K[10/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+✅ Test: APPROVE DOCTOR WORKFLOW
+
+[1A[2K⚠️  No pending applications found - may need to create test data
+
+[1A[2K[11/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+❌ Test: SOFT REJECT DOCTOR WORKFLOW
+
+[1A[2K⚠️  Not enough pending applications for rejection test
+
+[1A[2K[12/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+📊 Test: Doctor Statistics
+
+[1A[2K✅ Statistics section found
+
+[1A[2KHas numerical stats: true
+
+[1A[2K✅ Statistics displayed
+
+[1A[2K[13/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+📜 Test: Audit Trail
+
+[1A[2K[14/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+📊 Test: Profile Completion
+
+[1A[2K⚠️  No approved doctors found to test profile completion
+
+[1A[2K[15/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+⌨️  Test: Keyboard Accessibility
+
+[1A[2KFocused element: BODY
+
+[1A[2K  3) [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mnot[2m.[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: not [32m"BODY"[39m
+
+      649 |     console.log(`Focused element: ${focusedElement}`);
+      650 |
+    > 651 |     expect(focusedElement).not.toBe('BODY');
+          |                                ^
+      652 |     expect(focusedElement).not.toBe('NONE');
+      653 |
+      654 |     console.log('✅ Keyboard navigation working');
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:651:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--3072e-ould-be-keyboard-accessible-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--3072e-ould-be-keyboard-accessible-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[16/120] [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+[1A[2K[firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+⚡ Test: Page Load Performance
+
+[1A[2KDashboard load time: 265ms
+
+[1A[2K✅ Performance within budget
+
+[1A[2K[17/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+🔐 Test: Admin Dashboard Access
+
+[1A[2KCurrent URL: https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K  4) [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeTruthy[2m()[22m
+
+    Received: [31mfalse[39m
+
+      75 |                           await page.locator('text=/dashboard/i').count() > 0;
+      76 |
+    > 77 |     expect(hasAdminTitle).toBeTruthy();
+         |                           ^
+      78 |     console.log('✅ Admin dashboard accessible');
+      79 |
+      80 |     // Take screenshot
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:77:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--3f192-dmin-dashboard-successfully-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--3f192-dmin-dashboard-successfully-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-admin-doctor-approval--3f192-dmin-dashboard-successfully-webkit\error-context.md
+
+
+[1A[2K[18/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+🔒 Test: Non-admin access denied
+
+[1A[2KNon-admin redirected to: https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K  5) [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeTruthy[2m()[22m
+
+    Received: [31mfalse[39m
+
+      101 |                                  currentUrl.includes('/') && !currentUrl.includes('/admin');
+      102 |
+    > 103 |     expect(redirectedCorrectly).toBeTruthy();
+          |                                 ^
+      104 |     console.log('✅ Non-admin access blocked');
+      105 |
+      106 |     await context.close();
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:103:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--6cb1e--not-access-admin-dashboard-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--6cb1e--not-access-admin-dashboard-webkit\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--6cb1e--not-access-admin-dashboard-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e2e-admin-doctor-approval--6cb1e--not-access-admin-dashboard-webkit\error-context.md
+
+
+[1A[2K[19/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K
+📋 Test: Doctor Management Interface
+
+[1A[2K⚠️  Need to navigate to doctors section
+
+[1A[2K✅ Navigated to Doctors section
+
+[1A[2KSearch/Filter elements found: false
+
+[1A[2K✅ Doctor management interface present
+
+[1A[2K[20/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K
+🔍 Test: Filter by status
+
+[1A[2K⚠️  No status filter found - interface may be different
+
+[1A[2K[21/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+🔍 Test: Search functionality
+
+[1A[2K⚠️  No search input found
+
+[1A[2K[22/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+👁️  Test: View doctor details
+
+[1A[2K⚠️  No doctors found to view
+
+[1A[2K[23/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K
+✅ Test: APPROVE DOCTOR WORKFLOW
+
+[1A[2K⚠️  No pending applications found - may need to create test data
+
+[1A[2K[24/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+❌ Test: SOFT REJECT DOCTOR WORKFLOW
+
+[1A[2K⚠️  Not enough pending applications for rejection test
+
+[1A[2K[25/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K✅ Cookies banner accepted
+
+[1A[2K
+📊 Test: Doctor Statistics
+
+[1A[2K✅ Statistics section found
+
+[1A[2KHas numerical stats: true
+
+[1A[2K✅ Statistics displayed
+
+[1A[2K[26/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K
+📜 Test: Audit Trail
+
+[1A[2K[27/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K
+📊 Test: Profile Completion
+
+[1A[2K⚠️  No approved doctors found to test profile completion
+
+[1A[2K[28/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+[1A[2K[webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+
+🌐 Navigating to https://doktu-tracker.vercel.app/admin-dashboard
+
+[1A[2K
+⌨️  Test: Keyboard Accessibility
+
+[1A[2KFocused element: BODY
+
+[1A[2K  6) [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mnot[2m.[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: not [32m"BODY"[39m
+
+      649 |     console.log(`Focused element: ${focusedElement}`);
+      650 |
+    > 651 |     expect(focusedElement).not.toBe('BODY');
+          |                                ^
+      652 |     expect(focusedElement).not.toBe('NONE');
+      653 |
+      654 |     console.log('✅ Keyboard navigation working');
+        at C:\Users\mings\.apps\DoktuTracker\tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:651:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--3072e-ould-be-keyboard-accessible-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e2e-admin-doctor-approval--3072e-ould-be-keyboard-accessible-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[29/120] [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+[1A[2K  7) [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+
+[1A[2K[30/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+[1A[2K  8) [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+
+[1A[2K[31/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+[1A[2K[32/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+[1A[2K[33/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+[1A[2K[34/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+[1A[2K[35/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+[1A[2K[36/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+[1A[2K[37/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+[1A[2K[38/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+[1A[2K[39/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+[1A[2K[40/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+[1A[2K[41/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+[1A[2K[42/120] [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+[1A[2K[43/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+[1A[2K  9) [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+
+[1A[2K[44/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+[1A[2K[45/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+[1A[2K[46/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+[1A[2K[47/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+[1A[2K[48/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+[1A[2K[49/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+[1A[2K[50/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+[1A[2K[51/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+[1A[2K[52/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+[1A[2K[53/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+[1A[2K[54/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+[1A[2K[55/120] [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+[1A[2K[56/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+[1A[2K  10) [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+
+[1A[2K[57/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+[1A[2K[58/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+[1A[2K[59/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+[1A[2K[60/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+[1A[2K[61/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+[1A[2K[62/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+[1A[2K[63/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+[1A[2K[64/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+[1A[2K[65/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+[1A[2K[66/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+[1A[2K[67/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+[1A[2K[68/120] [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+[1A[2K[69/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+[1A[2K  11) [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+
+[1A[2K[70/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+[1A[2K[71/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+[1A[2K[72/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+[1A[2K[73/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+[1A[2K[74/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+[1A[2K[75/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+[1A[2K[76/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+[1A[2K[77/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+[1A[2K[78/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+[1A[2K[79/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+[1A[2K[80/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+[1A[2K[81/120] [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+[1A[2K[82/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+[1A[2K  12) [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+
+[1A[2K[83/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+[1A[2K[84/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+[1A[2K[85/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+[1A[2K[86/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+[1A[2K[87/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+[1A[2K[88/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+[1A[2K[89/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+[1A[2K[90/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+[1A[2K[91/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+[1A[2K[92/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+[1A[2K[93/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+[1A[2K[94/120] [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+[1A[2K[95/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+[1A[2K  13) [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+
+[1A[2K[96/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+[1A[2K[97/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+[1A[2K[98/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+[1A[2K[99/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+[1A[2K[100/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+[1A[2K[101/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+[1A[2K[102/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+[1A[2K[103/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+[1A[2K[104/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+[1A[2K[105/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+[1A[2K[106/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+[1A[2K[107/120] [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+[1A[2K[108/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully
+[1A[2K  14) [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+
+    Error: worker process exited unexpectedly (code=3221225794, signal=null)
+
+
+[1A[2K[109/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard
+[1A[2K[110/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:113:3 › Admin Doctor Management - Complete Workflow › [E2E-003] [P0] Should display doctor management interface
+[1A[2K[111/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:144:3 › Admin Doctor Management - Complete Workflow › [E2E-004] [P1] Should filter doctors by status
+[1A[2K[112/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:192:3 › Admin Doctor Management - Complete Workflow › [E2E-005] [P1] Should search doctors by name
+[1A[2K[113/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:218:3 › Admin Doctor Management - Complete Workflow › [E2E-006] [P0] Should view doctor application details
+[1A[2K[114/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:272:3 › Admin Doctor Management - Complete Workflow › [E2E-007] [P0] CRITICAL: Should approve doctor application successfully
+[1A[2K[115/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:384:3 › Admin Doctor Management - Complete Workflow › [E2E-008] [P0] Should reject doctor application (soft)
+[1A[2K[116/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:488:3 › Admin Doctor Management - Complete Workflow › [E2E-009] [P2] Should display doctor statistics
+[1A[2K[117/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:517:3 › Admin Doctor Management - Complete Workflow › [E2E-010] [P1] Should display audit history for doctor
+[1A[2K[118/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:571:3 › Admin Doctor Management - Complete Workflow › [E2E-011] [P1] Should show profile completion percentage
+[1A[2K[119/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible
+[1A[2K[120/120] [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget
+[1A[2K  14 failed
+    [chromium] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+    [doctor] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+    [patient] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+    [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+    [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard 
+    [firefox] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible 
+    [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+    [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:84:3 › Admin Doctor Management - Complete Workflow › [E2E-002] [P0] Non-admin users should not access admin dashboard 
+    [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:620:3 › Admin Doctor Management - Complete Workflow › [E2E-012] [P1] Admin dashboard should be keyboard accessible 
+    [webkit] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:663:3 › Admin Doctor Management - Complete Workflow › [E2E-013] [P2] Admin dashboard should load within performance budget 
+    [Mobile Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+    [Mobile Safari] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+    [Microsoft Edge] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+    [Google Chrome] › tests\e2e\admin-doctor-approval-workflow-comprehensive.spec.ts:62:3 › Admin Doctor Management - Complete Workflow › [E2E-001] [P0] Admin should access admin dashboard successfully 
+  84 did not run
+  22 passed (4.3m)
+
+[36m  Serving HTML report at http://localhost:51803. Press Ctrl+C to quit.[39m

@@ -1,0 +1,18 @@
+      .select({
+        id: notificationQueue.id,
+        status: notificationQueue.status
+      })
+      .from(notificationQueue)
+      .where(and(
+        eq(notificationQueue.userId, userId),
+        eq(notificationQueue.triggerCode, triggerCode),
+        gte(notificationQueue.createdAt, thirtyMinutesAgo),
+        or(
+          eq(notificationQueue.status, 'pending'),
+          eq(notificationQueue.status, 'failed')
+        )
+      ));
+
+    if (existing) {
+      console.log(\`🔁 Found existing \${existing.status} notification within 30 minutes - preventing duplicate\`);
+    }

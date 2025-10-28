@@ -1744,9 +1744,11 @@ export class UniversalNotificationService {
       // Link tracking wraps URLs in Mailgun redirects that trigger Bitdefender and other AV software
       const securitySensitiveTriggers = [
         // Security-sensitive account emails
+        TriggerCode.ACCOUNT_REG_SUCCESS,       // A1 - Registration success with verification link
+        TriggerCode.ACCOUNT_EMAIL_VERIFY,      // A2 - Email verification
         TriggerCode.ACCOUNT_PASSWORD_RESET,    // A3 - Password reset links
         TriggerCode.ACCOUNT_PASSWORD_CHANGED,  // A4 - Security confirmation
-        TriggerCode.ACCOUNT_EMAIL_VERIFICATION, // A2 - Email verification
+        TriggerCode.ACCOUNT_EMAIL_VERIFICATION, // A2 - Email verification (alias)
         TriggerCode.ACCOUNT_EMAIL_CHANGE,      // A5 - Email change confirmation
         TriggerCode.ACCOUNT_DELETION_CONFIRM,  // A6 - Account deletion
         TriggerCode.ACCOUNT_SUSPENSION_NOTICE,  // A7 - Account suspension

@@ -2,10 +2,10 @@
   "cookies": [
     {
       "name": "connect.sid",
-      "value": "s%3ATSH21QJK1_wvzl-tyPidmoqY-bGGcduR.QbVdsxu9b%2B76iuC53M8J7Xtig0Hu3jQqRp4%2FOcclqhw",
+      "value": "s%3A-g5_R6ietx4bmclcrt7YsRm3VACbYEHb.Y2%2Fhc2Iukeu0TAqBZ%2BNAnHaJlxdDXO1YvWbEqn9M40I",
       "domain": "web-production-b2ce.up.railway.app",
       "path": "/",
-      "expires": 1760364027,
+      "expires": 1760550037,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"

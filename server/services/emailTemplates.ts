@@ -1,12 +1,13 @@
 // Email template definitions based on the provided specifications
 import { format } from "date-fns";
-import { 
+import {
   generateEmailHeader,
   generateEmailFooter,
   generateAppointmentCard,
   generateButtonGroup,
   generatePlainTextContent
 } from './emailComponents';
+import { t, getUserLocale } from './i18n';
 
 export interface EmailTemplate {
   subject: string;
@@ -14,46 +15,51 @@ export interface EmailTemplate {
   text?: string;
 }
 
-// Helper function to get template by name
-export function getTemplate(templateName: string, data: any): EmailTemplate {
+// Helper function to get template by name with i18n support
+export function getTemplate(
+  templateName: string,
+  data: any,
+  userLocale?: string
+): EmailTemplate {
+  const locale = getUserLocale(userLocale);
   const templateFunction = templates[templateName];
   if (!templateFunction) {
     throw new Error(`Template '${templateName}' not found`);
   }
-  return templateFunction(data);
+  return templateFunction(data, locale);
 }
 
 // Template functions that generate email content with merged data
-const templates: Record<string, (data: any) => EmailTemplate> = {
-  welcome_free_credit: (data) => ({
-    subject: "Welcome to DokTu – Your Health Advisory Platform",
+const templates: Record<string, (data: any, locale?: string) => EmailTemplate> = {
+  welcome_free_credit: (data, locale = 'en') => ({
+    subject: t(locale, 'account.registration.subject'),
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <p>Dear ${data.first_name || 'Patient'},</p>
-        
-        <p>Welcome to DokTu! We're excited to have you join our health advisory platform.</p>
-        
-        <p>You can now book consultations with trusted doctors from various specialties – anytime, from anywhere.</p>
-        
-        <p>To get the most out of your experience:</p>
+        <p>${t(locale, 'common.greeting', { name: data.first_name || 'Patient' })}</p>
+
+        <p>${t(locale, 'account.registration.intro')}</p>
+
+        <p>${t(locale, 'account.registration.description')}</p>
+
+        <p>${t(locale, 'account.registration.next_steps_title')}</p>
         <ul>
-          <li>Complete your health profile now (takes less than 5 minutes).</li>
-          <li>Upload any relevant medical records.</li>
-          <li>Choose your preferred doctor and consultation time.</li>
+          <li>${t(locale, 'account.registration.step1')}</li>
+          <li>${t(locale, 'account.registration.step2')}</li>
+          <li>${t(locale, 'account.registration.step3')}</li>
         </ul>
-        
+
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.VITE_APP_URL}/patient/health-profile" 
+          <a href="${process.env.VITE_APP_URL}/patient/health-profile"
              style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
-            Complete My Health Profile
+            ${t(locale, 'account.registration.cta_button')}
           </a>
         </div>
-        
-        <p>Need help getting started? Our support team is here for you.</p>
-        
-        <p>Thank you for trusting DokTu.</p>
-        
-        <p>Warm regards,<br>DokTu Team</p>
+
+        <p>${t(locale, 'account.registration.help_text')}</p>
+
+        <p>${t(locale, 'account.registration.closing')}</p>
+
+        <p>${t(locale, 'common.footer_team')}</p>
       </div>
     `
   }),
@@ -3812,13 +3818,18 @@ const templates: Record<string, (data: any) => EmailTemplate> = {
   })
 };
 
-export async function getEmailTemplate(templateKey: string, mergeData: any): Promise<EmailTemplate> {
+export async function getEmailTemplate(
+  templateKey: string,
+  mergeData: any,
+  userLocale?: string
+): Promise<EmailTemplate> {
+  const locale = getUserLocale(userLocale);
   const templateFunc = templates[templateKey];
-  
+
   if (!templateFunc) {
     throw new Error(`Template not found: ${templateKey}`);
   }
-  
+
   // Validate required merge fields
   const requiredFields = getRequiredFields(templateKey);
   for (const field of requiredFields) {
@@ -3826,8 +3837,8 @@ export async function getEmailTemplate(templateKey: string, mergeData: any): Pro
       throw new Error(`Missing required merge field: ${field} for template ${templateKey}`);
     }
   }
-  
-  return templateFunc(mergeData);
+
+  return templateFunc(mergeData, locale);
 }
 
 function getRequiredFields(templateKey: string): string[] {

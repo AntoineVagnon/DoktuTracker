@@ -1,0 +1,67 @@
+{
+  "total": 6,
+  "passed": 3,
+  "failed": 3,
+  "warnings": 0,
+  "tests": [
+    {
+      "id": "P0-001",
+      "description": "Email Template Rendering",
+      "status": "FAIL",
+      "details": "Test execution error: column \"user_email\" does not exist",
+      "evidence": null,
+      "timestamp": "2025-10-24T12:01:27.589Z"
+    },
+    {
+      "id": "P0-002",
+      "description": "Data Enrichment",
+      "status": "FAIL",
+      "details": "1 out of 10 emails missing required fields",
+      "evidence": {
+        "enrichmentIssues": 1
+      },
+      "timestamp": "2025-10-24T12:01:27.771Z"
+    },
+    {
+      "id": "P1-001",
+      "description": "Language Detection",
+      "status": "PASS",
+      "details": "6 users have locale preferences",
+      "evidence": {
+        "localeCount": {
+          "en": 6
+        },
+        "bosnianUsers": 0
+      },
+      "timestamp": "2025-10-24T12:01:27.808Z"
+    },
+    {
+      "id": "P1-002",
+      "description": "Duplicate Prevention",
+      "status": "PASS",
+      "details": "0 duplicates found in 0 notifications",
+      "evidence": {
+        "notificationsAnalyzed": 0
+      },
+      "timestamp": "2025-10-24T12:01:27.842Z"
+    },
+    {
+      "id": "P1-003",
+      "description": "Deduplication Logic",
+      "status": "PASS",
+      "details": "No failed notifications - deduplication logic present in code",
+      "evidence": null,
+      "timestamp": "2025-10-24T12:01:27.876Z"
+    },
+    {
+      "id": "E2E-001",
+      "description": "E2E Booking Flow",
+      "status": "FAIL",
+      "details": "Notification not created for booking",
+      "evidence": {
+        "bookingId": 174
+      },
+      "timestamp": "2025-10-24T12:01:27.931Z"
+    }
+  ]
+}

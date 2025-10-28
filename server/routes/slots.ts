@@ -26,15 +26,15 @@ export function setupSlotRoutes(app: Express) {
     try {
       const { slotId, sessionId } = holdSlotSchema.parse(req.body);
       const actualSessionId = sessionId || req.session.id;
-      
+
       console.log(`Holding slot ${slotId} for session ${actualSessionId}`);
-      
+
       // Release any previous slots held by this session to start fresh timer
       await storage.releaseAllSlotsForSession(actualSessionId);
-      
+
       // Hold the new slot for 15 minutes
       await storage.holdSlot(slotId, actualSessionId, 15);
-      
+
       // Save the session to ensure it persists
       await new Promise((resolve, reject) => {
         req.session.save((err) => {
@@ -47,9 +47,9 @@ export function setupSlotRoutes(app: Express) {
           }
         });
       });
-      
-      res.json({ 
-        success: true, 
+
+      res.json({
+        success: true,
         message: 'Slot held for 15 minutes, payment required within 15 minutes',
         expiresAt: new Date(Date.now() + 15 * 60 * 1000), // Payment timeout: 15 minutes
         sessionId: actualSessionId

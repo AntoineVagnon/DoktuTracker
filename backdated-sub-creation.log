@@ -1,0 +1,34 @@
+Connecting to database...
+🚀 Creating backdated subscription for testing...
+
+📋 Step 1: Checking user 222 (patient121@gmail.com)...
+✓ Database connection verified
+✅ User found: patient121@gmail.com
+   Current stripeSubscriptionId: sub_1SEnlR2YxuDmKTPwbctCzNUF
+
+📋 Step 2: Checking for existing subscription...
+⚠️  Found 1 existing subscription(s)
+   Deleting existing subscriptions and cycles...
+
+
+❌ Error creating backdated subscription:
+PostgresError: update or delete on table "membership_cycles" violates foreign key constraint "appointment_coverage_cycle_id_fkey" on table "appointment_coverage"
+    at ErrorResponse (file:///C:/Users/mings/.apps/DoktuTracker/node_modules/postgres/src/connection.js:794:26)
+    at handle (file:///C:/Users/mings/.apps/DoktuTracker/node_modules/postgres/src/connection.js:480:6)
+    at TLSSocket.data (file:///C:/Users/mings/.apps/DoktuTracker/node_modules/postgres/src/connection.js:315:9)
+    at TLSSocket.emit (node:events:519:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at TLSWrap.onStreamRead (node:internal/stream_base_commons:189:23) {
+  severity_local: 'ERROR',
+  severity: 'ERROR',
+  code: '23503',
+  detail: 'Key (id)=(ccac1be9-c703-4d9f-afdb-65c655fc6317) is still referenced from table "appointment_coverage".',
+  schema_name: 'public',
+  table_name: 'appointment_coverage',
+  constraint_name: 'appointment_coverage_cycle_id_fkey',
+  file: 'ri_triggers.c',
+  line: '2609',
+  routine: 'ri_ReportViolation'
+}

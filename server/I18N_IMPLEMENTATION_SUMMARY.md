@@ -95,28 +95,33 @@ const emailTemplate = getTemplate(templateName, templateData, userLocale);
    - Supports variable interpolation with `{{variableName}}` syntax
 
 3. **Database Schema**
-   - User locale preference field already exists: `user_notification_preferences.locale`
+   - User locale preference field: `notification_preferences.locale`
    - Default value: 'en'
    - Supported values: 'en', 'bs'
 
-### 🔄 In Progress
 4. **Email Template Integration**
-   - Update `getTemplate()` signature to accept locale parameter
-   - Modify template functions to use i18n translations
-   - Pattern established for incremental migration
+   - ✅ `getTemplate()` signature updated to accept locale parameter
+   - ✅ `getEmailTemplate()` signature updated to accept locale parameter
+   - ✅ First template (`welcome_free_credit`) converted to use i18n
+   - ✅ Pattern established for incremental migration of remaining templates
 
-### ⏳ Pending
-5. **Notification Service Updates**
-   - Fetch user locale from database
-   - Pass locale to template generation
-   - Test with both English and Bosnian users
+5. **Notification Service Integration**
+   - ✅ Fetches user locale from `notification_preferences` table
+   - ✅ Passes locale to `getEmailTemplate()` function
+   - ✅ Logs locale usage for debugging
 
 6. **Testing**
-   - Create test users with different locale preferences
-   - Verify email generation in both languages
-   - Test all 55 template variations
+   - ✅ i18n verification test created and passing
+   - ✅ Confirms all 55 templates have translations in both languages
+   - ✅ Validates integration at all levels (service, templates, notifications)
 
-7. **Deployment**
+### ⏳ Pending
+7. **Template Migration**
+   - Convert remaining 54 templates to use i18n (currently only `welcome_free_credit` uses i18n)
+   - Follow the pattern established in `welcome_free_credit` template
+   - Can be done incrementally or in batches
+
+8. **Deployment**
    - Build and deploy to production
    - Monitor for any i18n-related errors
    - Gather user feedback on translations
@@ -274,5 +279,5 @@ For questions or issues:
 ---
 
 **Last Updated**: 2025-10-24
-**Version**: 1.0
-**Status**: Implementation In Progress
+**Version**: 1.1
+**Status**: Core Integration Complete (Template Migration Pending)

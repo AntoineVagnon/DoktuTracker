@@ -1,0 +1,189 @@
+{
+  "startTime": "2025-10-24T11:53:07.899Z",
+  "totalChecks": 366,
+  "bookingsProcessed": [
+    176,
+    177,
+    178,
+    179,
+    180,
+    181,
+    182,
+    183,
+    184,
+    185,
+    186,
+    187,
+    188,
+    189,
+    190,
+    191
+  ],
+  "successfulBookings": 6,
+  "alerts": [
+    {
+      "timestamp": "2025-10-24T12:42:26.099Z",
+      "message": "Issues found for booking #176:"
+    },
+    {
+      "timestamp": "2025-10-24T12:42:26.099Z",
+      "message": "  - No notifications found for this booking"
+    },
+    {
+      "timestamp": "2025-10-24T12:44:26.678Z",
+      "message": "Issues found for booking #177:"
+    },
+    {
+      "timestamp": "2025-10-24T12:44:26.678Z",
+      "message": "  - No notifications found for this booking"
+    },
+    {
+      "timestamp": "2025-10-24T12:48:26.171Z",
+      "message": "Issues found for booking #178:"
+    },
+    {
+      "timestamp": "2025-10-24T12:48:26.171Z",
+      "message": "  - P0 FAILURE: Email 0c17fa9b-2298-4f19-b9a9-3d363aa11025 failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T12:48:26.171Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T12:48:26.171Z",
+      "message": "  - P0 FAILURE: Email edc5e015-64b9-4218-992a-100d9684f95e failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T12:48:26.171Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T12:48:26.171Z",
+      "message": "  - P0 FAILURE: Email 0c51a0ee-be00-4133-994f-a1fc27aac47e failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T12:48:26.171Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T12:58:27.240Z",
+      "message": "Issues found for booking #179:"
+    },
+    {
+      "timestamp": "2025-10-24T12:58:27.240Z",
+      "message": "  - P0 FAILURE: Email e489febf-e293-4302-86b9-93437fa87e05 failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T12:58:27.240Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T13:04:27.768Z",
+      "message": "Issues found for booking #180:"
+    },
+    {
+      "timestamp": "2025-10-24T13:04:27.768Z",
+      "message": "  - P0 FAILURE: Email 4d654e73-f4b9-459c-bede-873382fae9ed failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T13:04:27.768Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T14:24:27.041Z",
+      "message": "Issues found for booking #182:"
+    },
+    {
+      "timestamp": "2025-10-24T14:24:27.041Z",
+      "message": "  - P0 FAILURE: Email bb3625a5-b272-4c30-bb32-3aca6757bf9d failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T14:24:27.041Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T15:01:49.982Z",
+      "message": "Issues found for booking #183:"
+    },
+    {
+      "timestamp": "2025-10-24T15:01:49.982Z",
+      "message": "  - P0 FAILURE: Email 2eb9f67b-5cc6-4ee6-93d9-1b0e72447f8b failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T15:01:49.982Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T15:01:49.982Z",
+      "message": "  - P0 FAILURE: Email 979d3d35-b0e7-4184-8cc0-110573ad723d failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T15:01:49.982Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T15:05:49.951Z",
+      "message": "Issues found for booking #184:"
+    },
+    {
+      "timestamp": "2025-10-24T15:05:49.951Z",
+      "message": "  - P0 FAILURE: Email 7c4e9914-dd67-44a5-9752-012e580ee7a4 failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T15:05:49.951Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T15:05:49.951Z",
+      "message": "  - P0 FAILURE: Email 36172f2a-6d76-4945-9a42-5cda0a571183 failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T15:05:49.952Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T15:37:50.080Z",
+      "message": "Issues found for booking #186:"
+    },
+    {
+      "timestamp": "2025-10-24T15:37:50.080Z",
+      "message": "  - P0 FAILURE: Email 5a667c9e-9461-4072-8228-4302ed06dbc0 failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T15:37:50.080Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T15:53:50.099Z",
+      "message": "Issues found for booking #187:"
+    },
+    {
+      "timestamp": "2025-10-24T15:53:50.099Z",
+      "message": "  - P0 FAILURE: Email 24aca410-8803-4cf9-9dd6-0294f1347eb6 failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T15:53:50.099Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T15:53:50.099Z",
+      "message": "  - P0 FAILURE: Email f9230089-6eaf-4eb0-a8e5-20322c9fb646 failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T15:53:50.099Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    },
+    {
+      "timestamp": "2025-10-24T15:53:50.099Z",
+      "message": "  - P0 FAILURE: Email ba63da4e-24cd-44b6-ae86-2fb592f861e7 failed with error: Cannot convert undefined or null to object"
+    },
+    {
+      "timestamp": "2025-10-24T15:53:50.099Z",
+      "message": "  - P0 CRITICAL: OLD TEMPLATE ERROR STILL OCCURRING!"
+    }
+  ],
+  "lastCheckTime": "2025-10-26T11:54:22.927Z",
+  "maxRuntime": 172800000,
+  "maxSuccessfulBookings": 30,
+  "endTime": "2025-10-26T11:54:23.241Z"
+}

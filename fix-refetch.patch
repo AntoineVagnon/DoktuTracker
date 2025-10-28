@@ -1,0 +1,12 @@
+The fix is to use refetchType: 'active' with invalidateQueries to force immediate refetch even with staleTime.
+
+Change line 397 in deleteSlotRangeMutation from:
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/time-slots' });
+
+To:
+      queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === '/api/time-slots',
+        refetchType: 'active' 
+      });
+
+And same for deleteSlotMutation at line 377.
