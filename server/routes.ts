@@ -2982,11 +2982,14 @@ export async function registerRoutes(app: Express): Promise<void> {
       // For doctor users, also fetch their doctor_id
       let doctorId: number | undefined;
       if (dbUser.role === 'doctor') {
+        console.log('🔍 [/api/auth/user] Fetching doctor_id for user:', { userId: dbUser.id, email: dbUser.email });
         const doctorResult = await db.query(
           'SELECT id FROM doctors WHERE user_id = $1',
           [dbUser.id]
         );
+        console.log('🔍 [/api/auth/user] Doctor query result:', { rowCount: doctorResult.rowCount, rows: doctorResult.rows });
         doctorId = doctorResult.rows[0]?.id;
+        console.log('🔍 [/api/auth/user] Final doctorId:', doctorId);
       }
 
       // Return user with role and doctorId (if applicable)
