@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { X, AlertCircle, Clock, Video, Upload, User, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
-import { formatDistanceToNow, isAfter, isBefore, addMinutes, addHours } from "date-fns";
+import { formatDistanceToNow, isAfter, isBefore, addMinutes, addHours, format } from "date-fns";
 import { calculateHealthProfileCompletion } from "@/lib/healthProfileUtils";
 
 interface BannerProps {
@@ -106,12 +106,12 @@ function Banner({
                   {timeLeft}
                 </span>
               )}
-              {description && !countdown && (
-                <span className="text-sm font-medium opacity-75">
-                  {description}
-                </span>
-              )}
             </div>
+            {description && (
+              <p className="text-sm opacity-75 mt-1">
+                {description}
+              </p>
+            )}
           </div>
         </div>
         
@@ -324,11 +324,20 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
       const appointmentTime = new Date(apt.appointmentDate);
       const isLate = isAfter(now, addMinutes(appointmentTime, 15));
       const isVeryClose = isAfter(now, addMinutes(appointmentTime, -5));
-      
-      // Determine banner message based on proximity - keep it concise for single line
-      let title = `Dr. ${apt.doctor?.firstName || 'Doctor'} consultation`;
+
+      // Build full doctor name and info
+      const doctorFirstName = apt.doctor?.user?.firstName || apt.doctor?.firstName || 'Doctor';
+      const doctorLastName = apt.doctor?.user?.lastName || apt.doctor?.lastName || '';
+      const doctorSpecialty = apt.doctor?.specialty || '';
+      const fullDoctorName = `Dr. ${doctorFirstName} ${doctorLastName}`.trim();
+
+      // Format appointment time (e.g., "Jan 15, 2025 at 2:30 PM")
+      const formattedDate = format(appointmentTime, 'PPP p');
+
+      // Determine banner message based on proximity
+      let title = `${fullDoctorName} consultation`;
       let buttonLabel = 'Join Video Call';
-      
+
       if (isAfter(now, appointmentTime)) {
         title += ' - join now';
         buttonLabel = 'Join Now';
@@ -338,11 +347,15 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
         title += ' - ready to join';
         buttonLabel = 'Join Video';
       }
-      
+
+      // Add description with doctor specialty and appointment time
+      const description = `${doctorSpecialty}${doctorSpecialty ? ' • ' : ''}${formattedDate}`;
+
       newBanners.push({
         type: 'live',
         priority: 2,
         title,
+        description,
         countdown: appointmentTime,
         primaryAction: {
           label: buttonLabel,
