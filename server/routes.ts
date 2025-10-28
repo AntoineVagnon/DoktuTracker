@@ -1430,20 +1430,51 @@ export async function registerRoutes(app: Express): Promise<void> {
       if (nextOnly === 'true') {
         const now = new Date();
         const leadTimeMinutes = 60; // 60-minute buffer requirement
-        
+
         const nextSlot = slots
           .filter(slot => {
             if (!slot.isAvailable) return false;
-            // Slots are stored in local European time, so we need to interpret them correctly
-            // August is summer time in Europe - CEST (UTC+2)
-            const slotDateTime = new Date(`${slot.date}T${slot.startTime}+02:00`);
+            // Slots are stored in local European time, interpret with DST-aware offset
+            // Determine current timezone offset for Europe (CET in winter = UTC+1, CEST in summer = UTC+2)
+            // Simple DST check: last Sunday of March to last Sunday of October is summer time
+            const slotDate = new Date(`${slot.date}T12:00:00Z`); // Use noon UTC to avoid edge cases
+            const year = slotDate.getFullYear();
+
+            // Last Sunday of March (DST starts)
+            const marchLastSunday = new Date(year, 2, 31); // March 31
+            marchLastSunday.setDate(31 - marchLastSunday.getDay()); // Go back to last Sunday
+
+            // Last Sunday of October (DST ends)
+            const octoberLastSunday = new Date(year, 9, 31); // October 31
+            octoberLastSunday.setDate(31 - octoberLastSunday.getDay()); // Go back to last Sunday
+
+            // Check if slot date is in summer time period
+            const isDST = slotDate >= marchLastSunday && slotDate < octoberLastSunday;
+            const offset = isDST ? '+02:00' : '+01:00';
+
+            const slotDateTime = new Date(`${slot.date}T${slot.startTime}${offset}`);
             const diffMinutes = (slotDateTime.getTime() - now.getTime()) / (1000 * 60);
-            console.log(`⏰ Slot ${slot.date} ${slot.startTime} with offset +02:00: ${diffMinutes.toFixed(0)} minutes from now`);
+            console.log(`⏰ Slot ${slot.date} ${slot.startTime} with offset ${offset} (DST=${isDST}): ${diffMinutes.toFixed(0)} minutes from now`);
             return diffMinutes >= leadTimeMinutes; // Only show slots at least 60 minutes in the future
           })
           .sort((a, b) => {
-            const aTime = new Date(`${a.date}T${a.startTime}+02:00`).getTime();
-            const bTime = new Date(`${b.date}T${b.startTime}+02:00`).getTime();
+            const slotDateA = new Date(`${a.date}T12:00:00Z`);
+            const slotDateB = new Date(`${b.date}T12:00:00Z`);
+            const year = slotDateA.getFullYear();
+
+            const marchLastSunday = new Date(year, 2, 31);
+            marchLastSunday.setDate(31 - marchLastSunday.getDay());
+            const octoberLastSunday = new Date(year, 9, 31);
+            octoberLastSunday.setDate(31 - octoberLastSunday.getDay());
+
+            const isDST_A = slotDateA >= marchLastSunday && slotDateA < octoberLastSunday;
+            const isDST_B = slotDateB >= marchLastSunday && slotDateB < octoberLastSunday;
+
+            const offsetA = isDST_A ? '+02:00' : '+01:00';
+            const offsetB = isDST_B ? '+02:00' : '+01:00';
+
+            const aTime = new Date(`${a.date}T${a.startTime}${offsetA}`).getTime();
+            const bTime = new Date(`${b.date}T${b.startTime}${offsetB}`).getTime();
             return aTime - bTime;
           })[0];
         
