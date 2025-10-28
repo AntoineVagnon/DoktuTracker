@@ -635,7 +635,25 @@ export async function setupSupabaseAuth(app: Express) {
           console.log('User not found in database, returning session user');
           return res.json(user);
         }
-        res.json(freshUser);
+
+        // For doctor users, also fetch their doctor_id
+        let doctorId: number | undefined;
+        if (freshUser.role === 'doctor') {
+          console.log('🔍 [/api/auth/user] Fetching doctor_id for user:', { userId: freshUser.id, email: freshUser.email });
+          const doctorResult = await db.query(
+            'SELECT id FROM doctors WHERE user_id = $1',
+            [freshUser.id]
+          );
+          console.log('🔍 [/api/auth/user] Doctor query result:', { rowCount: doctorResult.rowCount, rows: doctorResult.rows });
+          doctorId = doctorResult.rows[0]?.id;
+          console.log('🔍 [/api/auth/user] Final doctorId:', doctorId);
+        }
+
+        // Return user with doctorId if applicable
+        res.json({
+          ...freshUser,
+          doctorId
+        });
       } catch (dbError: any) {
         // Database error, return the user from session
         console.error('Database error fetching user, returning session user:', dbError.message);
