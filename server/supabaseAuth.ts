@@ -464,7 +464,7 @@ export async function setupSupabaseAuth(app: Express) {
       }
 
       // Use environment variable for frontend URL with proper fallback
-      const frontendUrl = process.env.VITE_APP_URL || process.env.APP_URL || 'https://doktu.co';
+      const frontendUrl = process.env.CLIENT_URL || process.env.APP_URL || 'https://doktu.co';
 
       // Generate Supabase password reset link (but don't let Supabase send the email)
       // We'll extract the token and send it through our notification system
@@ -900,7 +900,7 @@ export async function setupSupabaseAuth(app: Express) {
       }
 
       // Use environment variable for frontend URL with proper fallback
-      const frontendUrl = process.env.VITE_APP_URL || process.env.APP_URL || 'https://doktu.co';
+      const frontendUrl = process.env.CLIENT_URL || process.env.APP_URL || 'https://doktu.co';
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${frontendUrl}/password-reset`
