@@ -804,6 +804,53 @@ export class MembershipService {
       currentPeriodStart,
       currentPeriodEnd
     );
+
+    // Send MEMBERSHIP_ACTIVATED notification
+    try {
+      // Get user details
+      const [user] = await db
+        .select({
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName
+        })
+        .from(users)
+        .where(eq(users.id, patientId))
+        .limit(1);
+
+      // Get plan details
+      const [plan] = await db
+        .select()
+        .from(membershipPlans)
+        .where(eq(membershipPlans.id, planId))
+        .limit(1);
+
+      if (user && plan) {
+        const { UniversalNotificationService, TriggerCode } = await import('./notificationService');
+        const notificationService = new UniversalNotificationService();
+
+        await notificationService.scheduleNotification({
+          userId: user.id,
+          triggerCode: TriggerCode.MEMBERSHIP_ACTIVATED,
+          scheduledFor: new Date(),
+          mergeData: {
+            first_name: user.firstName || 'there',
+            last_name: user.lastName || '',
+            plan_name: plan.name,
+            allowance: plan.allowancePerCycle.toString(),
+            consultation_duration: '30', // Default consultation duration
+            cycle_start: currentPeriodStart.toISOString(),
+            cycle_end: currentPeriodEnd.toISOString()
+          }
+        });
+
+        console.log(`✅ MEMBERSHIP_ACTIVATED notification sent for user ${user.id} (${user.email})`);
+      }
+    } catch (emailError) {
+      console.error('❌ Error sending MEMBERSHIP_ACTIVATED notification:', emailError);
+      // Don't fail subscription activation if notification fails
+    }
   }
 
   /**
