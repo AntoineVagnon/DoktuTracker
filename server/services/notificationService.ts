@@ -1631,10 +1631,10 @@ export class UniversalNotificationService {
         DoctorName: "Your doctor",
 
         // Additional common fields
-        verification_link: `${process.env.VITE_APP_URL}/verify-email`,
+        verification_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/verify`,
         appointment_datetime_local: "Your upcoming appointment",
         doctor_name: "Your doctor",
-        join_link: `${process.env.VITE_APP_URL}/consultation`
+        join_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/consultation`
       };
 
       // Parse notification merge data and merge with minimal data

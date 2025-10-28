@@ -298,7 +298,9 @@ export async function setupSupabaseAuth(app: Express) {
             triggerCode: TriggerCode.ACCOUNT_REG_SUCCESS,
             scheduledFor: new Date(), // Send immediately
             mergeData: {
-              first_name: user.firstName ?? firstName ?? 'Patient'
+              first_name: user.firstName ?? firstName ?? 'Patient',
+              last_name: user.lastName ?? lastName ?? '',
+              verification_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/verify`
             },
             userContext: {
               ipAddress: req.ip,
