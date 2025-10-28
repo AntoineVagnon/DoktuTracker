@@ -124,7 +124,7 @@ authRouter.post('/register', async (req, res) => {
           mergeData: {
             first_name: firstName,
             last_name: lastName,
-            verification_link: `${process.env.FRONTEND_URL || 'http://localhost:5000'}/verify`
+            verification_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/verify`
           }
         });
         
@@ -272,7 +272,7 @@ authRouter.get('/verify', async (req, res) => {
     }
 
     // Redirect to dashboard with verification success flag
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5000';
+    const frontendUrl = process.env.CLIENT_URL || 'https://doktu.co';
     return res.redirect(`${frontendUrl}/dashboard?verified=1`);
 
   } catch (error: any) {
@@ -312,7 +312,7 @@ authRouter.post('/resend-verification', async (req, res) => {
           html: `
             <p>Here's your new verification link for Doktu.</p>
             <p>Please confirm your email address by clicking 
-            <a href="${process.env.FRONTEND_URL || 'http://localhost:5000'}/verify?token=${linkData.properties.token}">
+            <a href="${process.env.CLIENT_URL || 'https://doktu.co'}/verify?token=${linkData.properties.token}">
             this link</a>.</p>
           `
         });
