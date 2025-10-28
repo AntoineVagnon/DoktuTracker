@@ -53,13 +53,13 @@ export default function Header() {
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
-    
+
     setIsLoggingOut(true);
-    
+
     try {
       const response = await apiRequest("POST", "/api/auth/logout");
       const data = await response.json();
-      
+
       if (response.ok) {
         // Clear any local storage items
         sessionStorage.clear();
@@ -71,14 +71,9 @@ export default function Header() {
           title: "Logged out successfully",
           description: "You have been logged out of your account.",
         });
-        
-        // Redirect to homepage
-        setLocation('/');
-        
-        // Refresh page to update auth state
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+
+        // Force full page reload to homepage to clear all cached state
+        window.location.href = '/';
       } else {
         throw new Error(data.error || 'Logout failed');
       }
@@ -89,7 +84,6 @@ export default function Header() {
         description: error.message || "Logout failed, please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsLoggingOut(false);
     }
   };

@@ -64,26 +64,25 @@ export default function DoctorTopNavigation() {
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
-    
+
     setIsLoggingOut(true);
-    
+
     try {
       const response = await apiRequest("POST", "/api/auth/logout");
-      
+
       if (response.ok) {
         sessionStorage.clear();
         localStorage.removeItem('auth_redirect');
         localStorage.removeItem('booking_redirect');
-        
+        localStorage.removeItem('doktu_auth');
+
         toast({
           title: "Logged out successfully",
           description: "You have been logged out of your account.",
         });
-        
-        setLocation('/');
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
+
+        // Force full page reload to homepage to clear all cached state
+        window.location.href = '/';
       }
     } catch (error) {
       console.error("Logout error:", error);
@@ -92,7 +91,6 @@ export default function DoctorTopNavigation() {
         description: "An error occurred while logging out.",
         variant: "destructive",
       });
-    } finally {
       setIsLoggingOut(false);
     }
   };
