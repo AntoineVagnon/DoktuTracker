@@ -305,15 +305,15 @@ export function BannerSystem({ className, onOpenHealthProfile, onOpenDocumentUpl
     }
 
     // 2. Live/imminent session banners (second priority)
-    // Only show during actual appointment window (5 minutes before to 15 minutes after)
+    // Only show during actual appointment window (5 minutes before to 60 minutes after)
     const liveAppointments = appointments.filter(apt => {
       const appointmentTime = new Date(apt.appointmentDate);
       const fiveMinutesBefore = addMinutes(appointmentTime, -5);
-      const fifteenMinutesAfter = addMinutes(appointmentTime, 15); // Reduced from 30 to 15 minutes
-      
-      const shouldShow = apt.status === 'paid' && 
-                        isAfter(now, fiveMinutesBefore) && 
-                        isBefore(now, fifteenMinutesAfter);
+      const sixtyMinutesAfter = addMinutes(appointmentTime, 60); // Extended to 60 minutes for longer consultations
+
+      const shouldShow = apt.status === 'paid' &&
+                        isAfter(now, fiveMinutesBefore) &&
+                        isBefore(now, sixtyMinutesAfter);
       
       // console.log('🕐 Live appointment check:', { id: apt.id, shouldShow });
       
