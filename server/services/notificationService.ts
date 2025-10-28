@@ -1631,7 +1631,7 @@ export class UniversalNotificationService {
         DoctorName: "Your doctor",
 
         // Additional common fields
-        verification_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/verify`,
+        verification_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/dashboard`,
         appointment_datetime_local: "Your upcoming appointment",
         doctor_name: "Your doctor",
         join_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/consultation`

@@ -708,18 +708,18 @@ const templates: Record<string, (data: any, locale?: string) => EmailTemplate> =
           <li>Upload any relevant medical records.</li>
           <li>Choose your preferred doctor and consultation time.</li>
         </ul>
-        
+
         <div style="text-align: center; margin: 30px 0;">
           <a href="${data.verification_link}"
-             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
-            Verify Email Address
+             style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            Complete My Health Profile
           </a>
         </div>
-        
+
         <p>Need help getting started? Our support team is here for you.</p>
-        
+
         <p>Thank you for trusting Doktu.</p>
-        
+
         <p>Warm regards,<br>Doktu Team</p>
       </div>
     `

@@ -300,7 +300,7 @@ export async function setupSupabaseAuth(app: Express) {
             mergeData: {
               first_name: user.firstName ?? firstName ?? 'Patient',
               last_name: user.lastName ?? lastName ?? '',
-              verification_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/verify`
+              verification_link: `${process.env.CLIENT_URL || 'https://doktu.co'}/dashboard`
             },
             userContext: {
               ipAddress: req.ip,
