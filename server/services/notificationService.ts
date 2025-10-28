@@ -761,7 +761,8 @@ export class UniversalNotificationService {
       TriggerCode.ACCOUNT_PASSWORD_CHANGED,
       TriggerCode.DOCTOR_APP_APPROVED, // Doctor approval is a critical account status change
       TriggerCode.DOCTOR_APP_REJECTED_SOFT,
-      TriggerCode.DOCTOR_APP_REJECTED_HARD
+      TriggerCode.DOCTOR_APP_REJECTED_HARD,
+      TriggerCode.BOOKING_CONFIRMED, // Booking confirmations should be immediate (healthcare 24/7)
     ];
     if (immediateNotifications.includes(triggerCode)) {
       return scheduledFor;
