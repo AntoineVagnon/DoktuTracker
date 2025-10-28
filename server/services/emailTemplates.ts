@@ -710,9 +710,9 @@ const templates: Record<string, (data: any, locale?: string) => EmailTemplate> =
         </ul>
         
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.VITE_APP_URL}/dashboard" 
+          <a href="${data.verification_link}"
              style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
-            Complete My Health Profile
+            Verify Email Address
           </a>
         </div>
         
