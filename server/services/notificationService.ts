@@ -763,6 +763,9 @@ export class UniversalNotificationService {
       TriggerCode.DOCTOR_APP_REJECTED_SOFT,
       TriggerCode.DOCTOR_APP_REJECTED_HARD,
       TriggerCode.BOOKING_CONFIRMED, // Booking confirmations should be immediate (healthcare 24/7)
+      TriggerCode.BOOKING_REMINDER_24H, // Appointment reminders are time-critical
+      TriggerCode.BOOKING_REMINDER_1H, // Must be sent exactly when scheduled
+      TriggerCode.BOOKING_LIVE_IMMINENT, // 5-minute warning is urgent
     ];
     if (immediateNotifications.includes(triggerCode)) {
       return scheduledFor;
