@@ -693,7 +693,7 @@ export default function DoctorSignup() {
                               </a>
                               {' '}{t('doctors.signup.step4.and')}{' '}
                               <a
-                                href="/medical-disclaimer"
+                                href="/disclaimer"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-green-600 hover:text-green-500 underline font-medium"
