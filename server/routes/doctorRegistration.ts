@@ -443,3 +443,75 @@ doctorRegistrationRouter.get('/check-email', async (req, res) => {
     return res.status(500).json({ error: 'Failed to check email' });
   }
 });
+
+/**
+ * DELETE /api/doctor-registration/delete-test-account
+ * Delete a test doctor account by email (for cleaning up test data)
+ */
+doctorRegistrationRouter.delete('/delete-test-account', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ error: 'Email required in request body' });
+  }
+
+  try {
+    // 1. Find user in database
+    const [dbUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email.toLowerCase()))
+      .limit(1);
+
+    if (!dbUser) {
+      return res.status(404).json({ error: 'User not found in database' });
+    }
+
+    // 2. Find doctor record
+    const [doctor] = await db
+      .select()
+      .from(doctors)
+      .where(eq(doctors.userId, dbUser.id))
+      .limit(1);
+
+    // 3. Delete from Supabase auth
+    const { data: authUsers } = await supabase.auth.admin.listUsers();
+    const authUser = authUsers?.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+
+    if (authUser) {
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(authUser.id);
+      if (deleteError) {
+        console.error('Error deleting from Supabase:', deleteError);
+        return res.status(500).json({ error: 'Failed to delete from Supabase', details: deleteError.message });
+      }
+    }
+
+    // 4. Delete doctor audit records
+    if (doctor) {
+      await db.delete(doctorApplicationAudit).where(eq(doctorApplicationAudit.doctorId, doctor.id));
+    }
+
+    // 5. Delete doctor record
+    if (doctor) {
+      await db.delete(doctors).where(eq(doctors.id, doctor.id));
+    }
+
+    // 6. Delete user record
+    await db.delete(users).where(eq(users.id, dbUser.id));
+
+    return res.json({
+      success: true,
+      message: 'Test account deleted successfully',
+      deleted: {
+        email: email,
+        userId: dbUser.id,
+        doctorId: doctor?.id,
+        supabaseId: authUser?.id
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Delete test account error:', error);
+    return res.status(500).json({ error: 'Failed to delete test account', details: error.message });
+  }
+});
