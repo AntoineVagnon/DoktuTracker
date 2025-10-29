@@ -4,8 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Header from '@/components/Header';
 import { CheckCircle2, Clock, Mail, FileText, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function DoctorSignupSuccess() {
+  const { t } = useTranslation('doctors');
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -19,10 +22,10 @@ export default function DoctorSignupSuccess() {
             </div>
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Application Submitted Successfully!
+            {t('doctors.success.title')}
           </h1>
           <p className="text-xl text-gray-600">
-            Thank you for your interest in joining the Doktu platform
+            {t('doctors.success.subtitle')}
           </p>
         </div>
 
@@ -31,30 +34,30 @@ export default function DoctorSignupSuccess() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5 text-green-600" />
-              Check Your Email
+              {t('doctors.success.email_card_title')}
             </CardTitle>
             <CardDescription>
-              We've sent a confirmation email to your registered email address
+              {t('doctors.success.email_card_description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Alert>
               <Clock className="h-4 w-4" />
               <AlertDescription>
-                Your application is now under review by our medical team. We'll contact you within <strong>2-3 business days</strong> with a decision.
+                {t('doctors.success.review_alert')} <strong>{t('doctors.success.business_days')}</strong> {t('doctors.success.review_alert_suffix')}
               </AlertDescription>
             </Alert>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-3">What happens next?</h3>
+              <h3 className="font-semibold text-blue-900 mb-3">{t('doctors.success.what_next_title')}</h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold flex-shrink-0">
                     1
                   </div>
                   <div>
-                    <p className="font-medium text-blue-900">Application Review</p>
-                    <p className="text-sm text-blue-800">Our team will verify your credentials and medical license</p>
+                    <p className="font-medium text-blue-900">{t('doctors.success.step1_title')}</p>
+                    <p className="text-sm text-blue-800">{t('doctors.success.step1_description')}</p>
                   </div>
                 </div>
 
@@ -63,8 +66,8 @@ export default function DoctorSignupSuccess() {
                     2
                   </div>
                   <div>
-                    <p className="font-medium text-blue-900">Email Notification</p>
-                    <p className="text-sm text-blue-800">You'll receive an email with the outcome of your application</p>
+                    <p className="font-medium text-blue-900">{t('doctors.success.step2_title')}</p>
+                    <p className="text-sm text-blue-800">{t('doctors.success.step2_description')}</p>
                   </div>
                 </div>
 
@@ -73,8 +76,8 @@ export default function DoctorSignupSuccess() {
                     3
                   </div>
                   <div>
-                    <p className="font-medium text-blue-900">Profile Completion</p>
-                    <p className="text-sm text-blue-800">Once approved, complete your profile to activate your account</p>
+                    <p className="font-medium text-blue-900">{t('doctors.success.step3_title')}</p>
+                    <p className="text-sm text-blue-800">{t('doctors.success.step3_description')}</p>
                   </div>
                 </div>
 
@@ -83,8 +86,8 @@ export default function DoctorSignupSuccess() {
                     4
                   </div>
                   <div>
-                    <p className="font-medium text-blue-900">Start Consultations</p>
-                    <p className="text-sm text-blue-800">Set your availability and begin accepting patient bookings</p>
+                    <p className="font-medium text-blue-900">{t('doctors.success.step4_title')}</p>
+                    <p className="text-sm text-blue-800">{t('doctors.success.step4_description')}</p>
                   </div>
                 </div>
               </div>
@@ -97,10 +100,10 @@ export default function DoctorSignupSuccess() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-blue-600" />
-              Prepare Your Documents
+              {t('doctors.success.documents_title')}
             </CardTitle>
             <CardDescription>
-              While we review your application, please prepare the following documents
+              {t('doctors.success.documents_description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -108,32 +111,32 @@ export default function DoctorSignupSuccess() {
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                 <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium">Medical License Copy</p>
-                  <p className="text-sm text-gray-600">Clear, high-resolution scan or photo</p>
+                  <p className="font-medium">{t('doctors.success.doc_license_title')}</p>
+                  <p className="text-sm text-gray-600">{t('doctors.success.doc_license_description')}</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                 <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium">Proof of Identity</p>
-                  <p className="text-sm text-gray-600">Passport or national ID card</p>
+                  <p className="font-medium">{t('doctors.success.doc_identity_title')}</p>
+                  <p className="text-sm text-gray-600">{t('doctors.success.doc_identity_description')}</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                 <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium">Professional Photo</p>
-                  <p className="text-sm text-gray-600">Professional headshot for your profile</p>
+                  <p className="font-medium">{t('doctors.success.doc_photo_title')}</p>
+                  <p className="text-sm text-gray-600">{t('doctors.success.doc_photo_description')}</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                 <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium">IBAN for Payments</p>
-                  <p className="text-sm text-gray-600">Bank account for receiving consultation fees</p>
+                  <p className="font-medium">{t('doctors.success.doc_iban_title')}</p>
+                  <p className="text-sm text-gray-600">{t('doctors.success.doc_iban_description')}</p>
                 </div>
               </div>
             </div>
@@ -143,27 +146,27 @@ export default function DoctorSignupSuccess() {
         {/* Support Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Need Help?</CardTitle>
+            <CardTitle>{t('doctors.success.help_title')}</CardTitle>
             <CardDescription>
-              We're here to support you through the process
+              {t('doctors.success.help_description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-600">
-              If you have any questions about your application or the onboarding process, please don't hesitate to reach out:
+              {t('doctors.success.help_text')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1 p-4 bg-gray-50 rounded-lg">
-                <p className="font-semibold text-gray-900 mb-1">Email Support</p>
+                <p className="font-semibold text-gray-900 mb-1">{t('doctors.success.email_support')}</p>
                 <a href="mailto:doctors@doktu.co" className="text-green-600 hover:text-green-700 underline">
                   doctors@doktu.co
                 </a>
               </div>
               <div className="flex-1 p-4 bg-gray-50 rounded-lg">
-                <p className="font-semibold text-gray-900 mb-1">Help Center</p>
+                <p className="font-semibold text-gray-900 mb-1">{t('doctors.success.help_center')}</p>
                 <Link href="/support">
                   <span className="text-green-600 hover:text-green-700 underline cursor-pointer">
-                    Visit Support Center
+                    {t('doctors.success.visit_support')}
                   </span>
                 </Link>
               </div>
@@ -175,12 +178,12 @@ export default function DoctorSignupSuccess() {
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/">
             <Button variant="outline" size="lg">
-              Return to Home
+              {t('doctors.success.return_home')}
             </Button>
           </Link>
           <Link href="/support">
             <Button size="lg" className="bg-green-600 hover:bg-green-700">
-              Visit Help Center
+              {t('doctors.success.visit_help')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
@@ -189,9 +192,9 @@ export default function DoctorSignupSuccess() {
         {/* Additional Tips */}
         <div className="mt-12 text-center text-gray-600">
           <p className="text-sm">
-            Didn't receive a confirmation email? Check your spam folder or{' '}
+            {t('doctors.success.no_email_text')}{' '}
             <a href="mailto:doctors@doktu.co" className="text-green-600 hover:text-green-700 underline">
-              contact us
+              {t('doctors.success.contact_us')}
             </a>
           </p>
         </div>
