@@ -571,3 +571,82 @@ doctorRegistrationRouter.get('/list-all-pending', async (req, res) => {
     return res.status(500).json({ error: 'Failed to list pending doctors' });
   }
 });
+
+/**
+ * POST /api/doctor-registration/fix-incomplete-registration
+ * Fix incomplete doctor registration by creating missing doctor profile
+ * For cases where user exists but doctor profile is missing
+ */
+doctorRegistrationRouter.post('/fix-incomplete-registration', async (req, res) => {
+  const { email, specialty, licenseNumber, licenseCountry, licenseExpirationDate } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email required' });
+  }
+
+  try {
+    // 1. Check if user exists
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email.toLowerCase()))
+      .limit(1);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // 2. Check if doctor profile already exists
+    const [existingDoctor] = await db
+      .select()
+      .from(doctors)
+      .where(eq(doctors.userId, user.id))
+      .limit(1);
+
+    if (existingDoctor) {
+      return res.status(409).json({
+        error: 'Doctor profile already exists',
+        doctor: existingDoctor
+      });
+    }
+
+    // 3. Create doctor profile with provided or default values
+    const [newDoctor] = await db
+      .insert(doctors)
+      .values({
+        userId: user.id,
+        specialty: specialty || 'General Medicine',
+        licenseNumber: licenseNumber || `TEMP-${Date.now()}`,
+        licenseExpirationDate: licenseExpirationDate || null,
+        countries: [licenseCountry || 'FR'],
+        status: 'pending_review',
+        profileCompletionPercentage: 0,
+        consultationPrice: '35.00',
+        rating: '5.00',
+        reviewCount: 0
+      })
+      .returning();
+
+    // 4. Create audit log
+    await db.insert(doctorApplicationAudit).values({
+      doctorId: newDoctor.id,
+      adminId: null,
+      oldStatus: null,
+      newStatus: 'pending_review',
+      reason: 'Fixed incomplete registration',
+      notes: `Doctor profile created manually to fix incomplete registration for ${email}`,
+      ipAddress: req.ip || req.socket.remoteAddress || 'unknown',
+      userAgent: req.headers['user-agent'] || null
+    });
+
+    return res.json({
+      success: true,
+      message: 'Doctor profile created successfully',
+      doctor: newDoctor
+    });
+
+  } catch (error: any) {
+    console.error('Fix incomplete registration error:', error);
+    return res.status(500).json({ error: 'Failed to fix registration', details: error.message });
+  }
+});
