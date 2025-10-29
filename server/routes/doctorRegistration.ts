@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { supabase } from '../supabaseAuth';
 import { db } from '../db';
 import { users, doctors, doctorApplicationAudit, emailBlacklist } from '@shared/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, and, sql, desc } from 'drizzle-orm';
 import { notificationService, TriggerCode } from '../services/notificationService';
 import crypto from 'crypto';
 
@@ -513,5 +513,39 @@ doctorRegistrationRouter.delete('/delete-test-account', async (req, res) => {
   } catch (error: any) {
     console.error('Delete test account error:', error);
     return res.status(500).json({ error: 'Failed to delete test account', details: error.message });
+  }
+});
+
+/**
+ * GET /api/doctor-registration/list-all-pending
+ * Debug endpoint to list all pending doctor applications (no auth required)
+ */
+doctorRegistrationRouter.get('/list-all-pending', async (req, res) => {
+  try {
+    const pendingDoctors = await db
+      .select({
+        doctorId: doctors.id,
+        userId: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        specialty: doctors.specialty,
+        licenseNumber: doctors.licenseNumber,
+        status: doctors.status,
+        createdAt: users.createdAt
+      })
+      .from(doctors)
+      .innerJoin(users, eq(doctors.userId, users.id))
+      .where(eq(doctors.status, 'pending_review'))
+      .orderBy(desc(users.createdAt));
+
+    return res.json({
+      count: pendingDoctors.length,
+      doctors: pendingDoctors
+    });
+
+  } catch (error: any) {
+    console.error('List pending doctors error:', error);
+    return res.status(500).json({ error: 'Failed to list pending doctors' });
   }
 });
