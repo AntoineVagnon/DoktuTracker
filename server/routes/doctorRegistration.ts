@@ -650,3 +650,47 @@ doctorRegistrationRouter.post('/fix-incomplete-registration', async (req, res) =
     return res.status(500).json({ error: 'Failed to fix registration', details: error.message });
   }
 });
+
+/**
+ * GET /api/doctor-registration/list-admins
+ * Debug endpoint to list all admin users
+ */
+doctorRegistrationRouter.get('/list-admins', async (req, res) => {
+  try {
+    // Get admins from database
+    const admins = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        role: users.role,
+        approved: users.approved,
+        createdAt: users.createdAt
+      })
+      .from(users)
+      .where(eq(users.role, 'admin'))
+      .orderBy(users.createdAt);
+
+    // Also check Supabase auth for users with admin role in metadata
+    const { data: authUsers } = await supabase.auth.admin.listUsers();
+    const supabaseAdmins = authUsers?.users.filter(u =>
+      u.user_metadata?.role === 'admin' || u.app_metadata?.role === 'admin'
+    ) || [];
+
+    return res.json({
+      count: admins.length,
+      databaseAdmins: admins,
+      supabaseAdmins: supabaseAdmins.map(u => ({
+        id: u.id,
+        email: u.email,
+        role: u.user_metadata?.role || u.app_metadata?.role,
+        created_at: u.created_at
+      }))
+    });
+
+  } catch (error: any) {
+    console.error('List admins error:', error);
+    return res.status(500).json({ error: 'Failed to list admins' });
+  }
+});
