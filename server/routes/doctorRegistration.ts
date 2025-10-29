@@ -297,9 +297,16 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
 
   } catch (error: any) {
     console.error('Doctor registration error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      detail: error.detail
+    });
     return res.status(500).json({
       error: 'Registration failed',
-      message: 'An unexpected error occurred during registration. Please try again later.'
+      message: error.message || 'An unexpected error occurred during registration. Please try again later.',
+      ...(process.env.NODE_ENV !== 'production' && { details: error.message })
     });
   }
 });
