@@ -201,6 +201,15 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
 
     if (authError) {
       console.error('Supabase auth signup error:', authError);
+
+      // Handle specific error codes with user-friendly messages
+      if (authError.code === 'email_exists' || authError.message.includes('already been registered')) {
+        return res.status(409).json({
+          error: 'Email already registered',
+          message: 'An account with this email address already exists. Please use a different email or try logging in.'
+        });
+      }
+
       return res.status(400).json({
         error: 'Account creation failed',
         message: authError.message
