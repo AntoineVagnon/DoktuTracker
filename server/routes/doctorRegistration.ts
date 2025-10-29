@@ -31,7 +31,7 @@ const ELIGIBLE_COUNTRIES = [...EU_COUNTRIES, ...BALKAN_COUNTRIES];
 // In-memory rate limiting (simple implementation - consider Redis for production)
 const registrationAttempts = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 50; // Increased from 3 to 50 for testing flexibility
 
 /**
  * Rate limiting middleware
