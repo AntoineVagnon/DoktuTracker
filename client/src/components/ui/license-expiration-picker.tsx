@@ -71,7 +71,9 @@ export function LicenseExpirationPicker({
     }
   }, [value]);
 
-  const handlePresetClick = (yearsToAdd: number) => {
+  const handlePresetClick = (yearsToAdd: number, e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     const today = new Date();
     const futureDate = new Date(today.getFullYear() + yearsToAdd, today.getMonth(), today.getDate());
     const month = futureDate.getMonth().toString();
@@ -81,7 +83,9 @@ export function LicenseExpirationPicker({
     setSelectedYear(year);
   };
 
-  const handleClear = () => {
+  const handleClear = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     setSelectedMonth(undefined);
     setSelectedYear(undefined);
     onChange(undefined);
@@ -160,7 +164,7 @@ export function LicenseExpirationPicker({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => handlePresetClick(1)}
+            onClick={(e) => handlePresetClick(1, e)}
             disabled={disabled}
             className="h-10 text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-colors"
             aria-label="Set expiration to 1 year from now"
@@ -171,7 +175,7 @@ export function LicenseExpirationPicker({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => handlePresetClick(3)}
+            onClick={(e) => handlePresetClick(3, e)}
             disabled={disabled}
             className="h-10 text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-colors"
             aria-label="Set expiration to 3 years from now"
@@ -182,7 +186,7 @@ export function LicenseExpirationPicker({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => handlePresetClick(5)}
+            onClick={(e) => handlePresetClick(5, e)}
             disabled={disabled}
             className="h-10 text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-colors"
             aria-label="Set expiration to 5 years from now"
@@ -193,7 +197,7 @@ export function LicenseExpirationPicker({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => handlePresetClick(10)}
+            onClick={(e) => handlePresetClick(10, e)}
             disabled={disabled}
             className="h-10 text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-colors"
             aria-label="Set expiration to 10 years from now"
@@ -216,7 +220,7 @@ export function LicenseExpirationPicker({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={handleClear}
+            onClick={(e) => handleClear(e)}
             disabled={disabled}
             className="h-7 text-xs hover:bg-background"
             aria-label="Clear selected date"
