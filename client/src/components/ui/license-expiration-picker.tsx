@@ -3,6 +3,7 @@ import { Button } from './button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface LicenseExpirationPickerProps {
   value?: Date;
@@ -13,21 +14,6 @@ interface LicenseExpirationPickerProps {
   placeholder?: string;
 }
 
-const MONTHS = [
-  { value: '0', label: 'January' },
-  { value: '1', label: 'February' },
-  { value: '2', label: 'March' },
-  { value: '3', label: 'April' },
-  { value: '4', label: 'May' },
-  { value: '5', label: 'June' },
-  { value: '6', label: 'July' },
-  { value: '7', label: 'August' },
-  { value: '8', label: 'September' },
-  { value: '9', label: 'October' },
-  { value: '10', label: 'November' },
-  { value: '11', label: 'December' },
-];
-
 export function LicenseExpirationPicker({
   value,
   onChange,
@@ -36,6 +22,7 @@ export function LicenseExpirationPicker({
   className,
   placeholder = 'Select expiration date',
 }: LicenseExpirationPickerProps) {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [selectedMonth, setSelectedMonth] = useState<string>(
     value ? value.getMonth().toString() : ''
@@ -43,6 +30,22 @@ export function LicenseExpirationPicker({
   const [selectedYear, setSelectedYear] = useState<string>(
     value ? value.getFullYear().toString() : ''
   );
+
+  // Get translated month names
+  const MONTHS = [
+    { value: '0', label: t('doctors.signup.step2.license_months.january') },
+    { value: '1', label: t('doctors.signup.step2.license_months.february') },
+    { value: '2', label: t('doctors.signup.step2.license_months.march') },
+    { value: '3', label: t('doctors.signup.step2.license_months.april') },
+    { value: '4', label: t('doctors.signup.step2.license_months.may') },
+    { value: '5', label: t('doctors.signup.step2.license_months.june') },
+    { value: '6', label: t('doctors.signup.step2.license_months.july') },
+    { value: '7', label: t('doctors.signup.step2.license_months.august') },
+    { value: '8', label: t('doctors.signup.step2.license_months.september') },
+    { value: '9', label: t('doctors.signup.step2.license_months.october') },
+    { value: '10', label: t('doctors.signup.step2.license_months.november') },
+    { value: '11', label: t('doctors.signup.step2.license_months.december') },
+  ];
 
   // Generate year options (current year to +15 years for medical licenses)
   const years = Array.from({ length: 16 }, (_, i) => {
@@ -97,7 +100,7 @@ export function LicenseExpirationPicker({
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground">
-            Month
+            {t('doctors.signup.step2.license_month_label')}
           </label>
           <Select
             value={selectedMonth}
@@ -106,9 +109,9 @@ export function LicenseExpirationPicker({
           >
             <SelectTrigger
               className="h-12 text-base"
-              aria-label="Select month"
+              aria-label={t('doctors.signup.step2.license_month_label')}
             >
-              <SelectValue placeholder="Month" />
+              <SelectValue placeholder={t('doctors.signup.step2.license_month_placeholder')} />
             </SelectTrigger>
             <SelectContent>
               {MONTHS.map((month) => (
@@ -126,7 +129,7 @@ export function LicenseExpirationPicker({
 
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground">
-            Year
+            {t('doctors.signup.step2.license_year_label')}
           </label>
           <Select
             value={selectedYear}
@@ -135,9 +138,9 @@ export function LicenseExpirationPicker({
           >
             <SelectTrigger
               className="h-12 text-base"
-              aria-label="Select year"
+              aria-label={t('doctors.signup.step2.license_year_label')}
             >
-              <SelectValue placeholder="Year" />
+              <SelectValue placeholder={t('doctors.signup.step2.license_year_placeholder')} />
             </SelectTrigger>
             <SelectContent>
               {years.map((year) => (
@@ -157,7 +160,7 @@ export function LicenseExpirationPicker({
       {/* Quick Preset Buttons */}
       <div className="space-y-2">
         <label className="text-xs font-medium text-muted-foreground block">
-          Quick select (common license durations)
+          {t('doctors.signup.step2.license_quick_select_label')}
         </label>
         <div className="grid grid-cols-4 gap-2">
           <Button
