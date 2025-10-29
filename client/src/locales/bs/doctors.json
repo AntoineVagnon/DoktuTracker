@@ -1,5 +1,27 @@
 {
   "doctors": {
+    "specialties": {
+      "General Medicine": "Opšta medicina",
+      "Pediatrics": "Pedijatrija",
+      "Dermatology": "Dermatologija",
+      "Cardiology": "Kardiologija",
+      "Psychology": "Psihologija",
+      "Psychiatry": "Psihijatrija",
+      "Gynecology": "Ginekologija",
+      "Orthopedics": "Ortopedija",
+      "Ophthalmology": "Oftalmologija",
+      "ENT (Otolaryngology)": "ORL (Otorinolaringologija)",
+      "Neurology": "Neurologija",
+      "Endocrinology": "Endokrinologija",
+      "Gastroenterology": "Gastroenterologija",
+      "Pulmonology": "Pulmonologija",
+      "Rheumatology": "Reumatologija",
+      "Urology": "Urologija",
+      "Oncology": "Onkologija",
+      "Nephrology": "Nefrologija",
+      "Hematology": "Hematologija",
+      "Infectious Disease": "Zarazne bolesti"
+    },
     "list": {
       "title": "Pronađite doktora",
       "search_placeholder": "Pretražite po imenu ili specijalnosti...",

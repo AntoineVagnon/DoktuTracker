@@ -78,13 +78,15 @@ i18n
 
     // Language detection options
     detection: {
-      // Order of detection methods
-      order: ['localStorage', 'querystring', 'navigator'],
+      // Order of detection methods - prioritize querystring and localStorage, then navigator
+      order: ['querystring', 'localStorage', 'navigator'],
       // Keys or params to lookup language from
       lookupQuerystring: 'lng',
       lookupLocalStorage: 'doktu-language',
       // Cache user language
       caches: ['localStorage'],
+      // Detect language from cookie
+      lookupCookie: 'doktu-language',
     },
 
     // Interpolation options

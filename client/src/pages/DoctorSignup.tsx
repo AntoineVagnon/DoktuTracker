@@ -471,7 +471,7 @@ export default function DoctorSignup() {
                           <SelectContent>
                             {SPECIALTIES.map((specialty) => (
                               <SelectItem key={specialty} value={specialty}>
-                                {specialty}
+                                {t(`doctors.specialties.${specialty}`, specialty)}
                               </SelectItem>
                             ))}
                           </SelectContent>

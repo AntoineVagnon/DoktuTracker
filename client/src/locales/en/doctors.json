@@ -1,5 +1,27 @@
 {
   "doctors": {
+    "specialties": {
+      "General Medicine": "General Medicine",
+      "Pediatrics": "Pediatrics",
+      "Dermatology": "Dermatology",
+      "Cardiology": "Cardiology",
+      "Psychology": "Psychology",
+      "Psychiatry": "Psychiatry",
+      "Gynecology": "Gynecology",
+      "Orthopedics": "Orthopedics",
+      "Ophthalmology": "Ophthalmology",
+      "ENT (Otolaryngology)": "ENT (Otolaryngology)",
+      "Neurology": "Neurology",
+      "Endocrinology": "Endocrinology",
+      "Gastroenterology": "Gastroenterology",
+      "Pulmonology": "Pulmonology",
+      "Rheumatology": "Rheumatology",
+      "Urology": "Urology",
+      "Oncology": "Oncology",
+      "Nephrology": "Nephrology",
+      "Hematology": "Hematology",
+      "Infectious Disease": "Infectious Disease"
+    },
     "list": {
       "title": "Find a Doctor",
       "search_placeholder": "Search by name or specialty...",
