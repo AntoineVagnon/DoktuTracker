@@ -390,3 +390,56 @@ doctorRegistrationRouter.get('/eligible-countries', async (req, res) => {
     }
   });
 });
+
+/**
+ * GET /api/doctor-registration/check-email?email=xxx
+ * Debug endpoint to check if an email exists in Supabase
+ */
+doctorRegistrationRouter.get('/check-email', async (req, res) => {
+  const { email } = req.query;
+
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ error: 'Email parameter required' });
+  }
+
+  try {
+    // Check in Supabase auth
+    const { data: authUsers, error } = await supabase.auth.admin.listUsers();
+
+    if (error) {
+      console.error('Error listing Supabase users:', error);
+      return res.status(500).json({ error: 'Failed to check email' });
+    }
+
+    const existingAuthUser = authUsers?.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+
+    // Check in database
+    const [dbUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email.toLowerCase()))
+      .limit(1);
+
+    return res.json({
+      email: email,
+      existsInSupabase: !!existingAuthUser,
+      existsInDatabase: !!dbUser,
+      supabaseUser: existingAuthUser ? {
+        id: existingAuthUser.id,
+        email: existingAuthUser.email,
+        created_at: existingAuthUser.created_at,
+        role: existingAuthUser.user_metadata?.role
+      } : null,
+      dbUser: dbUser ? {
+        id: dbUser.id,
+        email: dbUser.email,
+        role: dbUser.role,
+        approved: dbUser.approved
+      } : null
+    });
+
+  } catch (error: any) {
+    console.error('Email check error:', error);
+    return res.status(500).json({ error: 'Failed to check email' });
+  }
+});
