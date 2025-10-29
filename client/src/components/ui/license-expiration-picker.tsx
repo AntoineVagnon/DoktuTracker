@@ -22,7 +22,7 @@ export function LicenseExpirationPicker({
   className,
   placeholder = 'Select expiration date',
 }: LicenseExpirationPickerProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('doctors');
   const currentYear = new Date().getFullYear();
   const [selectedMonth, setSelectedMonth] = useState<string>(
     value ? value.getMonth().toString() : ''
