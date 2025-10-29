@@ -213,7 +213,11 @@ export default function DoctorSignup() {
         specialty: finalData.specialty,
         licenseNumber: finalData.licenseNumber,
         licenseCountry: finalData.primaryCountry, // Backend expects 'licenseCountry' not 'primaryCountry'
+        licenseExpirationDate: finalData.licenseExpirationDate ? finalData.licenseExpirationDate.toISOString() : null,
+        ...(finalData.additionalCountries && finalData.additionalCountries.length > 0 && { additionalCountries: finalData.additionalCountries }),
+        ...(finalData.rppsNumber && { rppsNumber: finalData.rppsNumber }),
         ...(finalData.bio && { bio: finalData.bio }),
+        ...(finalData.consultationPrice && { consultationPrice: finalData.consultationPrice }),
       };
 
       // Call registration API

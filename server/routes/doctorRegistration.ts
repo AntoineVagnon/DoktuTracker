@@ -95,8 +95,12 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
     specialty,
     licenseNumber,
     licenseCountry,
+    licenseExpirationDate,
+    additionalCountries,
+    rppsNumber,
     phone,
-    bio
+    bio,
+    consultationPrice
   } = req.body;
 
   // Get IP address for rate limiting and audit
@@ -226,19 +230,28 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
       .returning();
 
     // 10. Create doctor profile with pending_review status
+    // Build countries array: start with primary, add additional countries if provided
+    const allCountries = [
+      licenseCountry.toUpperCase(),
+      ...(additionalCountries && Array.isArray(additionalCountries)
+        ? additionalCountries.map((c: string) => c.toUpperCase()).filter((c: string) => c !== licenseCountry.toUpperCase())
+        : []
+      )
+    ];
+
     const [newDoctor] = await db
       .insert(doctors)
       .values({
         userId: newUser.id,
         specialty,
         licenseNumber,
-        licenseExpirationDate: null, // To be completed in dashboard
-        countries: [licenseCountry.toUpperCase()], // Initial country, can add more in dashboard
+        licenseExpirationDate: licenseExpirationDate ? new Date(licenseExpirationDate) : null,
+        countries: allCountries,
         bio: bio || null,
-        rppsNumber: licenseCountry === 'FR' ? licenseNumber : null, // Use license number as RPPS if French
+        rppsNumber: rppsNumber || (licenseCountry === 'FR' ? licenseNumber : null), // Use provided RPPS or license number if French
         status: 'pending_review',
         profileCompletionPercentage: 0, // Will be calculated after profile completion
-        consultationPrice: '35.00', // Default price, can be updated in dashboard
+        consultationPrice: consultationPrice || '35.00', // Use provided price or default
         rating: '5.00',
         reviewCount: 0
       })
