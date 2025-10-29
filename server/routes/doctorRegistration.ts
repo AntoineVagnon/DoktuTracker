@@ -245,7 +245,7 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
         userId: newUser.id,
         specialty,
         licenseNumber,
-        licenseExpirationDate: licenseExpirationDate ? new Date(licenseExpirationDate) : null,
+        licenseExpirationDate: licenseExpirationDate ? licenseExpirationDate : null, // Already a string (ISO format from frontend)
         countries: allCountries,
         bio: bio || null,
         rppsNumber: rppsNumber || (licenseCountry === 'FR' ? licenseNumber : null), // Use provided RPPS or license number if French
