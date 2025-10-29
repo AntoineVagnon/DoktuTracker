@@ -37,11 +37,11 @@ export function LicenseExpirationPicker({
   placeholder = 'Select expiration date',
 }: LicenseExpirationPickerProps) {
   const currentYear = new Date().getFullYear();
-  const [selectedMonth, setSelectedMonth] = useState<string | undefined>(
-    value ? value.getMonth().toString() : undefined
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    value ? value.getMonth().toString() : ''
   );
-  const [selectedYear, setSelectedYear] = useState<string | undefined>(
-    value ? value.getFullYear().toString() : undefined
+  const [selectedYear, setSelectedYear] = useState<string>(
+    value ? value.getFullYear().toString() : ''
   );
 
   // Generate year options (current year to +15 years for medical licenses)
@@ -52,7 +52,7 @@ export function LicenseExpirationPicker({
 
   // Update parent when month or year changes
   useEffect(() => {
-    if (selectedMonth !== undefined && selectedYear !== undefined) {
+    if (selectedMonth && selectedYear) {
       const month = parseInt(selectedMonth);
       const year = parseInt(selectedYear);
       const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
@@ -86,8 +86,8 @@ export function LicenseExpirationPicker({
   const handleClear = (e?: React.MouseEvent) => {
     e?.preventDefault();
     e?.stopPropagation();
-    setSelectedMonth(undefined);
-    setSelectedYear(undefined);
+    setSelectedMonth('');
+    setSelectedYear('');
     onChange(undefined);
   };
 
@@ -208,12 +208,12 @@ export function LicenseExpirationPicker({
       </div>
 
       {/* Selected Date Display */}
-      {selectedMonth !== undefined && selectedYear !== undefined && (
+      {selectedMonth && selectedYear && (
         <div className="flex items-center justify-between p-3 bg-muted rounded-md border">
           <div className="flex items-center gap-2">
             <CalendarIcon className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm font-medium">
-              {MONTHS[parseInt(selectedMonth)].label} {selectedYear}
+              {MONTHS[parseInt(selectedMonth)]?.label} {selectedYear}
             </span>
           </div>
           <Button
