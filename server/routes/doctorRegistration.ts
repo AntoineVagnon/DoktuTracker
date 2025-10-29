@@ -420,10 +420,22 @@ doctorRegistrationRouter.get('/check-email', async (req, res) => {
       .where(eq(users.email, email.toLowerCase()))
       .limit(1);
 
+    // Check for doctor record
+    let doctorRecord = null;
+    if (dbUser) {
+      const [doctor] = await db
+        .select()
+        .from(doctors)
+        .where(eq(doctors.userId, dbUser.id))
+        .limit(1);
+      doctorRecord = doctor;
+    }
+
     return res.json({
       email: email,
       existsInSupabase: !!existingAuthUser,
       existsInDatabase: !!dbUser,
+      hasDoctorRecord: !!doctorRecord,
       supabaseUser: existingAuthUser ? {
         id: existingAuthUser.id,
         email: existingAuthUser.email,
@@ -435,6 +447,16 @@ doctorRegistrationRouter.get('/check-email', async (req, res) => {
         email: dbUser.email,
         role: dbUser.role,
         approved: dbUser.approved
+      } : null,
+      doctor: doctorRecord ? {
+        id: doctorRecord.id,
+        userId: doctorRecord.userId,
+        status: doctorRecord.status,
+        specialty: doctorRecord.specialty,
+        licenseNumber: doctorRecord.licenseNumber,
+        licenseExpirationDate: doctorRecord.licenseExpirationDate,
+        countries: doctorRecord.countries,
+        profileCompletionPercentage: doctorRecord.profileCompletionPercentage
       } : null
     });
 
