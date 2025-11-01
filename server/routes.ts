@@ -6675,6 +6675,10 @@ export async function registerRoutes(app: Express): Promise<void> {
   const { doctorDashboardRouter } = await import('./routes/doctorDashboard');
   app.use('/api/doctor', doctorDashboardRouter);
 
+  // Register doctor documents routes (German medical credential documents)
+  const { doctorDocumentsRouter } = await import('./routes/doctorDocuments');
+  app.use('/api/doctor-documents', doctorDocumentsRouter);
+
   // Register membership routes
   registerMembershipRoutes(app);
 
