@@ -119,7 +119,7 @@
         "modern_tech_desc": "Video konsultacije visokog kvaliteta"
       },
       "progress": {
-        "title": "Registracija doktora - Korak {{step}} od 4",
+        "title": "Registracija doktora - Korak {{step}} od 5",
         "percentage": "{{percent}}% Dovršeno",
         "step1_title": "Lične informacije",
         "step2_title": "Medicinske kredencijale",

@@ -193,6 +193,15 @@ authRouter.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Failed to create session' });
     }
 
+    // Regenerate session to prevent session fixation attacks
+    // This creates a new session ID and destroys the old one
+    await new Promise<void>((resolve, reject) => {
+      req.session.regenerate((err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
     // Store session in Express session
     req.session.supabaseSession = data.session;
 

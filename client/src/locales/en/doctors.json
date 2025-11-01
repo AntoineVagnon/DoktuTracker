@@ -119,7 +119,7 @@
         "modern_tech_desc": "High-quality video consultations"
       },
       "progress": {
-        "title": "Doctor Registration - Step {{step}} of 4",
+        "title": "Doctor Registration - Step {{step}} of 5",
         "percentage": "{{percent}}% Complete",
         "step1_title": "Personal Information",
         "step2_title": "Medical Credentials",
