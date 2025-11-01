@@ -444,26 +444,23 @@ export default function DoctorSignup() {
       const loginData = await loginResponse.json();
       console.log('✅ Auto-login successful:', loginData);
 
-      // Refetch auth query to get new authenticated state
-      // Using refetchQueries (not invalidateQueries) ensures we WAIT for the refetch to complete
-      await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
-      console.log('✅ Auth state refetched');
-
-      // Poll for auth state to be updated (with timeout)
-      let authVerified = false;
-      for (let i = 0; i < 10; i++) {
-        const authData = queryClient.getQueryData(['/api/auth/user']);
-        console.log(`🔍 Poll ${i + 1}: Auth data:`, authData);
-        if (authData && typeof authData === 'object' && 'id' in authData) {
-          authVerified = true;
-          console.log('✅ Auth state verified - user is authenticated');
-          break;
-        }
-        await new Promise(resolve => setTimeout(resolve, 200)); // Wait 200ms between polls
+      // FIXED: Directly set the auth data in React Query cache using the login response
+      // This avoids the cookie propagation timing issue that causes 401 errors on refetch
+      if (loginData.user) {
+        queryClient.setQueryData(['/api/auth/user'], loginData.user);
+        console.log('✅ Auth data set directly in cache:', loginData.user);
+      } else {
+        console.error('❌ No user data in login response:', loginData);
       }
 
-      if (!authVerified) {
-        console.warn('⚠️ Auth state not verified after polling - proceeding anyway');
+      // Verify the cache was updated
+      const cachedAuthData = queryClient.getQueryData(['/api/auth/user']);
+      console.log('🔍 Verifying cached auth data:', cachedAuthData);
+
+      if (cachedAuthData && typeof cachedAuthData === 'object' && 'id' in cachedAuthData) {
+        console.log('✅ Auth state verified - user is authenticated');
+      } else {
+        console.warn('⚠️ Auth data not found in cache after setting');
       }
 
       // Show success message
