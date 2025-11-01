@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
+import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -178,6 +179,7 @@ export default function DoctorSignup() {
   const { t } = useTranslation('doctors');
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<any>({});
@@ -437,6 +439,15 @@ export default function DoctorSignup() {
         }, 2000);
         return;
       }
+
+      // Parse login response
+      const loginData = await loginResponse.json();
+      console.log('✅ Auto-login successful:', loginData);
+
+      // Invalidate auth query cache to force refetch with new authenticated state
+      // This ensures useAuth() hook will return isAuthenticated: true
+      await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      console.log('✅ Auth query cache invalidated');
 
       // Show success message
       toast({
