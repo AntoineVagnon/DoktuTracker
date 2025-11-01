@@ -444,10 +444,11 @@ export default function DoctorSignup() {
       const loginData = await loginResponse.json();
       console.log('✅ Auto-login successful:', loginData);
 
-      // Invalidate auth query cache to force refetch with new authenticated state
-      // This ensures useAuth() hook will return isAuthenticated: true
-      await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      console.log('✅ Auth query cache invalidated');
+      // Refetch auth query to get new authenticated state
+      // Using refetchQueries (not invalidateQueries) ensures we WAIT for the refetch to complete
+      // This guarantees useAuth() hook will return isAuthenticated: true before redirect
+      await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
+      console.log('✅ Auth state refetched and updated');
 
       // Show success message
       toast({
