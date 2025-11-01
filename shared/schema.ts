@@ -360,8 +360,8 @@ export const doctors = pgTable("doctors", {
 
   // Doctor registration workflow fields
   status: varchar("status", { length: 50 }).notNull().default("pending_review"), // pending_review, approved, profile_incomplete, active, suspended, rejected_soft, rejected_hard
-  licenseNumber: varchar("license_number", { length: 255 }),
-  licenseExpirationDate: date("license_expiration_date"),
+  licenseNumber: varchar("license_number", { length: 255 }), // DEPRECATED: Use doctor_documents table instead
+  licenseExpirationDate: date("license_expiration_date"), // DEPRECATED: Use doctor_documents table instead
   countries: text("countries").array().default(sql`ARRAY[]::text[]`), // EU + Balkan countries where licensed
   iban: varchar("iban", { length: 34 }), // International Bank Account Number
   ibanVerificationStatus: varchar("iban_verification_status", { length: 50 }).default("pending"),
@@ -372,10 +372,53 @@ export const doctors = pgTable("doctors", {
   approvedAt: timestamp("approved_at"),
   activatedAt: timestamp("activated_at"),
   lastLoginAt: timestamp("last_login_at"),
+  documentsUploadedAt: timestamp("documents_uploaded_at"), // When credential documents were uploaded
 
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+// Doctor Documents table for German medical credentials
+export const doctorDocuments = pgTable("doctor_documents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  doctorId: integer("doctor_id").references(() => doctors.id, { onDelete: 'cascade' }).notNull(),
+
+  // Document type: approbation (mandatory), facharzturkunde (mandatory), zusatzbezeichnung (optional)
+  documentType: varchar("document_type", { length: 50 }).notNull(), // approbation, facharzturkunde, zusatzbezeichnung
+
+  // File information
+  fileName: varchar("file_name", { length: 255 }).notNull(),
+  originalFileName: varchar("original_file_name", { length: 255 }).notNull(),
+  fileSize: integer("file_size").notNull(),
+  mimeType: varchar("mime_type", { length: 100 }).notNull(),
+  storageUrl: text("storage_url").notNull(),
+
+  // Document metadata
+  uploadDate: timestamp("upload_date").notNull().defaultNow(),
+  uploadedAt: timestamp("uploaded_at").notNull().defaultNow(),
+
+  // Verification status
+  verificationStatus: varchar("verification_status", { length: 50 }).notNull().default("pending"), // pending, verified, rejected, expired
+  verifiedBy: integer("verified_by").references(() => users.id),
+  verifiedAt: timestamp("verified_at"),
+  rejectionReason: text("rejection_reason"),
+
+  // Document details (optional, extracted from document)
+  issueDate: date("issue_date"),
+  expiryDate: date("expiry_date"),
+  issuingAuthority: varchar("issuing_authority", { length: 255 }),
+  documentNumber: varchar("document_number", { length: 255 }),
+
+  // Timestamps
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_doctor_documents_doctor_id").on(table.doctorId),
+  index("idx_doctor_documents_type").on(table.documentType),
+  index("idx_doctor_documents_status").on(table.verificationStatus),
+  // Unique constraint: one document of each type per doctor
+  unique("unique_doctor_document_type").on(table.doctorId, table.documentType)
+]);
 
 // Doctor application audit trail - tracks all status changes
 export const doctorApplicationAudit = pgTable("doctor_application_audit", {
@@ -1015,6 +1058,16 @@ export const insertDoctorSchema = createInsertSchema(doctors).omit({
 });
 export type InsertDoctor = z.infer<typeof insertDoctorSchema>;
 export type Doctor = typeof doctors.$inferSelect;
+
+export const insertDoctorDocumentSchema = createInsertSchema(doctorDocuments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  uploadDate: true,
+  uploadedAt: true,
+});
+export type InsertDoctorDocument = z.infer<typeof insertDoctorDocumentSchema>;
+export type DoctorDocument = typeof doctorDocuments.$inferSelect;
 
 export const insertTimeSlotSchema = createInsertSchema(doctorTimeSlots).omit({
   id: true,

@@ -39,24 +39,34 @@ export class SupabaseStorageService {
   /**
    * Upload a file to Supabase Storage
    * @param buffer File buffer
-   * @param fileName Original file name
+   * @param fileName Original file name or full path
    * @param mimeType File MIME type
-   * @param userId User ID for organizing files
+   * @param userId User ID for organizing files (optional for custom paths)
+   * @param bucketName Custom bucket name (optional, defaults to patient-documents)
    * @returns Object with file path and public URL
    */
   async uploadFile(
     buffer: Buffer,
     fileName: string,
     mimeType: string,
-    userId: number
-  ): Promise<{ path: string; url: string }> {
-    // Generate unique file path: userId/uuid-originalname
-    const fileExt = fileName.split('.').pop();
-    const uniqueFileName = `${randomUUID()}.${fileExt}`;
-    const filePath = `${userId}/${uniqueFileName}`;
+    userId?: string | number,
+    bucketName?: string
+  ): Promise<{ path: string; url: string; publicUrl: string | null }> {
+    const bucket = bucketName || this.bucketName;
+
+    // If fileName contains '/', treat it as a full path, otherwise generate one
+    let filePath: string;
+    if (fileName.includes('/')) {
+      filePath = fileName;
+    } else {
+      // Generate unique file path: userId/uuid-originalname
+      const fileExt = fileName.split('.').pop();
+      const uniqueFileName = `${randomUUID()}.${fileExt}`;
+      filePath = userId ? `${userId}/${uniqueFileName}` : uniqueFileName;
+    }
 
     console.log('📤 Uploading to Supabase Storage:', {
-      bucket: this.bucketName,
+      bucket,
       path: filePath,
       size: buffer.length,
       mimeType
@@ -64,7 +74,7 @@ export class SupabaseStorageService {
 
     // Upload file
     const { data, error } = await this.supabase.storage
-      .from(this.bucketName)
+      .from(bucket)
       .upload(filePath, buffer, {
         contentType: mimeType,
         upsert: false,
@@ -81,7 +91,7 @@ export class SupabaseStorageService {
     // Get the full path (without public URL since bucket is private)
     const path = data.path;
 
-    return { path, url: path };
+    return { path, url: path, publicUrl: null };
   }
 
   /**
@@ -126,10 +136,13 @@ export class SupabaseStorageService {
   /**
    * Delete a file from Supabase Storage (GDPR right to be forgotten)
    * @param filePath Path to the file in storage
+   * @param bucketName Custom bucket name (optional, defaults to patient-documents)
    */
-  async deleteFile(filePath: string): Promise<void> {
+  async deleteFile(filePath: string, bucketName?: string): Promise<void> {
+    const bucket = bucketName || this.bucketName;
+
     const { error } = await this.supabase.storage
-      .from(this.bucketName)
+      .from(bucket)
       .remove([filePath]);
 
     if (error) {
