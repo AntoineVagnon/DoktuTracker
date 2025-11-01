@@ -1,0 +1,13 @@
+APPROBATIONSURKUNDE
+Medical License Document
+
+This is a test document for the doctor documents upload system.
+
+Doctor: Test Doctor
+License Number: TEST-123456
+Issue Date: 2024-01-01
+Expiry Date: 2034-01-01
+Issuing Authority: Test Medical Board Germany
+
+This document certifies that the named doctor is authorized to practice medicine.
+

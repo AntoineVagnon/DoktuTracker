@@ -263,9 +263,9 @@ export default function DoctorSignup() {
         variant: 'default',
       });
 
-      // Redirect to a success page or login
+      // Redirect to document upload page
       setTimeout(() => {
-        setLocation('/doctor-signup-success');
+        setLocation('/doctor/upload-documents');
       }, 2000);
 
     } catch (error: any) {

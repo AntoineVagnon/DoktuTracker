@@ -60,6 +60,8 @@ import Contact from "@/pages/Contact";
 import Support from "@/pages/Support";
 import DoctorSignup from "@/pages/DoctorSignup";
 import DoctorSignupSuccess from "@/pages/DoctorSignupSuccess";
+import DoctorDocumentUploadWelcome from "@/pages/DoctorDocumentUploadWelcome";
+import DoctorDocuments from "@/pages/DoctorDocuments";
 
 
 function Router() {
@@ -100,6 +102,8 @@ function Router() {
       <Route path="/doctor-calendar" component={DoctorCalendar} />
       <Route path="/doctor-settings" component={DoctorSettings} />
       <Route path="/doctor-records" component={PatientRecords} />
+      <Route path="/doctor/upload-documents" component={DoctorDocumentUploadWelcome} />
+      <Route path="/doctor/documents" component={DoctorDocuments} />
       <Route path="/documents" component={DocumentLibrary} />
       <Route path="/patient-calendar" component={PatientCalendar} />
       <Route path="/patient/settings" component={PatientSettings} />
