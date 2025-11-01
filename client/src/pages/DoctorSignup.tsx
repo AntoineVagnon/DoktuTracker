@@ -20,13 +20,14 @@ import { LicenseExpirationPicker } from '@/components/ui/license-expiration-pick
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
-// Available countries for doctor registration (27 EU + 7 Balkan)
+// Available countries for doctor registration (27 EU + 7 non-EU Balkan = 34 total)
+// Note: All 12 Balkan countries are included (5 are EU members + 7 non-EU)
 const ELIGIBLE_COUNTRIES = [
-  // EU Countries
+  // EU Countries (including 5 Balkan EU members: BG, HR, GR, RO, SI)
   { code: 'AT', name: 'Austria' },
   { code: 'BE', name: 'Belgium' },
-  { code: 'BG', name: 'Bulgaria' },
-  { code: 'HR', name: 'Croatia' },
+  { code: 'BG', name: 'Bulgaria' }, // Balkan + EU
+  { code: 'HR', name: 'Croatia' }, // Balkan + EU
   { code: 'CY', name: 'Cyprus' },
   { code: 'CZ', name: 'Czech Republic' },
   { code: 'DK', name: 'Denmark' },
@@ -34,7 +35,7 @@ const ELIGIBLE_COUNTRIES = [
   { code: 'FI', name: 'Finland' },
   { code: 'FR', name: 'France' },
   { code: 'DE', name: 'Germany' },
-  { code: 'GR', name: 'Greece' },
+  { code: 'GR', name: 'Greece' }, // Balkan + EU
   { code: 'HU', name: 'Hungary' },
   { code: 'IE', name: 'Ireland' },
   { code: 'IT', name: 'Italy' },
@@ -45,12 +46,12 @@ const ELIGIBLE_COUNTRIES = [
   { code: 'NL', name: 'Netherlands' },
   { code: 'PL', name: 'Poland' },
   { code: 'PT', name: 'Portugal' },
-  { code: 'RO', name: 'Romania' },
+  { code: 'RO', name: 'Romania' }, // Balkan + EU
   { code: 'SK', name: 'Slovakia' },
-  { code: 'SI', name: 'Slovenia' },
+  { code: 'SI', name: 'Slovenia' }, // Balkan + EU
   { code: 'ES', name: 'Spain' },
   { code: 'SE', name: 'Sweden' },
-  // Balkan Countries
+  // Non-EU Balkan Countries
   { code: 'AL', name: 'Albania' },
   { code: 'BA', name: 'Bosnia and Herzegovina' },
   { code: 'XK', name: 'Kosovo' },
