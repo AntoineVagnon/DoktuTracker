@@ -10,13 +10,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Header from '@/components/Header';
-import { ArrowLeft, ArrowRight, Stethoscope, Shield, Clock, Users, CheckCircle2, AlertCircle, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Stethoscope, Shield, Clock, Users, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { LicenseExpirationPicker } from '@/components/ui/license-expiration-picker';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -122,17 +121,11 @@ const step1Schema = z.object({
 });
 
 // Step 2: Medical Credentials
+// License number/expiration removed - doctors will upload credential documents after registration
 const step2Schema = z.object({
   specialty: z.string().min(1, 'Please select your specialty'),
-  licenseNumber: z.string().min(1, 'License number is required'),
-  licenseExpirationDate: z.date({
-    required_error: 'License expiration date is required',
-  }).refine((date) => date > new Date(), {
-    message: 'License must not be expired',
-  }),
   primaryCountry: z.string().min(1, 'Please select your primary country of practice'),
   additionalCountries: z.array(z.string()).optional(),
-  rppsNumber: z.string().optional(), // French RPPS number
 });
 
 // Step 3: Professional Details
@@ -180,10 +173,8 @@ export default function DoctorSignup() {
     resolver: zodResolver(step2Schema),
     defaultValues: {
       specialty: '',
-      licenseNumber: '',
       primaryCountry: '',
       additionalCountries: [],
-      rppsNumber: '',
     },
   });
 
@@ -229,6 +220,15 @@ export default function DoctorSignup() {
 
     try {
       // Prepare request body matching backend API expectations
+      // License fields removed - doctors will upload credential documents after registration
+      // Combine primaryCountry with additionalCountries for countries array
+      const allCountries = [
+        finalData.primaryCountry,
+        ...(finalData.additionalCountries && finalData.additionalCountries.length > 0
+          ? finalData.additionalCountries.filter((c: string) => c !== finalData.primaryCountry)
+          : [])
+      ];
+
       const requestBody = {
         email: finalData.email,
         password: finalData.password,
@@ -236,11 +236,7 @@ export default function DoctorSignup() {
         lastName: finalData.lastName,
         phone: finalData.phone,
         specialty: finalData.specialty,
-        licenseNumber: finalData.licenseNumber,
-        licenseCountry: finalData.primaryCountry, // Backend expects 'licenseCountry' not 'primaryCountry'
-        licenseExpirationDate: finalData.licenseExpirationDate ? finalData.licenseExpirationDate.toISOString() : null,
-        ...(finalData.additionalCountries && finalData.additionalCountries.length > 0 && { additionalCountries: finalData.additionalCountries }),
-        ...(finalData.rppsNumber && { rppsNumber: finalData.rppsNumber }),
+        additionalCountries: allCountries, // Includes primary + additional countries
         ...(finalData.bio && { bio: finalData.bio }),
         ...(finalData.consultationPrice && { consultationPrice: finalData.consultationPrice }),
       };
@@ -506,37 +502,13 @@ export default function DoctorSignup() {
                     )}
                   />
 
-                  <FormField
-                    control={form2.control}
-                    name="licenseNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('doctors.signup.step2.license_number_label')}</FormLabel>
-                        <FormControl>
-                          <Input placeholder={t('doctors.signup.step2.license_number_placeholder')} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form2.control}
-                    name="licenseExpirationDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>{t('doctors.signup.step2.license_expiration_label')}</FormLabel>
-                        <FormControl>
-                          <LicenseExpirationPicker
-                            value={field.value}
-                            onChange={field.onChange}
-                            placeholder={t('doctors.signup.step2.license_expiration_placeholder')}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/* License number/expiration removed - doctors will upload credential documents after registration */}
+                  <Alert className="bg-blue-50 border-blue-200">
+                    <AlertCircle className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-sm text-blue-800">
+                      After registration, you'll be able to upload your medical credential documents (Approbationsurkunde, Facharzturkunde) in your dashboard.
+                    </AlertDescription>
+                  </Alert>
 
                   <FormField
                     control={form2.control}
@@ -587,19 +559,6 @@ export default function DoctorSignup() {
                     </p>
                   </div>
 
-                  <FormField
-                    control={form2.control}
-                    name="rppsNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('doctors.signup.step2.rpps_label')}</FormLabel>
-                        <FormControl>
-                          <Input placeholder={t('doctors.signup.step2.rpps_placeholder')} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   <div className="flex justify-between pt-4">
                     <Button type="button" variant="outline" onClick={handleBack}>
