@@ -444,15 +444,18 @@ export default function DoctorSignup() {
       const loginData = await loginResponse.json();
       console.log('✅ Auto-login successful:', loginData);
 
-      // CRITICAL FIX: Store session tokens in localStorage to persist across page reload
-      // The backend returns access_token and refresh_token in the session object
-      // We need to store these so they survive the page navigation to /doctor-dashboard
-      if (loginData.session) {
-        localStorage.setItem('sb-access-token', loginData.session.access_token);
-        localStorage.setItem('sb-refresh-token', loginData.session.refresh_token);
-        console.log('✅ Session tokens stored in localStorage');
+      // CRITICAL FIX: Store complete auth data in localStorage with correct key 'doktu_auth'
+      // The app's auth system (queryClient.ts) looks for 'doktu_auth' containing both user and session
+      // This ensures authentication persists across page reload to /doctor-dashboard
+      if (loginData.user && loginData.session) {
+        const authData = {
+          user: loginData.user,
+          session: loginData.session
+        };
+        localStorage.setItem('doktu_auth', JSON.stringify(authData));
+        console.log('✅ Complete auth data stored in localStorage as doktu_auth');
       } else {
-        console.error('❌ No session data in login response:', loginData);
+        console.error('❌ Incomplete login response:', loginData);
       }
 
       // Also set auth data in React Query cache for immediate use
