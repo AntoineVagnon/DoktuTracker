@@ -470,10 +470,11 @@ export default function DoctorSignup() {
         variant: 'default',
       });
 
-      // Redirect to dashboard (documents already uploaded in step 4)
+      // Redirect to dashboard with full page reload to ensure cookies are sent
+      // Using window.location.href instead of setLocation to force browser to send session cookies
       setTimeout(() => {
-        console.log('🚀 Redirecting to doctor dashboard...');
-        setLocation('/doctor-dashboard');
+        console.log('🚀 Redirecting to doctor dashboard with full page reload...');
+        window.location.href = '/doctor-dashboard';
       }, 1500);
 
     } catch (error: any) {
