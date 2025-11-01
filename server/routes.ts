@@ -488,34 +488,36 @@ export async function registerRoutes(app: Express): Promise<void> {
         };
       });
       
-      // 📧 SCHEDULE EMAIL NOTIFICATIONS FOR ALL APPOINTMENTS
-      // Use the unified notification system with i18n support
-      // Notifications will be processed by the email queue and respect user's language preference
-      try {
-        console.log(`📧 Scheduling booking confirmation notification for appointment ${result.appointment.id}`);
+      // 📧 SCHEDULE EMAIL NOTIFICATIONS ONLY FOR CONFIRMED/PAID APPOINTMENTS
+      // - For membership-covered appointments (paid immediately): send notification now
+      // - For pending payment appointments: notification will be sent by Stripe webhook after payment succeeds
+      if (!result.paymentRequired) {
+        // Membership covered - appointment is already confirmed (status: 'paid')
+        try {
+          console.log(`📧 Scheduling booking confirmation notification for PAID/COVERED appointment ${result.appointment.id}`);
 
-        // Schedule notification for patient
-        await notificationService.scheduleNotification({
-          userId: appointmentData.patientId,
-          appointmentId: result.appointment.id,
-          triggerCode: TriggerCode.BOOK_CONF,
-          scheduledFor: new Date(), // Send immediately
-          mergeData: {
-            appointment_id: result.appointment.id.toString(),
-            doctor_id: appointmentData.doctorId.toString(),
-            patient_id: appointmentData.patientId.toString()
-          }
-        });
+          // Schedule notification for patient
+          await notificationService.scheduleNotification({
+            userId: appointmentData.patientId,
+            appointmentId: result.appointment.id,
+            triggerCode: TriggerCode.BOOK_CONF,
+            scheduledFor: new Date(), // Send immediately
+            mergeData: {
+              appointment_id: result.appointment.id.toString(),
+              doctor_id: appointmentData.doctorId.toString(),
+              patient_id: appointmentData.patientId.toString()
+            }
+          });
 
-        console.log(`✅ Booking confirmation notification scheduled for patient ${appointmentData.patientId}`);
+          console.log(`✅ Booking confirmation notification scheduled for patient ${appointmentData.patientId} (membership covered)`);
 
-        // Note: Doctor notification will be handled by a separate trigger code when implemented
-        // For now, the patient notification is the priority
-
-      } catch (notificationError) {
-        console.error('📧 Failed to schedule booking notification:', notificationError);
-        // Don't fail the appointment creation if notification scheduling fails
-        // The webhook will still trigger a backup notification
+        } catch (notificationError) {
+          console.error('📧 Failed to schedule booking notification:', notificationError);
+          // Don't fail the appointment creation if notification scheduling fails
+        }
+      } else {
+        // Payment required - notification will be sent by Stripe webhook after successful payment
+        console.log(`⏳ Skipping immediate notification for pending payment appointment ${result.appointment.id} - will be sent after payment confirmation`);
       }
       
       // 🔄 RETURN STRUCTURED RESPONSE FOR FRONTEND ROUTING
@@ -907,34 +909,36 @@ export async function registerRoutes(app: Express): Promise<void> {
         };
       });
       
-      // 📧 SCHEDULE EMAIL NOTIFICATIONS FOR ALL APPOINTMENTS
-      // Use the unified notification system with i18n support
-      // Notifications will be processed by the email queue and respect user's language preference
-      try {
-        console.log(`📧 Scheduling booking confirmation notification for appointment ${result.appointment.id}`);
+      // 📧 SCHEDULE EMAIL NOTIFICATIONS ONLY FOR CONFIRMED/PAID APPOINTMENTS
+      // - For membership-covered appointments (paid immediately): send notification now
+      // - For pending payment appointments: notification will be sent by Stripe webhook after payment succeeds
+      if (!result.paymentRequired) {
+        // Membership covered - appointment is already confirmed (status: 'paid')
+        try {
+          console.log(`📧 Scheduling booking confirmation notification for PAID/COVERED appointment ${result.appointment.id}`);
 
-        // Schedule notification for patient
-        await notificationService.scheduleNotification({
-          userId: appointmentData.patientId,
-          appointmentId: result.appointment.id,
-          triggerCode: TriggerCode.BOOK_CONF,
-          scheduledFor: new Date(), // Send immediately
-          mergeData: {
-            appointment_id: result.appointment.id.toString(),
-            doctor_id: appointmentData.doctorId.toString(),
-            patient_id: appointmentData.patientId.toString()
-          }
-        });
+          // Schedule notification for patient
+          await notificationService.scheduleNotification({
+            userId: appointmentData.patientId,
+            appointmentId: result.appointment.id,
+            triggerCode: TriggerCode.BOOK_CONF,
+            scheduledFor: new Date(), // Send immediately
+            mergeData: {
+              appointment_id: result.appointment.id.toString(),
+              doctor_id: appointmentData.doctorId.toString(),
+              patient_id: appointmentData.patientId.toString()
+            }
+          });
 
-        console.log(`✅ Booking confirmation notification scheduled for patient ${appointmentData.patientId}`);
+          console.log(`✅ Booking confirmation notification scheduled for patient ${appointmentData.patientId} (membership covered)`);
 
-        // Note: Doctor notification will be handled by a separate trigger code when implemented
-        // For now, the patient notification is the priority
-
-      } catch (notificationError) {
-        console.error('📧 Failed to schedule booking notification:', notificationError);
-        // Don't fail the appointment creation if notification scheduling fails
-        // The webhook will still trigger a backup notification
+        } catch (notificationError) {
+          console.error('📧 Failed to schedule booking notification:', notificationError);
+          // Don't fail the appointment creation if notification scheduling fails
+        }
+      } else {
+        // Payment required - notification will be sent by Stripe webhook after successful payment
+        console.log(`⏳ Skipping immediate notification for pending payment appointment ${result.appointment.id} - will be sent after payment confirmation`);
       }
       
       // 🔄 RETURN STRUCTURED RESPONSE FOR FRONTEND ROUTING
