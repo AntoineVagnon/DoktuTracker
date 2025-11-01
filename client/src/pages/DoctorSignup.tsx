@@ -444,23 +444,21 @@ export default function DoctorSignup() {
       const loginData = await loginResponse.json();
       console.log('✅ Auto-login successful:', loginData);
 
-      // FIXED: Directly set the auth data in React Query cache using the login response
-      // This avoids the cookie propagation timing issue that causes 401 errors on refetch
-      if (loginData.user) {
-        queryClient.setQueryData(['/api/auth/user'], loginData.user);
-        console.log('✅ Auth data set directly in cache:', loginData.user);
+      // CRITICAL FIX: Store session tokens in localStorage to persist across page reload
+      // The backend returns access_token and refresh_token in the session object
+      // We need to store these so they survive the page navigation to /doctor-dashboard
+      if (loginData.session) {
+        localStorage.setItem('sb-access-token', loginData.session.access_token);
+        localStorage.setItem('sb-refresh-token', loginData.session.refresh_token);
+        console.log('✅ Session tokens stored in localStorage');
       } else {
-        console.error('❌ No user data in login response:', loginData);
+        console.error('❌ No session data in login response:', loginData);
       }
 
-      // Verify the cache was updated
-      const cachedAuthData = queryClient.getQueryData(['/api/auth/user']);
-      console.log('🔍 Verifying cached auth data:', cachedAuthData);
-
-      if (cachedAuthData && typeof cachedAuthData === 'object' && 'id' in cachedAuthData) {
-        console.log('✅ Auth state verified - user is authenticated');
-      } else {
-        console.warn('⚠️ Auth data not found in cache after setting');
+      // Also set auth data in React Query cache for immediate use
+      if (loginData.user) {
+        queryClient.setQueryData(['/api/auth/user'], loginData.user);
+        console.log('✅ Auth data set in React Query cache:', loginData.user);
       }
 
       // Show success message
@@ -470,10 +468,9 @@ export default function DoctorSignup() {
         variant: 'default',
       });
 
-      // Redirect to dashboard with full page reload to ensure cookies are sent
-      // Using window.location.href instead of setLocation to force browser to send session cookies
+      // Redirect to dashboard - localStorage tokens will persist across navigation
       setTimeout(() => {
-        console.log('🚀 Redirecting to doctor dashboard with full page reload...');
+        console.log('🚀 Redirecting to doctor dashboard...');
         window.location.href = '/doctor-dashboard';
       }, 1500);
 
