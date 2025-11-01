@@ -90,6 +90,8 @@ function Router() {
       <Route path="/membership-start" component={MembershipStart} />
       <Route path="/membership/success" component={MembershipSuccess} />
       <Route path="/complete-subscription" component={CompleteSubscription} />
+      <Route path="/doctor/upload-documents" component={DoctorDocumentUploadWelcome} />
+      <Route path="/doctor/documents" component={DoctorDocuments} />
       <Route path="/doctor/:id" component={DoctorProfile} />
       <Route path="/doctors" component={DoctorList} />
       <Route path="/book-appointment-choice" component={BookAppointmentChoice} />
@@ -102,8 +104,6 @@ function Router() {
       <Route path="/doctor-calendar" component={DoctorCalendar} />
       <Route path="/doctor-settings" component={DoctorSettings} />
       <Route path="/doctor-records" component={PatientRecords} />
-      <Route path="/doctor/upload-documents" component={DoctorDocumentUploadWelcome} />
-      <Route path="/doctor/documents" component={DoctorDocuments} />
       <Route path="/documents" component={DocumentLibrary} />
       <Route path="/patient-calendar" component={PatientCalendar} />
       <Route path="/patient/settings" component={PatientSettings} />
