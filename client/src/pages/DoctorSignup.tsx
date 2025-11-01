@@ -446,9 +446,25 @@ export default function DoctorSignup() {
 
       // Refetch auth query to get new authenticated state
       // Using refetchQueries (not invalidateQueries) ensures we WAIT for the refetch to complete
-      // This guarantees useAuth() hook will return isAuthenticated: true before redirect
       await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
-      console.log('✅ Auth state refetched and updated');
+      console.log('✅ Auth state refetched');
+
+      // Poll for auth state to be updated (with timeout)
+      let authVerified = false;
+      for (let i = 0; i < 10; i++) {
+        const authData = queryClient.getQueryData(['/api/auth/user']);
+        console.log(`🔍 Poll ${i + 1}: Auth data:`, authData);
+        if (authData && typeof authData === 'object' && 'id' in authData) {
+          authVerified = true;
+          console.log('✅ Auth state verified - user is authenticated');
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 200)); // Wait 200ms between polls
+      }
+
+      if (!authVerified) {
+        console.warn('⚠️ Auth state not verified after polling - proceeding anyway');
+      }
 
       // Show success message
       toast({
@@ -459,8 +475,9 @@ export default function DoctorSignup() {
 
       // Redirect to dashboard (documents already uploaded in step 4)
       setTimeout(() => {
+        console.log('🚀 Redirecting to doctor dashboard...');
         setLocation('/doctor-dashboard');
-      }, 2500);
+      }, 1500);
 
     } catch (error: any) {
       console.error('Registration error:', error);
