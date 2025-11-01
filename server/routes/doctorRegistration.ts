@@ -60,27 +60,9 @@ function hashEmail(email: string): string {
   return crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex');
 }
 
-/**
- * Validate license number format (basic validation)
- * Different countries have different formats, so we do basic checks
- */
-function validateLicenseNumber(licenseNumber: string, country: string): { valid: boolean; error?: string } {
-  if (!licenseNumber || licenseNumber.trim().length < 5) {
-    return { valid: false, error: 'License number must be at least 5 characters' };
-  }
-
-  // French RPPS number validation (11 digits)
-  if (country === 'FR') {
-    const rppsRegex = /^\d{11}$/;
-    if (!rppsRegex.test(licenseNumber)) {
-      return { valid: false, error: 'French RPPS number must be 11 digits' };
-    }
-  }
-
-  // Add more country-specific validations as needed
-
-  return { valid: true };
-}
+// License number validation removed - replaced with document upload system
+// Doctors now upload Approbationsurkunde, Facharzturkunde, and Zusatzbezeichnung documents
+// instead of providing license numbers during registration
 
 /**
  * POST /api/doctor-registration/signup
@@ -93,14 +75,10 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
     firstName,
     lastName,
     specialty,
-    licenseNumber,
-    licenseCountry,
-    licenseExpirationDate,
-    additionalCountries,
-    rppsNumber,
     phone,
     bio,
-    consultationPrice
+    consultationPrice,
+    additionalCountries
   } = req.body;
 
   // Get IP address for rate limiting and audit
@@ -116,30 +94,15 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
     }
 
     // 2. Validate required fields
-    if (!email || !password || !firstName || !lastName || !specialty || !licenseNumber || !licenseCountry) {
+    if (!email || !password || !firstName || !lastName || !specialty) {
       return res.status(400).json({
         error: 'Missing required fields',
-        required: ['email', 'password', 'firstName', 'lastName', 'specialty', 'licenseNumber', 'licenseCountry']
+        required: ['email', 'password', 'firstName', 'lastName', 'specialty']
       });
     }
 
-    // 3. Validate country eligibility
-    if (!ELIGIBLE_COUNTRIES.includes(licenseCountry.toUpperCase())) {
-      return res.status(400).json({
-        error: 'Country not eligible',
-        message: 'At this time, we only accept doctors licensed in EU member states and Balkan countries.',
-        eligibleRegions: ['European Union (27 countries)', 'Balkan Region (7 countries)']
-      });
-    }
-
-    // 4. Validate license number format
-    const licenseValidation = validateLicenseNumber(licenseNumber, licenseCountry);
-    if (!licenseValidation.valid) {
-      return res.status(400).json({
-        error: 'Invalid license number',
-        message: licenseValidation.error
-      });
-    }
+    // Note: License validation removed - doctors will upload credential documents
+    // (Approbationsurkunde, Facharzturkunde, Zusatzbezeichnung) after registration
 
     // 5. Check email blacklist (for hard-rejected applications)
     const emailHash = hashEmail(email);
@@ -173,19 +136,7 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
       });
     }
 
-    // 7. Check for duplicate license number
-    const [existingDoctor] = await db
-      .select()
-      .from(doctors)
-      .where(eq(doctors.licenseNumber, licenseNumber))
-      .limit(1);
-
-    if (existingDoctor) {
-      return res.status(409).json({
-        error: 'License number already registered',
-        message: 'A doctor with this license number is already registered in our system.'
-      });
-    }
+    // License number duplicate check removed - doctors now upload credential documents instead
 
     // 8. Create Supabase auth user with 'doctor' role using admin API
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
@@ -239,25 +190,22 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
       .returning();
 
     // 10. Create doctor profile with pending_review status
-    // Build countries array: start with primary, add additional countries if provided
-    const allCountries = [
-      licenseCountry.toUpperCase(),
-      ...(additionalCountries && Array.isArray(additionalCountries)
-        ? additionalCountries.map((c: string) => c.toUpperCase()).filter((c: string) => c !== licenseCountry.toUpperCase())
-        : []
-      )
-    ];
+    // Countries can be added later when uploading credential documents
+    const allCountries = additionalCountries && Array.isArray(additionalCountries)
+      ? additionalCountries.map((c: string) => c.toUpperCase())
+      : [];
 
     const [newDoctor] = await db
       .insert(doctors)
       .values({
         userId: newUser.id,
         specialty,
-        licenseNumber,
-        licenseExpirationDate: licenseExpirationDate ? licenseExpirationDate : null, // Already a string (ISO format from frontend)
+        // License fields removed - doctors upload credential documents instead
+        licenseNumber: null,
+        licenseExpirationDate: null,
         countries: allCountries,
         bio: bio || null,
-        rppsNumber: rppsNumber || (licenseCountry === 'FR' ? licenseNumber : null), // Use provided RPPS or license number if French
+        rppsNumber: null, // Will be extracted from uploaded documents if applicable
         status: 'pending_review',
         profileCompletionPercentage: 0, // Will be calculated after profile completion
         consultationPrice: consultationPrice || '35.00', // Use provided price or default
@@ -297,9 +245,9 @@ doctorRegistrationRouter.post('/signup', async (req, res) => {
         specialty: newDoctor.specialty,
         nextSteps: [
           'Your application is now under review by our admin team',
+          'Upload your credential documents (Approbationsurkunde, Facharzturkunde) in your dashboard',
           'You will receive an email notification within 2-3 business days',
-          'Once approved, you will be able to complete your profile in the doctor dashboard',
-          'After completing your profile 100%, your account will be activated and visible to patients'
+          'Once approved and documents are verified, your account will be activated and visible to patients'
         ]
       }
     });
