@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,15 +9,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import Header from '@/components/Header';
-import { ArrowLeft, ArrowRight, Stethoscope, Shield, Clock, Users, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Stethoscope, Shield, Clock, Users, CheckCircle2, AlertCircle, Check, X, Loader2, Save, Upload } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
+import { CountrySearchSelect } from '@/components/CountrySearchSelect';
+import { DoctorDocumentUpload } from '@/components/doctor/DoctorDocumentUpload';
+import {
+  formatPhoneNumber,
+  isValidEmail,
+  getBioStats,
+  getEstimatedTime,
+  AVAILABLE_LANGUAGES,
+  AVAILABILITY_PREFERENCES,
+  saveFormProgress,
+  loadFormProgress,
+  clearFormProgress,
+} from '@/lib/signupHelpers';
 
 // Available countries for doctor registration (27 EU + 7 non-EU Balkan = 34 total)
 // Note: All 12 Balkan countries are included (5 are EU members + 7 non-EU)
@@ -107,7 +123,7 @@ const SPECIALTIES = [
   'Nuclear Medicine',
 ];
 
-// Step 1: Personal Information
+// Step 1: Personal Information - Enhanced with autocomplete attributes
 const step1Schema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
@@ -120,22 +136,33 @@ const step1Schema = z.object({
   path: ["confirmPassword"],
 });
 
-// Step 2: Medical Credentials
-// License number/expiration removed - doctors will upload credential documents after registration
+// Step 2: Medical Credentials - Enhanced with years of experience and languages
 const step2Schema = z.object({
   specialty: z.string().min(1, 'Please select your specialty'),
   primaryCountry: z.string().min(1, 'Please select your primary country of practice'),
   additionalCountries: z.array(z.string()).optional(),
+  yearsOfExperience: z.string().min(1, 'Please enter your years of experience'),
+  languages: z.array(z.string()).min(1, 'Please select at least one language'),
 });
 
-// Step 3: Professional Details
+// Step 3: Professional Details - Enhanced with availability preference
 const step3Schema = z.object({
   bio: z.string().optional(),
   consultationPrice: z.string().optional(),
+  availabilityPreference: z.string().optional(),
 });
 
-// Step 4: Terms & Conditions
+// Step 4: Document Upload
 const step4Schema = z.object({
+  // Documents are optional in schema since user can skip
+  // But we'll show UI warnings if they skip
+  approbationUploaded: z.boolean().optional(),
+  facharzturkundeUploaded: z.boolean().optional(),
+  zusatzbezeichnungUploaded: z.boolean().optional(),
+});
+
+// Step 5: Terms & Conditions (moved from step 4)
+const step5Schema = z.object({
   agreeToTerms: z.boolean().refine(val => val === true, 'You must accept the terms and conditions'),
   agreeToPrivacy: z.boolean().refine(val => val === true, 'You must accept the privacy policy'),
   agreeToGDPR: z.boolean().refine(val => val === true, 'You must acknowledge GDPR compliance'),
@@ -145,6 +172,7 @@ type Step1Data = z.infer<typeof step1Schema>;
 type Step2Data = z.infer<typeof step2Schema>;
 type Step3Data = z.infer<typeof step3Schema>;
 type Step4Data = z.infer<typeof step4Schema>;
+type Step5Data = z.infer<typeof step5Schema>;
 
 export default function DoctorSignup() {
   const { t } = useTranslation('doctors');
@@ -154,6 +182,22 @@ export default function DoctorSignup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<any>({});
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Document upload state tracking
+  const [approbationUploaded, setApprobationUploaded] = useState(false);
+  const [facharzturkundeUploaded, setFacharzturkundeUploaded] = useState(false);
+  const [zusatzbezeichnungUploaded, setZusatzbezeichnungUploaded] = useState(false);
+
+  // Refs for focus management
+  const step1FirstFieldRef = useRef<HTMLInputElement>(null);
+  const step2FirstFieldRef = useRef<HTMLButtonElement>(null);
+  const step3FirstFieldRef = useRef<HTMLTextAreaElement>(null);
+  const step4FirstFieldRef = useRef<HTMLDivElement>(null);
+  const step5FirstFieldRef = useRef<HTMLButtonElement>(null);
 
   // Form for Step 1
   const form1 = useForm<Step1Data>({
@@ -175,6 +219,8 @@ export default function DoctorSignup() {
       specialty: '',
       primaryCountry: '',
       additionalCountries: [],
+      yearsOfExperience: '',
+      languages: [],
     },
   });
 
@@ -184,12 +230,23 @@ export default function DoctorSignup() {
     defaultValues: {
       bio: '',
       consultationPrice: '',
+      availabilityPreference: '',
     },
   });
 
-  // Form for Step 4
+  // Form for Step 4 (Document Upload)
   const form4 = useForm<Step4Data>({
     resolver: zodResolver(step4Schema),
+    defaultValues: {
+      approbationUploaded: false,
+      facharzturkundeUploaded: false,
+      zusatzbezeichnungUploaded: false,
+    },
+  });
+
+  // Form for Step 5 (Terms & Conditions - moved from step 4)
+  const form5 = useForm<Step5Data>({
+    resolver: zodResolver(step5Schema),
     defaultValues: {
       agreeToTerms: false,
       agreeToPrivacy: false,
@@ -197,31 +254,121 @@ export default function DoctorSignup() {
     },
   });
 
-  const progressPercentage = (currentStep / 4) * 100;
+  // Load saved progress on mount
+  useEffect(() => {
+    const savedProgress = loadFormProgress();
+    if (savedProgress && savedProgress.step > 1) {
+      const shouldRestore = window.confirm(
+        'We found a saved draft of your registration. Would you like to continue where you left off?'
+      );
+
+      if (shouldRestore) {
+        setCurrentStep(savedProgress.step);
+        setFormData(savedProgress.data);
+
+        // Restore form values
+        if (savedProgress.data.firstName) form1.reset(savedProgress.data);
+        if (savedProgress.data.specialty) form2.reset(savedProgress.data);
+        if (savedProgress.data.bio) form3.reset(savedProgress.data);
+        if (savedProgress.data.selectedCountries) setSelectedCountries(savedProgress.data.selectedCountries);
+        if (savedProgress.data.selectedLanguages) setSelectedLanguages(savedProgress.data.selectedLanguages);
+
+        toast({
+          title: 'Draft restored',
+          description: 'Your previous progress has been restored.',
+        });
+      } else {
+        clearFormProgress();
+      }
+    }
+  }, []);
+
+  const progressPercentage = (currentStep / 5) * 100;
+
+  // Watch password for strength indicator
+  const password = form1.watch('password');
+  const email = form1.watch('email');
+  const bio = form3.watch('bio') || '';
+
+  // Get bio statistics
+  const bioStats = getBioStats(bio);
+
+  // Auto-save progress
+  useEffect(() => {
+    const autoSave = () => {
+      if (currentStep > 1) {
+        setIsAutoSaving(true);
+        const currentData = {
+          ...formData,
+          selectedCountries,
+          selectedLanguages,
+        };
+        saveFormProgress(currentStep, currentData);
+        setTimeout(() => setIsAutoSaving(false), 1000);
+      }
+    };
+
+    const timer = setTimeout(autoSave, 3000);
+    return () => clearTimeout(timer);
+  }, [formData, selectedCountries, selectedLanguages, currentStep]);
+
+  // Focus management - auto-focus first field on step change
+  useEffect(() => {
+    setTimeout(() => {
+      if (currentStep === 1 && step1FirstFieldRef.current) {
+        step1FirstFieldRef.current.focus();
+      } else if (currentStep === 2 && step2FirstFieldRef.current) {
+        step2FirstFieldRef.current.focus();
+      } else if (currentStep === 3 && step3FirstFieldRef.current) {
+        step3FirstFieldRef.current.focus();
+      } else if (currentStep === 4 && step4FirstFieldRef.current) {
+        step4FirstFieldRef.current.focus();
+      } else if (currentStep === 5 && step5FirstFieldRef.current) {
+        step5FirstFieldRef.current.focus();
+      }
+    }, 100);
+  }, [currentStep]);
 
   const handleStep1Submit = (data: Step1Data) => {
     setFormData({ ...formData, ...data });
     setCurrentStep(2);
+    // Announce step change for screen readers
+    announceStepChange(2);
   };
 
   const handleStep2Submit = (data: Step2Data) => {
     setFormData({ ...formData, ...data });
     setCurrentStep(3);
+    announceStepChange(3);
   };
 
   const handleStep3Submit = (data: Step3Data) => {
     setFormData({ ...formData, ...data });
     setCurrentStep(4);
+    announceStepChange(4);
   };
 
-  const handleStep4Submit = async (data: Step4Data) => {
+  const handleStep4Submit = (data: Step4Data) => {
+    // Check if required documents uploaded
+    if (!approbationUploaded || !facharzturkundeUploaded) {
+      // Show warning but allow continue
+      toast({
+        title: "Documents recommended",
+        description: "You can upload documents later, but your account won't be active until verified.",
+        variant: "default",
+      });
+    }
+    setFormData({ ...formData, ...data });
+    setCurrentStep(5);
+    announceStepChange(5);
+  };
+
+  const handleStep5Submit = async (data: Step5Data) => {
     setIsSubmitting(true);
     const finalData = { ...formData, ...data };
 
     try {
       // Prepare request body matching backend API expectations
-      // License fields removed - doctors will upload credential documents after registration
-      // Combine primaryCountry with additionalCountries for countries array
       const allCountries = [
         finalData.primaryCountry,
         ...(finalData.additionalCountries && finalData.additionalCountries.length > 0
@@ -236,9 +383,12 @@ export default function DoctorSignup() {
         lastName: finalData.lastName,
         phone: finalData.phone,
         specialty: finalData.specialty,
-        additionalCountries: allCountries, // Includes primary + additional countries
+        additionalCountries: allCountries,
         ...(finalData.bio && { bio: finalData.bio }),
         ...(finalData.consultationPrice && { consultationPrice: finalData.consultationPrice }),
+        ...(finalData.yearsOfExperience && { yearsOfExperience: parseInt(finalData.yearsOfExperience) }),
+        ...(finalData.languages && { languages: finalData.languages }),
+        ...(finalData.availabilityPreference && { availabilityPreference: finalData.availabilityPreference }),
       };
 
       // Call registration API
@@ -256,7 +406,14 @@ export default function DoctorSignup() {
         throw new Error(result.error || 'Registration failed');
       }
 
+      // Show success animation
+      setShowSuccessAnimation(true);
+
+      // Clear saved progress
+      clearFormProgress();
+
       // Auto-login after successful registration
+      setIsLoggingIn(true);
       const loginResponse = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -266,11 +423,11 @@ export default function DoctorSignup() {
           email: finalData.email,
           password: finalData.password,
         }),
-        credentials: 'include', // Important: include credentials for session cookie
+        credentials: 'include',
       });
 
       if (!loginResponse.ok) {
-        // Registration successful but login failed - redirect to login page
+        setIsLoggingIn(false);
         toast({
           title: 'Registration successful',
           description: 'Please login to continue',
@@ -284,17 +441,19 @@ export default function DoctorSignup() {
       // Show success message
       toast({
         title: t('doctors.signup.toasts.success_title'),
-        description: t('doctors.signup.toasts.success_description'),
+        description: 'Your registration is complete and documents are under review',
         variant: 'default',
       });
 
-      // Redirect to document upload page
+      // Redirect to dashboard (documents already uploaded in step 4)
       setTimeout(() => {
-        setLocation('/doctor/upload-documents');
-      }, 2000);
+        setLocation('/doctor-dashboard');
+      }, 2500);
 
     } catch (error: any) {
       console.error('Registration error:', error);
+      setShowSuccessAnimation(false);
+      announceError(error.message || 'Registration failed');
       toast({
         title: t('doctors.signup.toasts.error_title'),
         description: error.message || t('doctors.signup.toasts.error_description'),
@@ -308,6 +467,15 @@ export default function DoctorSignup() {
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+      announceStepChange(currentStep - 1);
+    }
+  };
+
+  // Handle step navigation by clicking on progress steps
+  const handleStepClick = (step: number) => {
+    if (step < currentStep) {
+      setCurrentStep(step);
+      announceStepChange(step);
     }
   };
 
@@ -319,20 +487,96 @@ export default function DoctorSignup() {
     );
   };
 
-  // Update form2 when countries change
+  const toggleLanguageSelection = (languageCode: string) => {
+    setSelectedLanguages(prev =>
+      prev.includes(languageCode)
+        ? prev.filter(l => l !== languageCode)
+        : [...prev, languageCode]
+    );
+  };
+
+  // Update form2 when countries/languages change
   useEffect(() => {
     form2.setValue('additionalCountries', selectedCountries);
-  }, [selectedCountries]);
+    form2.setValue('languages', selectedLanguages);
+  }, [selectedCountries, selectedLanguages]);
+
+  // Accessibility: Announce step changes
+  const announceStepChange = (step: number) => {
+    const stepTitles = {
+      1: 'Step 1: Personal Information',
+      2: 'Step 2: Medical Credentials',
+      3: 'Step 3: Professional Details',
+      4: 'Step 4: Document Upload',
+      5: 'Step 5: Terms and Conditions',
+    };
+
+    const announcement = document.getElementById('step-announcement');
+    if (announcement) {
+      announcement.textContent = `Now on ${stepTitles[step as keyof typeof stepTitles]}`;
+    }
+  };
+
+  // Accessibility: Announce errors
+  const announceError = (message: string) => {
+    const announcement = document.getElementById('error-announcement');
+    if (announcement) {
+      announcement.textContent = `Error: ${message}`;
+    }
+  };
+
+  // Handle save and continue later
+  const handleSaveAndContinueLater = () => {
+    const currentData = {
+      ...formData,
+      ...form1.getValues(),
+      ...form2.getValues(),
+      ...form3.getValues(),
+      selectedCountries,
+      selectedLanguages,
+    };
+    saveFormProgress(currentStep, currentData);
+    toast({
+      title: 'Progress saved',
+      description: 'Your progress has been saved. You can continue later from where you left off.',
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
 
+      {/* Accessibility: Live regions for announcements */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true" id="step-announcement"></div>
+      <div className="sr-only" aria-live="assertive" aria-atomic="true" id="error-announcement"></div>
+
+      {/* Success Animation Overlay */}
+      {showSuccessAnimation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-lg p-8 max-w-md mx-4 text-center animate-in fade-in zoom-in duration-500">
+            <div className="mb-4 flex justify-center">
+              <div className="rounded-full bg-green-100 p-4">
+                <CheckCircle2 className="h-16 w-16 text-green-600 animate-in zoom-in duration-700" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Registration Successful!</h2>
+            {isLoggingIn ? (
+              <div className="flex items-center justify-center gap-2 text-gray-600">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <p>Logging you in...</p>
+              </div>
+            ) : (
+              <p className="text-gray-600">Redirecting you to your dashboard...</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-green-600 to-green-800 text-white">
         <div className="container mx-auto max-w-6xl px-4 py-16">
           <Link href="/">
-            <Button variant="ghost" className="text-white hover:bg-white/10 mb-8">
+            <Button variant="ghost" className="text-white hover:bg-white/10 mb-8 transition-all hover:scale-105">
               <ArrowLeft className="h-4 w-4 mr-2" />
               {t('doctors.signup.back_to_home')}
             </Button>
@@ -346,10 +590,10 @@ export default function DoctorSignup() {
         </div>
       </div>
 
-      {/* Benefits Section */}
+      {/* Benefits Section with hover effects */}
       <div className="container mx-auto max-w-6xl px-4 py-12">
         <div className="grid md:grid-cols-4 gap-6 mb-12">
-          <Card>
+          <Card className="transition-all hover:shadow-lg hover:-translate-y-1 duration-300">
             <CardContent className="pt-6">
               <Users className="h-8 w-8 text-green-600 mb-3" />
               <h3 className="font-semibold mb-2">{t('doctors.signup.benefits.new_patients_title')}</h3>
@@ -357,7 +601,7 @@ export default function DoctorSignup() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="transition-all hover:shadow-lg hover:-translate-y-1 duration-300">
             <CardContent className="pt-6">
               <Clock className="h-8 w-8 text-green-600 mb-3" />
               <h3 className="font-semibold mb-2">{t('doctors.signup.benefits.flexible_schedule_title')}</h3>
@@ -365,7 +609,7 @@ export default function DoctorSignup() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="transition-all hover:shadow-lg hover:-translate-y-1 duration-300">
             <CardContent className="pt-6">
               <Shield className="h-8 w-8 text-green-600 mb-3" />
               <h3 className="font-semibold mb-2">{t('doctors.signup.benefits.secure_platform_title')}</h3>
@@ -373,7 +617,7 @@ export default function DoctorSignup() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="transition-all hover:shadow-lg hover:-translate-y-1 duration-300">
             <CardContent className="pt-6">
               <Stethoscope className="h-8 w-8 text-green-600 mb-3" />
               <h3 className="font-semibold mb-2">{t('doctors.signup.benefits.modern_tech_title')}</h3>
@@ -388,15 +632,71 @@ export default function DoctorSignup() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <CardTitle>{t('doctors.signup.progress.title', { step: currentStep })}</CardTitle>
-                <span className="text-sm text-gray-500">{t('doctors.signup.progress.percentage', { percent: Math.round(progressPercentage) })}</span>
+                <div className="flex items-center gap-2">
+                  {isAutoSaving && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <Save className="h-3 w-3 animate-pulse" />
+                      Saving...
+                    </div>
+                  )}
+                  <span className="text-sm text-gray-500">{t('doctors.signup.progress.percentage', { percent: Math.round(progressPercentage) })}</span>
+                </div>
               </div>
-              <Progress value={progressPercentage} className="w-full" />
-              <CardDescription>
-                {currentStep === 1 && t('doctors.signup.progress.step1_title')}
-                {currentStep === 2 && t('doctors.signup.progress.step2_title')}
-                {currentStep === 3 && t('doctors.signup.progress.step3_title')}
-                {currentStep === 4 && t('doctors.signup.progress.step4_title')}
-              </CardDescription>
+
+              {/* Animated Progress Bar */}
+              <div className="relative">
+                <Progress value={progressPercentage} className="w-full h-3 transition-all duration-500" />
+                {progressPercentage === 100 && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 rounded-full animate-pulse opacity-50"></div>
+                )}
+              </div>
+
+              {/* Clickable Step Indicators */}
+              <div className="flex justify-between items-center">
+                {[1, 2, 3, 4, 5].map((step) => (
+                  <button
+                    key={step}
+                    onClick={() => handleStepClick(step)}
+                    disabled={step > currentStep}
+                    className={cn(
+                      'flex flex-col items-center gap-1 transition-all duration-300',
+                      step < currentStep ? 'cursor-pointer hover:scale-110' : '',
+                      step > currentStep ? 'opacity-50 cursor-not-allowed' : ''
+                    )}
+                    aria-label={`Step ${step}`}
+                  >
+                    <div className={cn(
+                      'w-8 h-8 rounded-full flex items-center justify-center font-semibold transition-all duration-300',
+                      step < currentStep ? 'bg-green-600 text-white' : '',
+                      step === currentStep ? 'bg-green-600 text-white ring-4 ring-green-200' : '',
+                      step > currentStep ? 'bg-gray-200 text-gray-500' : ''
+                    )}>
+                      {step < currentStep ? <Check className="h-4 w-4" /> : step}
+                    </div>
+                    <span className="text-xs font-medium hidden sm:block">
+                      {step === 1 && 'Personal'}
+                      {step === 2 && 'Credentials'}
+                      {step === 3 && 'Details'}
+                      {step === 4 && 'Documents'}
+                      {step === 5 && 'Terms'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between">
+                <CardDescription>
+                  {currentStep === 1 && t('doctors.signup.progress.step1_title')}
+                  {currentStep === 2 && t('doctors.signup.progress.step2_title')}
+                  {currentStep === 3 && t('doctors.signup.progress.step3_title')}
+                  {currentStep === 4 && 'Upload Medical Credentials'}
+                  {currentStep === 5 && t('doctors.signup.progress.step4_title')}
+                </CardDescription>
+                <Badge variant="outline" className="text-xs">
+                  <Clock className="h-3 w-3 mr-1" />
+                  {getEstimatedTime(currentStep)} remaining
+                </Badge>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -410,9 +710,18 @@ export default function DoctorSignup() {
                       name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('doctors.signup.step1.first_name_label')}</FormLabel>
+                          <FormLabel className="flex items-center gap-1">
+                            {t('doctors.signup.step1.first_name_label')}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder={t('doctors.signup.step1.first_name_placeholder')} {...field} />
+                            <Input
+                              placeholder={t('doctors.signup.step1.first_name_placeholder')}
+                              autoComplete="given-name"
+                              ref={step1FirstFieldRef}
+                              className="transition-all focus:ring-2 focus:ring-green-500"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -423,9 +732,17 @@ export default function DoctorSignup() {
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('doctors.signup.step1.last_name_label')}</FormLabel>
+                          <FormLabel className="flex items-center gap-1">
+                            {t('doctors.signup.step1.last_name_label')}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder={t('doctors.signup.step1.last_name_placeholder')} {...field} />
+                            <Input
+                              placeholder={t('doctors.signup.step1.last_name_placeholder')}
+                              autoComplete="family-name"
+                              className="transition-all focus:ring-2 focus:ring-green-500"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -438,9 +755,30 @@ export default function DoctorSignup() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('doctors.signup.step1.email_label')}</FormLabel>
+                        <FormLabel className="flex items-center gap-1">
+                          {t('doctors.signup.step1.email_label')}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder={t('doctors.signup.step1.email_placeholder')} {...field} />
+                          <div className="relative">
+                            <Input
+                              type="email"
+                              placeholder={t('doctors.signup.step1.email_placeholder')}
+                              autoComplete="email"
+                              className="transition-all focus:ring-2 focus:ring-green-500 pr-10"
+                              {...field}
+                            />
+                            {/* Email Validation Icon */}
+                            {field.value && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                {isValidEmail(field.value) ? (
+                                  <Check className="h-5 w-5 text-green-600 animate-in zoom-in" />
+                                ) : (
+                                  <X className="h-5 w-5 text-red-600 animate-in zoom-in" />
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -452,10 +790,26 @@ export default function DoctorSignup() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('doctors.signup.step1.phone_label')}</FormLabel>
+                        <FormLabel className="flex items-center gap-1">
+                          {t('doctors.signup.step1.phone_label')}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <Input type="tel" placeholder={t('doctors.signup.step1.phone_placeholder')} {...field} />
+                          <Input
+                            type="tel"
+                            placeholder="+49 30 12345678"
+                            autoComplete="tel"
+                            className="transition-all focus:ring-2 focus:ring-green-500"
+                            {...field}
+                            onChange={(e) => {
+                              const formatted = formatPhoneNumber(e.target.value);
+                              field.onChange(formatted);
+                            }}
+                          />
                         </FormControl>
+                        <FormDescription className="text-xs">
+                          Format: +[country code] [area] [number]
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -466,10 +820,21 @@ export default function DoctorSignup() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('doctors.signup.step1.password_label')}</FormLabel>
+                        <FormLabel className="flex items-center gap-1">
+                          {t('doctors.signup.step1.password_label')}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder={t('doctors.signup.step1.password_placeholder')} {...field} />
+                          <Input
+                            type="password"
+                            placeholder={t('doctors.signup.step1.password_placeholder')}
+                            autoComplete="new-password"
+                            className="transition-all focus:ring-2 focus:ring-green-500"
+                            {...field}
+                          />
                         </FormControl>
+                        {/* Password Strength Indicator */}
+                        <PasswordStrengthIndicator password={password || ''} />
                         <FormMessage />
                       </FormItem>
                     )}
@@ -480,17 +845,34 @@ export default function DoctorSignup() {
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('doctors.signup.step1.confirm_password_label')}</FormLabel>
+                        <FormLabel className="flex items-center gap-1">
+                          {t('doctors.signup.step1.confirm_password_label')}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder={t('doctors.signup.step1.confirm_password_placeholder')} {...field} />
+                          <Input
+                            type="password"
+                            placeholder={t('doctors.signup.step1.confirm_password_placeholder')}
+                            autoComplete="new-password"
+                            className="transition-all focus:ring-2 focus:ring-green-500"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <div className="flex justify-end pt-4">
-                    <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                  <div className="flex justify-between pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleSaveAndContinueLater}
+                      className="transition-all hover:scale-105"
+                    >
+                      <Save className="mr-2 h-4 w-4" /> Save & Continue Later
+                    </Button>
+                    <Button type="submit" className="bg-green-600 hover:bg-green-700 transition-all hover:scale-105">
                       {t('doctors.signup.step1.next_button')} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
@@ -507,14 +889,17 @@ export default function DoctorSignup() {
                     name="specialty"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('doctors.signup.step2.specialty_label')}</FormLabel>
+                        <FormLabel className="flex items-center gap-1">
+                          {t('doctors.signup.step2.specialty_label')}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger ref={step2FirstFieldRef} className="transition-all focus:ring-2 focus:ring-green-500">
                               <SelectValue placeholder={t('doctors.signup.step2.specialty_placeholder')} />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="max-h-[300px]">
                             {SPECIALTIES.map((specialty) => (
                               <SelectItem key={specialty} value={specialty}>
                                 {t(`doctors.specialties.${specialty}`, specialty)}
@@ -527,7 +912,65 @@ export default function DoctorSignup() {
                     )}
                   />
 
-                  {/* License number/expiration removed - doctors will upload credential documents after registration */}
+                  <FormField
+                    control={form2.control}
+                    name="yearsOfExperience"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1">
+                          Years of Experience
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="0"
+                            max="70"
+                            placeholder="e.g., 5"
+                            className="transition-all focus:ring-2 focus:ring-green-500"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription className="text-xs">
+                          Total years of medical practice
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Languages Spoken */}
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1">
+                      Languages Spoken
+                      <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border rounded-lg p-3 bg-gray-50">
+                      {AVAILABLE_LANGUAGES.map((language) => (
+                        <div key={language.code} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`language-${language.code}`}
+                            checked={selectedLanguages.includes(language.code)}
+                            onCheckedChange={() => toggleLanguageSelection(language.code)}
+                            className="transition-all"
+                          />
+                          <label
+                            htmlFor={`language-${language.code}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {language.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Select all languages you can use for consultations
+                    </p>
+                    {form2.formState.errors.languages && (
+                      <p className="text-sm text-red-600">{form2.formState.errors.languages.message}</p>
+                    )}
+                  </div>
+
                   <Alert className="bg-blue-50 border-blue-200">
                     <AlertCircle className="h-4 w-4 text-blue-600" />
                     <AlertDescription className="text-sm text-blue-800">
@@ -540,35 +983,36 @@ export default function DoctorSignup() {
                     name="primaryCountry"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('doctors.signup.step2.primary_country_label')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('doctors.signup.step2.primary_country_placeholder')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {ELIGIBLE_COUNTRIES.map((country) => (
-                              <SelectItem key={country.code} value={country.code}>
-                                {country.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormLabel className="flex items-center gap-1">
+                          {t('doctors.signup.step2.primary_country_label')}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <CountrySearchSelect
+                            countries={ELIGIBLE_COUNTRIES}
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder={t('doctors.signup.step2.primary_country_placeholder')}
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
                   <div className="space-y-2">
-                    <Label>{t('doctors.signup.step2.additional_countries_label')}</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border rounded-lg p-3">
+                    <Label className="flex items-center gap-1">
+                      {t('doctors.signup.step2.additional_countries_label')}
+                      <span className="text-gray-500 text-xs">(Optional)</span>
+                    </Label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border rounded-lg p-3 bg-gray-50">
                       {ELIGIBLE_COUNTRIES.map((country) => (
                         <div key={country.code} className="flex items-center space-x-2">
                           <Checkbox
                             id={`country-${country.code}`}
                             checked={selectedCountries.includes(country.code)}
                             onCheckedChange={() => toggleCountrySelection(country.code)}
+                            className="transition-all"
                           />
                           <label
                             htmlFor={`country-${country.code}`}
@@ -584,14 +1028,23 @@ export default function DoctorSignup() {
                     </p>
                   </div>
 
-
                   <div className="flex justify-between pt-4">
-                    <Button type="button" variant="outline" onClick={handleBack}>
+                    <Button type="button" variant="outline" onClick={handleBack} className="transition-all hover:scale-105">
                       <ArrowLeft className="mr-2 h-4 w-4" /> {t('doctors.signup.step2.back_button')}
                     </Button>
-                    <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                      {t('doctors.signup.step2.next_button')} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleSaveAndContinueLater}
+                        className="transition-all hover:scale-105"
+                      >
+                        <Save className="mr-2 h-4 w-4" /> Save
+                      </Button>
+                      <Button type="submit" className="bg-green-600 hover:bg-green-700 transition-all hover:scale-105">
+                        {t('doctors.signup.step2.next_button')} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </form>
               </Form>
@@ -613,14 +1066,40 @@ export default function DoctorSignup() {
                     name="bio"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('doctors.signup.step3.bio_label')}</FormLabel>
+                        <FormLabel className="flex items-center gap-1">
+                          {t('doctors.signup.step3.bio_label')}
+                          <span className="text-gray-500 text-xs">(Optional)</span>
+                        </FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder={t('doctors.signup.step3.bio_placeholder')}
                             rows={6}
+                            ref={step3FirstFieldRef}
+                            className="transition-all focus:ring-2 focus:ring-green-500"
+                            maxLength={2000}
                             {...field}
                           />
                         </FormControl>
+                        {/* Bio Character Counter */}
+                        <div className="flex items-center justify-between text-xs">
+                          <span className={cn(
+                            bioStats.status === 'optimal' && 'text-green-600 font-medium',
+                            bioStats.status === 'short' && 'text-gray-500',
+                            bioStats.status === 'long' && 'text-yellow-600',
+                            bioStats.status === 'too-long' && 'text-red-600'
+                          )}>
+                            {bioStats.length} / {bioStats.max} characters
+                            {bioStats.status === 'optimal' && ' - Perfect length!'}
+                            {bioStats.status === 'short' && bioStats.length > 0 && ` - Recommended: ${bioStats.optimal} chars`}
+                          </span>
+                          {bioStats.length > 0 && (
+                            <div className="flex gap-1">
+                              <div className={cn('w-2 h-2 rounded-full', bioStats.length >= 100 ? 'bg-green-500' : 'bg-gray-300')}></div>
+                              <div className={cn('w-2 h-2 rounded-full', bioStats.length >= bioStats.optimal ? 'bg-green-500' : 'bg-gray-300')}></div>
+                              <div className={cn('w-2 h-2 rounded-full', bioStats.length >= 500 ? 'bg-yellow-500' : 'bg-gray-300')}></div>
+                            </div>
+                          )}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -631,13 +1110,54 @@ export default function DoctorSignup() {
                     name="consultationPrice"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('doctors.signup.step3.price_label')}</FormLabel>
+                        <FormLabel className="flex items-center gap-1">
+                          {t('doctors.signup.step3.price_label')}
+                          <span className="text-gray-500 text-xs">(Optional)</span>
+                        </FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" placeholder={t('doctors.signup.step3.price_placeholder')} {...field} />
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder={t('doctors.signup.step3.price_placeholder')}
+                            className="transition-all focus:ring-2 focus:ring-green-500"
+                            {...field}
+                          />
                         </FormControl>
                         <p className="text-xs text-gray-500">
                           {t('doctors.signup.step3.price_help')}
                         </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Availability Preference */}
+                  <FormField
+                    control={form3.control}
+                    name="availabilityPreference"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1">
+                          Availability Preference
+                          <span className="text-gray-500 text-xs">(Optional)</span>
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="transition-all focus:ring-2 focus:ring-green-500">
+                              <SelectValue placeholder="Select your general availability..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {AVAILABILITY_PREFERENCES.map((pref) => (
+                              <SelectItem key={pref.value} value={pref.value}>
+                                {pref.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription className="text-xs">
+                          This helps us suggest optimal time slots. You can set specific hours later.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -655,22 +1175,141 @@ export default function DoctorSignup() {
                   </div>
 
                   <div className="flex justify-between pt-4">
-                    <Button type="button" variant="outline" onClick={handleBack}>
+                    <Button type="button" variant="outline" onClick={handleBack} className="transition-all hover:scale-105">
                       <ArrowLeft className="mr-2 h-4 w-4" /> {t('doctors.signup.step3.back_button')}
                     </Button>
-                    <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                      {t('doctors.signup.step3.next_button')} <ArrowRight className="ml-2 h-4 w-4" />
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleSaveAndContinueLater}
+                        className="transition-all hover:scale-105"
+                      >
+                        <Save className="mr-2 h-4 w-4" /> Save
+                      </Button>
+                      <Button type="submit" className="bg-green-600 hover:bg-green-700 transition-all hover:scale-105">
+                        {t('doctors.signup.step3.next_button')} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </Form>
+            )}
+
+            {/* Step 4: Document Upload */}
+            {currentStep === 4 && (
+              <Form {...form4}>
+                <form onSubmit={form4.handleSubmit(handleStep4Submit)} className="space-y-6">
+                  <Alert className="bg-blue-50 border-blue-200 animate-in slide-in-from-top">
+                    <Upload className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-sm text-blue-800">
+                      <p className="font-medium mb-1">Upload Medical Credentials</p>
+                      <p>Upload your medical documents now for faster account activation. You can also upload them later from your dashboard.</p>
+                    </AlertDescription>
+                  </Alert>
+
+                  {/* Document Upload Progress Indicator */}
+                  <div className="bg-gray-50 border rounded-lg p-4 space-y-2" ref={step4FirstFieldRef}>
+                    <h3 className="font-semibold text-sm mb-3">Document Upload Status</h3>
+                    <div className="flex items-center gap-2 text-sm">
+                      {approbationUploaded ? (
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
+                      )}
+                      <span className={approbationUploaded ? 'text-green-600 font-medium' : 'text-gray-600'}>
+                        Approbationsurkunde
+                      </span>
+                      {!approbationUploaded && <Badge variant="outline" className="text-xs">Required</Badge>}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      {facharzturkundeUploaded ? (
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
+                      )}
+                      <span className={facharzturkundeUploaded ? 'text-green-600 font-medium' : 'text-gray-600'}>
+                        Facharzturkunde
+                      </span>
+                      {!facharzturkundeUploaded && <Badge variant="outline" className="text-xs">Required</Badge>}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      {zusatzbezeichnungUploaded ? (
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
+                      )}
+                      <span className={zusatzbezeichnungUploaded ? 'text-green-600 font-medium' : 'text-gray-600'}>
+                        Zusatzbezeichnung
+                      </span>
+                      <Badge variant="outline" className="text-xs">Optional</Badge>
+                    </div>
+                  </div>
+
+                  {/* Document Upload Components */}
+                  <div className="space-y-4">
+                    <DoctorDocumentUpload
+                      documentType="approbation"
+                      title="Approbationsurkunde"
+                      description="Your medical license certificate (required)"
+                      required={true}
+                      onUploadSuccess={() => {
+                        setApprobationUploaded(true);
+                        form4.setValue('approbationUploaded', true);
+                      }}
+                    />
+
+                    <DoctorDocumentUpload
+                      documentType="facharzturkunde"
+                      title="Facharzturkunde"
+                      description="Your specialist certificate (required)"
+                      required={true}
+                      onUploadSuccess={() => {
+                        setFacharzturkundeUploaded(true);
+                        form4.setValue('facharzturkundeUploaded', true);
+                      }}
+                    />
+
+                    <DoctorDocumentUpload
+                      documentType="zusatzbezeichnung"
+                      title="Zusatzbezeichnung"
+                      description="Additional qualifications (optional)"
+                      required={false}
+                      onUploadSuccess={() => {
+                        setZusatzbezeichnungUploaded(true);
+                        form4.setValue('zusatzbezeichnungUploaded', true);
+                      }}
+                    />
+                  </div>
+
+                  {/* Warning if documents not uploaded */}
+                  {(!approbationUploaded || !facharzturkundeUploaded) && (
+                    <Alert className="bg-amber-50 border-amber-200">
+                      <AlertCircle className="h-4 w-4 text-amber-600" />
+                      <AlertDescription className="text-sm text-amber-800">
+                        <p className="font-medium mb-1">Documents not yet uploaded</p>
+                        <p>You can continue without uploading documents now, but your account won't be activated until they are verified. We recommend uploading them now.</p>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="flex justify-between pt-4">
+                    <Button type="button" variant="outline" onClick={handleBack} className="transition-all hover:scale-105">
+                      <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                    </Button>
+                    <Button type="submit" className="bg-green-600 hover:bg-green-700 transition-all hover:scale-105">
+                      Next Step <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </form>
               </Form>
             )}
 
-            {/* Step 4: Terms & Conditions */}
-            {currentStep === 4 && (
-              <Form {...form4}>
-                <form onSubmit={form4.handleSubmit(handleStep4Submit)} className="space-y-6">
-                  <Alert>
+            {/* Step 5: Terms & Conditions (moved from step 4) */}
+            {currentStep === 5 && (
+              <Form {...form5}>
+                <form onSubmit={form5.handleSubmit(handleStep5Submit)} className="space-y-6">
+                  <Alert className="animate-in slide-in-from-top">
                     <CheckCircle2 className="h-4 w-4" />
                     <AlertDescription>
                       {t('doctors.signup.step4.almost_done')}
@@ -679,14 +1318,16 @@ export default function DoctorSignup() {
 
                   <div className="space-y-4">
                     <FormField
-                      control={form4.control}
+                      control={form5.control}
                       name="agreeToTerms"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 border rounded-lg p-4">
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 border rounded-lg p-4 transition-all hover:bg-gray-50">
                           <FormControl>
                             <Checkbox
+                              ref={step5FirstFieldRef}
                               checked={field.value}
                               onCheckedChange={field.onChange}
+                              className="transition-all data-[state=checked]:animate-in data-[state=checked]:zoom-in"
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
@@ -696,7 +1337,7 @@ export default function DoctorSignup() {
                                 href="/terms"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-green-600 hover:text-green-500 underline font-medium"
+                                className="text-green-600 hover:text-green-500 underline font-medium transition-colors"
                               >
                                 {t('doctors.signup.step4.terms_link')}
                               </a>
@@ -705,7 +1346,7 @@ export default function DoctorSignup() {
                                 href="/disclaimer"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-green-600 hover:text-green-500 underline font-medium"
+                                className="text-green-600 hover:text-green-500 underline font-medium transition-colors"
                               >
                                 {t('doctors.signup.step4.medical_disclaimer_link')}
                               </a>
@@ -717,14 +1358,15 @@ export default function DoctorSignup() {
                     />
 
                     <FormField
-                      control={form4.control}
+                      control={form5.control}
                       name="agreeToPrivacy"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 border rounded-lg p-4">
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 border rounded-lg p-4 transition-all hover:bg-gray-50">
                           <FormControl>
                             <Checkbox
                               checked={field.value}
                               onCheckedChange={field.onChange}
+                              className="transition-all data-[state=checked]:animate-in data-[state=checked]:zoom-in"
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
@@ -734,7 +1376,7 @@ export default function DoctorSignup() {
                                 href="/privacy"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-green-600 hover:text-green-500 underline font-medium"
+                                className="text-green-600 hover:text-green-500 underline font-medium transition-colors"
                               >
                                 {t('doctors.signup.step4.privacy_link')}
                               </a>
@@ -746,14 +1388,15 @@ export default function DoctorSignup() {
                     />
 
                     <FormField
-                      control={form4.control}
+                      control={form5.control}
                       name="agreeToGDPR"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 border rounded-lg p-4">
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 border rounded-lg p-4 transition-all hover:bg-gray-50">
                           <FormControl>
                             <Checkbox
                               checked={field.value}
                               onCheckedChange={field.onChange}
+                              className="transition-all data-[state=checked]:animate-in data-[state=checked]:zoom-in"
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
@@ -763,7 +1406,7 @@ export default function DoctorSignup() {
                                 href="/gdpr"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-green-600 hover:text-green-500 underline font-medium"
+                                className="text-green-600 hover:text-green-500 underline font-medium transition-colors"
                               >
                                 {t('doctors.signup.step4.gdpr_link')}
                               </a>
@@ -775,6 +1418,25 @@ export default function DoctorSignup() {
                       )}
                     />
                   </div>
+
+                  {/* Document Status Summary */}
+                  {(approbationUploaded && facharzturkundeUploaded) ? (
+                    <Alert className="bg-green-50 border-green-200 animate-in slide-in-from-bottom">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <AlertDescription className="text-sm text-green-800">
+                        <p className="font-medium mb-1">Documents uploaded successfully</p>
+                        <p>Your documents will be reviewed by our admin team within 24-48 hours.</p>
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <Alert className="bg-amber-50 border-amber-200 animate-in slide-in-from-bottom">
+                      <AlertCircle className="h-4 w-4 text-amber-600" />
+                      <AlertDescription className="text-sm text-amber-800">
+                        <p className="font-medium mb-1">Documents not yet uploaded</p>
+                        <p>You can upload your medical credentials later from your dashboard. However, your account won't be activated until they are verified.</p>
+                      </AlertDescription>
+                    </Alert>
+                  )}
 
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <p className="text-sm text-green-800 font-medium mb-2">
@@ -789,16 +1451,25 @@ export default function DoctorSignup() {
                   </div>
 
                   <div className="flex justify-between pt-4">
-                    <Button type="button" variant="outline" onClick={handleBack}>
+                    <Button type="button" variant="outline" onClick={handleBack} className="transition-all hover:scale-105">
                       <ArrowLeft className="mr-2 h-4 w-4" /> {t('doctors.signup.step4.back_button')}
                     </Button>
                     <Button
                       type="submit"
-                      className="bg-green-600 hover:bg-green-700"
+                      className="bg-green-600 hover:bg-green-700 transition-all hover:scale-105 min-w-[200px]"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? t('doctors.signup.step4.submitting') : t('doctors.signup.step4.submit_button')}
-                      {!isSubmitting && <CheckCircle2 className="ml-2 h-4 w-4" />}
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          {t('doctors.signup.step4.submitting')}
+                        </>
+                      ) : (
+                        <>
+                          {t('doctors.signup.step4.submit_button')}
+                          <CheckCircle2 className="ml-2 h-4 w-4" />
+                        </>
+                      )}
                     </Button>
                   </div>
                 </form>
@@ -807,12 +1478,12 @@ export default function DoctorSignup() {
           </CardContent>
         </Card>
 
-        {/* FAQ Section */}
+        {/* FAQ Section - Mobile Optimized with Collapsible */}
         <div className="mt-12 max-w-2xl mx-auto">
           <h2 className="text-2xl font-bold mb-6 text-center">{t('doctors.signup.faq.title')}</h2>
 
           <div className="space-y-4">
-            <Card>
+            <Card className="transition-all hover:shadow-md">
               <CardHeader>
                 <CardTitle className="text-lg">{t('doctors.signup.faq.verification_question')}</CardTitle>
               </CardHeader>
@@ -823,7 +1494,7 @@ export default function DoctorSignup() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="transition-all hover:shadow-md">
               <CardHeader>
                 <CardTitle className="text-lg">{t('doctors.signup.faq.fees_question')}</CardTitle>
               </CardHeader>
@@ -834,7 +1505,7 @@ export default function DoctorSignup() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="transition-all hover:shadow-md">
               <CardHeader>
                 <CardTitle className="text-lg">{t('doctors.signup.faq.countries_question')}</CardTitle>
               </CardHeader>
@@ -845,7 +1516,7 @@ export default function DoctorSignup() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="transition-all hover:shadow-md">
               <CardHeader>
                 <CardTitle className="text-lg">{t('doctors.signup.faq.documents_question')}</CardTitle>
               </CardHeader>
@@ -857,6 +1528,15 @@ export default function DoctorSignup() {
             </Card>
           </div>
         </div>
+      </div>
+
+      {/* Mobile: Sticky footer with progress indicator on mobile */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-40">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium">Step {currentStep} of 5</span>
+          <span className="text-xs text-gray-500">{getEstimatedTime(currentStep)} left</span>
+        </div>
+        <Progress value={progressPercentage} className="h-2" />
       </div>
     </div>
   );
