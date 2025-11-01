@@ -40,14 +40,24 @@ app.set("trust proxy", 1); // Trust first proxy (required for rate limiting behi
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
+  // Log all CORS requests for debugging
+  console.log(`[CORS] ${req.method} ${req.path} from origin: ${origin}`);
+
   // Allow specific origins (no wildcard due to credentials)
-  if (origin === 'https://www.doktu.co' ||
-      origin === 'https://doktu.co' ||
-      origin === 'https://doktu-tracker.vercel.app' ||
-      origin === 'http://localhost:5173' ||
-      origin === 'http://localhost:5000' ||
-      origin === 'http://localhost:3000') {
+  const allowedOrigins = [
+    'https://www.doktu.co',
+    'https://doktu.co',
+    'https://doktu-tracker.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:5000',
+    'http://localhost:3000'
+  ];
+
+  if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
+    console.log(`[CORS] ✅ Allowed origin: ${origin}`);
+  } else {
+    console.log(`[CORS] ❌ Rejected origin: ${origin}`);
   }
 
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
@@ -57,6 +67,7 @@ app.use((req, res, next) => {
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
+    console.log(`[CORS] Handling OPTIONS preflight for ${req.path}`);
     res.status(200).end();
     return;
   }
