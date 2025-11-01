@@ -95,14 +95,17 @@ export class SupabaseStorageService {
   }
 
   /**
-   * Get a signed URL for secure file download
+   * Get a signed URL for secure file download (for private buckets)
    * @param filePath Path to the file in storage
    * @param expiresIn Expiration time in seconds (default: 1 hour)
+   * @param bucketName Custom bucket name (optional, defaults to patient-documents)
    * @returns Signed URL
    */
-  async getSignedUrl(filePath: string, expiresIn: number = 3600): Promise<string> {
+  async getSignedUrl(filePath: string, expiresIn: number = 3600, bucketName?: string): Promise<string> {
+    const bucket = bucketName || this.bucketName;
+
     const { data, error } = await this.supabase.storage
-      .from(this.bucketName)
+      .from(bucket)
       .createSignedUrl(filePath, expiresIn);
 
     if (error) {
@@ -116,11 +119,14 @@ export class SupabaseStorageService {
   /**
    * Download a file from Supabase Storage
    * @param filePath Path to the file in storage
+   * @param bucketName Custom bucket name (optional, defaults to patient-documents)
    * @returns File buffer
    */
-  async downloadFile(filePath: string): Promise<Buffer> {
+  async downloadFile(filePath: string, bucketName?: string): Promise<Buffer> {
+    const bucket = bucketName || this.bucketName;
+
     const { data, error } = await this.supabase.storage
-      .from(this.bucketName)
+      .from(bucket)
       .download(filePath);
 
     if (error) {

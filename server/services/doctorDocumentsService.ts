@@ -244,6 +244,7 @@ export class DoctorDocumentsService {
 
   /**
    * Get document download URL (with access control)
+   * Generates a signed URL for secure temporary access to private bucket files
    */
   async getDocumentUrl(documentId: string, requesterId: number, requesterRole: string): Promise<string> {
     const document = await this.getDocument(documentId);
@@ -257,9 +258,15 @@ export class DoctorDocumentsService {
       throw new Error('Access denied');
     }
 
-    // Return the storage URL (should be a signed URL for security)
-    // For now, returning the stored URL; in production, generate signed URL
-    return document.storageUrl;
+    // Generate signed URL for secure temporary access (1 hour expiration)
+    // This works for both public and private buckets
+    const signedUrl = await this.storageService.getSignedUrl(
+      document.storageUrl,
+      3600, // 1 hour
+      DOCTOR_DOCUMENTS_BUCKET
+    );
+
+    return signedUrl;
   }
 }
 
