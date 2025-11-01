@@ -256,6 +256,31 @@ export default function DoctorSignup() {
         throw new Error(result.error || 'Registration failed');
       }
 
+      // Auto-login after successful registration
+      const loginResponse = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: finalData.email,
+          password: finalData.password,
+        }),
+        credentials: 'include', // Important: include credentials for session cookie
+      });
+
+      if (!loginResponse.ok) {
+        // Registration successful but login failed - redirect to login page
+        toast({
+          title: 'Registration successful',
+          description: 'Please login to continue',
+        });
+        setTimeout(() => {
+          setLocation('/login');
+        }, 2000);
+        return;
+      }
+
       // Show success message
       toast({
         title: t('doctors.signup.toasts.success_title'),
